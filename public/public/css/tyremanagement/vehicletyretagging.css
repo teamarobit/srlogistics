@@ -1,0 +1,79 @@
+.card{
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0 0 0 / 10%);
+}
+.left-wrap{
+    position: sticky;
+    top: 75px;
+}
+#container-img svg{
+    width: 200px;
+    height: 354px;
+}
+.topbar-bd {
+    margin: 0;
+    padding: 0;
+}
+.topbar-bd .item1 {
+    margin: 0;
+    padding: 0;
+    box-shadow: 0px 1px 3.3px 0px #00000040;
+}
+.topbar-bd .item1 h1 {
+    margin: 0;
+    padding: 11px 0;
+    font-family: Inter;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 23px;
+    letter-spacing: 2%;
+}
+.ten_wheel_block{
+    display: none;
+}
+.card h6{
+    position: absolute;
+    top: -9px;
+    margin: 0;
+    background: #d8e3fa;
+    padding: 2px;
+    border-radius: 5px;
+}
+.form-group{
+    margin-bottom: 5px;
+}
+.tyre-group{
+    transition: 0.4s ease all;
+    background: #fff;
+    cursor: pointer;
+}
+.tyre-group:hover path{
+    fill: #032671;
+}
+.tyre-group:hover text{
+    color: #032671;
+}
+label{
+    font-size: 11px;
+    margin-bottom: 0;
+}
+.card.active{
+    box-shadow: 0 0 10px rgb(3 38 113 / 41%);
+    outline: 5px solid #03267112;
+}
+.spare-wrap{
+    display: none;
+}
+.icon-wrap{
+    position: absolute;
+    right: 0px;
+    top: -7px;
+    background: #fff;
+    padding: 2px 5px;
+    box-shadow: 0 0 10px rgba(0 0 0 / 10%);
+    border-radius: 5px;
+}
+.btn-success{
+    background: #52D713 !important;
+    padding: 10px 15px !important;
+}

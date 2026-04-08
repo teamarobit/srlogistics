@@ -1,0 +1,10 @@
+$('document').ready(function(){
+    $('.if-rental').click(function(){
+        $('.rental-wrap').show();
+        $('.own-wrap').hide();
+    })
+    $('.if-owned').click(function(){
+        $('.rental-wrap').hide();
+        $('.own-wrap').show();
+    })
+})

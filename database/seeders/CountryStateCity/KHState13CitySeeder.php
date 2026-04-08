@@ -1,0 +1,42 @@
+<?php
+
+namespace Database\Seeders\CountryStateCity;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\City;
+
+class KHState13CitySeeder extends Seeder
+{
+	/*** Run the database seeds.*/
+	public function run(): void
+	{
+			$jayParsedAry = [
+[
+'state_id' => 659,
+'name' => 'Sangkom Thmei'
+],[
+'state_id' => 659,
+'name' => 'Srŏk Chhêb'
+],[
+'state_id' => 659,
+'name' => 'Srŏk Ch’êh Sên'
+],[
+'state_id' => 659,
+'name' => 'Srŏk Kulén'
+],[
+'state_id' => 659,
+'name' => 'Srŏk Rôviĕng'
+],[
+'state_id' => 659,
+'name' => 'Srŏk Tbêng Méanchey'
+],[
+'state_id' => 659,
+'name' => 'Tbeng Meanchey'
+],
+];
+		foreach($jayParsedAry as $data){
+		City::create($data);
+		}
+	}
+}
