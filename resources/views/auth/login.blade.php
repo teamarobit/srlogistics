@@ -212,7 +212,7 @@ body{
                             <!--slider_sec-->
                             
                             <div class="textbd">
-                                <p>ONE PLATFORM FOR ALL ROAD FREIGHT</p>
+                                <p>ONE PLATFORM FOR ALL ROAD FREIGHT Test</p>
                                 <h2>Visibility, Efficiency,<br>Sustainainability</h2>
                                 <div class="button_sec">
                                     <p>Join the SR Logistics</p>
