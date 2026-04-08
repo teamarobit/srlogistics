@@ -4,7 +4,7 @@
     
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('public/css/tyre/show.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/show.css') }}">
 
 @endsection
     
@@ -41,7 +41,7 @@
                         <div class="col-lg-6">
                             <div class="ltblock">
                                 <div class="icon_car {{ $tyreLifeInfo['life_border_class'] }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Registration Active">
-                                    <img src="{{ asset('public/images/icons/tyre-default.png') }}" height="25" />
+                                    <img src="{{ asset('images/icons/tyre-default.png') }}" height="25" />
                                 </div>
 
                                 <div class="text">
@@ -266,28 +266,28 @@
                     <ul class="nav nav-tabs item-box">
                         <li class="nav-item">
                             <button class="nav-link nav_click active" data-bs-toggle="tab" data-bs-target="#vehicle">
-                                <span class="icon"><img src="{{ asset('public/images/icons/car-icon04.png') }}" alt="" /></span>
+                                <span class="icon"><img src="{{ asset('images/icons/car-icon04.png') }}" alt="" /></span>
                                 Allocated Vehicle
                             </button>
                         </li>
                         
                         <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#maintenance">
-                                <span class="icon"><img src="{{ asset('public/images/icons/maintenance-icon.png') }}" alt="" /></span>
+                                <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" /></span>
                                 Maintenance
                             </button>
                         </li>
     
                         <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#documents">
-                                <span class="icon"><img src="{{ asset('public/images/icons/documents-icon.png') }}" alt="" /></span>
+                                <span class="icon"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
                                 Document
                             </button>
                         </li>
     
                         <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#comment">
-                                <span class="icon"><img src="{{ asset('public/images/icons/comments-0123.png') }}" alt="" /></span>
+                                <span class="icon"><img src="{{ asset('images/icons/comments-0123.png') }}" alt="" /></span>
                                 Comments
                             </button>
                         </li>
@@ -311,7 +311,7 @@
                                         >
                                             <div class="item-filter">
                                                 <span class="filter-icon">
-                                                    <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon" />
+                                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                                 </span>
                                                 <p>Filter Options</p>
                                             </div>
@@ -684,7 +684,7 @@
                                                 @php
                                                     $medias = $mediadocument->medias;
                                                     $files = $medias->map(function ($media) {
-                                                                    $media->url = asset('public/medias/' . $media->file_path);
+                                                                    $media->url = asset('medias/' . $media->file_path);
                                                                     $media->delete_url = route('tyre.document.destroy', $media->id);
                                                                     return $media;
                                                                 });
@@ -1132,11 +1132,11 @@
 
 @section('js')
 <script>
-    const PDF_LOGO = "{{ asset('public/images/pdf_file.png') }}";
-    const OTHER_LOGO = "{{ asset('public/images/other_file.svg') }}";
+    const PDF_LOGO = "{{ asset('images/pdf_file.png') }}";
+    const OTHER_LOGO = "{{ asset('images/other_file.svg') }}";
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('public/customjs/tyre/show.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/show.js') }}?v={{ uniqid() }}"></script>
 
 @endsection
 

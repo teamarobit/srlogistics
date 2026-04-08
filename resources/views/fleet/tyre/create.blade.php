@@ -2,7 +2,7 @@
 
 @section('css')
     
-    <link rel="stylesheet" href="{{ asset('public/css/fleet/tyre/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fleet/tyre/create.css') }}">
     
 @endsection
 
@@ -299,12 +299,12 @@
 
 @section('js')
 <script>
-    const sixWheelTruckPath = "{{ asset('public/arobittyre_management/6-wheel-new.svg') }}";
-    const tenWheelTruckPath = "{{ asset('public/arobittyre_management/10-wheel-new.svg') }}";
+    const sixWheelTruckPath = "{{ asset('arobittyre_management/6-wheel-new.svg') }}";
+    const tenWheelTruckPath = "{{ asset('arobittyre_management/10-wheel-new.svg') }}";
 </script>
 
-<script type="text/javascript" src="{{ asset('public/arobittyre_management/fleet-tyre.js') }}"></script>
-<script type="text/javascript" src="{{ asset('public/customjs/fleet/tyre/create.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('arobittyre_management/fleet-tyre.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/tyre/create.js') }}?v={{ uniqid() }}"></script>
 
 
 @endsection

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('vehicletyremapping', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('tyre_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('tyreposition_id')->constrained()->restrictOnDelete();
+            $table->bigInteger('vehicle_id');
+            $table->bigInteger('tyre_id');
+            $table->bigInteger('tyreposition_id');
             $table->date('fitment_date')->nullable();
             $table->unsignedBigInteger('km_at_fitment')->nullable();
             $table->date('removal_date')->nullable();

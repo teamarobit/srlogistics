@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-srlbranch-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-srlbranch-master.css') }}">
 
 <style>
 .rental-wrap{
@@ -350,7 +350,7 @@
 
                                 @forelse($branch->files as $file)
                                     @php
-                                        $path = asset('public/media/branch/' . $file->file_name);
+                                        $path = asset('media/branch/' . $file->file_name);
                                         $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
                                     @endphp
                                 
@@ -556,7 +556,7 @@ $('document').ready(function(){
 
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/branch/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}"></script>
 
 @endsection
 

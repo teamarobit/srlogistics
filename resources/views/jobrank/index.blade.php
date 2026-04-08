@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/department.css') }}">
 
 <style>
 body{ background-color: #fff; }
@@ -162,6 +162,6 @@ var DELETE_JOBRANK  = "{{route('jobrank.delete')}}";
 var DESIGNATION_URL = "{{ route('designation.getDepartmentWiseDesignations', '__ID__') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/jobrank/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/jobrank/index.js')}}"></script>
 
 @endsection

@@ -204,7 +204,7 @@ box-shadow: 0px 0px 6px -1px rgba(0,0,0, 0.5);border-radius: 13px;}
                                 
                                 <div class="loginslider">
                                     <div class="item">
-                                       <img src="{{ asset('public/images/login-img012.png') }}" width="100%">
+                                       <img src="{{ asset('images/login-img012.png') }}" width="100%">
                                     </div>
                                 </div>
                                 

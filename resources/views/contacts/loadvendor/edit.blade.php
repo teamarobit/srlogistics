@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/employee-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/employee-management.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 <style>
@@ -556,9 +556,9 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td>
-                                                                        Malviya Nagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('public/images/icons/pin.png') }}" alt="Map Location"></a>
+                                                                        Malviya Nagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('images/icons/pin.png') }}" alt="Map Location"></a>
                                                                     </td>
-                                                                    <td>Indiranagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('public/images/icons/pin.png') }}" alt="Map Location"></a></td>
+                                                                    <td>Indiranagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('images/icons/pin.png') }}" alt="Map Location"></a></td>
                                                                     <td>
                                                                         <span class="tag">16 FT 15M * 11M * XXM 16M</span>
                                                                         <a class="vehicle-detail-btn" data-id="2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#moreSize">More</a>
@@ -591,9 +591,9 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td>
-                                                                        Malviya Nagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('public/images/icons/pin.png') }}" alt="Map Location"></a>
+                                                                        Malviya Nagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('images/icons/pin.png') }}" alt="Map Location"></a>
                                                                     </td>
-                                                                    <td>Indiranagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('public/images/icons/pin.png') }}" alt="Map Location"></a></td>
+                                                                    <td>Indiranagar <a class="text-danger" href="https://maps.app.goo.gl/JfwW6FKYwvC33CZC6" target="_blank"><img src="{{ asset('images/icons/pin.png') }}" alt="Map Location"></a></td>
                                                                     <td>
                                                                         <span class="tag">16 FT 15M * 11M * XXM 16M</span>
                                                                         <a class="vehicle-detail-btn" data-id="2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#moreSize">More</a>
@@ -666,11 +666,11 @@
                                                            <div class="col-12 col-md-4 attachment-box">
                                                               <div class="preview-img d-block w-100">
                                                                   <div class="d-flex justify-content-between">
-                                                                      <a href="{{asset('public/media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                          <img src="{{asset('public/media/contact/'.$coattachment->name)}}" class="me-3">
+                                                                      <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
+                                                                          <img src="{{asset('media/contact/'.$coattachment->name)}}" class="me-3">
                                                                       </a>
                                                                       <div style="font-size: 14px;">
-                                                                          <a href="{{asset('public/media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
+                                                                          <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
                                                                               <p class="mb-0 file-name">{{$coattachment->original_name}} </p>
                                                                           </a>
                                                                           <p class="mb-0">Size: <span class="text-secondary">{{round((float)$coattachment->file_size,2)}} MB</span></p>
@@ -1199,8 +1199,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/activity.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
 @endsection

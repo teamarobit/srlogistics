@@ -3,8 +3,8 @@
 @section('css')
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('public/css/tyre/edit.css') }}">
-<!--<link rel="stylesheet" href="{{ asset('public/css/vehicle-details.css') }}">-->
+<link rel="stylesheet" href="{{ asset('css/tyre/edit.css') }}">
+<!--<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">-->
 
 @endsection
 
@@ -225,11 +225,11 @@
                         <div class="col-12 col-md-4 attachment-box">
                             <div class="preview-img d-block w-100">
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ asset('public/medias/'. $image->file_path) }}" download="{{ $image->file_name }}">
-                                        <img src="{{ asset('public/medias/'. $image->file_path) }}" class="me-3">
+                                    <a href="{{ asset('medias/'. $image->file_path) }}" download="{{ $image->file_name }}">
+                                        <img src="{{ asset('medias/'. $image->file_path) }}" class="me-3">
                                     </a>
                                     <div style="font-size: 14px;">
-                                        <a href="{{ asset('public/medias/'. $image->file_path) }}" download="{{ $image->file_name }}">
+                                        <a href="{{ asset('medias/'. $image->file_path) }}" download="{{ $image->file_name }}">
                                             <p class="mb-0 file-name">{{ $image->file_name }} </p>
                                         </a>
                                         <p class="mb-0">Size: <span class="text-secondary">{{ round((float) $image->file_size, 2) }} MB</span></p>
@@ -254,7 +254,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{asset('public/customjs/tyre/edit.js')}}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{asset('customjs/tyre/edit.js')}}?v={{ uniqid() }}"></script>
 
 @endsection
 

@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-asset.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-asset.css') }}">
 
 <style>
 /*body { background-color: #fff; }*/
@@ -240,7 +240,7 @@
                                           <div class="upload__img-wrap">
                                             @forelse($data->files as $file)
                                                 @php
-                                                    $path = asset('public/media/asset/' . $file->file_name);
+                                                    $path = asset('media/asset/' . $file->file_name);
                                                     $ext = strtolower(pathinfo($file->file_name, PATHINFO_EXTENSION));
                                                 @endphp
                                                 
@@ -316,6 +316,6 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/asset/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/asset/edit.js')}}"></script>
 
 @endsection

@@ -193,7 +193,7 @@
                                             <span class="me-2">
                                                 
                                                 @if ($item->product && $item->product->primary_image)
-                                                    <img src="{{ asset('public/media/product/' . $item->product->primary_image) }}" alt="{{ $item->product->primary_image }}" width="50">
+                                                    <img src="{{ asset('media/product/' . $item->product->primary_image) }}" alt="{{ $item->product->primary_image }}" width="50">
                                                 @else
                                                     
                                                 @endif
@@ -265,7 +265,7 @@
                                             <span class="me-2">
                                                 
                                                 @if ($item->product && $item->product->primary_image)
-                                                    <img src="{{ asset('public/media/product/' . $item->product->primary_image) }}" alt="{{ $item->product->primary_image }}" width="50">
+                                                    <img src="{{ asset('media/product/' . $item->product->primary_image) }}" alt="{{ $item->product->primary_image }}" width="50">
                                                 @else
                                                     N/A
                                                 @endif
@@ -309,5 +309,5 @@
     var EDIT_BOM    = "{{ route('bom.edit', ['id' => $bom->id]) }}";
    
 </script>
-<script type="text/javascript" src="{{ asset('public/customjs/bom/show.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/bom/show.js') }}?v={{ time() }}"></script>
 @endsection

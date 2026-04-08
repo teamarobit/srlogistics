@@ -4,7 +4,7 @@
   <div class="container-fluid srmegamenu ">
     <!-- Toggle button -->
     <span class="toggle-menu d-block d-lg-none" style="padding: 0.25rem 0.5rem;">
-      <img src="{{ asset('public/images/icons/ham.svg') }}" alt="Ham Menu" width="20" height="14">
+      <img src="{{ asset('images/icons/ham.svg') }}" alt="Ham Menu" width="20" height="14">
     </span>
 
     <!-- Collapsible wrapper -->
@@ -14,12 +14,12 @@
 
         <li class="nav-item">
           <a class="nav-link text-white {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
-              <img src="{{ asset('public/images/menu-icon/Dashboard.png') }}">Dashboard </a>
+              <img src="{{ asset('images/menu-icon/Dashboard.png') }}">Dashboard </a>
         </li>
 
         <li class="nav-item">
 
-          <a href="javascript:void(0)" class="nav-link text-white"><img src="{{ asset('public/images/menu-icon/vehicles.webp') }}">Fleet</a>
+          <a href="javascript:void(0)" class="nav-link text-white"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
           
           <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
@@ -27,7 +27,7 @@
             
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Vehicle</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Vehicle</li>
                       
                       @if(Route::has('fleetdashboard.index'))
                       <li><a href="{{ route('fleetdashboard.index') }}">Vehicle Dashboard</a></li>
@@ -52,7 +52,7 @@
             
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Driver</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Driver</li>
                       <li><a href="driver.php">Driver Dashboard</a></li>
                       <li><a href="#">Driver Documents</a></li>
                       <li><a href="#">Driver RAG Status</a></li>
@@ -68,13 +68,13 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link text-white" href="javascript:void(0)"><img src="{{ asset('public/images/menu-icon/road-trip.webp') }}">Freight</a>
+          <a class="nav-link text-white" href="javascript:void(0)"><img src="{{ asset('images/menu-icon/road-trip.webp') }}">Freight</a>
           <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Trip Planning</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Trip Planning</li>
                       <li><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addTrip">Create Trip</a></li>
                       <li><a href="trips.php">Trip Tracking</a></li>
                       <li><a href="#">Vehicle & Trip Approval</a></li>
@@ -97,7 +97,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Exception Management</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Exception Management</li>
                       <li><a href="driver.php">Delay Alerts</a></li>
                       <li><a href="#">Breakdown Logs</a></li>
                       <li><a href="#">Trip Reassignment</a></li>
@@ -111,13 +111,13 @@
 
         
         <li class="nav-item">
-        <a class="nav-link text-white" href="#"><img src="{{ asset('public/images/menu-icon/Production.png') }}">Service</a>
+        <a class="nav-link text-white" href="#"><img src="{{ asset('images/menu-icon/Production.png') }}">Service</a>
         <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Service Requests</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Service Requests</li>
                       <li><a href="#">Create New Service Request</a></li>
                       <li><a href="#">Breakdown Request</a></li>
                       <li><a href="#">Routine Maintenance Request</a></li>
@@ -128,7 +128,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Workshop / Service Center Operations</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Workshop / Service Center Operations</li>
                       <li><a href="driver.php">Job Card Creation</a></li>
                       <li><a href="#">Job Card</a></li>
                       <li><a href="#">Spare Part Consumption</a></li>
@@ -138,7 +138,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Maintenance Scheduling</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Maintenance Scheduling</li>
                       <li><a href="driver.php">Preventive Maintenance Calendar</a></li>
                       <li><a href="#">KM-Based Service Alerts</a></li>
                       <li><a href="#">Engine Oil Change Alerts</a></li>
@@ -149,7 +149,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Inventory (Service-Level Only)</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Inventory (Service-Level Only)</li>
                       <li><a href="driver.php">Purchase Order </a></li>
                       <li><a href="#">GRN</a></li>
                       <li><a href="#">Tyre Inventory</a></li>
@@ -163,13 +163,13 @@
         </li>
 
         <li class="nav-item">
-        <a class="nav-link text-white" href="#"><img src="{{ asset('public/images/menu-icon/Production.png') }}">Finance</a>
+        <a class="nav-link text-white" href="#"><img src="{{ asset('images/menu-icon/Production.png') }}">Finance</a>
         <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Freight Billing</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Freight Billing</li>
                       <li><a href="create-invoice.php">Create Invoice</a></li>
                       <li><a href="invoice-list.php">Invoices</a></li>
                       <li><a href="#">Customer & Broker ledger</a></li>
@@ -180,7 +180,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Payments</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Payments</li>
                       <li><a href="#">Driver Settlement</a></li>
                       <li><a href="#">Vendor Settlement</a></li>
                     </ul>
@@ -188,7 +188,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Trip Expense Management</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Trip Expense Management</li>
                       <li><a href="#">Fuel Expenses</a></li>
                       <li><a href="#">Driver Allowances</a></li>
                       <li><a href="#">Repair Charges</a></li>
@@ -199,7 +199,7 @@
                   
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/fleet-monitoring.png') }}"></span>Inventory (Service-Level Only)</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Inventory (Service-Level Only)</li>
                       <li><a href="driver.php">Purchase Order </a></li>
                       <li><a href="#">GRN</a></li>
                       <li><a href="#">Tyre Inventory</a></li>
@@ -213,13 +213,13 @@
         </li>
 
         <li class="nav-item">
-        <a class="nav-link text-white" href="#"><img src="{{ asset('public/images/menu-icon/Production.png') }}">Reports & Analytics</a>
+        <a class="nav-link text-white" href="#"><img src="{{ asset('images/menu-icon/Production.png') }}">Reports & Analytics</a>
         <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
-                      <li class="title"><span class="icon"><img src="{{ asset('public/images/menu-icon/vehicle-details.png') }}"></span>Billing & Invoicing</li>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Billing & Invoicing</li>
                       <li><a href="#">Fleet Utilization</a></li>
                       <li><a href="#">Driver Performance</a></li>
                       <li><a href="#">Trip Profitability</a></li>
@@ -237,7 +237,7 @@
     
     <!--mobile logo-->
       <a class="navbar-brand mt-2 mt-lg-0 d-block d-lg-none" href="index.php">
-        <img src="{{ asset('public/images/logo.png') }}" width="78" height="46" alt="Logo" loading="lazy"/>
+        <img src="{{ asset('images/logo.png') }}" width="78" height="46" alt="Logo" loading="lazy"/>
       </a>
     <!-- Right elements -->
     <div class="d-flex align-items-center mob-adjust">
@@ -252,7 +252,7 @@
           role="button"
           aria-expanded="false">
           <!--<i class="uil uil-bell text-white" style="font-size: 22px;"></i>-->
-          <img src="{{ asset('public/images/menu-icon/notification.png') }}" alt="Notification" width="22" height="22">
+          <img src="{{ asset('images/menu-icon/notification.png') }}" alt="Notification" width="22" height="22">
         </a>
         <ul
           class="dropdown-menu dropdown-menu-lg dropdown-menu-end"
@@ -338,7 +338,7 @@
           aria-expanded="false"
         >
           <!--<i class="uil uil-user-circle text-white" style="font-size: 22px;"></i>-->
-          <img src="{{ asset('public/images/menu-icon/profile.png') }}" alt="Profile" width="22" height="22">
+          <img src="{{ asset('images/menu-icon/profile.png') }}" alt="Profile" width="22" height="22">
         </a>
 
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">

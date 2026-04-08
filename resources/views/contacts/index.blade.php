@@ -126,5 +126,5 @@
     @endif
     
 </script>
-<script type="text/javascript" src="{{ asset('public/customjs/contact/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/index.js') }}?v={{ time() }}"></script>
 @endsection

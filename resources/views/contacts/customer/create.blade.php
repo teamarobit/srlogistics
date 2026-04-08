@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-customer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 <style>
@@ -1367,7 +1367,7 @@ p {  margin:0;  font-size: 13px; word-break: break-word; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
 
 @endsection
 

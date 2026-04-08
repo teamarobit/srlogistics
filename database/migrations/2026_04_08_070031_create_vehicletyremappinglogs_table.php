@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('vehicletyremappinglogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicletyremapping_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('tyre_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('tyreposition_id')->constrained()->restrictOnDelete();
+            $table->bigInteger('vehicletyremapping_id');
+            $table->bigInteger('vehicle_id');
+            $table->bigInteger('tyre_id');
+            $table->bigInteger('tyreposition_id');
             $table->date('fitment_date')->nullable();
             $table->unsignedBigInteger('km_at_fitment')->nullable();
             $table->date('removal_date')->nullable();

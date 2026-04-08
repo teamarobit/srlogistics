@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/srlbranch-master-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/srlbranch-master-list.css') }}">
 
 <style>
 body{ background-color: #fff; }
@@ -211,5 +211,5 @@ body{ background-color: #fff; }
     var DELETE_BRANCH  = "{{route('branch.delete')}}";
     
 </script>
-<script type="text/javascript" src="{{ asset('public/customjs/branch/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/branch/index.js') }}?v={{ time() }}"></script>
 @endsection

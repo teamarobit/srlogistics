@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/department.css') }}">
 
 <style>
 body{ background-color: #fff; }
@@ -158,5 +158,5 @@ body{ background-color: #fff; }
     
    
 </script>
-<script type="text/javascript" src="{{ asset('public/customjs/department/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/department/index.js') }}?v={{ time() }}"></script>
 @endsection

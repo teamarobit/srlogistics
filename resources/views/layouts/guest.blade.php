@@ -25,7 +25,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
 
     <!--custom style-->
-    <link href="{{ asset('public/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     
     <link href="css/responsive.css?v=<?php echo uniqid(); ?>" rel="stylesheet">
 
@@ -122,7 +122,7 @@ $(function () {
 
 @yield('js')
 
-<script src="{{ asset('public/js/common.js') }}"></script>
+<script src="{{ asset('js/common.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
