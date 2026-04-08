@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-routes.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-routes.css') }}">
 
 <style>
 .add-remove01btn.del-row{
@@ -443,9 +443,9 @@ let getCitiesUrlTemplate = "{{ route('getcities', ':id') }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/route/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/route/create.js')}}"></script>
 
-<script type="text/javascript" src="{{asset('public/js/add-routes.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/add-routes.js')}}"></script>
 
 @endsection
 

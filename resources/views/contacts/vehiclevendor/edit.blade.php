@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/employee-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/employee-management.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 <style>
@@ -840,11 +840,11 @@ align-items: center;    justify-content: center;    color: #fff;    font-size: 1
                                                    <div class="col-12 col-md-4 attachment-box">
                                                       <div class="preview-img d-block w-100">
                                                           <div class="d-flex justify-content-between">
-                                                              <a href="{{asset('public/media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                  <img src="{{asset('public/media/contact/'.$coattachment->name)}}" class="me-3">
+                                                              <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
+                                                                  <img src="{{asset('media/contact/'.$coattachment->name)}}" class="me-3">
                                                               </a>
                                                               <div style="font-size: 14px;">
-                                                                  <a href="{{asset('public/media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
+                                                                  <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
                                                                       <p class="mb-0 file-name">{{$coattachment->original_name}} </p>
                                                                   </a>
                                                                   <p class="mb-0">Size: <span class="text-secondary">{{round((float)$coattachment->file_size,2)}} MB</span></p>
@@ -1078,8 +1078,8 @@ align-items: center;    justify-content: center;    color: #fff;    font-size: 1
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/activity.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
 @endsection

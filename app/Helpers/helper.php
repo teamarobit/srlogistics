@@ -69,7 +69,7 @@ if(!function_exists('getTyreLifeInfo')){
                         'life_fill_class' => 'bg-secondary',
                         'life_color' => 'grey',
                         'life_text' => 'N/A',
-                        'icon' => asset('public/images/icons/tyre-default.png')
+                        'icon' => asset('images/icons/tyre-default.png')
                     ];
         $tyre = Tyre::find($tyre_id);
         if($tyre){
@@ -82,21 +82,21 @@ if(!function_exists('getTyreLifeInfo')){
                     $lifeInfo['life_fill_class'] = 'bg-success';
                     $lifeInfo['life_color'] = 'green';
                     $lifeInfo['life_text'] = 'Good';
-                    $lifeInfo['icon'] = asset('public/images/icons/tyre-success.png');
+                    $lifeInfo['icon'] = asset('images/icons/tyre-success.png');
                 }elseif($life_percent >= 30){
                     $lifeInfo['life_percent'] = $life_percent;
                     $lifeInfo['life_border_class'] = 'bg-warning';
                     $lifeInfo['life_fill_class'] = 'bg-warning';
                     $lifeInfo['life_color'] = 'yellow';
                     $lifeInfo['life_text'] = 'Warning';
-                    $lifeInfo['icon'] = asset('public/images/icons/tyre-warning.png');
+                    $lifeInfo['icon'] = asset('images/icons/tyre-warning.png');
                 }else{
                     $lifeInfo['life_percent'] = $life_percent;
                     $lifeInfo['life_border_class'] = 'reg-inactive';
                     $lifeInfo['life_fill_class'] = 'bg-danger';
                     $lifeInfo['life_color'] = 'red';
                     $lifeInfo['life_text'] = 'Critical';
-                    $lifeInfo['icon'] = asset('public/images/icons/tyre-danger.png');
+                    $lifeInfo['icon'] = asset('images/icons/tyre-danger.png');
                 }
             }
         }

@@ -3,7 +3,7 @@
 @section('css')
     
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ asset('public/css/vehicle-details.css?v=0.02') }}">
+<link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=0.02') }}">
     
 @endsection
 
@@ -38,7 +38,7 @@
                         <div class="col-lg-6">
                             <div class="ltblock">
                                 <div class="icon_car {{ $vehicle->basicinfo->registration_status == 'Active' ? 'reg-active' : 'reg-inactive' }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ $vehicle->basicinfo->registration_status == 'Active' ? 'Registration Active' : 'Registration Inactive' }}">
-                                    <img src="{{ asset('public/images/icons/car-icon04.png') }}" />
+                                    <img src="{{ asset('images/icons/car-icon04.png') }}" />
                                 </div>
 
                                 <div class="text">
@@ -1222,56 +1222,56 @@
                 <ul class="nav nav-tabs item-box">
                     <li class="nav-item">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#trip">
-                            <span class="icon"><img src="{{ asset('public/images/icons/trip-bookicon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/trip-bookicon.png') }}" alt="" /></span>
                             Trip Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fuel">
-                            <span class="icon"><img src="{{ asset('public/images/icons/fuel-bookicon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/fuel-bookicon.png') }}" alt="" /></span>
                             Fuel Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#expenses">
-                            <span class="icon"><img src="{{ asset('public/images/icons/expenses-icon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/expenses-icon.png') }}" alt="" /></span>
                             Expenses Book
                         </button>
                     </li>
                     
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#maintenance">
-                            <span class="icon"><img src="{{ asset('public/images/icons/maintenance-icon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" /></span>
                             Maintenance
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
-                            <span class="icon"><img src="{{ asset('public/images/icons/documents-icon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
                             Document
                         </button>
                     </li>
 
                     <li class="nav-item">
                       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allotment">
-                        <span class="icon"><img src="{{ asset('public/images/icons/allotment-icon.png') }}" alt=""></span>
+                        <span class="icon"><img src="{{ asset('images/icons/allotment-icon.png') }}" alt=""></span>
                         Allotment 
                       </button>
                     </li>
                     
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#emi_book">
-                            <span class="icon"><img src="{{ asset('public/images/icons/emi-bookicon.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/emi-bookicon.png') }}" alt="" /></span>
                             EMI Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#comment">
-                            <span class="icon"><img src="{{ asset('public/images/icons/comments-0123.png') }}" alt="" /></span>
+                            <span class="icon"><img src="{{ asset('images/icons/comments-0123.png') }}" alt="" /></span>
                             Comments
                         </button>
                     </li>
@@ -1385,7 +1385,7 @@
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon" />
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                             </span>
                                             <p>Filter Options</p>
                                         </div>
@@ -1647,7 +1647,7 @@
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon" />
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                             </span>
                                             <p>Filter Options</p>
                                         </div>
@@ -1822,7 +1822,7 @@
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon" />
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                             </span>
                                             <p>Filter Options</p>
                                         </div>
@@ -2650,7 +2650,7 @@
                         <div class="filter-options">
                             <div class="item-filter">
                                 <span class="filter-icon">
-                                    <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon" />
+                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                 </span>
                                 <p>Filter Options</p>
                             </div>
@@ -5068,7 +5068,7 @@
 @section('js')
 
 
-<script type="text/javascript" src="{{ asset('public/customjs/fleet/vehicle-details.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
 
 <script>
 

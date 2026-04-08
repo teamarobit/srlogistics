@@ -2,9 +2,9 @@
 
 @section('css')
     
-<link rel="stylesheet" href="{{ asset('public/css/fleet-dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('public/css/dashboard-table.css') }}">
-<link rel="stylesheet" href="{{ asset('public/css/vehicle-details.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet-dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/dashboard-table.css') }}">
+<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">
 
 <style>
     .bg-empty{
@@ -76,16 +76,16 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -98,16 +98,16 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -120,18 +120,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <!--<div class="item2">Inactive Vehicles</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -144,18 +144,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <!--<div class="item2">Without Driver</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -168,18 +168,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <!--<div class="item2">On Trip Vehicles</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -192,18 +192,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <!--<div class="item2">Maintenance Vehicles</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/vehicles.png') }}" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -287,7 +287,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -450,7 +450,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -583,7 +583,7 @@
                                             </thead>
                                             <tbody id="fleetTableBody_7">
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1234</span>
                                                     </td>
@@ -608,7 +608,7 @@
                                                 </tr>
                                                 
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche03.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche03.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1235</span>
                                                     </td>
@@ -647,7 +647,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -782,7 +782,7 @@
                                             </thead>
                                             <tbody id="fleetTableBody_3">
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1234</span>
                                                     </td>
@@ -810,7 +810,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche02.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche02.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-7650</span>
                                                     </td>
@@ -853,7 +853,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -989,7 +989,7 @@
                                             </thead>
                                             <tbody id="fleetTableBody_5">
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1234</span>
                                                     </td>
@@ -1032,7 +1032,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -1159,7 +1159,7 @@
                                             </thead>
                                             <tbody id="fleetTableBody_1">
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1234</span>
                                                     </td>
@@ -1189,7 +1189,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche03.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche03.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1235</span>
                                                     </td>
@@ -1234,7 +1234,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -1372,7 +1372,7 @@
                                             </thead>
                                             <tbody id="fleetTableBody_6">
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1234</span>
                                                     </td>
@@ -1394,7 +1394,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><img src="{{ asset('public/images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
                                                     <td>
                                                         <span class="value">WB-12-AB-1236</span>
                                                     </td>
@@ -1590,15 +1590,15 @@
 @section('js')
 
 <script>
-let FASTAG_EXCEL = "{{ asset('public/sample_excels/Fasttag.xlsx') }}";
-let GPS_EXCEL    = "{{ asset('public/sample_excels/Gps.xlsx') }}";
-let TYRE_EXCEL   = "{{ asset('public/sample_excels/Tyre.xlsx') }}";
-let BATTERY_EXCEL   = "{{ asset('public/sample_excels/Battery.xlsx') }}";
+let FASTAG_EXCEL = "{{ asset('sample_excels/Fasttag.xlsx') }}";
+let GPS_EXCEL    = "{{ asset('sample_excels/Gps.xlsx') }}";
+let TYRE_EXCEL   = "{{ asset('sample_excels/Tyre.xlsx') }}";
+let BATTERY_EXCEL   = "{{ asset('sample_excels/Battery.xlsx') }}";
 </script>
 
 
-<script type="text/javascript" src="{{ asset('public/customjs/fleet/index.js') }}"></script>
-<script type="text/javascript" src="{{ asset('public/js/fleet-dashboard.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet-dashboard.js') }}"></script>
 
 
 @endsection

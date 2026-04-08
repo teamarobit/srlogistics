@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-designation.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-designation.css') }}">
 
 <style>
 
@@ -112,7 +112,7 @@
 var SKILLSETS = "{{ route('skillset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/skillset/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/skillset/create.js')}}"></script>
 
 @endsection
 

@@ -2,8 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-vehicle.css') }}">
-<link rel="stylesheet" href="{{ asset('public/css/vehicle-details.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-vehicle.css') }}">
+<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">
 
 <style>
 .table-hover tbody > tr:hover > * {
@@ -316,7 +316,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/vehicle/management/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/management/create.js')}}"></script>
 
 @endsection
 

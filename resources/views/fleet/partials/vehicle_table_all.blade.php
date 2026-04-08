@@ -3,7 +3,7 @@
     @foreach($vehicles as $vehicle)
     <tr>
         <td>
-            <img src="{{ asset('public/images/icons/vehiche03.png') }}" class="driver-img-sm">
+            <img src="{{ asset('images/icons/vehiche03.png') }}" class="driver-img-sm">
         </td>
 
         <td>

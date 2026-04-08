@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-vehicle-type.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-vehicle-type.css') }}">
 
 <style>
 
@@ -103,7 +103,7 @@
 var LISTING      = "{{route('digilockprovider.index')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/provider/digilock/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/provider/digilock/create.js')}}"></script>
 
 @endsection
 

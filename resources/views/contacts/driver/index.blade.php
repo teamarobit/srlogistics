@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/employe-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/employe-list.css') }}">
 
 <style>
 body{
@@ -263,7 +263,7 @@ var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 var DELETE_CONTACT  = "{{route('contact.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/' . $cotype->slug . '/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js') }}"></script>
 
 @endsection
 

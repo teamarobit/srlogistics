@@ -2,8 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-customer.css') }}">
-<link rel="stylesheet" href="{{ asset('public/css/add-srlbranch-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-srlbranch-master.css') }}">
 
 <style>
 .loading-wrap{
@@ -155,7 +155,7 @@
                                 </div>
                                 @if(optional($contract->detail)->contract_file)
                                     <p class="mt-2">
-                                        <a href="{{ asset('public/media/customer-contract/'.$contract->detail->contract_file) }}"
+                                        <a href="{{ asset('media/customer-contract/'.$contract->detail->contract_file) }}"
                                            target="_blank">
                                            View Existing File
                                         </a>
@@ -335,6 +335,6 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{ asset('public/customjs/contact/' . $cotype->slug . '/contract-form.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js') }}"></script>
 
 @endsection

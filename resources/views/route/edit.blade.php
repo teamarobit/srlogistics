@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-routes.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-routes.css') }}">
 
 <style>
 .add-remove01btn.del-row{
@@ -584,9 +584,9 @@ window.editDestinationCityId = "{{ $route->destination_city_id ?? '' }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/route/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/route/edit.js')}}"></script>
 
-<script type="text/javascript" src="{{asset('public/js/add-routes.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/add-routes.js')}}"></script>
 
 @endsection
 

@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/department.css') }}">
 
 <style>
 body{ background-color: #fff; }
@@ -128,7 +128,7 @@ body{ background-color: #fff; }
     var DELETE_SKILLSET  = "{{route('skillset.delete')}}";
     
 </script>
-<script type="text/javascript" src="{{ asset('public/customjs/skillset/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/skillset/index.js') }}?v={{ time() }}"></script>
 
 @endsection
 

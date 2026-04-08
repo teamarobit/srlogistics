@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-asset.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-asset.css') }}">
 
 <style>
 /*body { background-color: #fff; }*/
@@ -280,7 +280,7 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/asset/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/asset/create.js')}}"></script>
 
 @endsection
 

@@ -204,7 +204,7 @@ body{
                                 
                                 <div class="loginslider">
                                     <div class="item">
-                                       <img src="{{ asset('public/images/login-img012.png') }}" width="100%">
+                                       <img src="{{ asset('images/login-img012.png') }}" width="100%">
                                     </div>
                                 </div>
                                 

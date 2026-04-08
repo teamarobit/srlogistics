@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
 
 <style>
 
@@ -254,7 +254,7 @@ var EDIT_VEHILEGROUP = "{{ route('vehiclegroup.edit', ':id') }}";
 var DELETE_VEHILEGROUP = "{{ route('vehiclegroup.delete') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/vehicle/group/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/group/index.js')}}"></script>
 
 @endsection
 

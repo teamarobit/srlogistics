@@ -28,8 +28,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
 
     <!--custom style-->
-    <link href="{{ asset('public/css/style.css?v=0.02') }}" rel="stylesheet">
-    <link href="{{ asset('public/css/responsive.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?v=0.02') }}" rel="stylesheet">
+    <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
 
     <!--select2-->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -45,7 +45,7 @@
 
     <!--bootstrap taginput-->
     <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTfEzf1y6XJjR0Qn2/C7M+Z8v/gB3T6tK+k1t4g+D6t8T6+K+w8/z+k+D6t8T6+K+w8/z+k=" crossorigin="anonymous" referrerpolicy="no-referrer" />-->
-    <link rel="stylesheet" href="{{ asset('public/css/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-tagsinput.css') }}">
     
     <!--tel input-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/css/intlTelInput.css">
@@ -107,10 +107,10 @@
 
     <!--bootstrap taginput-->
     <!--<script src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.min.js" integrity="sha512-i2pZ0bQ/rN8eM4a/C8W/H/Q7/g+w8/z+k+D6t8T6+K+w8/z+k+D6t8T6+K+w8/z+k=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
-    <script src="{{ asset('public/js/bootstrap-tagsinput.js') }}"></script>
+    <script src="{{ asset('js/bootstrap-tagsinput.js') }}"></script>
 
     <!-- Common -->
-    <script src="{{ asset('public/js/common.js') }}"></script>
+    <script src="{{ asset('js/common.js') }}"></script>
     
     <!--tel input-->
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/intlTelInput.min.js"></script>

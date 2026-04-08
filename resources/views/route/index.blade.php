@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/routes-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/routes-list.css') }}">
 
 <style>
 
@@ -202,7 +202,7 @@
 var DELETE_ROUTE  = "{{route('route.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/route/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/route/index.js')}}"></script>
 
 @endsection
 

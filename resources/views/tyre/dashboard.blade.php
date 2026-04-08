@@ -2,8 +2,8 @@
 
 @section('css')
     
-<link rel="stylesheet" href="{{ asset('public/css/tyre/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('public/css/tyre/dashboard-table.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard-table.css') }}">
 
 <style>
     .bg-empty{
@@ -78,16 +78,16 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> 100%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 100%</div>
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/icons/tyre-default.png') }}" />
+                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -100,16 +100,16 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> {{ round($warehouse_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($warehouse_count * 100 / $all_count) }}%</div>
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/icons/tyre-default.png') }}" />
+                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -122,18 +122,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> {{ round($service_center_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($service_center_count * 100 / $all_count) }}%</div>
                         
                                     <!--<div class="item2">Inactive Vehicles</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/icons/tyre-default.png') }}" />
+                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -146,18 +146,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> {{ round($vehicle_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($vehicle_count * 100 / $all_count) }}%</div>
                         
                                     <!--<div class="item2">Without Driver</div>-->
                         
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/icons/tyre-default.png') }}" />
+                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -170,15 +170,15 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('public/images/up-right-arrow 1.png') }}" /> {{ round($discarded_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($discarded_count * 100 / $all_count) }}%</div>
                                     <div class="item3">
-                                        <img src="{{ asset('public/images/icons/tyre-default.png') }}" />
+                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="{{ asset('public/images/images01.png') }}" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -215,7 +215,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -358,7 +358,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -498,7 +498,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -638,7 +638,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -778,7 +778,7 @@
                                     <div class="item-filter">
                                         <div class="filter">
                                             <span class="filter-icon">
-                                                <img src="{{ asset('public/images/icons/filter-01icon.png') }}" alt="icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
                                             </span>
                                         </div>
                                         <p class="mb-0">Filter Options</p>
@@ -922,7 +922,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{ asset('public/customjs/tyre/dashboard.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/dashboard.js') }}?v={{ uniqid() }}"></script>
 
 
 @endsection

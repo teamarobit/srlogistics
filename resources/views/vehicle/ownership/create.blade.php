@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('public/css/add-ownership.css') }}">
+<link rel="stylesheet" href="{{ asset('css/add-ownership.css') }}">
 
 <style>
 
@@ -121,7 +121,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{asset('public/customjs/vehicle/ownership/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js')}}"></script>
 
 @endsection
 
