@@ -37,6 +37,7 @@ class BranchController extends Controller
     {
         $search_branch_type = $request->get('type');
         $search_branch_city = $request->get('city');
+        $search_status = $request->get('status');
         
         $cities = City::whereHas('state.country', function ($q) {
                             $q->where('iso2', 'IN');
@@ -54,6 +55,10 @@ class BranchController extends Controller
                                     ->when($search_branch_city, function ($query) use ($search_branch_city) {
                                         $query->where('city_id', $search_branch_city);
                                     })
+                                    
+                                    ->when($search_status !== null && $search_status !== '', function ($q) use ($search_status) {
+                                        $q->where('status', $search_status);
+                                    })
                                     ->orderBy('id', 'DESC')
                                     ->paginate(10)
                                     ->withQueryString(); // preserves search query in pagination links
@@ -62,7 +67,7 @@ class BranchController extends Controller
         
         //dd($branches);
         
-        return view('branch.index', compact('branches','search_branch_type','search_branch_city','cities'));
+        return view('branch.index', compact('branches','search_branch_type','search_branch_city','cities','search_status'));
     }
     
     
@@ -83,6 +88,7 @@ class BranchController extends Controller
         
         $request->merge([
             'phone'    => preg_replace('/\s+/', '', $request->phone),
+            'branch_owner_phone'    => preg_replace('/\s+/', '', $request->branch_owner_phone),
         ]);
         
         $validator = Validator::make($request->all(), [
@@ -276,6 +282,7 @@ class BranchController extends Controller
         
         $request->merge([
             'phone'    => preg_replace('/\s+/', '', $request->phone),
+            'branch_owner_phone'    => preg_replace('/\s+/', '', $request->branch_owner_phone),
         ]);
         
         // Step 1: Validate main fields and dynamic rows

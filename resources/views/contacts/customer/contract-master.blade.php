@@ -29,7 +29,7 @@ body{
                                 <!--<a href="#" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Contract Master</a>-->
                                 
                                 <form action="{{ route('contact.customer.contract.list') }}" method="GET" class="d-inline-block" id="searchform">
-                                    <div class="search-wrap d-inline-block ms-2" style="width:180px;">
+                                    <div class="search-wrap d-inline-block ms-2" style="width:160px;">
                                         <select name="customer" id="search_customer" class="form-control select2">
                                             <option value="">Select Customer</option>
                                             @foreach($customers as $customer)
@@ -41,7 +41,7 @@ body{
                                         </select>
                                     </div>
                                     
-                                    <div class="search-wrap d-inline-block ms-2" style="width:180px;">
+                                    <div class="search-wrap d-inline-block ms-2" style="width:160px;">
                                         <select name="contractno" id="search_contractno" class="form-select select2">
                                             <option value="">Filter by Contract No</option>
                                             @foreach($contractNumbers as $contractNo)
@@ -55,11 +55,11 @@ body{
                                         {{--<input type="text" id="search_contractno" name="contractno" value="{{$search_contractno}}" class="form-control" placeholder="Filter by Contract No." >--}}
                                     </div>
                                     
-                                    <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                    <div class="search-wrap d-inline-block ms-2" style="width: 160px;">
                                         <input type="text" class="form-control" name="start_daterange" id="start_daterange" value="{{ request('start_daterange') }}" placeholder="Search by Start Date"/>
                                     </div>
                                     
-                                    <div class="search-wrap d-inline-block ms-2" style="width:180px;">
+                                    <div class="search-wrap d-inline-block ms-2" style="width:160px;">
                                         <input type="text" class="form-control" name="end_daterange" id="end_daterange" value="{{ request('end_daterange') }}" placeholder="Search by End Date"/>
                                     </div>
                                     

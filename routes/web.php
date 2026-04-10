@@ -351,6 +351,7 @@ Route::group(['middleware' => ['auth']], function() {
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
+        Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
         
     }); 
     
@@ -532,7 +533,12 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/delete-digilock', [App\Http\Controllers\FleetDashboardController::class, 'destroyDigiLock'])->name('deleteDigiLock');
         
         
+        // document
+        Route::post('/{vehicle}/document/save', [App\Http\Controllers\FleetDashboardController::class, 'storeDocument'])->name('document.store');
+        Route::post('/{mediadocument}/document/update', [App\Http\Controllers\FleetDashboardController::class, 'updateDocument'])->name('document.update');
+        Route::post('/{media}/document/delete', [App\Http\Controllers\FleetDashboardController::class, 'destroyDocument'])->name('document.destroy');
         
+        // comment
         Route::post('/{vehicle}/comment/save', [App\Http\Controllers\FleetDashboardController::class, 'storeComment'])->name('vehicle.comment.store');
         
     });

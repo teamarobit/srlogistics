@@ -661,3 +661,16 @@
 
 /*----*/
 
+.bg-empty{
+    background-color: #bccb2d;
+}
+.prev-wrap{
+    width: 120px;
+    height: 130px;
+    display: flex !important;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+}
+

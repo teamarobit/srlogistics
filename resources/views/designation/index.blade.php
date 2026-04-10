@@ -91,7 +91,7 @@ body{ background-color: #fff; }
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted">
+                                    <td colspan="5" class="text-center text-muted">
                                         No designation found.
                                     </td>
                                 </tr>
