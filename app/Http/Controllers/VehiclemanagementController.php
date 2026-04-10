@@ -399,7 +399,7 @@ class VehiclemanagementController extends Controller
                 $record->vehicletypesize_id = $request->vehicle_size;
                 $record->category = $request->category;
                 $record->status = $request->status;
-                $record->mounted_tyre_count = $request->mounted_tyre_count;
+                $record->mounted_tyre_count = $record->vehicletyremappings()->count() ? $record->mounted_tyre_count : $request->mounted_tyre_count;
                 $record->updated_by = Auth::user()->id;
                 $record->save();
                 

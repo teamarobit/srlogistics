@@ -33,11 +33,11 @@
                                 
                                 <form action="{{ route('rto.index') }}" id="searchform" class="d-inline-block d-flex">
                                       
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                  <div class="search-wrap d-inline-block ms-2" style="width: 125px;">
                                       <input type="text" name="rto" id="search_rto" value="{{ old('rto', $search_rto_name) }}" class="form-control" placeholder="Search by Name" />
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                  <div class="search-wrap d-inline-block ms-2" style="width: 120px;">
                                     <select name="state_id" id="search_state_id" class="form-control select2 dependent-select" data-target="search_city_id">
                                         <option value="">-- Select State --</option>
                                         @foreach($states as $state)
@@ -48,7 +48,7 @@
                                     </select>
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                  <div class="search-wrap d-inline-block ms-2" style="width: 110px;">
                                     <select name="city_id" id="search_city_id" class="form-control select2">
                                         <option value="">-- Select City --</option>
                                         @foreach($cities as $city)
@@ -57,6 +57,14 @@
                                                 {{ $city->name }}
                                             </option>
                                         @endforeach
+                                    </select>
+                                  </div>
+                                  
+                                  <div class="search-wrap d-inline-block ms-2" style="width: 125px;">
+                                    <select name="" id="" class="form-select">
+                                        <option value="">Filter by Status</option>
+                                            <option>Active</option>
+                                            <option>Inactive</option>
                                     </select>
                                   </div>
                                   

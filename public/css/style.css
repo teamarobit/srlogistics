@@ -1986,3 +1986,16 @@ hr{
 .error{
     font-size: 13px;
 }
+
+.select2-container--default .select2-selection--multiple{
+    font-size: 14px;
+    border: 1px solid #d4d6db !important;
+    padding-left: 6px;
+    min-height: 35px;
+}
+.select2-container--default .select2-search--inline .select2-search__field{
+    padding-bottom: 0;
+}
+.select2-container .select2-search--inline .select2-search__field{
+    height: 24px !important;
+}

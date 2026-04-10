@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 
 use App\Models\Tyreposition;
 use App\Models\Vehicle;
+use App\Models\Vehicletyremapping;
+use App\Models\Vehicletyremappinglog;
 
 use Auth;
 
@@ -23,11 +25,67 @@ class TyreManagementController extends Controller
     use Useractivity;
     
     public function vehicleTyreTagging(Vehicle $vehicle){
+        $mounted_tyrepositions = Tyreposition::where('status', 'Active')->take($vehicle->mounted_tyre_count)->get();
+        if(!$vehicle->vehicletyremappings()->count()){
+            if($mounted_tyrepositions->count()){
+                foreach($mounted_tyrepositions as $mounted_tyreposition){
+                    $data = [
+                                    'vehicle_id' => $vehicle->id,
+                                    'tyre_id' => NULL,
+                                    'tyreposition_id' => $mounted_tyreposition->id,
+                                    'status' => 'Inactive',
+                                    'created_by' => Auth::id(),
+                                    'created_at' => now(),
+                                ];
+                    $vehicletyremapping = Vehicletyremapping::create($data);
+                    $data['vehicletyremapping_id'] = $vehicletyremapping->id;
+                    Vehicletyremappinglog::create($data);
+                }
+            }else{
+                return redirect()->back();
+            }
+        }
+        
+        $vehicle->load('vehicletyremappings');
+        // $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
         $tyrepositions = Tyreposition::where('status', 'Active')->get();
         
-        // $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
-        
         return view('tyremanagement.vehicletyretagging', compact('tyrepositions', 'vehicle'));
+    }
+    
+    public function tagTyreToVehicle(Request $request, Vehicle $vehicle){
+        $rules = [];
+        
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Only numeric values are allowed.',
+            'min'      => 'Value must be at least :min.',
+            'in'       => 'Invalid selection.',
+        ]);
+    
+        if ($validator->fails()) {
+            $errors = [];
+    
+            foreach ($validator->errors()->toArray() as $field => $messages) {
+                $errors[$field] = $messages;
+            }
+    
+            return response()->json([
+                'data' => $errors,
+                'message' => 'Please fill with valid data.'
+            ], 422);
+        }
+    }
+    
+    public function getTyreList(Request $request){
+        $condition = $request->condition;
+        $type = $request->type;
+        $tyres = [];
+        if(!empty($condition) && !empty($type)){
+            $tyres = Tyre::where('location', 'Warehouse')->where('tyre_type', $type)->where('tyre_condition', $condition)->get();
+        }
+        
+        return response()->json(['tyres' => $tyres, 'message' => 'Tyre fetched successfully']);
     }
     
     // public function store(Request $request)

@@ -80,10 +80,10 @@ class Vehicle extends Model
         return $this->hasOne(Vehiclefasttags::class, 'vehicle_id');
     }
     
-    // public function tyres()
-    // {
-    //     return $this->hasMany(Tyre::class, 'vehicle_id');
-    // }
+    public function vehicletyremappings()
+    {
+        return $this->hasMany(Vehicletyremapping::class, 'vehicle_id');
+    }
     
     public function batteries()
     {

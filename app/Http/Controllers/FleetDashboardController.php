@@ -247,7 +247,7 @@ class FleetDashboardController extends Controller
         $chassisEmis = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Chassis');
         $bodyEmis    = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Body');
         
-        $attachmenttypes = Attachmenttype::get(); //dd($attachmenttypes);
+        $attachmenttypes = Attachmenttype::get();
         
         $today = Carbon::today();
         $tenDaysLater = Carbon::today()->addDays(10);
