@@ -80,10 +80,10 @@ class Vehicle extends Model
         return $this->hasOne(Vehiclefasttags::class, 'vehicle_id');
     }
     
-    // public function tyres()
-    // {
-    //     return $this->hasMany(Tyre::class, 'vehicle_id');
-    // }
+    public function vehicletyremappings()
+    {
+        return $this->hasMany(Vehicletyremapping::class, 'vehicle_id');
+    }
     
     public function batteries()
     {
@@ -133,6 +133,19 @@ class Vehicle extends Model
     
     public function vehicletyres(){
         return $this->hasMany(Vehicletyre::class);
+    }
+    
+    public function medias()
+    {
+        return $this->morphMany(Media::class, 'mediable');
+    }
+    
+    public function images(){
+        return $this->morphMany(Media::class, 'mediable')->where('type', 'Image');
+    }
+    
+    public function documents(){
+        return $this->morphMany(Media::class, 'mediable')->where('type', 'Document');
     }
     
     public function comments()

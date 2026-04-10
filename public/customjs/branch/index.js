@@ -18,7 +18,7 @@ $(document).ready(function(){
     
     $('#search_city_id').data('select2').$container.find('.select2-selection__placeholder').text('Filter by City');
     
-    $('#search_branch_type, #search_city_id').on('change blur', function () { 
+    $('#search_branch_type, #search_city_id, #search_status').on('change blur', function () { 
         $('#searchform').submit();
     });
     

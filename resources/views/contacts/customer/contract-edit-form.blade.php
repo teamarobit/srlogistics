@@ -131,7 +131,11 @@
                                         <label>Monthly Total Allowed Kilometer <span class="text-danger">*</span> </label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input type="text" name="total_allowed_kilometer" value="{{ $contract->monthly_total_allowed_kilometer }}" class="form-control">
+                                        <div class="input-group mb-3">
+                                          <input type="text" name="total_allowed_kilometer" value="{{ $contract->monthly_total_allowed_kilometer }}" class="form-control" aria-describedby="kilometer">
+                                          <!--<input type="text" class="form-control">-->
+                                          <span class="input-group-text" id="kilometer">KM</span>
+                                        </div>
                                         <small class="error text-danger" id="add_total_allowed_kilometer_error"></small>
                                     </div>
                                 </div>
@@ -140,7 +144,10 @@
                                         <label>Monthly Total Price<span class="text-danger">*</span> </label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input type="text" name="monthly_total_price" value="{{ old('monthly_total_price', $contract->monthly_total_price) }}" class="form-control">
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="price">₹</span> 
+                                            <input type="text" name="monthly_total_price" value="{{ old('monthly_total_price', $contract->monthly_total_price) }}" class="form-control" aria-describedby="price">
+                                        </div>
                                         <small class="error text-danger" id="add_monthly_total_price_error"></small>
                                     </div>
                                 </div>

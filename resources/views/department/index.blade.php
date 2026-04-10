@@ -75,7 +75,7 @@ body{ background-color: #fff; }
                                 
                                 <td>
                                     @if($department->branches->count())
-                                        <span class="badge bg-secondary">{{ $department->branches->pluck('location')->implode(', ') }}</span>
+                                        <span class="badge bg-info">{{ $department->branches->pluck('location')->implode(', ') }}</span>
                                     @else
                                         -
                                     @endif

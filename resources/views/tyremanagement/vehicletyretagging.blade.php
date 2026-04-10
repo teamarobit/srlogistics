@@ -48,13 +48,12 @@
                         
                         <div class="col-12 col-md-9">
                             <h6>Mounted Tyre</h6>
-                            @forelse($tyrepositions as $tyreposition)
-                                @if(!in_array($tyreposition->code, ['S1']))
-                                    <div id="{{ $tyreposition->code }}" class="card mt-4 mandtory_tyre_positions">
-                                        <input type="hidden" value="{{ $tyreposition->id }}">
-                                        <h6>Tyre Details - {{ $tyreposition->code }} <span class="text-danger" style="font-size: 14px">*</span></h6>
-                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addTyre" style="max-width: max-content; margin: 0 auto;">+ Add Tyre Details</button>
-                                        
+                            @forelse($vehicle->vehicletyremappings as $vehicletyremapping)
+                                <div id="{{ $vehicletyremapping->tyreposition->code }}" class="card mt-4 mandtory_tyre_positions">
+                                    <input type="hidden" value="{{ $vehicletyremapping->tyreposition->id }}">
+                                    <h6>Tyre Details - {{ $vehicletyremapping->tyreposition->code }} <span class="text-danger" style="font-size: 14px">*</span></h6>
+                                    
+                                    @if($vehicletyremapping->status == 'Active')
                                         <div class="row">
                                             <div class="col">
                                                 <label>Tyre Conditions</label>
@@ -81,8 +80,11 @@
                                                 <a href="tyre-action.php" class="btn btn-success p-3">Take Action</a>
                                             </div>
                                         </div>
-                                    </div>
-                                @endif
+                                    @else
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addTyre" style="max-width: max-content; margin: 0 auto;">+ Add Tyre Details</button>
+                                    @endif
+                                    
+                                </div>
                             @empty
                             @endforelse
                             
