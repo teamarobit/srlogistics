@@ -43,6 +43,7 @@ body{ background-color: #fff; }
                                             </option>
                                         </select>
                                       </div>
+                                      
                                       <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
                                           <!--<input type="text" class="form-control" placeholder="Filter by City" />-->
                                           <select name="city" id="search_city_id" class="form-select select2">
@@ -55,6 +56,14 @@ body{ background-color: #fff; }
                                                     </option>
                                                 @endforeach
                                           </select>
+                                      </div>
+                                      
+                                      <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
+                                        <select name="status" id="search_status" class="form-select">
+                                            <option value="">Select Status</option>
+                                            <option value="Active" {{ $search_status == 'Active' ? 'selected' : '' }}>Active</option>
+                                            <option value="Inactive" {{ $search_status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
                                       </div>
                                       
                                   </form>

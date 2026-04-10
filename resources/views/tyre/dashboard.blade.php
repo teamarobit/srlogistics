@@ -43,9 +43,9 @@
                                 <i class="uil uil-plus me-1"></i>Add Tyre
                             </a>               
                            
-                            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#uploadBulk">
-                                <i class="uil uil-upload me-1"></i>Bulk Upload
-                            </button>               
+                            <!--<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#uploadBulk">-->
+                            <!--    <i class="uil uil-upload me-1"></i>Bulk Upload-->
+                            <!--</button>               -->
 
                           <!--<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">-->
                           <!--  <i class="uil uil-upload me-1"></i>Bulk Upload-->
