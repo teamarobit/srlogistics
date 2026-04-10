@@ -1,6 +1,4 @@
-$(document).ready(function(){
-    
-    const Toast = Swal.mixin({
+const Toast = Swal.mixin({
           toast: true,
           position: 'top',
           showConfirmButton: false,
@@ -11,6 +9,8 @@ $(document).ready(function(){
             toast.addEventListener('mouseleave', Swal.resumeTimer);
           }
     });
+
+$(document).ready(function(){
     
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));

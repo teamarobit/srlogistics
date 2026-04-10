@@ -75,6 +75,19 @@
                             
                                                     <div class="mt-3">
                                                         <div class="row form-group">
+
+                                                            <div class="col-12 col-md-4">
+                                                                <div class="form-floating">
+                                                                    <input type="text"
+                                                                           name="vehiclesize_length[]"
+                                                                           class="form-control decimalonly"
+                                                                           value="{{ $size->length ?? '' }}">
+                                                                    <label>Length (ft)</label>
+                                                                </div>
+                                                                <small class="error text-danger"
+                                                                       id="vehiclesize_length_{{ $index }}_error"></small>
+                                                            </div>
+
                             
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
@@ -87,6 +100,8 @@
                                                                 <small class="error text-danger"
                                                                        id="vehiclesize_height_{{ $index }}_error"></small>
                                                             </div>
+
+                                                            
                             
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
@@ -100,17 +115,7 @@
                                                                        id="vehiclesize_width_{{ $index }}_error"></small>
                                                             </div>
                             
-                                                            <div class="col-12 col-md-4">
-                                                                <div class="form-floating">
-                                                                    <input type="text"
-                                                                           name="vehiclesize_length[]"
-                                                                           class="form-control decimalonly"
-                                                                           value="{{ $size->length ?? '' }}">
-                                                                    <label>Length (ft)</label>
-                                                                </div>
-                                                                <small class="error text-danger"
-                                                                       id="vehiclesize_length_{{ $index }}_error"></small>
-                                                            </div>
+                                                            
                             
                                                         </div>
                                                     </div>

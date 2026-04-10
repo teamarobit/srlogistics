@@ -183,6 +183,8 @@ class RtoController extends Controller
         if($rto == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! RTO not found.']);
         }
+
+        $hasRoutes = $rto->routertos()->exists();
         
         $states = State::whereHas('country', function ($q) {
                             $q->where('iso2', 'IN');
@@ -194,7 +196,7 @@ class RtoController extends Controller
         $description = 'Retrieve a RTO named '.$rto->name.' to edit.';
         $useractivity = $this->storeUseractivity(17, 5, Auth::user()->id, $rto->id, $description);
         
-        return view('rto.edit', compact('rto','states'));
+        return view('rto.edit', compact('rto','states','hasRoutes'));
     }
     
     

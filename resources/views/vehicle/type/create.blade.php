@@ -64,6 +64,14 @@
                         
                                             <div class="mt-3">
                                                 <div class="row">
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-floating">
+                                                            <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
+                                                            <label>Length (ft)</label>
+                                                        </div>
+                                                        <small class="error text-danger" id="vehiclesize_length_0_error"></small>
+                                                    </div>
                         
                                                     <div class="col-md-4">
                                                         <div class="form-floating">
@@ -79,14 +87,6 @@
                                                             <label>Width (ft)</label>
                                                         </div>
                                                         <small class="error text-danger" id="vehiclesize_width_0_error"></small>
-                                                    </div>
-                        
-                                                    <div class="col-md-4">
-                                                        <div class="form-floating">
-                                                            <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
-                                                            <label>Length (ft)</label>
-                                                        </div>
-                                                        <small class="error text-danger" id="vehiclesize_length_0_error"></small>
                                                     </div>
                         
                                                 </div>

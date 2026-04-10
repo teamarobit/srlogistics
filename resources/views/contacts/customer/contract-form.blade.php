@@ -93,7 +93,7 @@
                                     <label>Customer Name <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <select name="contact_id" class="form-control {{ !empty($contractid) ? 'not-clickable' : '' }}">
+                                    <select name="contact_id" class="form-control {{ !empty($customerid) ? 'not-clickable' : '' }}" readonly>
                                         <option value="">Select Customer</option>
                                         @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}" {{ (isset($customerid) && $customerid == $customer->id) ? 'selected' : '' }}>{{ $customer->contact_name }}</option>

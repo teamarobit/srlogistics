@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-\URL::forceScheme('https');
+// \URL::forceScheme('https');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -533,6 +533,12 @@ Route::group(['middleware' => ['auth']], function() {
         
         
         
+        // document
+        Route::post('/{vehicle}/document/save', [App\Http\Controllers\FleetDashboardController::class, 'storeDocument'])->name('document.store');
+        Route::post('/{mediadocument}/document/update', [App\Http\Controllers\FleetDashboardController::class, 'updateDocument'])->name('document.update');
+        Route::post('/{media}/document/delete', [App\Http\Controllers\FleetDashboardController::class, 'destroyDocument'])->name('document.destroy');
+        
+        // comment
         Route::post('/{vehicle}/comment/save', [App\Http\Controllers\FleetDashboardController::class, 'storeComment'])->name('vehicle.comment.store');
         
     });

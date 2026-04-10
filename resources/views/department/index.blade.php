@@ -159,4 +159,21 @@ body{ background-color: #fff; }
    
 </script>
 <script type="text/javascript" src="{{ asset('customjs/department/index.js') }}?v={{ time() }}"></script>
+
+@if(session('error'))
+<script>
+window.onload = function () {
+    if (typeof Toast !== 'undefined') {
+        Toast.fire({
+            icon: 'error',
+            title: @json(session('error'))
+        });
+    } else {
+        alert(@json(session('error'))); // fallback
+    }
+};
+</script>
+@endif
+
+
 @endsection

@@ -40,6 +40,12 @@ use App\Models\Loanaccount;
 use App\Models\Loanaccountlog;
 use App\Models\Loanaccountcrongivenemi;
 
+
+use App\Models\Attachmenttype;
+use App\Models\Media;
+use App\Models\Mediadocument;
+
+
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Hash;
@@ -61,6 +67,8 @@ use App\Exports\FleetVehicleExport;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
+
+use App\Services\MediaDocumentService;
 
 use App\Traits\Useractivity;
 
@@ -238,9 +246,20 @@ class FleetDashboardController extends Controller
         
         $chassisEmis = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Chassis');
         $bodyEmis    = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Body');
+        
+        $attachmenttypes = Attachmenttype::get(); //dd($attachmenttypes);
+        
+        $today = Carbon::today();
+        $tenDaysLater = Carbon::today()->addDays(10);
+        
+        $mediaDocumentIds = $vehicle->documents()->pluck('mediadocument_id')->toArray(); //dd($mediaDocumentIds);
+        $mediadocuments = Mediadocument::whereIn('id', $mediaDocumentIds)->get();
+        $total_doc_count = $mediadocuments->count();
+        $expired_doc_count = $mediadocuments->where('expiry_date', '<', $today)->count();
+        $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
 
     
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis'));
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count'));
     }
     
     public function getDriverData($id)
@@ -1999,6 +2018,145 @@ class FleetDashboardController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    // Document
+    public function storeDocument(Request $request, Vehicle $vehicle, MediaDocumentService $service){
+        $rules = [
+                    'files' => 'required|array|min:1',
+                    'files.*' => 'required|file|max:2048|mimes:jpg,jpeg,png,webp,pdf',
+                
+                    'attachment_type' => 'required',
+                
+                    'document_number' => 'required|string|max:100',
+                    'issue_date' => 'nullable|date',
+                    'expiry_date' => 'nullable|date|after:issue_date',
+                
+                    'set_reminder' => 'nullable',
+                    'reminder_days' => 'required_if:set_reminder,1|nullable|integer|min:1',
+                
+                    'notes' => 'nullable|string|max:500',
+                ];
+        
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Only numeric values are allowed.',
+            'min'      => 'Value must be at least :min.',
+            'in'       => 'Invalid selection.',
+        ]);
+    
+        if ($validator->fails()) {
+            $errors = [];
+    
+            foreach ($validator->errors()->toArray() as $field => $messages) {
+                $errors[$field] = $messages;
+            }
+    
+            return response()->json([
+                'data' => $errors,
+                'message' => 'Please fill with valid data.'
+            ], 422);
+        }
+        
+        try{
+            $document = $service->storeDocument($vehicle, $request->all());
+        }catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Document uploaded successfully',
+            'data' => $document
+        ]);
+    }
+    
+    
+    
+    public function updateDocument(Request $request, Mediadocument $mediadocument, MediaDocumentService $service){
+        $request->merge([
+                            'issue_date' => $request->issue_date 
+                                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->issue_date)->format('Y-m-d')
+                                : null,
+                        
+                            'expiry_date' => $request->expiry_date 
+                                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->expiry_date)->format('Y-m-d')
+                                : null,
+                        ]);
+        $rules = [
+                    'files' => 'nullable|array',
+                    'files.*' => 'file|max:2048|mimes:jpg,jpeg,png,webp,pdf',
+                
+                    'attachment_type' => 'required',
+                
+                    'document_number' => 'required|string|max:100',
+                    'issue_date' => 'required|date',
+                    'expiry_date' => 'nullable|date|after:issue_date',
+                
+                    'set_reminder' => 'nullable',
+                    'reminder_days' => 'required_if:set_reminder,1|nullable|integer|min:1',
+                
+                    'notes' => 'nullable|string|max:500',
+                ];
+        
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Only numeric values are allowed.',
+            'min'      => 'Value must be at least :min.',
+            'in'       => 'Invalid selection.',
+        ]);
+    
+        if ($validator->fails()) {
+            $errors = [];
+    
+            foreach ($validator->errors()->toArray() as $field => $messages) {
+                $errors[$field] = $messages;
+            }
+    
+            return response()->json([
+                'data' => $errors,
+                'message' => 'Please fill with valid data.'
+            ], 422);
+        }
+        
+        try{
+            $vehicle = $mediadocument->medias()->first()?->mediable;
+            $document = $service->updateDocument($vehicle, $mediadocument, $request->all());
+        }catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Document updated successfully',
+            'data' => $document
+        ]);
+    }
+    
+    
+    
+    
+    public function destroyDocument(Media $media){
+        $mediadocument = $media->mediadocument;
+        if($mediadocument->medias()->count() < 2){
+            return response()->json(['message' => 'You cannot delete this as atleast one document should be there.'], 422);
+        }
+        
+        try{
+            DB::transaction(function() use ($media){
+                $media->delete();
+                $this->storeUseractivity(71, 6, Auth::id(), $media->id, 'Media deleted.');
+            });
+        }catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+        
+        return response()->json(['message' => 'Document deleted successfully.']);
     }
     
     

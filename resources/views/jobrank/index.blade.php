@@ -164,4 +164,19 @@ var DESIGNATION_URL = "{{ route('designation.getDepartmentWiseDesignations', '__
 
 <script type="text/javascript" src="{{asset('customjs/jobrank/index.js')}}"></script>
 
+@if(session('error'))
+<script>
+window.onload = function () {
+    if (typeof Toast !== 'undefined') {
+        Toast.fire({
+            icon: 'error',
+            title: @json(session('error'))
+        });
+    } else {
+        alert(@json(session('error'))); // fallback
+    }
+};
+</script>
+@endif
+
 @endsection

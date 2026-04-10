@@ -164,9 +164,18 @@ class ContactController extends Controller
     
             DB::transaction(function () use ($ids) {
     
-                $contacts = Contact::with('cotype')->whereIn('id', $ids)->get();
+                $contacts = Contact::with('cotype', 'customercontracts')->whereIn('id', $ids)->get();
     
                 foreach ($contacts as $contact) {
+
+                    if ($contact->customercontracts->isNotEmpty()) {
+
+                        \Log::warning('Delete blocked - customer contracts exist', [
+                            'contact_id' => $contact->id
+                        ]);
+
+                        throw new \Exception("Cannot delete contact ID {$contact->id}. Customer contracts exist.");
+                    }
     
                     $cotypeName = $contact->cotype ? $contact->cotype->name : null;
                     $actmodelId = null;
@@ -202,7 +211,7 @@ class ContactController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'Something went wrong while deleting selected records.'
+                'message' => $e->getMessage()
             ]);
         }
     }
@@ -242,7 +251,7 @@ class ContactController extends Controller
     
             DB::transaction(function () use ($request, &$cotype) {
     
-                $query = Contact::where('cotype_id', $cotype->id);
+                $query = Contact::with('customercontracts')->where('cotype_id', $cotype->id);
     
                 // Apply filters
                 if (!empty($request->name)) {
@@ -291,6 +300,15 @@ class ContactController extends Controller
                 $actmodelId = $actmodel ? $actmodel->id : null;
     
                 foreach ($contacts as $contact) {
+
+                    if ($contact->customercontracts->isNotEmpty()) {
+
+                        \Log::warning('Delete blocked - customer contracts exist', [
+                            'contact_id' => $contact->id
+                        ]);
+
+                        throw new \Exception("Cannot delete contact ID {$contact->id}. Customer contracts exist.");
+                    }
     
                     $contact->delete();
     
@@ -492,10 +510,13 @@ class ContactController extends Controller
                     $file = $request->file('attachment_file');
             
                     $fileoriginalname = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
                     $filesize = $file->getSize();
+                    
             
-                    $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-            
+                    // Keep original extension
+                    $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
                     $file->move(
                         public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
                         $filename
@@ -1196,9 +1217,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -1788,9 +1815,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -2550,6 +2583,9 @@ class ContactController extends Controller
                 
                         'vehicletype_size_id' => 'required|array|min:1',
                         'vehicletype_size_id.*' => 'required|exists:vehicletypesizes,id',
+
+                        'vehicletype_weight' => 'required|array|min:1',
+                        'vehicletype_weight.*' => 'required|numeric|min:1',
                 
                         'vehicletype_price' => 'required|array|min:1',
                         'vehicletype_price.*' => 'required|numeric|min:0',
@@ -2823,6 +2859,7 @@ class ContactController extends Controller
                         $contractpricingvehicle->vehicletype_id      = $vehicleTypeId;
                         $contractpricingvehicle->vehicletypesize_id  = $request->vehicletype_size_id[$index];
                         $contractpricingvehicle->price               = $request->vehicletype_price[$index];
+                        $contractpricingvehicle->weight              = $request->vehicletype_weight[$index];
                         $contractpricingvehicle->save();
                         
                         // Log
@@ -2831,6 +2868,7 @@ class ContactController extends Controller
                         $contractpricingvehiclelog->vehicletype_id      = $vehicleTypeId;
                         $contractpricingvehiclelog->vehicletypesize_id  = $request->vehicletype_size_id[$index];
                         $contractpricingvehiclelog->price               = $request->vehicletype_price[$index];
+                        $contractpricingvehiclelog->weight              = $request->vehicletype_weight[$index];
                         $contractpricingvehiclelog->save();
                     }
                 }
@@ -2853,7 +2891,7 @@ class ContactController extends Controller
             
         } catch (\Throwable $e) {
 
-            \Log::error('CustomerLocation save failed', [
+            \Log::error('Contract pricing save failed', [
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
             ]);
@@ -3477,9 +3515,22 @@ class ContactController extends Controller
     
             $contact_id = $request->contact_id;
             $type = $request->type;
-    
-            $midpoints = Customerlocation::where('route_type', 'midpoint')->where('contact_id', $contact_id)->where('location_type', $type)->get();
-    
+
+            \Log::info('Fetch midpoints request received', [
+                'contact_id' => $contact_id,
+                'type'       => $type,
+            ]);
+
+            
+            $midpoints = Customerlocation::where('route_type', 'Midpoint')->where('contact_id', $contact_id)
+                                            ->whereIn('location_type', [$type, 'Both'])->get();
+
+            \Log::info('Midpoints fetched', [
+                'count' => $midpoints->count(),
+                'data'  => $midpoints->toArray()
+            ]);
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Midpoints fetched successfully.',
@@ -4223,9 +4274,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -4834,9 +4891,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -5862,9 +5925,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -6308,9 +6377,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -7422,10 +7497,16 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                               
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;
@@ -8297,9 +8378,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -9148,9 +9235,15 @@ class ContactController extends Controller
                                 $fileoriginalname = $file->getClientOriginalName();
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
+
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
                                 
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
@@ -9758,9 +9851,15 @@ class ContactController extends Controller
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
+
+
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;
@@ -10287,9 +10386,15 @@ class ContactController extends Controller
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
+
+
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;
@@ -10450,9 +10555,14 @@ class ContactController extends Controller
         };
 
     
-        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_VEHICLE_VENDOR)->find($id);
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_TYRE_VENDOR)->find($id);
     
         if (!$contact) {
+            // \Log::warning('Contact not found', [
+            //     'contact_id' => $id,
+            //     'cotype_id'  => self::CONTACT_TYPE_TYRE_VENDOR,
+            // ]);
+
             return response()->json([
                 'success' => false,
                 'data'    => [],
@@ -10883,9 +10993,15 @@ class ContactController extends Controller
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
+
+
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;
@@ -11404,9 +11520,15 @@ class ContactController extends Controller
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
+
+
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;
@@ -12022,9 +12144,14 @@ class ContactController extends Controller
                                 $extension = $file->getClientOriginalExtension();
                                 $filesize = $file->getSize();
                                 
-                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.webp';
-                                $file->move(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),  $filename );
-                                
+                                // Keep original extension
+                                $filename = 'contact-attachment-'.Str::random(4).'_'.time().'.'.$extension;
+
+                                $file->move(
+                                    public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR),
+                                    $filename
+                                );
+
                                 $contact_attachment = new Coattachment;
                                 $contact_attachment->name              = $filename;
                                 $contact_attachment->original_name     = $fileoriginalname;

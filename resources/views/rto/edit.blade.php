@@ -34,6 +34,12 @@
                 <div class="addroute-bd">
                   <div class="container-fluid">
 
+                    @if($hasRoutes)
+                        <div class="alert alert-warning">
+                            This RTO is linked with routes. Charges fields are locked!
+                        </div>
+                    @endif
+
                     <form action="{{route('rto.update')}}" method="POST" id="editForm">
                         @csrf
                         
@@ -111,7 +117,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_large_truck" value="{{ old('charge_for_large_truck', $rto->charge_for_large_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="charge_for_large_truck" value="{{ old('charge_for_large_truck', $rto->charge_for_large_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_large_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -125,7 +131,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_medium_truck" value="{{ old('charge_for_medium_truck', $rto->charge_for_medium_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="charge_for_medium_truck" value="{{ old('charge_for_medium_truck', $rto->charge_for_medium_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_charge_for_medium_truck_error"></small>
                               </div>
                           </div>
@@ -139,7 +145,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_small_truck" value="{{ old('charge_for_small_truck', $rto->charge_for_small_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="charge_for_small_truck" value="{{ old('charge_for_small_truck', $rto->charge_for_small_truck) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_charge_for_small_truck_error"></small>
                               </div>
                           </div>

@@ -135,6 +135,19 @@ class Vehicle extends Model
         return $this->hasMany(Vehicletyre::class);
     }
     
+    public function medias()
+    {
+        return $this->morphMany(Media::class, 'mediable');
+    }
+    
+    public function images(){
+        return $this->morphMany(Media::class, 'mediable')->where('type', 'Image');
+    }
+    
+    public function documents(){
+        return $this->morphMany(Media::class, 'mediable')->where('type', 'Document');
+    }
+    
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');

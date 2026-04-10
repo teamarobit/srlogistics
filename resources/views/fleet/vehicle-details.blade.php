@@ -3,6 +3,7 @@
 @section('css')
     
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=0.02') }}">
     
 @endsection
@@ -2374,7 +2375,7 @@
                                     href="#"
                                     class="addtripbtn"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#add06_documents"
+                                    data-bs-target="#add_v_documents"
                                 >
                                     <i class="uil uil-plus me-1"></i> Documents</a
                                 >
@@ -2394,68 +2395,84 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <span class="value">Insurance</span>
-                                            </td>
-                                            
-                                            <td><span class="value">MH01ABG056</span></td>
-                                            
-                                            <td><span class="value">14/10/2025</span></td>
-                                            
-                                            <td><span class="value">14/10/2026</span></td>
-                                            
-                                            <td><span class="badge badge-success">Active</span></td>
-                                            
-                                            <td><span class="value">Lorem ipsum doller <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalNotes">...</a></span></td>
-    
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#add06_documents"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
                                         
-                                        <tr>
-                                            <td>
-                                                <span class="value">Fitness</span>
-                                            </td>
-                                            
-                                            <td><span class="value">MH01ABG056</span></td>
-                                            
-                                            <td><span class="value">14/10/2025</span></td>
-                                            
-                                            <td><span class="value">14/10/2026</span></td>
-                                            
-                                            <td><span class="badge badge-danger">Inctive</span></td>
-                                            
-                                            <td><span class="value">Lorem ipsum doller <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalNotes">...</a></span></td>
-    
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#add06_documents"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
+                                        @forelse($mediadocuments as $mediadocument)
+                                            @php
+                                                $medias = $mediadocument->medias;
+                                                $files = $medias->map(function ($media) {
+                                                                $media->url = asset('medias/' . $media->file_path);
+                                                                $media->delete_url = route('tyre.document.destroy', $media->id);
+                                                                return $media;
+                                                            });
+                                            @endphp
+                                            <tr>
+                                                <td>
+                                                    <span class="value">{{ $mediadocument->attachmenttype->name }}</span>
+                                                </td>
+                                                
+                                                <td><span class="value">{{ $mediadocument->document_number }}</span></td>
+                                                
+                                                <td><span class="value">{{ date('d/m/Y', strtotime($mediadocument->issue_date)) }}</span></td>
+                                                
+                                                <td><span class="value">{{ $mediadocument->expiry_date ? date('d/m/Y', strtotime($mediadocument->expiry_date)) : '-' }}</span></td>
+                                                
+                                                <td>
+                                                    @if($mediadocument->expiry_date)
+                                                        @if(date('Y-m-d', strtotime($mediadocument->expiry_date)) > date('Y-m-d', strtotime('+10days')))
+                                                            <span class="badge badge-success">Active</span>
+                                                        @elseif(date('Y-m-d', strtotime($mediadocument->expiry_date)) >= date('Y-m-d'))
+                                                            <span class="badge badge-warning">Expiring Soon</span>
+                                                        @else
+                                                            <span class="badge badge-danger">Expired</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="badge badge-secondary">N/A</span>
+                                                    @endif
+                                                </td>
+                                                
+                                                <td>
+                                                    <span class="value">
+                                                        @if(!empty($mediadocument->notes))
+                                                            {{ \Illuminate\Support\Str::limit($mediadocument->notes, 20, '...') }}
+                                                    
+                                                            @if(strlen($mediadocument->notes) > 20)
+                                                                <a href="javascript:void(0)" 
+                                                                    class="showMore"
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#modalNotes"
+                                                                    data-notes="{{ $mediadocument->notes }}">
+                                                                   <i class="me-1 uil uil-eye"></i>
+                                                                </a>
+                                                            @endif
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </span>
+                                                </td>
+        
+                                                <td class="text-center">
+                                                    <a class="text-info view-files" data-files='@json($files)'><i class="uil uil-document-info"></i></a>
+                                                    <a class="item-edit text-success" 
+                                                        data-url="{{ route('tyre.document.update', $mediadocument->id) }}" 
+                                                        
+                                                        data-attachment_type="{{ $mediadocument->attachmenttype->name }}"
+                                                        data-document_number="{{ $mediadocument->document_number }}"
+                                                        data-issue_date="{{ \Carbon\Carbon::parse($mediadocument->issue_date)->format('d/m/Y') }}"
+                                                        data-expiry_date="{{ $mediadocument->expiry_date ? \Carbon\Carbon::parse($mediadocument->expiry_date)->format('d/m/Y') : '' }}"
+                                                        data-notes="{{ $mediadocument->notes }}"
+                                                        data-reminder_days="{{ $mediadocument->reminder_days ?? '' }}"
+                                                        data-has_reminder="{{ $mediadocument->set_reminder }}"
+
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#edit_documents">
+                                                        <i class="uil uil-pen me-2"></i>
+                                                    </a>
+                                                    <!--<a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>-->
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
                                         
-                                        <tr>
-                                            <td>
-                                                <span class="value">PUCC</span>
-                                            </td>
-                                            
-                                            <td><span class="value">MH01ABG056</span></td>
-                                            
-                                            <td><span class="value">14/10/2025</span></td>
-                                            
-                                            <td><span class="value">14/10/2026</span></td>
-                                            
-                                            <td><span class="badge badge-success">Active</span></td>
-                                            
-                                            <td><span class="value">Lorem ipsum doller <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalNotes">...</a></span></td>
-    
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#add06_documents"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -4178,12 +4195,256 @@
 </div>
 
 
+<div class="modal fade expenses_wrapperModal" id="add_v_documents" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form action="{{ route('fleetdashboard.document.store', $vehicle->id) }}" id="documentForm">
+                    @csrf
+                    <div class="row">
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Vehicle No<span class="text-danger ms-1">*</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light" readonly value="{{ $vehicle->vehicle_no }}" />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Type<span class="text-danger ms-1">*</span></label>
+                            <select name="attachment_type" class="form-select" id="attachmenttype_dd">
+                                <option value="">Search Document Type...</option>
+                                @forelse($attachmenttypes as $attachmenttype)
+                                    <option value="{{ $attachmenttype->name }}">{{ $attachmenttype->name }}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                            <div class="error text-danger" id="document_attachment_type_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Number</label>
+                            <input type="text" class="form-control" name="document_number" placeholder="" />
+                            <div class="error text-danger" id="document_document_number_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Issue Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="doc_issue_date" name="issue_date" readonly />
+
+                                <span class="input-group-text">
+                                    <i class="uil uil-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <div class="error text-danger" id="document_issue_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Expiry Date<span class="text-danger ms-1"></span></label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="doc_expiry_date" name="expiry_date" readonly />
+                                <span class="input-group-text">
+                                    <i class="uil uil-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <div class="error text-danger" id="document_expiry_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Upload File(s)<span class="text-danger ms-1">*</span></label>
+                            <div class="dropzone" id="myDropzone">
+                                <div class="dz-message needsclick">
+                                    <i class="uil uil-upload me-2"></i>
+                                    Drop files here or click to upload (Max 2 files)
+                                </div>
+                            </div>
+                            <div class="error text-danger" id="document_files_error"></div>
+                            
+                        </div>
+                        
+
+                        <div class="col-12 col-md-12 form-group">
+                            <div class="d-flex">
+                                <input class="form-check-input clickto-adclass" name="set_reminder" type="checkbox" id="setReminder" />
+
+                                <label class="me-1">Set Reminder </label>
+                            </div>
+
+                            <div class="days-beforeexpiry" style="display: none">
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-3">
+                                        <label>Remind Before Days <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <select class="form-select" name="reminder_days">
+                                            <option value="">Choose..</option>
+                                            <option value="7">7 Days</option>
+                                            <option value="10">10 Days</option>
+                                            <option value="20">20 Days</option>
+                                        </select>
+                                        <div class="error text-danger" id="document_reminder_days_error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-12 form-group">
+                            <label>Notes</label>
+                            <textarea class="form-control" rows="4" name="notes"></textarea>
+                            <div class="error text-danger" id="document_notes_error"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary docSubmitForm">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade expenses_wrapperModal" id="edit_documents" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form action="" id="editDocumentForm">
+                    @csrf
+                    <div class="row">
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Vehicle No<span class="text-danger ms-1">*</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light" readonly value="{{ $vehicle->vehicle_no }}" />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Type<span class="text-danger ms-1">*</span></label>
+                            <select name="attachment_type" class="form-select" id="edit_attachmenttype_dd">
+                                <option value="">Search Document Type...</option>
+                                @forelse($attachmenttypes as $attachmenttype)
+                                    <option value="{{ $attachmenttype->name }}">{{ $attachmenttype->name }}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                            <div class="error text-danger" id="edit_document_attachment_type_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Number</label>
+                            <input type="text" class="form-control" name="document_number" placeholder="" />
+                            <div class="error text-danger" id="edit_document_document_number_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Issue Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="edit_doc_issue_date" name="issue_date" readonly />
+
+                                <span class="input-group-text">
+                                    <i class="uil uil-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <div class="error text-danger" id="edit_document_issue_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Expiry Date<span class="text-danger ms-1"></span></label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="edit_doc_expiry_date" name="expiry_date" readonly />
+                                <span class="input-group-text">
+                                    <i class="uil uil-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <div class="error text-danger" id="edit_document_expiry_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Upload File(s)<span class="text-danger ms-1">*</span></label>
+                            <div class="dropzone" id="edit_myDropzone">
+                                <div class="dz-message needsclick">
+                                    <i class="uil uil-upload me-2"></i>
+                                    Drop files here or click to upload (Max 2 files)
+                                </div>
+                            </div>
+                            <div class="error text-danger" id="document_files_error"></div>
+                            
+                        </div>
+                        
+
+                        <div class="col-12 col-md-12 form-group">
+                            <div class="d-flex">
+                                <input class="form-check-input clickto-adclass" name="set_reminder" type="checkbox" id="edit_setReminder" />
+
+                                <label class="me-1">Set Reminder </label>
+                            </div>
+
+                            <div class="days-beforeexpiry" style="display: none">
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-3">
+                                        <label>Remind Before Days <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <select class="form-select" id="edit_reminder_days" name="reminder_days">
+                                            <option value="">Choose..</option>
+                                            <option value="7">7 Days</option>
+                                            <option value="10">10 Days</option>
+                                            <option value="20">20 Days</option>
+                                        </select>
+                                        <div class="error text-danger" id="edit_document_reminder_days_error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-12 form-group">
+                            <label>Notes</label>
+                            <textarea class="form-control" rows="4" name="notes" id="edit_document_notes"></textarea>
+                            <div class="error text-danger" id="edit_document_notes_error"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary editDocSubmitForm">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-
-
-
-
+<div class="modal fade" id="filePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Uploaded Documents</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <div class="row mt-4  attachment-container" id="filePreviewContainer1">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     
     
@@ -4742,129 +5003,6 @@
     </div>
 </div>
     
-<div class="modal fade expenses_wrapperModal" id="add06_documents" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Document</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="uil uil-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <form>
-                    <div class="row">
-                        <div class="col-12 col-md-6 form-group">
-                            <label>Vehicle<span class="text-danger ms-1">*</span></label>
-                            <div class="input-group">
-                                <input type="text" class="form-control bg-light" readonly value="MH-01-AB-1234" />
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 form-group">
-                            <label>Document Type<span class="text-danger ms-1">*</span></label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search Document Type..." />
-                                <!--<span class="input-group-text">-->
-                                <!--  <i class="uil uil-file-alt"></i>-->
-                                <!--</span>-->
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 form-group">
-                            <label>Document Number</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" />
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 form-group">
-                            <label>Issue Date</label>
-                            <div class="input-group">
-                                <input class="date form-control" type="text" name="maintenance-date" />
-
-                                <span class="input-group-text">
-                                    <i class="uil uil-calendar-alt"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 form-group">
-                            <label>Expiry Date<span class="text-danger ms-1">*</span></label>
-                            <div class="input-group">
-                                <input class="date form-control" type="text" name="maintenance-date" />
-                                <span class="input-group-text">
-                                    <i class="uil uil-calendar-alt"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 form-group">
-                            <div class="file_0attachment">
-                                <!--<label for="formFile" class="form-label">File Attachment</label>-->
-
-                                <div class="upload__box">
-                                    <div class="upload__btn-box">
-                                        <label class="upload__btn">
-                                            <p class="btn btn-theme mb-0">
-                                                <i class="uil uil-plus me-1"></i>File Attachment
-                                            </p>
-                                            <input
-                                                type="file"
-                                                multiple=""
-                                                data-max_length="20"
-                                                class="upload__inputfile"
-                                            />
-                                        </label>
-                                    </div>
-                                    <div class="upload__img-wrap"></div>
-                                </div>
-
-                                <p class="allow-fsize">Allow file type PDF, JPG, JPEG, PNG</p>
-                            </div>
-                        </div>
-                        <!--////-->
-
-                        <div class="col-12 col-md-12 form-group">
-                            <div class="d-flex">
-                                <input class="form-check-input clickto-adclass" type="checkbox" id="setReminder" />
-
-                                <label class="me-1">Set Reminder </label>
-                            </div>
-
-                            <div class="days-beforeexpiry" style="display: none">
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-3">
-                                        <label>Remind Before Days <span class="text-danger">*</span></label>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <select class="form-select">
-                                            <option>Choose..</option>
-                                            <option>7 Days</option>
-                                            <option>10 Days</option>
-                                            <option>20 Days</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 col-md-12 form-group">
-                            <label>Notes</label>
-                            <textarea class="form-control" rows="4"></textarea>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-    
 <div class="modal fade remarks_wrapperModal" id="fuelbook1remarks" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
@@ -5067,8 +5205,9 @@
 
 @section('js')
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 
 <script>
 
@@ -5091,178 +5230,6 @@
     var VIEW_FINANCE_NOTES = "{{ route('vehicleemi.finance.note.show', ':id') }}";
     
     
-    
-    
-    $(document).ready(function() {
-      $(".changedriver_bd").hide();
-      $(".open_01driver").on("click", function() {
-        $(".changedriver_bd").slideToggle(300); 
-        $(this).toggleClass("active");   
-      });
-    });
-</script>
-
-<script>
-    $(function() {
-      $('input[name="datetime"]').daterangepicker({
-        singleDatePicker: true,   
-        timePicker: true,         
-        startDate: moment(),      
-        locale: {
-          format: 'MM/DD/YYYY hh:mm A' 
-        }
-      });
-    });
-</script>
-
-<script>
-$(function() {
-  $('input[name="datet01"]').daterangepicker({
-    singleDatePicker: true,   
-    timePicker: false,        
-    locale: {
-      format: 'MM/DD/YYYY',   
-    }
-  });
-});
-</script>
-
-<script>
-$(function() {
-  $('input[name="maintenance-date"]').daterangepicker({
-    singleDatePicker: true,   
-    timePicker: false,        
-    locale: {
-      format: 'MM/DD/YYYY',   
-    }
-  });
-});
-</script>
-
-<script>
-  const noteInput = document.getElementById('noteInput');
-  noteInput.addEventListener('input', function () {
-    this.style.height = 'auto'; // reset height
-    this.style.height = (this.scrollHeight) + 'px'; // set new height
-  });
-</script>
-
-<script>
-    $(document).ready(function() {
-        $('.modal').on('shown.bs.modal', function () {
-            $(this).find('.select2').select2({
-                dropdownParent: $(this)
-            });
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function(){
-        $('.add-stop-btn').click(function(){
-            $('.add-stop').show();
-        });
-        
-        $('.removeStop').click(function(){
-        $('.add-stop').hide();
-        });
-        
-    });
-</script>
-
-<script>
-  document.querySelectorAll('input[name="providentFund"]').forEach((radio) => {
-    radio.addEventListener("change", function () {
-      const pfField = document.getElementById("pf_number_field");
-      if (this.value === "yes") {
-        pfField.style.display = "flex"; // show
-      } else {
-        pfField.style.display = "none"; // hide
-      }
-    });
-  });
-  
-   // image upload
-    ImgUpload();
-    // --
-  
-  function ImgUpload() {
-      var imgWrap = "";
-      var imgArray = [];
-    
-      $('.upload__inputfile').each(function () {
-        $(this).on('change', function (e) {
-          imgWrap = $(this).closest('.upload__box').find('.upload__img-wrap');
-          var maxLength = $(this).attr('data-max_length');
-    
-          var files = e.target.files;
-          var filesArr = Array.prototype.slice.call(files);
-          var iterator = 0;
-          filesArr.forEach(function (f, index) {
-    
-            if (!f.type.match('image.*')) {
-              return;
-            }
-    
-            if (imgArray.length > maxLength) {
-              return false
-            } else {
-              var len = 0;
-              for (var i = 0; i < imgArray.length; i++) {
-                if (imgArray[i] !== undefined) {
-                  len++;
-                }
-              }
-              if (len > maxLength) {
-                return false;
-              } else {
-                imgArray.push(f);
-    
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                  var html = "<div class='upload__img-box'><div style='background-image: url(" + e.target.result + ")' data-number='" + $(".upload__img-close").length + "' data-file='" + f.name + "' class='img-bg'><div class='upload__img-close'></div></div></div>";
-                  imgWrap.append(html);
-                  iterator++;
-                }
-                reader.readAsDataURL(f);
-              }
-            }
-          });
-        });
-      });
-    
-      $('body').on('click', ".upload__img-close", function (e) {
-        var file = $(this).parent().data("file");
-        for (var i = 0; i < imgArray.length; i++) {
-          if (imgArray[i].name === file) {
-            imgArray.splice(i, 1);
-            break;
-          }
-        }
-        $(this).parent().parent().remove();
-      });
-    }
-</script>
-
-<script>
- $(document).ready(function(){
-    $('.clickto-adclass').change(function(){
-        if ($(this).is(':checked')) {
-            $('.days-beforeexpiry').addClass('active');
-        } else {
-            $('.days-beforeexpiry').removeClass('active');
-        }
-    });
-    
-    $('.if-main').click(function(){
-        $('.maintanance-wrap').show();
-        $('.repair-wrap').hide();
-    })
-    $('.if-rep').click(function(){
-        $('.maintanance-wrap').hide();
-        $('.repair-wrap').show();
-    })
-});
 </script>
 
 @endsection

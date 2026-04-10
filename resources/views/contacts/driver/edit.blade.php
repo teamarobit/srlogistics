@@ -1274,25 +1274,56 @@
                                                               <h6>{{$coattachtype->name}}</h6>
                                                           </div>
                                                           @foreach($contact->coattachments->where('coattachtype.id',$coattachtype->id) as $coattachment)
-                                                               <div class="col-12 col-md-4 attachment-box">
-                                                                  <div class="preview-img d-block w-100">
-                                                                      <div class="d-flex justify-content-between">
-                                                                          <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                              <img src="{{asset('media/contact/'.$coattachment->name)}}" class="me-3">
-                                                                          </a>
-                                                                          <div style="font-size: 14px;">
-                                                                              <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                                  <p class="mb-0 file-name">{{$coattachment->original_name}} </p>
-                                                                              </a>
-                                                                              <p class="mb-0">Size: <span class="text-secondary">{{round((float)$coattachment->file_size,2)}} MB</span></p>
-                                                                          </div>
-                                                                          <i class="uil-edit text-success ms-4 edit-attachment-btn" data-id="{{ $coattachment->id }}" style="cursor:pointer;"></i>
-                                                                          <i class="uil-trash-alt text-danger ms-4 delete-attachment-btn" data-url="{{ route('contact.deleteattachment', $coattachment->id) }}" style="cursor:pointer;"></i>
-                                                                      </div>
-                                                                      <small class="text-secondary d-block mt-2">Attached by <span class="text-theme">{{$coattachment->createdby?->name}}</span> on {{$coattachment->created_at->format('d/m/y [h:i A]')}}</small>
-                                                                  </div>
-                                                              </div>
-                                                          @endforeach
+
+                                                                @php
+                                                                    $fileUrl = asset('media/contact/'.$coattachment->name);
+                                                                    $extension = strtolower(pathinfo($coattachment->name, PATHINFO_EXTENSION));
+
+                                                                    $imageExtensions = ['jpg','jpeg','png','gif','webp','bmp'];
+                                                                @endphp
+                                                            <div class="col-12 col-md-4 attachment-box">
+                                                                <div class="preview-img d-block w-100">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <div>
+                                                                                <a href="{{ $fileUrl }}" download="{{ $coattachment->original_name }}">
+                                    
+                                                                                    @if(in_array($extension, $imageExtensions))
+                                                                                        <!-- Image Preview -->
+                                                                                        <img src="{{ $fileUrl }}" class="me-3" width="60">
+
+                                                                                    @elseif($extension == 'pdf')
+                                                                                        <i class="uil-file-alt me-3" style="font-size:40px;"></i>
+
+                                                                                    @elseif(in_array($extension, ['doc','docx']))
+                                                                                        <i class="uil-file-word me-3" style="font-size:40px;"></i>
+
+                                                                                    @elseif(in_array($extension, ['xls','xlsx']))
+                                                                                        <i class="uil-file-exclamation-alt me-3" style="font-size:40px;"></i>
+
+                                                                                    @elseif(in_array($extension, ['zip','rar']))
+                                                                                        <i class="uil-file-archive me-3" style="font-size:40px;"></i>
+
+                                                                                    @else
+                                                                                        <i class="uil-file me-3" style="font-size:40px;"></i>
+                                                                                    @endif
+
+                                                                                </a>
+                                                                            <div style="font-size: 14px;">
+                                                                                <a href="{{ $fileUrl }}" download="{{ $coattachment->original_name }}">
+                                                                                    <p class="mb-0 file-name">{{ $coattachment->original_name }}</p>
+                                                                                </a>
+                                                                                <p class="mb-0">Size: <span class="text-secondary">{{round((float)$coattachment->file_size,2)}} MB</span></p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="float-end">
+                                                                            <i class="uil-pen text-success edit-attachment-btn" data-id="{{ $coattachment->id }}" style="cursor:pointer;"></i>
+                                                                            <i class="uil-trash-alt text-danger delete-attachment-btn" data-url="{{ route('contact.deleteattachment', $coattachment->id) }}" style="cursor:pointer;"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <small class="text-secondary d-block mt-2">Attached by <span class="text-theme">{{$coattachment->createdby?->name}}</span> on {{$coattachment->created_at->format('d/m/y [h:i A]')}}</small>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 @endforeach
                                                 

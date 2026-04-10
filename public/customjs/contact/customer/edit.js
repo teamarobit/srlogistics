@@ -1275,7 +1275,9 @@ $(document).ready(function(){
                 type: type,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (response) {
+            success: function (response) { 
+
+                console.log(response);
     
                 if (response.success && response.data.length > 0) {
     

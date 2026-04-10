@@ -106,7 +106,7 @@
                     <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking Master</a></p>
                     @endif
                       
-                    {{-- @if(Route::has('vehicleownership.index')) 
+                    {{--@if(Route::has('vehicleownership.index')) 
                     <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type</a></p>
                     @endif --}}
                 

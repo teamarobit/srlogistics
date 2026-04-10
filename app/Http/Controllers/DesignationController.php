@@ -172,6 +172,11 @@ class DesignationController extends Controller
         if($designation == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Department not found.']);
         }
+
+        if ($designation->jobranks()->exists()) {
+
+            return redirect()->back()->with('error', 'This designation has jobrank. You cannot edit it.');
+        }
         
         $departments = Department::where('status', 'Active')->orderBy('name')->get();
         
