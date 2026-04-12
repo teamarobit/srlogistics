@@ -2,9 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-srlbranch-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Branch/create.css') }}">
 
-<style>
 .rental-wrap{
     display: none;
 }
@@ -38,7 +37,6 @@
     width: 100%;
 }
 
-</style>
 
 @endsection
 
@@ -556,7 +554,7 @@ $('document').ready(function(){
 
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Branch/edit.js')}}"></script>
 
 @endsection
 

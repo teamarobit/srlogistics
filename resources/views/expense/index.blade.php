@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Expense/index.css?v=1.0') }}">
 
-<style>
-
-</style>
 
 @endsection
 

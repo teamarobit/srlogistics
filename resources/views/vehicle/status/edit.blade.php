@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Status/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -109,15 +107,7 @@
 
 @section('js')
 
-<script>
-var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
-
-$(document).ready(function(){
-
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/status/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Status/edit.js')}}"></script>
 
 @endsection
 

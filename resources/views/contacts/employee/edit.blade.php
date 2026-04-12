@@ -2,35 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/employee-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Employee/edit.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-/**/
-.btn.btn-primary.me-2 { background: #010649; }
-.btn.btn-theme.me-2 {    background: #ea0027;    color: #fff;
-border-radius: 4px;    border: 0; }
-
-.service-center-wrap .admintech_wrapper .adminbd { display: none; opacity: 0; transition: opacity 0.3s ease; }
-.service-center-wrap .admintech_wrapper .techbd { display: none; opacity: 0; transition: opacity 0.3s ease; }
-.service-center-wrap .admintech_wrapper .show-block { display: block; opacity: 1;  }
-.select2-container--default .select2-selection--multiple .select2-selection__choice__display { font-size: 12px; }
-
-/**/
-
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-.only-table{
-    min-height: auto !important;
-}
-</style>
 
 @endsection
 
@@ -2326,7 +2300,7 @@ border-radius: 4px;    border: 0; }
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('js/employee-management.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Contacts/Employee/index.js') }}"></script>
 
 
 @endsection

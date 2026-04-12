@@ -2,13 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/employe-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
 
-<style>
-body{
-    background-color: #fff;
-}
-</style>
 
 @endsection
 

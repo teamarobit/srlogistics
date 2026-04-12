@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-vehicle-type.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Status/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -124,7 +122,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/status/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Status/create.js')}}"></script>
 
 @endsection
 

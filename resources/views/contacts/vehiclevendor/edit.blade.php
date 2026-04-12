@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/employee-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/VehicleVendor/edit.css?v=1.0') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 <style>

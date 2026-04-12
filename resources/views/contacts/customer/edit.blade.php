@@ -2,79 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/edit.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-p {  margin:0;  font-size: 13px; word-break: break-word; }
-.allshow { display:none; }
-
-/*.input-group-text.bg-light { height: 35px !important; }*/
-.input-group-text {    border-color: #e9eaed;    height: 35px !important;    color: #000 !important;
-font-weight: 500;    font-size: 12px;    background: #e9eaed;    color: #fff; }
-
-
-    .item_016btn {  display: flex; align-items: center; justify-content: end; }
-    
-    .item_blacklisted {    margin: 0 10px 0 150px;    padding: 11px 12px 5px 12px;    display: inline-block;    text-align: center;
-    background: #fff;    box-shadow: 0px 0px 8px 0px rgb(143 143 143 / 50%);    border-radius: 4px;    margin-right: auto;
-    position: relative;    top:-43px; }
-    
-    .item_blacklisted p { margin: 0;padding: 0;font-size: 20px;line-height: 14px;color: #ea0027;display: block;border: 0;font-weight: bold;}
-    .item_blacklisted span {    margin: 0;    padding: 3px 0 0 0;    font-size: 13px;    line-height: 21px;    color: #f9526e;    display: block;
-    font-weight: 600; }
-    
-    .secactivit_blacklist {margin: 21px 0 0 0;padding: 16px 10px !important;border-radius: 6px; width: 100%;}
-    
-    
-    .e-activitywrapper .bg-circlesec {    width: 30px;    height: 30px;    border-radius: 100%;    display: inline-flex;
-    align-items: center;    justify-content: center;    color: #fff;    font-size: 10px;
-    font-weight: 600;    padding: 0 !important; }
-    .blacklist_color .c_red {    color: #ea0027 !important; }
-    
-
-.rupee_01bgcolor { background: #e9eaed !important; }
-.upload01file input[type="file"] {  margin-top: 0;  padding: 10px;  border: 2px dashed #d1d1d1;  background-color: #fff; }
-.upload01file input[type="file"]::file-selector-button {  padding: 0.4em 1.5em;  border-width: 0;  border-radius: 4px; background-color: #032671;
-color: #FFFFFF;  font-weight: bold;  transition: all .25s ease-in-out;  cursor: pointer;  margin-right: 1em; }
-
-.showfile_wrap {margin: 0;padding: 12px;width: 120px;background: #2260b1;border-radius: 6px;cursor: pointer;}
-.showfile_wrap .showfile {margin:0;padding: 0 0 4px 0;}
-.showfile_wrap .showfile img {  width: 80px; object-fit: contain; }
-.showfile_wrap p {margin:0;padding:0;font-size: 16px;line-height: 22px;color: #fff;text-align: center;}
-.iti { width: 100%; }
-
-.accordion-item .tag {    padding: 2px 6px;    border-radius: 20px;    background-color: #e9f0ff;    border: 1px solid #032671;    display: inline-block;
-margin-bottom: 5px;    font-size: 12px;    padding: 2px 8px;    line-height: 21px; }
-
-.destination-wrap{
-    display: none;
-}
-.source-wrap{
-    display: none;
-}
-.midpoint-wrap{
-    display: none;
-}
-
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-
-
-.loading-wrap{
-    display: none;
-}
-.unloading-wrap{
-    display: none;
-}
-</style>
 
 @endsection
 

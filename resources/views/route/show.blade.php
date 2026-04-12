@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('css')
-<style>
     body{
         background-color: #fff;
     }
@@ -64,7 +63,6 @@
         font-weight: 600;
         font-size: 14px;
     }
-</style>
 @endsection
 
 @section('content')
@@ -309,5 +307,5 @@
     var EDIT_BOM    = "{{ route('bom.edit', ['id' => $bom->id]) }}";
    
 </script>
-<script type="text/javascript" src="{{ asset('customjs/bom/show.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/bom/show.js') }}"></script>
 @endsection

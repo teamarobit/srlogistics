@@ -2,9 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-srlbranch-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Tracking/create.css') }}">
 
-<style>
     .loading-wrap{
         display: none;
         background: #fff;
@@ -40,7 +39,6 @@
         border-radius: 10px;
         margin-bottom: 15px;
     }
-</style>
 
 @endsection
 
@@ -152,28 +150,7 @@
 
 @section('js')
 
-<script>
-var LISTING = "{{ route('vehicletracking.index') }}";
-
-$(function() {
-  $('input[name="time_hr_from"]').daterangepicker({
-    singleDatePicker: true,
-    showDropdowns: true,
-    minYear: 1901,
-    maxYear: parseInt(moment().format('YYYY'),10)
-  }, function(start, end, label) {
-    var years = moment().diff(start, 'years');
-    alert("You are " + years + " years old!");
-  });
-});
-
-$(document).ready(function(){
-    
-    
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/tracking/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Tracking/edit.js')}}"></script>
 
 @endsection
 

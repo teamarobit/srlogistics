@@ -44,6 +44,11 @@ use App\Models\Loanaccountcrongivenemi;
 use App\Models\Attachmenttype;
 use App\Models\Media;
 use App\Models\Mediadocument;
+use App\Models\Insuranceclaim;
+use App\Models\Insuranceclaimfollowup;
+use App\Models\VehicleInsurancePolicy;
+use App\Models\Insurancecompany;
+use App\Models\Workshop;
 
 
 use Spatie\Permission\Models\Role;
@@ -259,9 +264,63 @@ class FleetDashboardController extends Controller
         $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
 
     
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count'));
+        $workshops = \App\Models\Workshop::active()->orderBy('ownership')->orderBy('name')->get();
+
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops'));
     }
-    
+
+    public function getVehicleDetailsV2($id)
+    {
+        // Same data load as v1 — view does the redesign
+        $vehicle = Vehicle::with([
+            'basicinfo.insurancePolicies.insurer',
+            'group', 'groupTracking',
+            'driverAllocation.contact', 'customerAllocation.contact',
+            'gps', 'fasttag', 'batteries', 'digitalLocks',
+            'loanaccounts.financeprovider', 'chassisEmis.loanaccount', 'bodyEmis.loanaccount',
+            'cronGivenEMIs', 'comments',
+        ])->find($id);
+
+        if (!$vehicle) { abort(404); }
+
+        $gpsproviders         = \App\Models\Gpsprovider::where('status', 'Active')->orderBy('name')->get();
+        $fasttagproviders     = \App\Models\Fasttagprovider::where('status', 'Active')->orderBy('name')->get();
+        $digitallockproviders = \App\Models\Digitallockprovider::where('status', 'Active')->orderBy('name')->get();
+        $financeproviders     = \App\Models\Financeprovider::where('status', 'Active')->orderBy('name')->get();
+
+        $hasChassisLoan = $vehicle->loanaccounts->where('type', 'Chassis')->isNotEmpty();
+        $chassisLoan    = $hasChassisLoan ? $vehicle->loanaccounts->firstWhere('type', 'Chassis') : [];
+        $hasBodyLoan    = $vehicle->loanaccounts->where('type', 'Body')->isNotEmpty();
+        $bodyLoan       = $hasBodyLoan ? $vehicle->loanaccounts->firstWhere('type', 'Body') : [];
+        $totalEmi       = $vehicle->loanaccounts->isNotEmpty() ? $vehicle->loanaccounts->sum('emi_amount') : 0;
+
+        $chassisEmis = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Chassis');
+        $bodyEmis    = $vehicle->cronGivenEMIs->where('loanaccount.type', 'Body');
+
+        $attachmenttypes = \App\Models\Attachmenttype::get();
+        $today           = \Carbon\Carbon::today();
+        $tenDaysLater    = \Carbon\Carbon::today()->addDays(10);
+
+        $mediaDocumentIds = $vehicle->documents()->pluck('mediadocument_id')->toArray();
+        $mediadocuments   = \App\Models\Mediadocument::whereIn('id', $mediaDocumentIds)->get();
+        $total_doc_count    = $mediadocuments->count();
+        $expired_doc_count  = $mediadocuments->where('expiry_date', '<', $today)->count();
+        $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
+
+        $workshops = \App\Models\Workshop::active()->orderBy('ownership')->orderBy('name')->get();
+
+        $insurers = Insurancecompany::where('status', 'Active')->orderBy('name')->get();
+
+        return view('fleet.vehicle-details-v2', compact(
+            'vehicle','gpsproviders','fasttagproviders','digitallockproviders',
+            'financeproviders','chassisLoan','bodyLoan','totalEmi',
+            'chassisEmis','bodyEmis','attachmenttypes','mediadocuments',
+            'total_doc_count','expired_doc_count','expiring_doc_count',
+            'workshops','insurers'
+        ));
+    }
+
+
     public function getDriverData($id)
     {
         $vehicle = Vehicle::with([
@@ -2158,15 +2217,718 @@ class FleetDashboardController extends Controller
         
         return response()->json(['message' => 'Document deleted successfully.']);
     }
-    
-    
-    
-    
-    
-    
-    
 
+    // ─── Fleet Insurance Claims ──────────────────────────────────────────────
 
+    public function insurance(Request $request)
+    {
+        $query = Insuranceclaim::with(['vehicle', 'externalSc', 'createdBy'])
+            ->whereNull('deleted_at')
+            ->latest();
+
+        // Filters
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('type')) {
+            $query->where('damage_type', 'like', '%' . $request->type . '%');
+        }
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('claim_number', 'like', "%$s%")
+                  ->orWhere('insurer', 'like', "%$s%")
+                  ->orWhereHas('vehicle', fn($vq) => $vq->where('vehicle_no', 'like', "%$s%"));
+            });
+        }
+
+        $claims = $query->paginate(15)->withQueryString();
+
+        // Summary counts
+        $summary = [
+            'total'    => Insuranceclaim::whereNull('deleted_at')->count(),
+            'open'     => Insuranceclaim::whereNull('deleted_at')->whereNotIn('status', ['Closed', 'Rejected'])->count(),
+            'pending'  => Insuranceclaim::whereNull('deleted_at')->whereIn('status', ['Filed', 'Surveyor Assigned', 'Survey in Progress'])->count(),
+            'approved' => Insuranceclaim::whereNull('deleted_at')->whereIn('status', ['Insurer Approved', 'Settlement Received'])->count(),
+        ];
+
+        $vehicles  = Vehicle::where('status', 'Active')->orderBy('vehicle_no')->get(['id', 'vehicle_no']);
+        $workshops = \App\Models\Workshop::active()->orderBy('name')->get(['id', 'name', 'ownership', 'workshop_type']);
+
+        // Policy expiry: vehicles with active claims only
+        $claimedVehicleIds = Insuranceclaim::whereNull('deleted_at')
+            ->whereNotIn('status', ['Closed', 'Rejected'])
+            ->pluck('vehicle_id')
+            ->unique();
+
+        $expiringPolicies = Vehicle::with('basicinfo')
+            ->whereIn('id', $claimedVehicleIds)
+            ->whereHas('basicinfo', fn($q) => $q->whereNotNull('insurance_expiry'))
+            ->get()
+            ->map(function ($v) {
+                $exp      = \Carbon\Carbon::parse($v->basicinfo->insurance_expiry);
+                $daysLeft = (int) now()->diffInDays($exp, false);
+                return [
+                    'vehicle'     => $v,
+                    'expiry'      => $exp,
+                    'days_left'   => $daysLeft,
+                    'chip_status' => $daysLeft < 0 ? 'expired' : ($daysLeft <= 30 ? 'expiring' : 'ok'),
+                    'policy_no'   => $v->basicinfo->insurance_no ?? null,
+                    'insurer'     => $v->basicinfo->insurer ?? null,
+                    'note'        => $v->basicinfo->insurance_note ?? null,
+                ];
+            })
+            ->sortBy('days_left');
+
+        return view('ws.insurance', compact('claims', 'summary', 'vehicles', 'workshops', 'expiringPolicies'));
+    }
+
+    public function insuranceDetail($id)
+    {
+        $claim = Insuranceclaim::with([
+            'vehicle.basicinfo',
+            'externalSc',
+            'followups.createdBy',
+            'createdBy',
+        ])->findOrFail($id);
+
+        return view('ws.insurance-claim-detail', compact('claim'));
+    }
+
+    public function insuranceStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vehicle_id'             => 'required|exists:vehicles,id',
+            'incident_date'          => 'required|date',
+            'damage_type'            => 'required|string|max:255',
+            'incident_description'   => 'required|string',
+            'settlement_mode'        => 'required|in:Reimbursement,Cashless',
+            'workshop_type'          => 'required|in:Own,External',
+            'insurer'                => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $claim = Insuranceclaim::create([
+                'organisation_id'        => Auth::user()->organisation_id ?? 1,
+                'vehicle_id'             => $request->vehicle_id,
+                'claim_number'           => Insuranceclaim::nextClaimNumber(),
+                'settlement_mode'        => $request->settlement_mode,
+                'workshop_type'          => $request->workshop_type,
+                'external_sc_id'         => $request->external_sc_id,
+                'external_sc_claim_ref'  => $request->external_sc_claim_ref,
+                'insurer'                => $request->insurer,
+                'policy_no'              => $request->policy_no,
+                'insurer_claim_ref'      => $request->insurer_claim_ref,
+                'damage_type'            => $request->damage_type,
+                'incident_date'          => $request->incident_date,
+                'incident_location'      => $request->incident_location,
+                'incident_description'   => $request->incident_description,
+                'fir_no'                 => $request->fir_no,
+                'claim_filed_date'       => $request->claim_filed_date ?? now()->toDateString(),
+                'linked_job_card'        => $request->linked_job_card,
+                'repair_cost_estimate'   => $request->repair_cost_estimate ?? 0,
+                'excess_payable'         => $request->excess_payable,
+                'initiated_by'           => $request->initiated_by ?? 'Fleet Manager',
+                'status'                 => 'Filed',
+                'created_by'             => Auth::id(),
+            ]);
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Claim ' . $claim->claim_number . ' filed successfully.',
+                'claim_number' => $claim->claim_number,
+                'claim_id'     => $claim->id,
+                'redirect'     => route('fleet.insurance.detail', $claim->id),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function insuranceUpdateStatus(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:Filed,Surveyor Assigned,Survey in Progress,Insurer Approved,Settlement Received,Closed,Rejected',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $claim = Insuranceclaim::findOrFail($id);
+        $old   = $claim->status;
+
+        $claim->update([
+            'status'     => $request->status,
+            'updated_by' => Auth::id(),
+        ]);
+
+        // Auto-log the status change as a follow-up entry
+        Insuranceclaimfollowup::create([
+            'insuranceclaim_id' => $claim->id,
+            'event_type'        => 'Status Update',
+            'event_date'        => now()->toDateString(),
+            'note'              => 'Status changed from "' . $old . '" to "' . $request->status . '".'
+                                   . ($request->note ? ' Note: ' . $request->note : ''),
+            'created_by'        => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated to "' . $request->status . '".',
+            'status'  => $claim->status,
+        ]);
+    }
+
+    public function insuranceLogFollowup(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'event_type' => 'required|string|max:100',
+            'event_date' => 'required|date',
+            'note'       => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $claim = Insuranceclaim::findOrFail($id);
+
+        $followup = Insuranceclaimfollowup::create([
+            'insuranceclaim_id' => $claim->id,
+            'event_type'        => $request->event_type,
+            'event_date'        => $request->event_date,
+            'note'              => $request->note,
+            'created_by'        => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Follow-up logged.',
+            'followup'   => [
+                'id'         => $followup->id,
+                'event_type' => $followup->event_type,
+                'event_date' => $followup->event_date->format('d M Y'),
+                'note'       => $followup->note,
+                'logged_by'  => Auth::user()->name ?? 'You',
+            ],
+        ]);
+    }
+
+    public function insuranceSettlement(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'settlement_mode' => 'required|in:Reimbursement,Cashless',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $claim = Insuranceclaim::findOrFail($id);
+
+        $updateData = ['updated_by' => Auth::id()];
+
+        if ($request->settlement_mode === 'Reimbursement') {
+            $validator2 = Validator::make($request->all(), [
+                'amount_received' => 'required|numeric|min:0',
+                'settlement_date' => 'required|date',
+            ]);
+            if ($validator2->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator2->errors()], 422);
+            }
+            $updateData['amount_claimed']  = $request->amount_claimed ?? $claim->amount_claimed;
+            $updateData['amount_approved'] = $request->amount_approved ?? $claim->amount_approved;
+            $updateData['amount_received'] = $request->amount_received;
+            $updateData['settlement_date'] = $request->settlement_date;
+            $updateData['status']          = 'Settlement Received';
+        } else {
+            // Cashless — record excess paid
+            $validator2 = Validator::make($request->all(), [
+                'excess_paid'     => 'required|numeric|min:0',
+                'settlement_date' => 'required|date',
+            ]);
+            if ($validator2->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator2->errors()], 422);
+            }
+            $updateData['excess_paid']     = $request->excess_paid;
+            $updateData['settlement_date'] = $request->settlement_date;
+            $updateData['status']          = 'Settlement Received';
+        }
+
+        $claim->update($updateData);
+
+        // Auto-log settlement as follow-up
+        Insuranceclaimfollowup::create([
+            'insuranceclaim_id' => $claim->id,
+            'event_type'        => 'Settlement Recorded',
+            'event_date'        => $request->settlement_date,
+            'note'              => $request->settlement_mode === 'Reimbursement'
+                ? 'Settlement received: ₹' . number_format($request->amount_received, 2)
+                : 'Excess paid: ₹' . number_format($request->excess_paid, 2),
+            'created_by'        => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Settlement recorded. Claim status set to "Settlement Received".',
+        ]);
+    }
+
+    // ─── Compliance Pages ─────────────────────────────────────────────────────
+
+    /**
+     * Policy Renewal Tracker — lists all vehicles with insurance expiry data.
+     * GET /fleet/compliance/policy-renewal
+     */
+    public function policyRenewal(Request $request)
+    {
+        $query = Vehicle::with(['basicinfo', 'vehicletype'])
+            ->whereHas('basicinfo', fn($q) => $q->whereNotNull('insurance_expiry'))
+            ->where('status', 'Active');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where('vehicle_no', 'like', "%$s%")
+                  ->orWhereHas('basicinfo', fn($q) => $q
+                      ->where('insurance_no', 'like', "%$s%")
+                      ->orWhere('insurer', 'like', "%$s%"));
+        }
+
+        if ($request->filled('status_filter')) {
+            $sf = $request->status_filter;
+            $query->whereHas('basicinfo', function ($q) use ($sf) {
+                $today = now();
+                match ($sf) {
+                    'expired'  => $q->where('insurance_expiry', '<', $today),
+                    'expiring' => $q->whereBetween('insurance_expiry', [$today, $today->copy()->addDays(30)]),
+                    'ok'       => $q->where('insurance_expiry', '>', $today->copy()->addDays(30)),
+                    default    => null,
+                };
+            });
+        }
+
+        $vehicles = $query->orderBy('vehicle_no')->paginate(20)->withQueryString();
+
+        // Decorate with computed expiry info
+        $rows = $vehicles->map(function ($v) {
+            $exp      = $v->basicinfo?->insurance_expiry
+                          ? \Carbon\Carbon::parse($v->basicinfo->insurance_expiry) : null;
+            $daysLeft = $exp ? (int) now()->diffInDays($exp, false) : null;
+            return [
+                'vehicle'   => $v,
+                'exp'       => $exp,
+                'days_left' => $daysLeft,
+                'chip'      => is_null($daysLeft) ? 'grey'
+                             : ($daysLeft < 0     ? 'expired'
+                             : ($daysLeft <= 30   ? 'expiring' : 'ok')),
+            ];
+        });
+
+        $stats = [
+            'total'    => Vehicle::where('status', 'Active')->whereHas('basicinfo', fn($q) => $q->whereNotNull('insurance_expiry'))->count(),
+            'expired'  => Vehicle::where('status', 'Active')->whereHas('basicinfo', fn($q) => $q->where('insurance_expiry', '<', now()))->count(),
+            'expiring' => Vehicle::where('status', 'Active')->whereHas('basicinfo', fn($q) => $q->whereBetween('insurance_expiry', [now(), now()->addDays(30)]))->count(),
+            'ok'       => Vehicle::where('status', 'Active')->whereHas('basicinfo', fn($q) => $q->where('insurance_expiry', '>', now()->addDays(30)))->count(),
+        ];
+
+        return view('fleet.compliance.policy-renewal', compact('vehicles', 'rows', 'stats'));
+    }
+
+    /**
+     * Vehicle Document Expiry — all document types in one view.
+     * GET /fleet/compliance/document-expiry
+     */
+    public function documentExpiry(Request $request)
+    {
+        $query = Vehicle::with(['basicinfo', 'vehicletype'])
+            ->whereHas('basicinfo')
+            ->where('status', 'Active');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where('vehicle_no', 'like', "%$s%");
+        }
+
+        if ($request->filled('doc_type')) {
+            $dt = $request->doc_type;
+            $query->whereHas('basicinfo', function ($q) use ($dt) {
+                $col = match ($dt) {
+                    'insurance' => 'insurance_expiry',
+                    'fitness'   => 'fitness_expiry',
+                    'permit'    => 'permit_expiry',
+                    'pucc'      => 'pucc_expiry',
+                    'tax'       => 'tax_expiry',
+                    default     => null,
+                };
+                if ($col) $q->whereNotNull($col);
+            });
+        }
+
+        if ($request->filled('expiry_filter')) {
+            $ef = $request->expiry_filter;
+            $query->whereHas('basicinfo', function ($q) use ($ef) {
+                $today = now();
+                $cols  = ['insurance_expiry','fitness_expiry','permit_expiry','pucc_expiry','tax_expiry'];
+                $q->where(function ($orQ) use ($ef, $today, $cols) {
+                    foreach ($cols as $col) {
+                        match ($ef) {
+                            'expired'  => $orQ->orWhere($col, '<', $today),
+                            'expiring' => $orQ->orWhereBetween($col, [$today, $today->copy()->addDays(30)]),
+                            default    => null,
+                        };
+                    }
+                });
+            });
+        }
+
+        $vehicles = $query->orderBy('vehicle_no')->paginate(25)->withQueryString();
+
+        $helper = fn($date) => $date ? (function () use ($date) {
+            $exp      = \Carbon\Carbon::parse($date);
+            $daysLeft = (int) now()->diffInDays($exp, false);
+            return [
+                'date'     => $exp->format('d-m-Y'),
+                'days'     => $daysLeft,
+                'chip'     => $daysLeft < 0 ? 'expired' : ($daysLeft <= 30 ? 'expiring' : ($daysLeft <= 90 ? 'warning' : 'ok')),
+            ];
+        })() : null;
+
+        $rows = $vehicles->map(fn($v) => [
+            'vehicle'   => $v,
+            'insurance' => $helper($v->basicinfo?->insurance_expiry),
+            'fitness'   => $helper($v->basicinfo?->fitness_expiry),
+            'permit'    => $helper($v->basicinfo?->permit_expiry),
+            'pucc'      => $helper($v->basicinfo?->pucc_expiry),
+            'tax'       => $helper($v->basicinfo?->tax_expiry),
+        ]);
+
+        // Global counts across all doc types
+        $expiredCount  = 0; $expiringCount = 0;
+        foreach (['insurance_expiry','fitness_expiry','permit_expiry','pucc_expiry','tax_expiry'] as $col) {
+            $expiredCount  += Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->where($col,'<',now()))->count();
+            $expiringCount += Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->whereBetween($col,[now(),now()->addDays(30)]))->count();
+        }
+        $stats = [
+            'total'    => Vehicle::where('status','Active')->count(),
+            'expired'  => $expiredCount,
+            'expiring' => $expiringCount,
+        ];
+
+        return view('fleet.compliance.document-expiry', compact('vehicles', 'rows', 'stats'));
+    }
+
+    /**
+     * Permit & Fitness Tracker.
+     * GET /fleet/compliance/permit-fitness
+     */
+    public function permitFitness(Request $request)
+    {
+        $query = Vehicle::with(['basicinfo', 'vehicletype'])
+            ->whereHas('basicinfo')
+            ->where('status', 'Active');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where('vehicle_no', 'like', "%$s%")
+                  ->orWhereHas('basicinfo', fn($q) => $q->where('permit_no', 'like', "%$s%"));
+        }
+
+        if ($request->filled('permit_type')) {
+            $pt = $request->permit_type;
+            $query->whereHas('basicinfo', fn($q) => $q->where('permit_type', $pt));
+        }
+
+        if ($request->filled('status_filter')) {
+            $sf  = $request->status_filter;
+            $cols = ['permit_expiry', 'fitness_expiry'];
+            $query->whereHas('basicinfo', function ($q) use ($sf, $cols) {
+                $today = now();
+                $q->where(function ($orQ) use ($sf, $today, $cols) {
+                    foreach ($cols as $col) {
+                        match ($sf) {
+                            'expired'  => $orQ->orWhere($col, '<', $today),
+                            'expiring' => $orQ->orWhereBetween($col, [$today, $today->copy()->addDays(30)]),
+                            default    => null,
+                        };
+                    }
+                });
+            });
+        }
+
+        $vehicles = $query->orderBy('vehicle_no')->paginate(20)->withQueryString();
+
+        $chip = fn($date) => $date ? (function () use ($date) {
+            $exp  = \Carbon\Carbon::parse($date);
+            $days = (int) now()->diffInDays($exp, false);
+            return ['date' => $exp->format('d-m-Y'), 'days' => $days,
+                    'chip' => $days < 0 ? 'expired' : ($days <= 30 ? 'expiring' : ($days <= 90 ? 'warning' : 'ok'))];
+        })() : null;
+
+        $rows = $vehicles->map(fn($v) => [
+            'vehicle' => $v,
+            'permit'  => $chip($v->basicinfo?->permit_expiry),
+            'nat_permit' => $chip($v->basicinfo?->national_permit_expiry),
+            'fitness' => $chip($v->basicinfo?->fitness_expiry),
+            'permit_type' => $v->basicinfo?->permit_type,
+            'permit_no'   => $v->basicinfo?->permit_no,
+        ]);
+
+        $permitTypes = Vehicle::where('status','Active')
+            ->whereHas('basicinfo', fn($q) => $q->whereNotNull('permit_type'))
+            ->with('basicinfo:id,vehicle_id,permit_type')
+            ->get()
+            ->pluck('basicinfo.permit_type')
+            ->unique()->filter()->sort()->values();
+
+        $stats = [
+            'permit_expired'   => Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->where('permit_expiry','<',now()))->count(),
+            'permit_expiring'  => Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->whereBetween('permit_expiry',[now(),now()->addDays(30)]))->count(),
+            'fitness_expired'  => Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->where('fitness_expiry','<',now()))->count(),
+            'fitness_expiring' => Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->whereBetween('fitness_expiry',[now(),now()->addDays(30)]))->count(),
+        ];
+
+        return view('fleet.compliance.permit-fitness', compact('vehicles', 'rows', 'stats', 'permitTypes'));
+    }
+
+    // ─── Driver Module ────────────────────────────────────────────────────────
+
+    /**
+     * Fleet driver list with filters + stat cards.
+     * GET /fleet-dashboard/drivers
+     */
+    public function driverDashboard(Request $request)
+    {
+        $query = Contact::with(['driverinfo', 'currentVehicleAllocation.vehicle'])
+            ->where('cotype_id', self::CONTACT_TYPE_DRIVER)
+            ->whereNull('deleted_at');
+
+        // ── Filters ──────────────────────────────────────────────────────────
+        if ($name = $request->name) {
+            $query->where(function ($q) use ($name) {
+                $q->where('contact_name', 'like', "%{$name}%")
+                  ->orWhere('phone', 'like', "%{$name}%");
+            });
+        }
+        if ($licNo = $request->licence_no) {
+            $query->whereHas('driverinfo', fn($q) => $q->where('driving_licence_no', 'like', "%{$licNo}%"));
+        }
+        if ($status = $request->status) {
+            $query->where('status', $status);
+        }
+        if ($rag = $request->rag) {
+            $query->where('rag_status', $rag);
+        }
+        if ($category = $request->category) {
+            $query->whereHas('driverinfo', fn($q) => $q->where('category', $category));
+        }
+        if ($licExpiry = $request->lic_expiry) {
+            $now = now();
+            $query->whereHas('driverinfo', function ($q) use ($licExpiry, $now) {
+                match ($licExpiry) {
+                    'expired'  => $q->where('licence_expiry_date', '<', $now),
+                    'expiring' => $q->whereBetween('licence_expiry_date', [$now, $now->copy()->addDays(30)]),
+                    'ok'       => $q->where('licence_expiry_date', '>', $now->copy()->addDays(30)),
+                    default    => null,
+                };
+            });
+        }
+
+        $drivers = $query->orderBy('contact_name')->paginate(20)->withQueryString();
+
+        // ── Stat counts ──────────────────────────────────────────────────────
+        $base = Contact::where('cotype_id', self::CONTACT_TYPE_DRIVER)->whereNull('deleted_at');
+        $stats = [
+            'all'         => (clone $base)->count(),
+            'active'      => (clone $base)->where('status', 'Active')->count(),
+            'inactive'    => (clone $base)->where('status', 'Inactive')->count(),
+            'blacklisted' => (clone $base)->where('status', 'Blacklisted')->count(),
+            'on_leave'    => 0, // reserved — no DB column yet
+        ];
+
+        return view('fleet.driver-dashboard', compact('drivers', 'stats'));
+    }
+
+    /**
+     * Full driver profile page.
+     * GET /fleet-dashboard/driver/{id}/details
+     */
+    public function getDriverDetails(int $id)
+    {
+        $contact = Contact::with([
+            'driverinfo',
+            'currentVehicleAllocation.vehicle',
+            'vehicleAllocations.vehicle',
+            'relcontacts',
+            'workExperiences',
+        ])->whereNull('deleted_at')->findOrFail($id);
+
+        // All allocations newest-first for the Allotment tab
+        $allAllocations = $contact->vehicleAllocations()
+            ->with('vehicle')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('fleet.driver-details', compact('contact', 'allAllocations'));
+    }
+
+    // ─── Vehicle Insurance Policies ──────────────────────────────────────────
+
+    public function vehicleInsurancePolicies(Request $request)
+    {
+        $query = VehicleInsurancePolicy::with(['vehicle', 'insurer', 'createdBy']);
+
+        if ($search = $request->search) {
+            $query->whereHas('vehicle', fn($q) =>
+                $q->where('vehicle_number', 'like', "%{$search}%")
+            )->orWhere('policy_number', 'like', "%{$search}%");
+        }
+        if ($status = $request->status) {
+            $query->where('status', $status);
+        }
+        if ($type = $request->type) {
+            $query->where('policy_type', $type);
+        }
+        if ($expiry = $request->expiry) {
+            match ($expiry) {
+                'soon'    => $query->expiringSoon(30),
+                'expired' => $query->expired(),
+                default   => null
+            };
+        }
+
+        $policies  = $query->orderBy('policy_end_date')->paginate(25)->withQueryString();
+        $insurers = Insurancecompany::where('status', 'Active')->orderBy('name')->get();
+        $vehicles  = \App\Models\Vehiclebasicinfo::whereNull('deleted_at')
+                        ->orderBy('vehicle_number')
+                        ->get(['id', 'vehicle_number', 'manufacturer', 'model']);
+
+        $stats = [
+            'total'   => VehicleInsurancePolicy::whereNull('deleted_at')->count(),
+            'active'  => VehicleInsurancePolicy::whereNull('deleted_at')->where('status', 'Active')->count(),
+            'expiring'=> VehicleInsurancePolicy::whereNull('deleted_at')->expiringSoon(30)->count(),
+            'expired' => VehicleInsurancePolicy::whereNull('deleted_at')->expired()->count(),
+        ];
+
+        return view('fleet.vehicle-insurance', compact('policies', 'insurers', 'vehicles', 'stats'));
+    }
+
+    public function vehicleInsurancePolicyStore(Request $request)
+    {
+        $validated = $request->validate([
+            'vehicle_id'           => 'required|exists:vehiclebasicinfos,id',
+            'insurancecompany_id'  => 'nullable|exists:insurancecompanies,id',
+            'policy_number'        => 'nullable|string|max:100',
+            'policy_type'          => 'required|in:Comprehensive,Third Party,Zero Dep,Commercial',
+            'insured_value'        => 'nullable|numeric|min:0',
+            'premium_amount'       => 'nullable|numeric|min:0',
+            'policy_start_date'    => 'nullable|date',
+            'policy_end_date'      => 'nullable|date|after_or_equal:policy_start_date',
+            'notes'                => 'nullable|string|max:1000',
+            'policy_document'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $extra = ['status' => 'Active', 'created_by' => auth()->id()];
+
+        if ($request->hasFile('policy_document') && $request->file('policy_document')->isValid()) {
+            $dir  = public_path('media/insurance_policies');
+            if (!\File::exists($dir)) { \File::makeDirectory($dir, 0755, true); }
+            $orig = $request->file('policy_document')->getClientOriginalName();
+            $name = 'pol_' . time() . '_' . uniqid() . '.' . $request->file('policy_document')->getClientOriginalExtension();
+            $request->file('policy_document')->move($dir, $name);
+            $extra['policy_document']      = $name;
+            $extra['policy_document_name'] = $orig;
+        }
+
+        unset($validated['policy_document']);
+        $policy = VehicleInsurancePolicy::create(array_merge($validated, $extra));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Policy added successfully.',
+            'policy'  => $policy->load(['vehicle', 'insurer']),
+        ]);
+    }
+
+    public function vehicleInsurancePolicyUpdate(Request $request, int $id)
+    {
+        $policy = VehicleInsurancePolicy::findOrFail($id);
+
+        $validated = $request->validate([
+            'vehicle_id'           => 'required|exists:vehiclebasicinfos,id',
+            'insurancecompany_id'  => 'nullable|exists:insurancecompanies,id',
+            'policy_number'        => 'nullable|string|max:100',
+            'policy_type'          => 'required|in:Comprehensive,Third Party,Zero Dep,Commercial',
+            'insured_value'        => 'nullable|numeric|min:0',
+            'premium_amount'       => 'nullable|numeric|min:0',
+            'policy_start_date'    => 'nullable|date',
+            'policy_end_date'      => 'nullable|date|after_or_equal:policy_start_date',
+            'notes'                => 'nullable|string|max:1000',
+            'policy_document'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $extra = ['updated_by' => auth()->id()];
+
+        if ($request->hasFile('policy_document') && $request->file('policy_document')->isValid()) {
+            /* Remove old document */
+            if ($policy->policy_document) {
+                $old = public_path('media/insurance_policies/' . $policy->policy_document);
+                if (\File::exists($old)) { \File::delete($old); }
+            }
+            $dir  = public_path('media/insurance_policies');
+            if (!\File::exists($dir)) { \File::makeDirectory($dir, 0755, true); }
+            $orig = $request->file('policy_document')->getClientOriginalName();
+            $name = 'pol_' . time() . '_' . uniqid() . '.' . $request->file('policy_document')->getClientOriginalExtension();
+            $request->file('policy_document')->move($dir, $name);
+            $extra['policy_document']      = $name;
+            $extra['policy_document_name'] = $orig;
+        }
+
+        unset($validated['policy_document']);
+        $policy->update(array_merge($validated, $extra));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Policy updated successfully.',
+        ]);
+    }
+
+    public function vehicleInsurancePolicyDocumentDelete(int $id)
+    {
+        $policy = VehicleInsurancePolicy::findOrFail($id);
+        if ($policy->policy_document) {
+            $old = public_path('media/insurance_policies/' . $policy->policy_document);
+            if (\File::exists($old)) { \File::delete($old); }
+        }
+        $policy->update(['policy_document' => null, 'policy_document_name' => null, 'updated_by' => auth()->id()]);
+        return response()->json(['success' => true, 'message' => 'Document removed.']);
+    }
+
+    public function vehicleInsurancePolicyDestroy(int $id)
+    {
+        $policy = VehicleInsurancePolicy::findOrFail($id);
+        $policy->update(['deleted_by' => auth()->id()]);
+        $policy->delete();
+
+        return response()->json(['success' => true, 'message' => 'Policy removed.']);
+    }
+
+    public function vehicleInsurancePolicyToggleStatus(int $id)
+    {
+        $policy    = VehicleInsurancePolicy::findOrFail($id);
+        $newStatus = $policy->status === 'Active' ? 'Expired' : 'Active';
+        $policy->update(['status' => $newStatus, 'updated_by' => auth()->id()]);
+
+        return response()->json(['success' => true, 'new_status' => $newStatus,
+            'message' => 'Policy marked as ' . $newStatus . '.']);
+    }
 }
 
 

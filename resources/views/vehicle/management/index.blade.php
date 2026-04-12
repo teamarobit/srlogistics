@@ -2,11 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/ownership-list.css') }}">
-
-<style>
-
-</style>
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Management/index.css') }}">
 
 @endsection
 
@@ -182,11 +178,7 @@
 
 @section('js')
 
-<script>
-var LISTING = "{{ route('vehiclemanagement.index') }}";
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/management/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Management/index.js')}}"></script>
 
 @endsection
 

@@ -1,0 +1,98 @@
+/* ============================================================
+   sc-service-request.css  — Service Request page styles
+   ============================================================ */
+
+/* Service type selector cards */
+.sr-type-card {
+    border: 2px solid #e8eaed;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+}
+.sr-type-card:hover { border-color: #032671; background: #f0f4ff; }
+.sr-type-card.selected { border-color: #032671; background: #e3ecff; }
+.sr-type-card .st-icon { font-size: 26px; margin-bottom: 6px; display: block; }
+.sr-type-card .st-lbl  { font-size: 11px; font-weight: 600; color: #485D6B; }
+.sr-type-card.selected .st-lbl { color: #032671; }
+
+/* Priority chips */
+.priority-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #e8eaed;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+}
+.priority-chip:hover           { border-color: #032671; background: #f0f4ff; }
+.priority-chip.selected-normal { border-color: #10863f; background: #e6f4ea; color: #10863f; }
+.priority-chip.selected-urgent { border-color: #ea0027; background: #fdecea; color: #ea0027; }
+.priority-chip.selected-high   { border-color: #e65100; background: #fff3e0; color: #e65100; }
+
+/* Tyre position grid */
+.tyre-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+.tyre-pos-btn {
+    border: 2px solid #e8eaed;
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    color: #485D6B;
+    transition: all .15s;
+    user-select: none;
+    background: #fff;
+}
+.tyre-pos-btn:hover  { border-color: #032671; background: #f0f4ff; }
+.tyre-pos-btn.worn   { border-color: #ea0027; background: #fdecea; color: #ea0027; }
+.tyre-pos-btn.active { border-color: #032671; background: #e3ecff; color: #032671; }
+
+/* Success summary card */
+.sr-success-box {
+    background: linear-gradient(135deg, #032671 0%, #1a4ba8 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+}
+.sr-success-box .sr-ref-num { font-size: 32px; font-weight: 800; letter-spacing: 2px; }
+.sr-success-box .sr-sub     { font-size: 12px; opacity: .8; }
+
+/* SR summary card (read-only data) */
+.sr-summary-card {
+    background: #f5f7fb;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12px;
+}
+.sr-summary-card .sum-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #e8eaed; }
+.sr-summary-card .sum-row:last-child { border-bottom: none; }
+.sr-summary-card .sum-key { color: #485D6B; }
+.sr-summary-card .sum-val { font-weight: 600; color: #323130; }
+
+/* System checks panel */
+.sc-check-panel .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.sc-check-panel .check-item.ok  { background: #e6f4ea; color: #10863f; }
+.sc-check-panel .check-item.due { background: #fff3e0; color: #e65100; }
+.sc-check-panel .check-item.ov  { background: #fdecea; color: #ea0027; }

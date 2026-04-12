@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/ownershiptype-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Tyre/index.css?v=1.0') }}">
 
 @endsection
 
@@ -181,7 +181,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{ asset('customjs/tyre/index.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/index.js') }}"></script>
 
 @endsection
 

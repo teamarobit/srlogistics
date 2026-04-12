@@ -2,97 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/employee-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/LoadVendor/create.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-    p { margin: 0; font-size: 13px;  word-break: break-word; }
-    
-    .w-90 { width:90%; }
-    
-    /**/
-    .btn.btn-primary.me-2 { background: #010649; }
-    .btn.btn-theme.me-2 {    background: #ea0027;    color: #fff;
-    border-radius: 4px; border: 0; }
-    
-    /**/   
-    .item_016btn {  display: flex; align-items: center; justify-content: end; }
-    
-    /*.item_blacklisted {    margin: 0 10px 0 0;    padding: 11px 12px 5px 12px;    display: inline-block;    text-align: center;    background:#ea0027;*/
-    /*box-shadow: 0px 0px 8px 0px rgb(143 143 143 / 50%);    border-radius: 4px;}*/
-    /*.item_blacklisted p {    margin: 0;    padding: 0;    font-size: 20px;*/
-    /*line-height: 14px;    color: #ffffff;    display: block;    border: 0; font-weight: bold; }*/
-    /*.item_blacklisted span {    margin: 0;    padding: 3px 0 0 0;    font-size: 13px;    line-height: 21px;*/
-    /*color: #fff;    display: block;    font-weight: 600; }*/
-    
-    .item_blacklisted {    margin: 0 10px 0 150px;    padding: 11px 12px 5px 12px;    display: inline-block;    text-align: center;
-    background: #fff;    box-shadow: 0px 0px 8px 0px rgb(143 143 143 / 50%);    border-radius: 4px;    margin-right: auto;
-    position: relative;    top:-43px; }
-    
-    .item_blacklisted p { margin: 0;padding: 0;font-size: 20px;line-height: 14px;color: #ea0027;display: block;border: 0;font-weight: bold;}
-    .item_blacklisted span {    margin: 0;    padding: 3px 0 0 0;    font-size: 13px;    line-height: 21px;    color: #f9526e;    display: block;
-    font-weight: 600; }
-    
-     /*.allshow { display: none; }*/
-     
-    /**/ 
-    
-     /**/
-    .secactivit_blacklist {margin: 21px 0 0 0;padding: 16px 10px !important;border-radius: 6px;/* background: #fff !important; */width: 100%;}
-    /*.secactivit_blacklist h4 {margin:0;padding:0;font-size: 20px;line-height: 28px;color: #ffffff;font-weight: bold;}*/
-    /*.secactivit_blacklist .date_time {margin:0;padding: 4px 0 6px 0;font-size: 15px;line-height: 21px;color: #ffffff !important;display: block !important;}*/
-    /*.secactivit_blacklist .sec_reason {margin:0;padding:0;font-size: 15px;line-height: 19px;color: #fff !important;}*/
-    /**/
-    
-    .e-activitywrapper .bg-circlesec {    width: 30px;    height: 30px;    border-radius: 100%;    display: inline-flex;
-    align-items: center;    justify-content: center;    color: #fff;    font-size: 10px;
-    font-weight: 600;    padding: 0 !important; }
-    .blacklist_color .c_red {    color: #ea0027 !important; }
-    
-    .accordion-item .tag {
-        padding: 2px 6px;
-        border-radius: 20px;
-        background-color: #e9f0ff;
-        border: 1px solid #032671;
-        display: inline-block;
-        margin-bottom: 5px;
-        font-size: 12px;
-        padding: 2px 8px;
-        line-height: 21px;
-    }
-    
-    .destination-wrap{
-        display: none;
-    }
-    .source-wrap{
-        display: none;
-    }
-    .midpoint-wrap{
-        display: none;
-    }
-    .LoadingChargeDiv{
-        display: none;
-    }
-    .UnloadingChargeDiv{
-        display: none;
-    }
-    .CappingAmountDiv{
-        display: none;
-    }
-    
-    
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-
-
-</style>
 
 @endsection
 

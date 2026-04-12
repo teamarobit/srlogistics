@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/HR/designation-index.css') }}">
 
-<style>
-body{ background-color: #fff; }
-</style>
 
 @endsection
 
@@ -160,5 +157,5 @@ body{ background-color: #fff; }
     
    
 </script>
-<script type="text/javascript" src="{{ asset('customjs/designation/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/designation/index.js') }}"></script>
 @endsection

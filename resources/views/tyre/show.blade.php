@@ -4,7 +4,7 @@
     
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/tyre/show.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Tyre/show.css') }}">
 
 @endsection
     
@@ -518,56 +518,56 @@
                                                 </thead>
                                         
                                                 <tbody>
-                                                    <!-- Row 1 -->
-                                                    <tr>
-                                                        <td>Hub Greasing</td>
-                                                        <td>27-08-2025</td>
-                                                        <td>₹56420</td>
-                                                        <td>420</td>
-                                                        <td><span class="badge badge-warning">Pending</span></td>
+                                                    @forelse($maintenanceSchedules as $ms)
+                                                    <tr id="maint-row-{{ $ms->id }}">
+                                                        <td>{{ $ms->maintenance_item }}</td>
+                                                        <td>{{ $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—' }}</td>
+                                                        <td>{{ $ms->next_due_date ? $ms->next_due_date->format('d-m-Y') : '—' }}</td>
+                                                        <td>{{ $ms->odometer_km ? number_format($ms->odometer_km) : '—' }}</td>
+                                                        <td>
+                                                            @php
+                                                                $badgeMap = [
+                                                                    'Scheduled' => 'badge-primary',
+                                                                    'Pending'   => 'badge-warning',
+                                                                    'Done'      => 'badge-success',
+                                                                    'Overdue'   => 'badge-danger',
+                                                                ];
+                                                            @endphp
+                                                            <span class="badge {{ $badgeMap[$ms->status] ?? 'badge-secondary' }}">
+                                                                {{ $ms->status }}
+                                                            </span>
+                                                        </td>
                                                         <td class="text-center">
-                                                            <a class="item-edit text-success">
+                                                            <a href="javascript:void(0)"
+                                                               class="item-edit text-success maint-edit-btn"
+                                                               title="Edit"
+                                                               data-id="{{ $ms->id }}"
+                                                               data-item="{{ $ms->maintenance_item }}"
+                                                               data-last="{{ $ms->last_done_date ? $ms->last_done_date->format('Y-m-d') : '' }}"
+                                                               data-next="{{ $ms->next_due_date ? $ms->next_due_date->format('Y-m-d') : '' }}"
+                                                               data-odometer="{{ $ms->odometer_km }}"
+                                                               data-status="{{ $ms->status }}"
+                                                               data-notes="{{ $ms->notes }}"
+                                                               data-update-url="{{ route('tyre.maintenance.update', [$tyre->id, $ms->id]) }}">
                                                                 <i class="uil uil-pen me-2"></i>
                                                             </a>
-                                                            <a class="item-delete text-danger">
+                                                            <a href="javascript:void(0)"
+                                                               class="item-delete text-danger maint-delete-btn"
+                                                               title="Delete"
+                                                               data-id="{{ $ms->id }}"
+                                                               data-delete-url="{{ route('tyre.maintenance.destroy', [$tyre->id, $ms->id]) }}">
                                                                 <i class="uil uil-trash-alt"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
-                                        
-                                                    <!-- Row 2 -->
-                                                    <tr>
-                                                        <td>Painting</td>
-                                                        <td>27-08-2025</td>
-                                                        <td>₹56420</td>
-                                                        <td>350</td>
-                                                        <td><span class="badge badge-success">Up to Date</span></td>
-                                                        <td class="text-center">
-                                                            <a class="item-edit text-success">
-                                                                <i class="uil uil-pen me-2"></i>
-                                                            </a>
-                                                            <a class="item-delete text-danger">
-                                                                <i class="uil uil-trash-alt"></i>
-                                                            </a>
+                                                    @empty
+                                                    <tr id="maint-empty-row">
+                                                        <td colspan="6" class="text-center text-muted py-4">
+                                                            <i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>
+                                                            No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.
                                                         </td>
                                                     </tr>
-                                        
-                                                    <!-- Row 3 -->
-                                                    <tr>
-                                                        <td>Electric</td>
-                                                        <td>27-08-2025</td>
-                                                        <td>₹56420</td>
-                                                        <td>140</td>
-                                                        <td><span class="badge badge-success">Up to Date</span></td>
-                                                        <td class="text-center">
-                                                            <a class="item-edit text-success">
-                                                                <i class="uil uil-pen me-2"></i>
-                                                            </a>
-                                                            <a class="item-delete text-danger">
-                                                                <i class="uil uil-trash-alt"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                                    @endforelse
                                                 </tbody>
                                             </table>
                                         </div>
@@ -818,6 +818,113 @@
 </div>
     
     
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Schedule Maintenance Modal  #add05_maintenance
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade expenses_wrapperModal" id="add05_maintenance" tabindex="-1" aria-labelledby="maintModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            {{-- Header --}}
+            <div class="modal-header">
+                <h5 class="modal-title" id="maintModalLabel">
+                    <i class="uil uil-wrench me-2"></i>
+                    Schedule Maintenance &mdash;
+                    <span class="text-muted fw-normal fs-6">{{ $tyre->tyre_serial_number }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body">
+                <form id="maintForm" method="POST"
+                      action="{{ route('tyre.maintenance.store', $tyre->id) }}">
+                    @csrf
+
+                    {{-- Hidden: edit mode stores schedule id --}}
+                    <input type="hidden" id="maint_schedule_id" value="">
+                    <input type="hidden" id="maint_method_override" name="_method_override" value="store">
+
+                    <div class="row g-3">
+
+                        {{-- Maintenance Item --}}
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Maintenance Item <span class="text-danger">*</span></label>
+                            <input type="text" id="maint_item" name="maintenance_item"
+                                   class="form-control"
+                                   placeholder="e.g. Hub Greasing, Rotation, Balancing"
+                                   list="maint_item_suggestions">
+                            <datalist id="maint_item_suggestions">
+                                <option value="Hub Greasing">
+                                <option value="Wheel Rotation">
+                                <option value="Wheel Balancing">
+                                <option value="Tyre Inflation Check">
+                                <option value="Tread Depth Check">
+                                <option value="Alignment Check">
+                                <option value="Tyre Retreading">
+                                <option value="Valve Replacement">
+                                <option value="Visual Inspection">
+                            </datalist>
+                            <div class="text-danger small mt-1 d-none" id="maint_item_err"></div>
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select id="maint_status" name="status" class="form-select">
+                                <option value="Scheduled" selected>Scheduled</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Done">Done</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+
+                        {{-- Last Done Date --}}
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Last Done Date</label>
+                            <input type="date" id="maint_last_done" name="last_done_date" class="form-control">
+                        </div>
+
+                        {{-- Next Due Date --}}
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Next Due Date</label>
+                            <input type="date" id="maint_next_due" name="next_due_date" class="form-control">
+                        </div>
+
+                        {{-- Odometer --}}
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Odometer at Last Service (KM)</label>
+                            <input type="number" id="maint_odometer" name="odometer_km"
+                                   class="form-control" placeholder="e.g. 45000" min="0">
+                        </div>
+
+                        {{-- Notes --}}
+                        <div class="col-12 form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea id="maint_notes" name="notes" class="form-control"
+                                      rows="3" placeholder="Any additional remarks..."></textarea>
+                        </div>
+
+                    </div>{{-- /row --}}
+
+                </form>
+            </div>{{-- /modal-body --}}
+
+            {{-- Footer --}}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="maintSaveBtn">
+                    <span id="maintSaveBtnText">Save Schedule</span>
+                    <span id="maintSaveBtnSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>{{-- /#add05_maintenance --}}
+
 <!-- Add Document Modal -->
 <div class="modal fade expenses_wrapperModal" id="add06_documents" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -1136,7 +1243,190 @@
     const OTHER_LOGO = "{{ asset('images/other_file.svg') }}";
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/tyre/show.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/show.js') }}"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+//  Schedule Maintenance Modal JS
+// ═══════════════════════════════════════════════════════════════════════════
+(function () {
+    'use strict';
+
+    const STORE_URL  = "{{ route('tyre.maintenance.store', $tyre->id) }}";
+    const CSRF       = "{{ csrf_token() }}";
+
+    const $modal     = $('#add05_maintenance');
+    const $form      = $('#maintForm');
+    const $saveBtn   = $('#maintSaveBtn');
+    const $saveTxt   = $('#maintSaveBtnText');
+    const $saveSpn   = $('#maintSaveBtnSpinner');
+
+    // ── Badge helper ───────────────────────────────────────────────────────
+    function badgeClass(status) {
+        const map = { Scheduled: 'badge-primary', Pending: 'badge-warning', Done: 'badge-success', Overdue: 'badge-danger' };
+        return map[status] || 'badge-secondary';
+    }
+
+    // ── Reset form to "Add" mode ───────────────────────────────────────────
+    function resetModal() {
+        $form[0].reset();
+        $('#maint_schedule_id').val('');
+        $('#maint_method_override').val('store');
+        $form.attr('action', STORE_URL);
+        $saveTxt.text('Save Schedule');
+        $('#maintModalLabel').html('<i class="uil uil-wrench me-2"></i>Schedule Maintenance &mdash; <span class="text-muted fw-normal fs-6">{{ $tyre->tyre_serial_number }}</span>');
+        clearErrors();
+    }
+
+    function clearErrors() {
+        $('#maint_item_err').addClass('d-none').text('');
+    }
+
+    // ── Loading state ──────────────────────────────────────────────────────
+    function setBusy(busy) {
+        $saveBtn.prop('disabled', busy);
+        $saveSpn.toggleClass('d-none', !busy);
+    }
+
+    // ── Reset on open (only when NOT triggered by edit btn) ───────────────
+    $modal.on('show.bs.modal', function (e) {
+        if (!$(e.relatedTarget).hasClass('maint-edit-btn')) {
+            resetModal();
+        }
+    });
+
+    // ── Edit button click: pre-fill form ──────────────────────────────────
+    $(document).on('click', '.maint-edit-btn', function () {
+        const d = $(this).data();
+        resetModal();
+
+        $('#maint_schedule_id').val(d.id);
+        $('#maint_method_override').val('update');
+        $form.attr('action', d.updateUrl);
+
+        $('#maint_item').val(d.item);
+        $('#maint_last_done').val(d.last);
+        $('#maint_next_due').val(d.next);
+        $('#maint_odometer').val(d.odometer);
+        $('#maint_status').val(d.status);
+        $('#maint_notes').val(d.notes);
+
+        $saveTxt.text('Update Schedule');
+        $('#maintModalLabel').html('<i class="uil uil-pen me-2"></i>Edit Maintenance &mdash; <span class="text-muted fw-normal fs-6">{{ $tyre->tyre_serial_number }}</span>');
+
+        $modal.modal('show');
+    });
+
+    // ── Save / Update ──────────────────────────────────────────────────────
+    $saveBtn.on('click', function () {
+        clearErrors();
+
+        const item = $('#maint_item').val().trim();
+        if (!item) {
+            $('#maint_item_err').removeClass('d-none').text('Maintenance item is required.');
+            return;
+        }
+
+        const isUpdate   = $('#maint_method_override').val() === 'update';
+        const actionUrl  = $form.attr('action');
+        const scheduleId = $('#maint_schedule_id').val();
+
+        const payload = {
+            _token:           CSRF,
+            maintenance_item: item,
+            last_done_date:   $('#maint_last_done').val(),
+            next_due_date:    $('#maint_next_due').val(),
+            odometer_km:      $('#maint_odometer').val(),
+            status:           $('#maint_status').val(),
+            notes:            $('#maint_notes').val(),
+        };
+
+        setBusy(true);
+
+        $.ajax({
+            url:    actionUrl,
+            method: 'POST',
+            data:   payload,
+            success: function (res) {
+                setBusy(false);
+                $modal.modal('hide');
+                toastr.success(res.message || 'Saved successfully.');
+
+                if (isUpdate) {
+                    // Update the existing row in place
+                    const $row = $('#maint-row-' + scheduleId);
+                    $row.find('td:eq(0)').text(payload.maintenance_item);
+                    $row.find('td:eq(1)').text(payload.last_done_date ? formatDateDMY(payload.last_done_date) : '—');
+                    $row.find('td:eq(2)').text(payload.next_due_date  ? formatDateDMY(payload.next_due_date)  : '—');
+                    $row.find('td:eq(3)').text(payload.odometer_km    ? Number(payload.odometer_km).toLocaleString() : '—');
+                    $row.find('td:eq(4)').html('<span class="badge ' + badgeClass(payload.status) + '">' + payload.status + '</span>');
+                    // Refresh data-* attrs on edit btn
+                    $row.find('.maint-edit-btn')
+                        .data('item',     payload.maintenance_item)
+                        .data('last',     payload.last_done_date)
+                        .data('next',     payload.next_due_date)
+                        .data('odometer', payload.odometer_km)
+                        .data('status',   payload.status)
+                        .data('notes',    payload.notes)
+                        .attr('data-item',     payload.maintenance_item)
+                        .attr('data-last',     payload.last_done_date)
+                        .attr('data-next',     payload.next_due_date)
+                        .attr('data-odometer', payload.odometer_km)
+                        .attr('data-status',   payload.status)
+                        .attr('data-notes',    payload.notes);
+                } else {
+                    // Reload to get the new row with correct id
+                    setTimeout(function () { location.reload(); }, 600);
+                }
+            },
+            error: function (xhr) {
+                setBusy(false);
+                const msg = xhr.responseJSON?.message || 'Something went wrong.';
+                toastr.error(msg);
+            }
+        });
+    });
+
+    // ── Delete ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.maint-delete-btn', function () {
+        const scheduleId  = $(this).data('id');
+        const deleteUrl   = $(this).data('deleteUrl');
+
+        if (!confirm('Delete this maintenance schedule?')) return;
+
+        $.ajax({
+            url:    deleteUrl,
+            method: 'POST',
+            data:   { _token: CSRF },
+            success: function (res) {
+                toastr.success(res.message || 'Deleted.');
+                $('#maint-row-' + scheduleId).fadeOut(300, function () {
+                    $(this).remove();
+                    // Show empty row if tbody is now empty
+                    if ($('tbody .maint-edit-btn').length === 0) {
+                        $('tbody').append(
+                            '<tr id="maint-empty-row"><td colspan="6" class="text-center text-muted py-4">' +
+                            '<i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>' +
+                            'No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.</td></tr>'
+                        );
+                    }
+                });
+            },
+            error: function (xhr) {
+                toastr.error(xhr.responseJSON?.message || 'Could not delete.');
+            }
+        });
+    });
+
+    // ── Date format helper (YYYY-MM-DD → DD-MM-YYYY) ──────────────────────
+    function formatDateDMY(ymd) {
+        if (!ymd) return '—';
+        const parts = ymd.split('-');
+        return parts.length === 3 ? parts[2] + '-' + parts[1] + '-' + parts[0] : ymd;
+    }
+
+})();
+</script>
 
 @endsection
 

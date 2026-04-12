@@ -1,0 +1,193 @@
+body { background-color: #fff; }
+.ins-detail-wrap { padding: 0 0 40px; }
+
+/* ── Claim Header ── */
+.claim-header-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.claim-no { font-size: 18px; font-weight: 800; color: #032671; line-height: 1; }
+.claim-type-badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: 2px 9px; border-radius: 12px; margin-left: 10px;
+    background: #e3ecff; color: #032671;
+}
+.claim-meta { font-size: 12px; color: #888; margin-top: 5px; }
+.claim-meta strong { color: #444; }
+
+/* ── Status Pipeline ── */
+.claim-pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #f8f9fc;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.pip-step {
+    flex: 1;
+    padding: 10px 12px;
+    text-align: center;
+    position: relative;
+    border-right: 1px solid #e4e7ef;
+    font-size: 11px;
+    font-weight: 600;
+    color: #adb5bd;
+    background: #f8f9fc;
+}
+.pip-step:last-child { border-right: 0; }
+.pip-step.done {
+    color: #10863f;
+    background: #f0faf3;
+}
+.pip-step.active {
+    color: #032671;
+    background: #e8eeff;
+    font-weight: 700;
+}
+.pip-step .pip-icon { font-size: 16px; display: block; margin-bottom: 3px; }
+.pip-step.done .pip-icon { color: #10863f; }
+.pip-step.active .pip-icon { color: #032671; }
+.pip-step .pip-date { font-size: 10px; color: #adb5bd; font-weight: 400; margin-top: 2px; display: block; }
+.pip-step.done .pip-date { color: #10863f; }
+.pip-step.active .pip-date { color: #6c757d; }
+
+/* ── Financial Recovery Bar ── */
+.fin-bar {
+    display: flex;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.fin-cell {
+    flex: 1;
+    padding: 14px 16px;
+    border-right: 1px solid #e4e7ef;
+    text-align: center;
+}
+.fin-cell:last-child { border-right: 0; }
+.fin-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 4px; }
+.fin-amount { font-size: 18px; font-weight: 800; }
+.fin-cell.repair  .fin-amount { color: #2d2d2d; }
+.fin-cell.claimed .fin-amount { color: #032671; }
+.fin-cell.approved .fin-amount { color: #e65100; }
+.fin-cell.received .fin-amount { color: #10863f; }
+.fin-pending { font-size: 11px; color: #adb5bd; margin-top: 3px; }
+.fin-ok { font-size: 11px; color: #10863f; font-weight: 600; margin-top: 3px; }
+
+/* ── Section cards ── */
+.ins-sec-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+.ins-sec-head {
+    background: #f8f9fc;
+    border-bottom: 1px solid #e4e7ef;
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.ins-sec-head i { font-size: 15px; }
+.ins-sec-body { padding: 14px 16px; }
+
+/* ── Key-value pairs ── */
+.kv-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.kv-item { min-width: 160px; flex: 1; }
+.kv-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 2px; }
+.kv-value { font-size: 13px; color: #2d2d2d; font-weight: 500; }
+
+/* ── Vehicle reg badge ── */
+.ins-reg {
+    display: inline-block; font-size: 13px; font-weight: 800;
+    color: #032671; background: #e3ecff; border-radius: 5px;
+    padding: 2px 10px; letter-spacing: .5px;
+}
+
+/* ── Timeline / chase log ── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+    content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px;
+    width: 2px; background: #e4e7ef;
+}
+.tl-item { position: relative; margin-bottom: 16px; }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-dot {
+    position: absolute; left: -20px; top: 3px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #adb5bd; border: 2px solid #fff; box-shadow: 0 0 0 2px #e4e7ef;
+}
+.tl-dot.done   { background: #10863f; box-shadow: 0 0 0 2px #c3e6cb; }
+.tl-dot.active { background: #032671; box-shadow: 0 0 0 2px #b8cef8; }
+.tl-dot.warn   { background: #e65100; box-shadow: 0 0 0 2px #ffe0b2; }
+.tl-date  { font-size: 11px; color: #888; font-weight: 600; }
+.tl-event { font-size: 13px; color: #2d2d2d; font-weight: 600; margin-top: 1px; }
+.tl-note  { font-size: 12px; color: #6c757d; margin-top: 2px; line-height: 1.5; }
+
+/* ── Surveyor card ── */
+.surv-card {
+    background: #f8f9fc;
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.surv-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #e3ecff; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #032671; flex-shrink: 0;
+}
+.surv-name { font-size: 14px; font-weight: 700; color: #2d2d2d; }
+.surv-meta { font-size: 12px; color: #888; margin-top: 2px; }
+.surv-phone { font-size: 13px; font-weight: 700; color: #032671; margin-top: 4px; }
+
+/* ── Status badge ── */
+.claim-status-badge {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+    padding: 4px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;
+}
+.badge-survey  { background: #fff3e0; color: #e65100; }
+.badge-open    { background: #e3ecff; color: #032671; }
+.badge-approved{ background: #e6f4ea; color: #10863f; }
+.badge-settled { background: #e6f4ea; color: #10863f; }
+.badge-rejected{ background: #fdecea; color: #ea0027; }
+
+/* ── Action buttons ── */
+.ins-action-bar {
+    background: #fff; border: 1px solid #e4e7ef; border-radius: 8px;
+    padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: center; margin-bottom: 16px;
+}
+.btn-ins-primary { background:#032671; color:#fff; font-size:12px; font-weight:600; border:0; padding:6px 14px; border-radius:5px; }
+.btn-ins-primary:hover { background:#06409e; color:#fff; }
+.btn-ins-outline { background:#fff; color:#032671; font-size:12px; font-weight:600; border:1px solid #d0d8f0; padding:6px 14px; border-radius:5px; }
+.btn-ins-outline:hover { background:#f0f4ff; }
+.btn-ins-success { background:#fff; color:#10863f; font-size:12px; font-weight:600; border:1px solid #c3e6cb; padding:6px 14px; border-radius:5px; }
+.btn-ins-success:hover { background:#f0faf3; }
+.btn-ins-danger { background:#fff; color:#ea0027; font-size:12px; font-weight:600; border:1px solid #f5c0c0; padding:6px 14px; border-radius:5px; }
+.btn-ins-danger:hover { background:#fdecea; }
+
+/* ── Remark box ── */
+.remark-box { background:#f8f9fc; border-radius:6px; padding:10px 13px; font-size:13px; color:#444; font-style:italic; line-height:1.6; }

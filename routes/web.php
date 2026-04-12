@@ -5,13 +5,22 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+/* ── DEV: patch IP logos — remove after use ──────────────────────── */
+Route::get('/dev/patch-ip-logos', function () {
+    $logos = ['INS-001'=>'logo_new_india.svg','INS-002'=>'logo_united_india.svg','INS-003'=>'logo_icici_lombard.svg','INS-004'=>'logo_bajaj_allianz.svg','INS-005'=>'logo_hdfc_ergo.svg'];
+    $n = 0;
+    foreach ($logos as $code => $logo) { $n += \DB::table('contacts')->where('contact_code',$code)->update(['contact_image'=>$logo]); }
+    return response()->json(['patched'=>$n,'logos'=>$logos]);
+});
 Route::get('/', function () {
     return redirect('/login');
 });
 
+
+
 Auth::routes();
 
-\URL::forceScheme('https');
+//\URL::forceScheme('https');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -188,7 +197,18 @@ Route::group(['middleware' => ['auth']], function() {
             Route::post('/tyrevendor-bank-warapper', [App\Http\Controllers\ContactController::class, 'tyrevendor_bankWrapper'])->name('tyrevendor.bankwrapper');
             
             
-            // Battery Vendor 
+            // Spare Part Vendor
+            Route::get('/sparevendors', [App\Http\Controllers\ContactController::class, 'spareVendorList'])->name('sparevendor.index');
+            Route::get('/sparevendor/create', [App\Http\Controllers\ContactController::class, 'createSpareVendor'])->name('sparevendor.create');
+            Route::post('/sparevendor/save', [App\Http\Controllers\ContactController::class, 'storeSpareVendor'])->name('sparevendor.save');
+            Route::get('/sparevendor/{id}/edit', [App\Http\Controllers\ContactController::class, 'editSpareVendor'])->name('sparevendor.edit');
+            Route::post('/sparevendor/{id}/update', [App\Http\Controllers\ContactController::class, 'updateSpareVendor'])->name('sparevendor.update');
+            Route::post('/sparevendor/{id}/toggle-status', [App\Http\Controllers\ContactController::class, 'toggleSpareVendorStatus'])->name('sparevendor.toggle-status');
+            Route::delete('/sparevendor/{id}', [App\Http\Controllers\ContactController::class, 'destroySpareVendor'])->name('sparevendor.destroy');
+            Route::post('/sparevendor-contactperson-warapper', [App\Http\Controllers\ContactController::class, 'sparevendor_contactPersonWrapper'])->name('sparevendor.contactpersonwrapper');
+            Route::post('/sparevendor-bank-warapper', [App\Http\Controllers\ContactController::class, 'sparevendor_bankWrapper'])->name('sparevendor.bankwrapper');
+
+            // Battery Vendor
             Route::get('/batteryvendors', [App\Http\Controllers\ContactController::class, 'batteryVendorList'])->name('batteryvendor.index');
             Route::get('/batteryvendor/create', [App\Http\Controllers\ContactController::class, 'createBatteryVendor'])->name('batteryvendor.create');
             Route::post('/batteryvendor/save', [App\Http\Controllers\ContactController::class, 'storeBatteryVendor'])->name('batteryvendor.save');
@@ -196,8 +216,15 @@ Route::group(['middleware' => ['auth']], function() {
             Route::post('/batteryvendor/{id}/update', [App\Http\Controllers\ContactController::class, 'updateBatteryVendor'])->name('batteryvendor.update'); 
             Route::post('/batteryvendor-contactperson-warapper', [App\Http\Controllers\ContactController::class, 'batteryvendor_contactPersonWrapper'])->name('batteryvendor.contactpersonwrapper');
             Route::post('/batteryvendor-bank-warapper', [App\Http\Controllers\ContactController::class, 'batteryvendor_bankWrapper'])->name('batteryvendor.bankwrapper');
-            
-            
+
+            // Insurance Providers (modal-based, no separate create/edit pages)
+            Route::get   ('/insurance-providers',            [App\Http\Controllers\ContactController::class, 'insuranceProviderList'])->name('insuranceprovider.index');
+            Route::get   ('/insurance-provider/{id}/json',   [App\Http\Controllers\ContactController::class, 'getInsuranceProvider'])->name('insuranceprovider.json');
+            Route::post  ('/insurance-provider/save',        [App\Http\Controllers\ContactController::class, 'storeInsuranceProvider'])->name('insuranceprovider.save');
+            Route::post  ('/insurance-provider/{id}/update', [App\Http\Controllers\ContactController::class, 'updateInsuranceProvider'])->name('insuranceprovider.update');
+            Route::post  ('/insurance-provider/{id}/toggle-status', [App\Http\Controllers\ContactController::class, 'toggleInsuranceProviderStatus'])->name('insuranceprovider.toggle-status');
+            Route::delete('/insurance-provider/{id}',        [App\Http\Controllers\ContactController::class, 'destroyInsuranceProvider'])->name('insuranceprovider.destroy');
+
         });
         
         
@@ -345,8 +372,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/{tyre}/document/save', [App\Http\Controllers\TyreController::class, 'storeDocument'])->name('document.store');
         Route::post('/{mediadocument}/document/update', [App\Http\Controllers\TyreController::class, 'updateDocument'])->name('document.update');
         Route::post('/{media}/document/delete', [App\Http\Controllers\TyreController::class, 'destroyDocument'])->name('document.destroy');
-        
-    }); 
+        Route::post('/{tyre}/maintenance/store', [App\Http\Controllers\TyreController::class, 'storeMaintenance'])->name('maintenance.store');
+        Route::post('/{tyre}/maintenance/{schedule}/update', [App\Http\Controllers\TyreController::class, 'updateMaintenance'])->name('maintenance.update');
+        Route::post('/{tyre}/maintenance/{schedule}/delete', [App\Http\Controllers\TyreController::class, 'destroyMaintenance'])->name('maintenance.destroy');
+
+    });
     
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
@@ -492,6 +522,7 @@ Route::group(['middleware' => ['auth']], function() {
         
         // vehicle-details
         Route::get('/vehicle/{id}/details', [App\Http\Controllers\FleetDashboardController::class, 'getVehicleDetails'])->name('getVehicleDetails');
+        Route::get('/vehicle/{id}/details/v2', [App\Http\Controllers\FleetDashboardController::class, 'getVehicleDetailsV2'])->name('getVehicleDetailsV2');
         Route::get('/vehicle/{id}/driver-data', [App\Http\Controllers\FleetDashboardController::class, 'getDriverData'])->name('getDriverData');
         Route::post('/vehicle/update-driver', [App\Http\Controllers\FleetDashboardController::class, 'updateVehicleDriver'])->name('updateDriver');
         
@@ -540,10 +571,44 @@ Route::group(['middleware' => ['auth']], function() {
         
         // comment
         Route::post('/{vehicle}/comment/save', [App\Http\Controllers\FleetDashboardController::class, 'storeComment'])->name('vehicle.comment.store');
-        
+
+        // ── Driver module ──────────────────────────────────────────────────────
+        Route::get('/drivers',               [App\Http\Controllers\FleetDashboardController::class, 'driverDashboard'])->name('drivers');
+        Route::get('/driver/{id}/details',   [App\Http\Controllers\FleetDashboardController::class, 'getDriverDetails'])->name('getDriverDetails');
+
     });
     
     
+    // Fleet — Insurance Claims
+    Route::prefix('fleet/insurance-claims')->name('fleet.insurance.')->group(function () {
+        Route::get('/',        [App\Http\Controllers\FleetDashboardController::class, 'insurance'])->name('index');
+        Route::get('/{id}',    [App\Http\Controllers\FleetDashboardController::class, 'insuranceDetail'])->name('detail');
+        Route::post('/save',   [App\Http\Controllers\FleetDashboardController::class, 'insuranceStore'])->name('store');
+        Route::post('/{id}/update-status', [App\Http\Controllers\FleetDashboardController::class, 'insuranceUpdateStatus'])->name('updateStatus');
+        Route::post('/{id}/log-followup',  [App\Http\Controllers\FleetDashboardController::class, 'insuranceLogFollowup'])->name('logFollowup');
+        Route::post('/{id}/settlement',    [App\Http\Controllers\FleetDashboardController::class, 'insuranceSettlement'])->name('settlement');
+    });
+    // Legacy redirect — keep old URL working
+    Route::redirect('/fleet/insurance', '/fleet/insurance-claims', 301);
+    Route::redirect('/fleet/insurance/{id}', '/fleet/insurance-claims/{id}', 301);
+
+    // Fleet — Vehicle Insurance Policies
+    Route::prefix('fleet/vehicle-insurance')->name('fleet.vehicle-insurance.')->group(function () {
+        Route::get('/',            [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicies'])->name('index');
+        Route::post('/',           [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicyStore'])->name('store');
+        Route::put('/{id}',        [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicyUpdate'])->name('update');
+        Route::delete('/{id}',     [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicyDestroy'])->name('destroy');
+        Route::patch('/{id}/status',    [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicyToggleStatus'])->name('toggle-status');
+        Route::delete('/{id}/document', [App\Http\Controllers\FleetDashboardController::class, 'vehicleInsurancePolicyDocumentDelete'])->name('document-delete');
+    });
+
+    // Fleet — Compliance & Insurance (Policy Renewal / Document Expiry / Permit & Fitness)
+    Route::prefix('fleet/compliance')->name('fleet.compliance.')->group(function () {
+        Route::get('/policy-renewal',  [App\Http\Controllers\FleetDashboardController::class, 'policyRenewal'])->name('policy-renewal');
+        Route::get('/document-expiry', [App\Http\Controllers\FleetDashboardController::class, 'documentExpiry'])->name('document-expiry');
+        Route::get('/permit-fitness',  [App\Http\Controllers\FleetDashboardController::class, 'permitFitness'])->name('permit-fitness');
+    });
+
     // Vehicle-EMI
     Route::prefix('vehicle-emi')->name('vehicleemi.')->group(function () {
         Route::post('/vehicle/{id}/emi/save', [App\Http\Controllers\VehicleEmiController::class, 'storeEmi'])->name('save');
@@ -558,22 +623,84 @@ Route::group(['middleware' => ['auth']], function() {
     
     
     Route::post('/vehicle-file-import', [App\Http\Controllers\ImportController::class, 'uploadFile'])->name('import.file');
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-        
 
 
-    
+    /******************************** Workshop Module ******************************************/
+
+    Route::prefix('workshop')->name('ws.')->group(function () {
+
+        // Service Requests
+        Route::get('/dashboard',        [App\Http\Controllers\ServiceCentreController::class, 'dashboard'])->name('dashboard');
+        Route::get('/service-request',  [App\Http\Controllers\ServiceCentreController::class, 'serviceRequest'])->name('service-request.index');
+        Route::get('/appointment',      [App\Http\Controllers\ServiceCentreController::class, 'appointment'])->name('appointment.index');
+        Route::get('/in-token',         [App\Http\Controllers\ServiceCentreController::class, 'inToken'])->name('in-token.index');
+
+        // Workshop
+        Route::get('/workshop/job-cards',       [App\Http\Controllers\ServiceCentreController::class, 'jobCardList'])->name('workshop.job-list');
+        Route::get('/workshop/job-cards/{id}',  [App\Http\Controllers\ServiceCentreController::class, 'jobCardDetails'])->name('workshop.job-details');
+        // HIDDEN (not in use yet): Route::get('/workshop/technicians', [App\Http\Controllers\ServiceCentreController::class, 'technicianDashboard'])->name('workshop.tech-dashboard');
+        Route::get('/workshop/billing',         [App\Http\Controllers\ServiceCentreController::class, 'billing'])->name('workshop.billing');
+        Route::get('/workshop/delivery',        [App\Http\Controllers\ServiceCentreController::class, 'delivery'])->name('workshop.delivery');
+        Route::get('/workshop/onroad',          [App\Http\Controllers\ServiceCentreController::class, 'onroadService'])->name('workshop.onroad');
+
+        // Alerts & Reports
+        Route::get('/alerts',  [App\Http\Controllers\ServiceCentreController::class, 'alerts'])->name('alerts');
+        Route::get('/reports', [App\Http\Controllers\ServiceCentreController::class, 'reports'])->name('reports');
+
+        // External Service Centre
+        Route::get('/external/dispatch', [App\Http\Controllers\ServiceCentreController::class, 'externalDispatch'])->name('external.dispatch');
+        Route::get('/external/tracker',  [App\Http\Controllers\ServiceCentreController::class, 'externalTracker'])->name('external.tracker');
+        Route::get('/external/billing',  [App\Http\Controllers\ServiceCentreController::class, 'externalBilling'])->name('external.billing');
+        Route::get('/external/return',   [App\Http\Controllers\ServiceCentreController::class, 'externalReturn'])->name('external.return');
+
+        // Maintenance
+        Route::get('/maintenance/pm-calendar', [App\Http\Controllers\ServiceCentreController::class, 'pmCalendar'])->name('maintenance.pm-calendar');
+        Route::get('/maintenance/insurance',            [App\Http\Controllers\ServiceCentreController::class, 'insurance'])->name('maintenance.insurance');
+        Route::get('/maintenance/insurance/{id}',       [App\Http\Controllers\ServiceCentreController::class, 'insuranceDetail'])->name('maintenance.insurance.detail');
+        Route::post('/maintenance/insurance/vehicle/{vehicleId}/note', [App\Http\Controllers\ServiceCentreController::class, 'insuranceAddNote'])->name('maintenance.insurance.add-note');
+
+        // Master Data — Workshops (unified Own + External; BA CIAA approved April 2026)
+        Route::get('/master/workshops',            [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshops'])->name('master.workshops');
+        Route::post('/master/workshops',           [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopStore'])->name('master.workshops.store');
+        Route::put('/master/workshops/{id}',       [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
+        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
+        // Legacy redirects so any bookmarked URLs don't hard-404
+        Route::redirect('/master/service-centers', '/workshop/master/workshops', 301);
+        Route::redirect('/master/external-sc',     '/workshop/master/workshops', 301);
+        Route::get('/master/services',             [App\Http\Controllers\ServiceCentreController::class, 'masterServices'])->name('master.services');
+        Route::get('/master/service-key-points',   [App\Http\Controllers\ServiceCentreController::class, 'masterServiceKeyPoints'])->name('master.service-key-points');
+        // Spare Parts CRUD
+        Route::get   ('/master/spare-parts',             [App\Http\Controllers\ServiceCentreController::class, 'masterSpareParts'])->name('master.spare-parts');
+        Route::post  ('/master/spare-parts',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartStore'])->name('master.spare-parts.store');
+        Route::put   ('/master/spare-parts/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartUpdate'])->name('master.spare-parts.update');
+        Route::delete('/master/spare-parts/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartDestroy'])->name('master.spare-parts.destroy');
+        Route::patch ('/master/spare-parts/{id}/status', [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartToggleStatus'])->name('master.spare-parts.toggle-status');
+
+        Route::get   ('/master/spare-part-categories',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategories'])->name('master.spare-part-categories');
+        Route::post  ('/master/spare-part-categories',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryStore'])->name('master.spare-part-categories.store');
+        Route::put   ('/master/spare-part-categories/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryUpdate'])->name('master.spare-part-categories.update');
+        Route::delete('/master/spare-part-categories/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryDestroy'])->name('master.spare-part-categories.destroy');
+        Route::patch ('/master/spare-part-categories/{id}/status', [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryToggleStatus'])->name('master.spare-part-categories.toggle-status');
+
+        Route::get('/master/maintenance-items',    [App\Http\Controllers\ServiceCentreController::class, 'masterMaintenanceItems'])->name('master.maintenance-items');
+        Route::get('/master/fault-codes',          [App\Http\Controllers\ServiceCentreController::class, 'masterFaultCodes'])->name('master.fault-codes');
+
+    });
+
+    /******************************** Inventory Module ******************************************/
+
+    Route::prefix('inventory')->name('inventory.')->group(function () {
+        Route::get('/dashboard',        [App\Http\Controllers\ServiceCentreController::class, 'inventoryDashboard'])->name('dashboard');
+        Route::get('/spare-parts',      [App\Http\Controllers\ServiceCentreController::class, 'spareParts'])->name('spare-parts');
+        Route::get('/tyres',            [App\Http\Controllers\ServiceCentreController::class, 'tyreInventory'])->name('tyres');
+        Route::get('/batteries',        [App\Http\Controllers\ServiceCentreController::class, 'batteryInventory'])->name('batteries');
+        Route::get('/purchase-orders',      [App\Http\Controllers\ServiceCentreController::class, 'poList'])->name('purchase-orders');
+        Route::get('/purchase-orders/{id}', [App\Http\Controllers\ServiceCentreController::class, 'poDetail'])->name('po-detail');
+        Route::get('/goods-receipt',        [App\Http\Controllers\ServiceCentreController::class, 'grn'])->name('goods-receipt');
+        Route::get('/goods-receipt/{id}',   [App\Http\Controllers\ServiceCentreController::class, 'grnDetail'])->name('grn-detail');
+        Route::get('/stock-transfer',       [App\Http\Controllers\ServiceCentreController::class, 'stockTransfer'])->name('stock-transfer');
+    });
+
+
 }); 
     

@@ -1,0 +1,17 @@
+
+body { background:#fff; }
+.chip-expired  { background:#fff0f0; color:#c0392b; border:1px solid #f5c6cb; }
+.chip-expiring { background:#fff8e1; color:#b7660a; border:1px solid #ffe082; }
+.chip-warning  { background:#fff3e0; color:#e65100; border:1px solid #ffcc80; }
+.chip-ok       { background:#eafaf1; color:#1a7f45; border:1px solid #b7e4c7; }
+.chip-grey     { background:#f4f4f4; color:#aaa;    border:1px solid #ddd; }
+.exp-chip { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+.stat-card { border-left:4px solid; border-radius:8px; padding:14px 18px; background:#fff; }
+.stat-card.red   { border-color:#c0392b; }
+.stat-card.amber { border-color:#e67e22; }
+.stat-card .num  { font-size:20px; font-weight:700; }
+.stat-card .lbl  { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:.5px; }
+.sc-table thead th { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#999; background:#fafafa; border-bottom:2px solid #eee; padding:9px 12px; }
+.sc-table tbody td { font-size:13px; padding:9px 12px; vertical-align:middle; }
+.sc-table tbody tr:hover { background:#f9faff; }
+

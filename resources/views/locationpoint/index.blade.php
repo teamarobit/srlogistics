@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/LocationPoint/index.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -185,6 +183,6 @@
 
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/locationpoint/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/LocationPoint/index.js')}}"></script>
 
 @endsection

@@ -4,48 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Handover & Guarantor Agreement - {{ $contact->organisation?->name ?? '' }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.3; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 850px; margin: auto; border: 1px solid #ccc; padding: 30px; }
-        
-        /* Header Section */
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 22px; text-transform: uppercase; }
-        .header p { margin: 5px 0; font-size: 11px; }
-        
-        h2 { font-size: 14px; text-transform: uppercase; background: #f2f2f2; padding: 5px 10px; border: 1px solid #333; margin-top: 15px; margin-bottom: 10px; }
-        
-        /* Form Grids */
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .field { margin-bottom: 6px; font-size: 12px; }
-        .label { font-weight: bold; }
-        .underline { border-bottom: 1px solid #000; display: inline-block; min-width: 180px; height: 14px; vertical-align: bottom; }
-
-        /* Terms Section */
-        .terms { font-size: 11px; text-align: justify; margin: 15px 0; }
-        .terms ol { padding-left: 20px; margin: 0; }
-        .terms li { margin-bottom: 4px; }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        table, th, td { border: 1px solid #333; }
-        th, td { padding: 6px; text-align: left; }
-        th { background-color: #f9f9f9; }
-
-        /* Driver Media Box */
-        .media-box { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .media-box td { width: 33.33%; height: 100px; text-align: center; vertical-align: top; padding: 5px; font-size: 10px; font-weight: bold; }
-        .stamp-area { border: 1px dashed #999; height: 80px; margin-top: 5px; }
-
-        /* Signatures */
-        .sig-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; font-size: 12px; }
-        .sig-line { border-top: 1px solid #000; padding-top: 5px; margin-top: 35px; font-weight: bold; }
-
-        @media print {
-            .container { border: none; padding: 0; }
-            .page-break { page-break-before: always; }
-        }
-    </style>
 </head>
 <body>
     

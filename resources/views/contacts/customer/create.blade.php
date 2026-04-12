@@ -2,21 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-p {  margin:0;  font-size: 13px; word-break: break-word; }
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-</style>
 
 @endsection
 

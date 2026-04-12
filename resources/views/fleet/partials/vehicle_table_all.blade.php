@@ -29,6 +29,7 @@
 
         <td class="text-center">
             <a href="{{ route('fleetdashboard.getVehicleDetails', $vehicle->id) }}" class="btn btn-sm-custom">View Details</a>
+            <a href="{{ route('fleetdashboard.getVehicleDetailsV2', $vehicle->id) }}" class="btn btn-sm-custom ms-1" style="background:#032671;color:#fff;" title="New Design Preview">V2</a>
         </td>
     </tr>
     @endforeach

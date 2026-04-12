@@ -2,13 +2,11 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-asset.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Assets/create.css') }}">
 
-<style>
 /*body { background-color: #fff; }*/
 /*.table thead tr th { padding: 8px 10px; }*/
 /*.table tbody td { padding: 8px 10px; }*/
-</style>
 
 @endsection
 
@@ -316,6 +314,6 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/asset/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/edit.js')}}"></script>
 
 @endsection

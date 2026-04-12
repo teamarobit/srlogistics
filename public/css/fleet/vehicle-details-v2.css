@@ -1,0 +1,651 @@
+
+/* ═══════════════════════════════════════════════════════
+   V2 DESIGN LAYER — layered on top of vehicle-details.css
+   Does not override any functional styles
+════════════════════════════════════════════════════════ */
+
+/* ── Version badge ── */
+.v2-version-bar {
+    background: linear-gradient(135deg, #032671 0%, #0a3d9e 100%);
+    padding: 6px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    border-bottom: 3px solid #f0a500;
+}
+.v2-version-bar .v2-badge {
+    background: #f0a500;
+    color: #032671;
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+.v2-version-bar a {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 2px 10px;
+    border-radius: 3px;
+    transition: all .2s;
+}
+.v2-version-bar a:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+
+/* ── Quick stats bar ── */
+.v2-statsbar {
+    background: #fff;
+    border-bottom: 1px solid #e4e7ef;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    box-shadow: 0 1px 4px rgba(3,38,113,0.06);
+}
+.v2-stat {
+    display: flex;
+    align-items: center;
+    padding: 4px 20px 4px 0;
+    margin-right: 20px;
+    border-right: 1px solid #e8eaf0;
+    gap: 10px;
+}
+.v2-stat:last-child { border-right: none; }
+.v2-stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f0f3fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #032671;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+.v2-stat-label { font-size: 10px; color: #9098b1; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; line-height: 1; }
+.v2-stat-value { font-size: 13px; color: #1a2340; font-weight: 700; line-height: 1.3; }
+.v2-stat-sub { font-size: 10px; color: #9098b1; }
+.v2-status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 4px;
+}
+.v2-status-dot.active { background: #28a745; box-shadow: 0 0 0 2px rgba(40,167,69,.2); }
+.v2-status-dot.inactive { background: #dc3545; }
+
+/* ── Tab bar — pill style ── */
+.vehicle-itemtab .nav-tabs.item-box {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 10px;
+    padding: 6px 8px;
+    gap: 2px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.06);
+}
+.vehicle-itemtab .nav-tabs.item-box::-webkit-scrollbar { display: none; }
+.vehicle-itemtab .nav-tabs.item-box .nav-link {
+    border: none !important;
+    border-radius: 7px !important;
+    padding: 7px 16px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #6b7a99 !important;
+    background: transparent !important;
+    transition: all .18s ease !important;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.vehicle-itemtab .nav-tabs.item-box .nav-link:hover {
+    background: #f0f3fb !important;
+    color: #032671 !important;
+}
+.vehicle-itemtab .nav-tabs.item-box .nav-link.active {
+    background: linear-gradient(135deg, #032671, #0a3d9e) !important;
+    color: #fff !important;
+    box-shadow: 0 3px 10px rgba(3,38,113,0.25) !important;
+}
+.vehicle-itemtab .nav-tabs.item-box .nav-link .icon {
+    opacity: .7;
+    transition: opacity .18s;
+}
+.vehicle-itemtab .nav-tabs.item-box .nav-link.active .icon { opacity: 1; }
+.vehicle-itemtab .nav-tabs.item-box .nav-link img {
+    filter: grayscale(0.6);
+    transition: filter .18s;
+}
+.vehicle-itemtab .nav-tabs.item-box .nav-link.active img { filter: brightness(0) invert(1); }
+
+/* ── Tab count badge ── */
+.v2-tab-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.25);
+    color: inherit;
+    padding: 0px 5px;
+    border-radius: 8px;
+    min-width: 18px;
+    text-align: center;
+}
+.nav-link:not(.active) .v2-tab-badge {
+    background: #e4e7ef;
+    color: #6b7a99;
+}
+
+/* ── Info cards (consistent field display) ── */
+.v2-card {
+    background: #fff;
+    border: 1px solid #e8eaf2;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(3,38,113,0.04);
+}
+.v2-card-header {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: #032671;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #f0f3fb;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.v2-field { margin-bottom: 14px; }
+.v2-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #9098b1;
+    margin-bottom: 3px;
+}
+.v2-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2340;
+}
+.v2-value.mono { font-family: 'Courier New', monospace; font-size: 12px; }
+.v2-value.muted { color: #9098b1; font-weight: 400; }
+
+/* ── EMI progress bar ── */
+.v2-emi-progress {
+    height: 6px;
+    border-radius: 3px;
+    background: #e8eaf2;
+    margin-top: 6px;
+    overflow: hidden;
+}
+.v2-emi-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #032671, #0a7e3f);
+    transition: width .5s ease;
+}
+
+/* ── Status chips ── */
+.v2-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: .3px;
+}
+.v2-chip.green  { background: #e6f4ea; color: #1a7a36; }
+.v2-chip.orange { background: #fff3e0; color: #c45a00; }
+.v2-chip.blue   { background: #e3ecff; color: #032671; }
+.v2-chip.red    { background: #fde8e8; color: #c0392b; }
+.v2-chip.grey   { background: #f0f2f7; color: #6b7a99; }
+
+/* ── Section dividers inside cards ── */
+.v2-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #032671;
+    border-left: 3px solid #032671;
+    padding-left: 8px;
+    margin: 18px 0 12px;
+}
+
+/* ── Table improvements ── */
+.v2-table { font-size: 12px; }
+.v2-table thead th {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #9098b1;
+    border-bottom: 2px solid #e8eaf2 !important;
+    padding: 8px 12px;
+    background: #f8f9fc;
+}
+.v2-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f2f7 !important;
+    vertical-align: middle;
+    color: #3a4260;
+}
+.v2-table tbody tr:hover td { background: #f8f9ff; }
+.v2-table tbody tr:last-child td { border-bottom: none !important; }
+
+/* ── Summary metric boxes (trip/fuel/expense totals) ── */
+.v2-metric {
+    background: #f8f9fc;
+    border: 1px solid #e8eaf2;
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.v2-metric-label { font-size: 10px; color: #9098b1; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+.v2-metric-value { font-size: 20px; font-weight: 800; color: #032671; margin: 4px 0 2px; }
+.v2-metric-sub { font-size: 11px; color: #9098b1; }
+
+/* ── Page breadcrumb / top action bar ── */
+.v2-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e4e7ef;
+    background: #fff;
+}
+.v2-topbar-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #032671;
+    margin: 0;
+}
+.v2-topbar-sub { font-size: 12px; color: #9098b1; margin-top: 1px; }
+
+/* ══════════════════════════════════════════════════════
+   V2 ACCORDION REDESIGN — Safe scoped overrides only
+   Does not touch grid, overflow, or Bootstrap internals
+══════════════════════════════════════════════════════ */
+
+/* Add spacing between accordion items */
+.vehicleinfo-sec .accordion-item {
+    margin-bottom: 10px !important;
+    border: 1px solid #dde2f0 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.05);
+}
+
+/* Important Dates card — override original purple bg with clean white */
+.vehicleinfo-wrap .vehicleinfo-sec .important_df {
+    background: #fff !important;
+    border: 1px solid #dde2f0 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.05);
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .accordion-header {
+    background: #f6f8fd !important;
+    border: none !important;
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: 1px solid #e4e8f2 !important;
+}
+
+/* Section header background */
+.vehicleinfo-sec .accordion-header.vehicleinfor_head {
+    background: #f6f8fd !important;
+    border-bottom: 1px solid #e4e8f2 !important;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Section title — keep existing display but upgrade font */
+.vehicleinfo-wrap .vehicleinfo-sec .titletext {
+    font-weight: 700 !important;
+    color: #032671 !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .sec_title {
+    font-weight: 700 !important;
+    color: #032671 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: .5px !important;
+}
+
+/* ── Table inside accordion body: clean field display ── */
+.vehicleinfo-sec .table-responsive02 .table tbody td {
+    padding: 13px 16px !important;
+    vertical-align: top !important;
+    border-right: 1px solid #f2f4fa !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-bottom: 1px solid #f2f4fa !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody td:last-child {
+    border-right: none !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Label — the <p> tag inside each cell */
+.vehicleinfo-sec .table-responsive02 .table tbody td > p {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #9098b1 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .4px !important;
+    margin-bottom: 5px !important;
+    line-height: 1.2 !important;
+}
+
+/* Value — the <span class="text-secondary"> tag inside cells */
+.vehicleinfo-sec .table-responsive02 .table tbody td > .text-secondary {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #1e2a45 !important;
+    line-height: 1.4;
+}
+
+/* Hover row highlight */
+.vehicleinfo-sec .table-responsive02 .table tbody tr:hover td {
+    background: #f8f9fd !important;
+}
+
+/* Important Dates table cells */
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .table td {
+    padding: 10px 14px !important;
+    border-right: 1px solid #f2f4fa !important;
+    border-bottom: 1px solid #f2f4fa !important;
+    vertical-align: top !important;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .table td p {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #9098b1 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .4px !important;
+    margin-bottom: 4px !important;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .table td span:not(.c_green):not(.c_yellow):not(.c_red) {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #1e2a45 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   V2 INTELLIGENCE HEADER — Professional redesign
+   Senior UI approach: clear hierarchy, white card identity,
+   subtle grid background, proper health indicators.
+══════════════════════════════════════════════════════ */
+
+.v2-statsbar                      { display: none !important; }
+.vehicledtl-bd .topbar-bd         { display: none !important; }
+
+/* ── Page wrapper background ── */
+.srlog-bdwrapper.v2-page {
+    background: #f0f3fa;
+}
+
+/* ── Header zone container ── */
+.v2-header-zone {
+    background: #fff;
+    border-bottom: 2px solid #e2e8f5;
+    box-shadow: 0 2px 12px rgba(3,38,113,0.06);
+}
+
+/* ═══════════════════════════════════════════════════
+   IDENTITY BAR — vehicle reg + driver + actions
+═══════════════════════════════════════════════════ */
+.v2-id-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 28px;
+    border-bottom: 1px solid #edf0f9;
+    flex-wrap: wrap;
+}
+
+/* Vehicle icon */
+.v2-id-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #032671 0%, #1a56db 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(3,38,113,0.28);
+}
+.v2-id-icon-wrap img {
+    width: 26px; height: 26px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+.v2-id-rc-dot {
+    position: absolute; bottom: -3px; right: -3px;
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid #fff;
+}
+.v2-id-rc-dot.ok  { background: #16a34a; }
+.v2-id-rc-dot.bad { background: #dc2626; }
+
+/* Vehicle number + subtitle */
+.v2-id-main { display: flex; flex-direction: column; gap: 3px; }
+.v2-id-vno {
+    font-size: 20px; font-weight: 900;
+    color: #0f1d3a; letter-spacing: .5px;
+    font-family: 'Courier New', monospace;
+    display: flex; align-items: center; gap: 10px;
+    line-height: 1;
+}
+.v2-id-sub {
+    font-size: 11.5px; color: #64748b; font-weight: 500;
+}
+.v2-id-status {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 9px; border-radius: 20px;
+    letter-spacing: .3px; display: inline-flex;
+    align-items: center; gap: 4px;
+    font-family: Inter, sans-serif;
+}
+.v2-id-status.active   { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.v2-id-status.inactive { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* Pipe separator */
+.v2-id-sep {
+    width: 1px; height: 32px;
+    background: #dde3f0; flex-shrink: 0;
+}
+
+/* Info field */
+.v2-id-field { display: flex; flex-direction: column; gap: 1px; min-width: 100px; }
+.v2-id-field-label {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .7px;
+    color: #94a3b8;
+}
+.v2-id-field-value {
+    font-size: 13px; font-weight: 600;
+    color: #1e293b; display: flex; align-items: center; gap: 5px;
+}
+.v2-id-field-sub { font-size: 11px; color: #64748b; }
+
+.v2-id-edit-link {
+    color: #94a3b8; font-size: 11px;
+    text-decoration: none; transition: color .15s;
+}
+.v2-id-edit-link:hover { color: #032671; }
+
+/* Right actions */
+.v2-id-actions {
+    margin-left: auto; display: flex; align-items: center;
+    gap: 8px; flex-shrink: 0;
+}
+.v2-id-tag-btn {
+    font-size: 11px; font-weight: 600; color: #475569;
+    border: 1px solid #cbd5e1; background: #f8fafc;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    transition: all .15s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+}
+.v2-id-tag-btn:hover { background: #e8ecf7; color: #032671; border-color: #93c5fd; }
+
+/* ═══════════════════════════════════════════════════
+   INTELLIGENCE GRID — 3-col health summary
+═══════════════════════════════════════════════════ */
+.v2-intel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px 28px 20px;
+    background: #f5f7fb;
+}
+
+.v2-intel-col {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px 14px;
+    border-top: 4px solid transparent;
+    box-shadow: 0 1px 6px rgba(15,23,42,0.05);
+    transition: box-shadow .2s;
+}
+.v2-intel-col:hover {
+    box-shadow: 0 4px 16px rgba(15,23,42,0.10);
+}
+
+/* Health top-border colours */
+.v2-intel-col.health-green  { border-top-color: #16a34a; }
+.v2-intel-col.health-amber  { border-top-color: #d97706; }
+.v2-intel-col.health-red    { border-top-color: #dc2626; }
+.v2-intel-col.health-grey   { border-top-color: #94a3b8; }
+
+.v2-intel-col-title {
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .8px;
+    color: #1e40af; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Each label:value row */
+.v2-intel-row {
+    display: flex; align-items: baseline;
+    justify-content: space-between;
+    padding: 5px 0; gap: 8px;
+    border-bottom: 1px solid #f8fafc;
+}
+.v2-intel-row:last-of-type { border-bottom: none; }
+
+.v2-intel-lbl {
+    font-size: 11.5px; font-weight: 500;
+    color: #64748b; flex-shrink: 0; white-space: nowrap;
+}
+.v2-intel-val {
+    font-size: 12px; font-weight: 700;
+    color: #1e293b; text-align: right; line-height: 1.3;
+}
+.v2-intel-val.ok     { color: #15803d; }
+.v2-intel-val.warn   { color: #b45309; }
+.v2-intel-val.danger { color: #b91c1c; }
+.v2-intel-val-sub {
+    font-size: 10px; color: #94a3b8;
+    font-weight: 400; display: block;
+}
+
+.v2-intel-divider {
+    border: none; border-top: 1px solid #f1f5f9;
+    margin: 12px 0 10px;
+}
+.v2-intel-action {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; color: #1e40af;
+    border: 1px solid #bfdbfe; background: #eff6ff;
+    padding: 6px 14px; border-radius: 6px;
+    cursor: pointer; text-decoration: none; transition: all .15s;
+}
+.v2-intel-action:hover {
+    background: #1d4ed8; color: #fff;
+    border-color: #1d4ed8; text-decoration: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   ACCORDION — slightly darker, more contrast
+═══════════════════════════════════════════════════ */
+.vehicleinfo-sec .accordion-item {
+    margin-bottom: 10px !important;
+    border: 1px solid #c8d0e7 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.06);
+    overflow: visible !important;
+}
+.vehicleinfo-sec .accordion-header.vehicleinfor_head {
+    background: #eaeff8 !important;
+    border-bottom: 1px solid #c8d0e7 !important;
+    border-radius: 10px 10px 0 0;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df {
+    background: #fff !important;
+    border: 1px solid #c8d0e7 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.06);
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .accordion-header {
+    background: #eaeff8 !important;
+    border-bottom: 1px solid #c8d0e7 !important;
+    border-radius: 10px 10px 0 0 !important;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .titletext {
+    font-weight: 700 !important; color: #1e3a8a !important;
+    font-size: 12px !important; text-transform: uppercase; letter-spacing: .5px;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .sec_title {
+    font-weight: 700 !important; color: #1e3a8a !important;
+    font-size: 12px !important; text-transform: uppercase !important; letter-spacing: .5px !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody td {
+    padding: 13px 16px !important;
+    vertical-align: top !important;
+    border-right: 1px solid #e8ecf5 !important;
+    border-bottom: 1px solid #e8ecf5 !important;
+    border-top: none !important; border-left: none !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody td:last-child { border-right: none !important; }
+.vehicleinfo-sec .table-responsive02 .table tbody tr:last-child td { border-bottom: none !important; }
+.vehicleinfo-sec .table-responsive02 .table tbody td > p {
+    font-size: 10px !important; font-weight: 700 !important;
+    color: #64748b !important; text-transform: uppercase !important;
+    letter-spacing: .4px !important; margin-bottom: 5px !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody td > .text-secondary {
+    font-size: 13px !important; font-weight: 600 !important; color: #1e293b !important;
+}
+.vehicleinfo-sec .table-responsive02 .table tbody tr:hover td { background: #f8faff !important; }
+
+@media (max-width: 960px) {
+    .v2-intel-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+}
+@media (max-width: 600px) {
+    .v2-intel-grid { grid-template-columns: 1fr; padding: 12px 16px; }
+    .v2-id-bar { padding: 12px 16px; gap: 12px; }
+    .v2-id-sep { display: none; }
+    .v2-id-actions { width: 100%; justify-content: flex-end; margin-top: 8px; }
+}
+
+

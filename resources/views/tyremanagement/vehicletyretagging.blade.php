@@ -2,7 +2,7 @@
 
 @section('css')
     
-    <link rel="stylesheet" href="{{ asset('css/tyremanagement/vehicletyretagging.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Tyre/tagging.css') }}">
     
 @endsection
 
@@ -49,6 +49,7 @@
                         <div class="col-12 col-md-9">
                             <h6>Mounted Tyre</h6>
                             @forelse($vehicle->vehicletyremappings as $vehicletyremapping)
+                                @if(!$vehicletyremapping->tyreposition) @continue @endif
                                 <div id="{{ $vehicletyremapping->tyreposition->code }}" class="card mt-4 mandtory_tyre_positions">
                                     <input type="hidden" value="{{ $vehicletyremapping->tyreposition->id }}">
                                     <h6>Tyre Details - {{ $vehicletyremapping->tyreposition->code }} <span class="text-danger" style="font-size: 14px">*</span></h6>
@@ -210,7 +211,7 @@
 </script>
 
 <script type="text/javascript" src="{{ asset('arobittyre_management/fleet-tyre.js') }}"></script>
-<script type="text/javascript" src="{{ asset('customjs/tyremanagement/vehicletyretagging.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyremanagement/vehicletyretagging.js') }}"></script>
 
 
 @endsection

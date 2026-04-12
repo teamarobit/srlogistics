@@ -1,0 +1,38 @@
+/* ============================================================
+   SC — On-Road Service Page
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+.sc-stat-red { border-left: 4px solid #EA0027; background: #fff0f2; }
+.sc-stat-red .sc-stat-icon { color: #EA0027; }
+
+.sc-reg-badge {
+    background: #f0f2f8; color: #032671; font-weight: 600; font-size: 12px;
+    padding: 2px 7px; border-radius: 4px;
+}
+
+/* Critical row highlight */
+.sc-row-critical td { background: #fff8f0; }
+
+/* Type badges */
+.sc-type-own   { background: #032671; color: #fff; font-size: 11px; }
+.sc-type-third { background: #6f42c1; color: #fff; font-size: 11px; }
+
+/* Status badges */
+.sc-ors-dispatched  { background: #E65100; color: #fff; font-size: 11px; }
+.sc-ors-thirdparty  { background: #6f42c1; color: #fff; font-size: 11px; }
+.sc-ors-enroute     { background: #0097a7; color: #fff; font-size: 11px; }
+.sc-ors-resolved    { background: #10863f; color: #fff; font-size: 11px; }
+.sc-ors-open        { background: #EA0027; color: #fff; font-size: 11px; }
+
+.sc-location-link { color: #032671; font-size: 13px; }
+.sc-location-link:hover { color: #EA0027; }
+
+.sc-row-actions { display: flex; gap: 4px; justify-content: center; }
+.sc-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 5px;
+    border: 1px solid #dee2e6; background: #fff;
+    color: #485D6B; font-size: 14px; cursor: pointer; transition: all .15s;
+}
+.sc-action-btn:hover { background: #f0f2f8; color: #032671; border-color: #032671; }

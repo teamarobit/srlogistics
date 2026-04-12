@@ -1,0 +1,21 @@
+.item_016btn { display: flex; align-items: center; justify-content: end; }
+
+.w-90 { width: 90%; }
+.e-activitywrapper .bg-circlesec {
+    width: 30px; height: 30px; border-radius: 100%; display: inline-flex;
+    align-items: center; justify-content: center; color: #fff; font-size: 10px;
+    font-weight: 600; padding: 0 !important;
+}
+
+/*dropzone*/
+.dropzone { border: 2px dashed #dbdee0; padding: 20px; background: #fff; min-height: 120px; }
+
+/* Specialisation chips */
+.spec-check-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.spec-chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 13px;
+    border: 1px solid #ddd; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all .15s; user-select: none;
+}
+.spec-chip input[type=checkbox] { display: none; }
+.spec-chip.selected { background: #1a4fa0; color: #fff; border-color: #1a4fa0; }

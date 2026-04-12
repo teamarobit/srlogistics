@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{-- asset('css/vehicle-type-list.css') --}}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Status/index.css?v=1.0') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -176,7 +174,7 @@
 var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/status/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Status/index.js')}}"></script>
 
 @endsection
 

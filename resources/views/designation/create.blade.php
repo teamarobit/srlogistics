@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-vehicle-type.css') }}">
+<link rel="stylesheet" href="{{ asset('css/HR/designation-create.css') }}">
 
-<style>
-
-</style>
 
 @endsection
 

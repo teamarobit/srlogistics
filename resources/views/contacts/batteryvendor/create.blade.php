@@ -3,38 +3,9 @@
 @section('css')
 
 
-<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/BatteryVendor/create.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-.item_016btn {    display: flex;    align-items: center;    justify-content: end;}
-.item_blacklisted {    margin: 0 10px 0 150px;    padding: 11px 12px 5px 12px;    display: inline-block;    text-align: center;
-background: #fff;    box-shadow: 0px 0px 8px 0px rgb(143 143 143 / 50%);    border-radius: 4px;    margin-right: auto;
-position: relative;    top:-43px; }
-
-.item_blacklisted p { margin: 0;padding: 0;font-size: 20px;line-height: 14px;color: #ea0027;display: block;border: 0;font-weight: bold;}
-.item_blacklisted span {    margin: 0;    padding: 3px 0 0 0;    font-size: 13px;    line-height: 21px;    color: #f9526e;    display: block;
-font-weight: 600; }
-
-
-.w-90 { width: 90%; }
-.e-activitywrapper .bg-circlesec {    width: 30px;    height: 30px;    border-radius: 100%;    display: inline-flex;
-align-items: center;    justify-content: center;    color: #fff;    font-size: 10px;    font-weight: 600;    padding: 0 !important; }
-.blacklist_color .c_red {    color: #ea0027 !important;}
-
-
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-
-
-</style>
 
 @endsection
 

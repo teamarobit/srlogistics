@@ -1,0 +1,96 @@
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+.input-group>.form-control{
+    padding: 5px 15px;
+    height: 30px !important;
+    min-height: 30px !important;
+}
+
+.input-group-text {
+    border-color: #e9eaed;
+    height: 30px !important;
+    color: #000 !important;
+    font-weight: 500;
+    font-size: 12px;
+    background: #e9eaed;
+    color: #fff;
+}
+
+.btn-secondary{
+    background: #e9eaed;
+    border-color: #e9eaed;
+    padding: .55rem .75rem;
+}
+
+
+
+
+/*add-remove01btn*/
+
+.add-remove01btn {	margin: 0;	padding: 10px 0 0 0; display: flex; align-items: center; justify-content: end; }
+
+.add-remove01btn span {	padding: 4px 14px !important;	color: #fff;	border-radius: 5px;
+	font-size: 12px;	line-height: 15px;	cursor: pointer; }
+	
+.add-remove01btn .addfield { margin:0 7px 0 0; padding:0; }
+.add-remove01btn .removefield { margin:0; padding:0; }
+
+
+
+/*add-remove01btn*/
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
