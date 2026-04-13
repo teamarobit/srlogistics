@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Handover & Guarantor Agreement - {{ $contact->organisation?->name ?? '' }}</title>
+    <link rel="stylesheet" href="{{ asset('css/Contacts/Driver/joining-letter.css') }}">
+    <style>
+        .print-btn { margin-bottom: 16px; }
+        @media print { .print-btn { display: none; } }
+    </style>
 </head>
 <body>
     
@@ -13,7 +18,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>{{ $contact->organisation?->name ?? '' }} ({{ $contact->organisation?->short_name ?? '' }})</h1> 
+            <h1>{{ $contact->organisation?->name ?? '' }}{{ $contact->organisation?->short_name ? ' (' . $contact->organisation->short_name . ')' : '' }}</h1>
             <p>{{ $contact->organisation?->address ?? '' }}</p> 
             <h3 style="margin: 10px 0 0 0; font-size: 16px;">DRIVER RESPONSIBILITY, VEHICLE HANDOVER & GUARANTOR AGREEMENT</h3> 
         </div>
