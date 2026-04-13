@@ -22,15 +22,15 @@ return new class extends Migration
         });
 
         // 2 — Insert spare vendor cotype if not already present
-        $exists = DB::table('cotypes')->where('slug', 'sparevendor')->exists();
-        if (!$exists) {
-            DB::table('cotypes')->insert([
-                'name'       => 'Spare Part Vendor',
-                'slug'       => 'sparevendor',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
+        // $exists = DB::table('cotypes')->where('slug', 'sparevendor')->exists();
+        // if (!$exists) {
+        //     DB::table('cotypes')->insert([
+        //         'name'       => 'Spare Part Vendor',
+        //         'slug'       => 'sparevendor',
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]);
+        // }
     }
 
     public function down(): void
@@ -39,6 +39,6 @@ return new class extends Migration
             $table->dropColumn('specialisation');
         });
 
-        DB::table('cotypes')->where('slug', 'sparevendor')->delete();
+        // DB::table('cotypes')->where('slug', 'sparevendor')->delete();
     }
 };

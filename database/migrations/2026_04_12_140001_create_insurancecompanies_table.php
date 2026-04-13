@@ -14,7 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('insurancecompanies', function (Blueprint $table) {
-            $table->bigInteger('id', true);
+            $table->id();
+            // $table->bigInteger('id', true);
             $table->string('name');
             $table->string('code', 50)->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');

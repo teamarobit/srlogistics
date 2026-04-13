@@ -6733,7 +6733,6 @@ class ContactController extends Controller
         $coattachtypes = Coattachtype::all();       
         $cotype        = $cotypes->firstWhere('id', self::CONTACT_TYPE_DRIVER);
         
-        
         $lastDriver = Contact::where('cotype_id',self::CONTACT_TYPE_DRIVER)->orderBy('id','desc')->first();
         if ($lastDriver) {
             $newNumber = $lastDriver->id + 1;
@@ -12606,38 +12605,67 @@ class ContactController extends Controller
             return response()->json(['success' => false, 'data' => $validator->errors()], 422);
         }
 
-        $cotype = Cotype::where('slug', 'insuranceprovider')->first();
+        $contact = NULL;
+        try{
+            DB::transaction(function() use ($request, &$contact){
+                $lastcontact = Contact::withTrashed()->orderBy('id', 'DESC')->first();
+                if($lastcontact){
+                    $lastcontactno = $lastcontact->contactno;
+                    $incr_lastcontact = $lastcontactno+1;
+                    if(strlen($incr_lastcontact)<5){
+                        $contactno = '0';
+                        for($i = 0; $i<(5-strlen($incr_lastcontact)); $i++){
+                            $contactno .= '0';
+                        }
+                        $contactno .= $incr_lastcontact;
+                    } else {
+                        $contactno = $incr_lastcontact;
+                    }
+                    
+                } else {
+                    $contactno = '000001';
+                }
+                
+                $phoneCode = getPhoneCode();
 
-        $contact = new Contact();
-        $contact->cotype_id      = self::CONTACT_TYPE_INSURANCE_PROVIDER;
-        $contact->company_name   = $request->company_name;
-        $contact->contact_name   = $request->contact_name;
-        $contact->contact_code   = $request->contact_code;
-        $contact->phone          = $request->phone;
-        $contact->ph_prefix      = $request->phone_code ?? getPhoneCode();
-        $contact->whatsapp       = $request->whatsapp;
-        $contact->email          = $request->email;
-        $contact->address        = $request->address;
-        $contact->country_id     = $request->country_id;
-        $contact->state_id       = $request->state_id;
-        $contact->city_id        = $request->city_id;
-        $contact->pincode        = $request->pincode;
-        $contact->gst_number     = $request->gst_number;
-        $contact->pan_number     = $request->pan_number;
-        $contact->tds_percentage = $request->tds_percentage ?? 0;
-        $contact->status         = $request->status ?? 'Active';
-        $contact->contact_comment = $request->contact_comment;
-        $contact->created_by     = Auth::id();
+                $cotype = Cotype::where('slug', 'insuranceprovider')->first();
 
-        if ($request->hasFile('contact_image') && $request->file('contact_image')->isValid()) {
-            $uploadPath = public_path('media/contact');
-            if (!\File::exists($uploadPath)) { \File::makeDirectory($uploadPath, 0755, true); }
-            $filename = 'ip_' . time() . '_' . uniqid() . '.' . $request->file('contact_image')->getClientOriginalExtension();
-            $request->file('contact_image')->move($uploadPath, $filename);
-            $contact->contact_image = $filename;
+                $contact = new Contact();
+                $contact->contactno      = $contactno;
+                $contact->cotype_id      = self::CONTACT_TYPE_INSURANCE_PROVIDER;
+                $contact->company_name   = $request->company_name;
+                $contact->contact_name   = $request->contact_name;
+                $contact->contact_code   = $request->contact_code;
+                $contact->phone          = $request->phone;
+                $contact->ph_prefix      = $request->phone_code ?? getPhoneCode();
+                $contact->whatsapp       = $request->whatsapp;
+                $contact->email          = $request->email;
+                $contact->address1       = $request->address;
+                $contact->country_id     = $request->country_id;
+                $contact->state_id       = $request->state_id;
+                $contact->city_id        = $request->city_id;
+                $contact->zipcode        = $request->pincode;
+                $contact->gst_number     = $request->gst_number;
+                $contact->pan_no         = $request->pan_number;
+                $contact->tds_percentage = $request->tds_percentage ?? 0;
+                $contact->status         = $request->status ?? 'Active';
+                $contact->comment = $request->contact_comment;
+                $contact->created_by     = Auth::id();
+
+                if ($request->hasFile('contact_image') && $request->file('contact_image')->isValid()) {
+                    $uploadPath = public_path('media/contact');
+                    if (!\File::exists($uploadPath)) { \File::makeDirectory($uploadPath, 0755, true); }
+                    $filename = 'ip_' . time() . '_' . uniqid() . '.' . $request->file('contact_image')->getClientOriginalExtension();
+                    $request->file('contact_image')->move($uploadPath, $filename);
+                    $contact->contact_image = $filename;
+                }
+
+                $contact->save();
+            });
+        }catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        $contact->save();
+        
 
         return response()->json([
             'success' => true,

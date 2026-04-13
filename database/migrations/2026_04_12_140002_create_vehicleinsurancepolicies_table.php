@@ -39,7 +39,7 @@ return new class extends Migration
             $table->softDeletes();
 
             // vehiclebasicinfos uses bigInteger PK — must use matching signed type
-            $table->foreign('vehicle_id')->references('id')->on('vehiclebasicinfos')->cascadeOnDelete();
+            $table->foreign('vehicle_id')->references('id')->on('vehicles')->cascadeOnDelete();
             $table->foreign('insurancecompany_id')->references('id')->on('insurancecompanies')->nullOnDelete();
             $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
             $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();

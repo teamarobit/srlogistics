@@ -11,19 +11,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $exists = DB::table('cotypes')->where('slug', 'insuranceprovider')->exists();
-        if (!$exists) {
-            DB::table('cotypes')->insert([
-                'name'       => 'Insurance Provider',
-                'slug'       => 'insuranceprovider',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
+        // $exists = DB::table('cotypes')->where('slug', 'insuranceprovider')->exists();
+        // if (!$exists) {
+        //     DB::table('cotypes')->insert([
+        //         'name'       => 'Insurance Provider',
+        //         'slug'       => 'insuranceprovider',
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ]);
+        // }
     }
 
     public function down(): void
     {
-        DB::table('cotypes')->where('slug', 'insuranceprovider')->delete();
+        // DB::table('cotypes')->where('slug', 'insuranceprovider')->delete();
     }
 };
