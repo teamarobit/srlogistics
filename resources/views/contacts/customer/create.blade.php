@@ -1337,19 +1337,6 @@
     
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
     
-    console.log("UPLOAD_URL:", window.UPLOAD_URL); 
-    
-    $(document).ready(function(){
-        
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){
-                $(this).addClass('has-val');
-            }
-        });
-        
-        $('.select2').select2();
-        
-    });
 
 </script>
 

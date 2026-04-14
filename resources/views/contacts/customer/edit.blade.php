@@ -2129,27 +2129,6 @@
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
-<script>
-$('#contract-pricing').on('shown.bs.modal', function () {
-    $(this).find('.select2').select2({
-        dropdownParent: $('#contract-pricing'),
-        width: '100%'
-    });
-    $('.if-loading').click(function(){
-        $('.loading-wrap').show();
-        $('.unloading-wrap').hide();
-    })
-    $('.if-unloading').click(function(){
-        $('.unloading-wrap').show();
-        $('.loading-wrap').hide();
-    })
-});
-$(document).ready(function() {
-    $('.select2-modal').select2({
-        dropdownParent: $('#vehAllocation') // or any other element within the modal
-    });
-});
-</script>
 
 @endsection
 

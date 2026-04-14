@@ -582,12 +582,6 @@
 
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
 
-    $(document).ready(function(){
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){ $(this).addClass('has-val'); }
-        });
-        $('.select2').select2();
-    });
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>

@@ -1886,7 +1886,7 @@
 
 <script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('js/Contacts/Employee/index.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ asset('js/Contacts/Employee/create.js') }}"></script> -->
 
 @endsection
 

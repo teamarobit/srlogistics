@@ -25,7 +25,7 @@
                 <div class="item1-cbdhed">
                     <div class="row align-items-end">
 
-                        <div class="col-12 col-md-8 item_016btn">
+                        <div class="col-12 text-end item_016btn">
 
                             @if($contact->status === 'Blacklisted' && $contact->blacklisted_at)
                             <div class="item_blacklisted">
@@ -762,12 +762,6 @@
 
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
 
-    $(document).ready(function(){
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){ $(this).addClass('has-val'); }
-        });
-        $('.select2').select2();
-    });
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>

@@ -2275,22 +2275,6 @@
     
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
     
-    
-    
-    $(document).ready(function(){
-        
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){
-                $(this).addClass('has-val');
-            }
-        });
-        
-        $('.select2').select2();
-        
-        $('[data-toggle="tooltip"]').tooltip();
-        
-    });
-    
 
 </script>
 
@@ -2300,7 +2284,7 @@
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('js/Contacts/Employee/index.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ asset('js/Contacts/Employee/index.js') }}"></script> -->
 
 
 @endsection

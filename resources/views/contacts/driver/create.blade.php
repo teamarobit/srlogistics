@@ -1578,29 +1578,13 @@
     
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
     
-    //console.log("UPLOAD_URL:", window.UPLOAD_URL); 
-    
-
-    
-    $(document).ready(function(){
-        
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){
-                $(this).addClass('has-val');
-            }
-        });
-        
-        $('.select2').select2();
-        
-    });
-
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 
 @endsection
 

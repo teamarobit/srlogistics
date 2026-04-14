@@ -182,7 +182,7 @@
 var RTOS = "{{ route('rto.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/RTO/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/rto/create.js')}}"></script>
 
 @endsection
 

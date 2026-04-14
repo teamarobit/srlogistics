@@ -122,7 +122,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{asset('js/Vehicle/Status/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/status/create.js')}}"></script>
 
 @endsection
 

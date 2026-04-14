@@ -4,42 +4,6 @@
 
 <link rel="stylesheet" href="{{ asset('css/Vehicle/Tracking/create.css') }}">
 
-    .loading-wrap{
-        display: none;
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    .unloading-wrap{
-        display: none;
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    .rate-wrap{
-        display: none;
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    .toll-wrap{
-        display: none;
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    .tax-wrap{
-        display: none;
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-
 @endsection
 
 @section('content')
@@ -150,7 +114,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{asset('js/Vehicle/Tracking/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/tracking/edit.js')}}"></script>
 
 @endsection
 
