@@ -1071,7 +1071,7 @@ class ContactController extends Controller
                 
                 $lastcontact = Contact::withTrashed()->orderBy('id', 'DESC')->first();
                 if($lastcontact){
-                    $lastcontactno = $lastcontact->contactno;
+                    $lastcontactno = (int) $lastcontact->contactno;
                     $incr_lastcontact = $lastcontactno+1;
                     if(strlen($incr_lastcontact)<5){
                         $contactno = '0';
