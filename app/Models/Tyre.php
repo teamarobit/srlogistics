@@ -43,7 +43,12 @@ class Tyre extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
-    
+
+    public function maintenanceSchedules()
+    {
+        return $this->hasMany(TyreMaintenanceSchedule::class, 'tyre_id');
+    }
+
     // public function updatedBy()
     // {
     //     return $this->belongsTo(User::class, 'updated_by');

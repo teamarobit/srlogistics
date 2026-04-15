@@ -1,0 +1,52 @@
+
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+.rental-wrap{
+    display: none;
+}
+
+body{
+    color: red;
+}
+
+
+
+.loading-wrap{
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.unloading-wrap{
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.rate-wrap{
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.toll-wrap{
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.tax-wrap{
+    display: none;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}

@@ -1,26 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-    
-<link rel="stylesheet" href="{{ asset('css/fleet-dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/dashboard-table.css') }}">
-<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">
-
-<style>
-    .bg-empty{
-        background-color: #bccb2d;
-    }
-    .prev-wrap{
-        width: 120px;
-        height: 130px;
-        display: flex !important;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        align-items: center;
-        justify-content: center;
-    }
-</style>
-
+<link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/index.css') }}">
 @endsection
 
 @section('content')
@@ -214,7 +196,6 @@
                 <!---->
                 <div class="itemfuelfleet">
                     <div class="row">
-                        
                         <div class="col-12">
                             <div class="itemsec">
                                 <p>Fleet Status</p>
@@ -602,7 +583,7 @@
                                                     <!--<td><span class="value">This vehicle is ready for operation</span></td>-->
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -627,7 +608,7 @@
                                                     <!--<td><span class="value">This vehicle is ready for operation</span></td>-->
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -805,7 +786,7 @@
                                                     <td><span class="value">Anuj Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -833,7 +814,7 @@
                                                     <td><span class="value">Suresh Dhar</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1012,7 +993,7 @@
                                                     <td><span class="value">Anuj Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1184,7 +1165,7 @@
                                                     <td><span class="value">Anuj Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1214,7 +1195,7 @@
                                                     <td><span class="value">Mishin Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1389,7 +1370,7 @@
                                                     <td><span class="value">Anuj Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1411,7 +1392,7 @@
                                                     <td><span class="value">Ankur Maheta</span></td>
             
                                                     <td class="text-center">
-                                                        <a href="vehicle-details.php" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
                                                     </td>
                                                 </tr>
@@ -1597,8 +1578,8 @@ let BATTERY_EXCEL   = "{{ asset('sample_excels/Battery.xlsx') }}";
 </script>
 
 
-<script type="text/javascript" src="{{ asset('customjs/fleet/index.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet-dashboard.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/index.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/dashboard.js?v=1.0') }}"></script>
 
 
 @endsection

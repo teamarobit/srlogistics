@@ -1,0 +1,93 @@
+/* ============================================================
+   SC — Technician Dashboard
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* Kanban lanes */
+.sc-kanban-lane {
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 300px;
+}
+.sc-kanban-available { background: #f0fbf4; border: 1px solid #c3e6cb; }
+.sc-kanban-working   { background: #fff8f2; border: 1px solid #ffd6b0; }
+.sc-kanban-break     { background: #f8f9fa; border: 1px solid #dee2e6; }
+
+.sc-kanban-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #323130;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+.sc-kanban-count {
+    margin-left: auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    color: #485D6B;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 1px 9px;
+}
+.sc-kanban-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sc-dot-green { background: #10863f; }
+.sc-dot-amber { background: #E65100; }
+.sc-dot-grey  { background: #6c757d; }
+
+/* Tech cards inside kanban */
+.sc-tech-card {
+    background: #fff;
+    border: 1px solid #e8eaf0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+.sc-tech-card-muted { opacity: 0.7; }
+
+/* Tech avatar small */
+.sc-tech-avatar-sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+/* Status badges */
+.sc-avail-badge { background: #10863f; color: #fff; font-size: 10px; }
+.sc-wip-badge   { background: #E65100; color: #fff; font-size: 10px; }
+.sc-break-badge { background: #6c757d; color: #fff; font-size: 10px; }
+
+/* Tech stats line */
+.sc-tech-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #485D6B;
+}
+
+/* Current job highlight box */
+.sc-current-job-box {
+    background: #f0f2f8;
+    border-left: 3px solid #032671;
+    border-radius: 0 6px 6px 0;
+    padding: 8px 10px;
+    margin-top: 6px;
+}
+
+/* Job timer */
+.sc-job-timer {
+    font-size: 11px;
+    color: #E65100;
+    font-weight: 600;
+}

@@ -2,62 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-customer.css') }}">
-<link rel="stylesheet" href="{{ asset('css/add-srlbranch-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
+<link rel="stylesheet" href="{{  }}">
 
-<style>
-.loading-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.unloading-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.rate-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.toll-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.tax-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.not-clickable {
-    pointer-events: none;      
-    background-color: #f2f2f2; 
-    cursor: not-allowed;
-}
-.added-routes{
-    display: none;
-}
-
-.input-group-text {
-    border-color: #e9eaed;
-    background: #e9eaed;
-    color: #000;
-}
-
-</style>
 
 @endsection
 

@@ -1,0 +1,119 @@
+/* ============================================================
+   SC — External Service Centre (shared across all 4 ext pages)
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* External SC type badges */
+.sc-ext-brand   { background: #e3ecff; color: #032671; font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; display:inline-block; }
+.sc-ext-third   { background: #f3e5f5; color: #7b1fa2; font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; display:inline-block; }
+.sc-ext-warranty{ background: #e6f4ea; color: #10863f; font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; display:inline-block; }
+
+/* Dispatch status */
+.sc-dsp-dispatched  { background: #e3ecff; color: #032671; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-dsp-diagnosing  { background: #fff3e0; color: #E65100; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-dsp-repairing   { background: #f3e5f5; color: #7b1fa2; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-dsp-ready       { background: #e0f7fa; color: #006064; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-dsp-returned    { background: #e6f4ea; color: #10863f; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-dsp-cancelled   { background: #f0f2f8; color: #6c757d; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+
+/* External billing */
+.sc-ext-bill-pending { background: #fff3e0; color: #E65100; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-ext-bill-paid    { background: #e6f4ea; color: #10863f; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-ext-bill-dispute { background: #fdecea; color: #EA0027; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+.sc-ext-bill-warranty{ background: #e0f7fa; color: #006064; font-size:11px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; }
+
+/* Tracker Kanban */
+.sc-ext-kanban {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    overflow-x: auto;
+}
+@media (max-width: 992px) {
+    .sc-ext-kanban { grid-template-columns: repeat(3, 1fr); }
+}
+.sc-ext-lane {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 160px;
+}
+.sc-ext-lane-head {
+    font-size: 11px; font-weight: 700;
+    color: #6c757d; text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.sc-ext-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+.sc-ext-card-reg { font-weight: 700; color: #032671; font-size: 12px; }
+.sc-ext-card-sc  { color: #6c757d; font-size: 11px; margin-top: 2px; }
+.sc-ext-card-days{ font-size: 11px; color: #adb5bd; margin-top: 4px; }
+
+/* Days overdue indicator */
+.sc-tat-ok      { color: #10863f; font-weight: 600; font-size: 12px; }
+.sc-tat-warning { color: #E65100; font-weight: 600; font-size: 12px; }
+.sc-tat-overdue { color: #EA0027; font-weight: 600; font-size: 12px; }
+
+/* Section label (Return page) */
+.sc-ext-section-label {
+    font-size: 11px; font-weight: 700; color: #6c757d;
+    text-transform: uppercase; letter-spacing: 0.8px;
+}
+
+/* Ready-to-collect card */
+.sc-ext-return-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color .15s, box-shadow .15s;
+}
+.sc-ext-return-card:hover {
+    border-color: #032671;
+    box-shadow: 0 2px 10px rgba(3,38,113,.07);
+}
+.sc-ext-return-meta {
+    display: flex; flex-direction: column; gap: 2px;
+    font-size: 12px; color: #6c757d; margin-top: 6px;
+}
+.sc-ext-return-meta i { color: #adb5bd; }
+
+/* Return summary strip inside modal */
+.sc-ext-return-summary {
+    background: #f8f9fc;
+    border: 1px solid #e4e7ef;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+/* Checklist grid */
+.sc-ext-chk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+@media (max-width: 576px) {
+    .sc-ext-chk-grid { grid-template-columns: 1fr; }
+}
+.sc-ext-chk-item {
+    background: #f8f9fc;
+    border: 1px solid #e4e7ef;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+/* Invoice summary strip */
+.sc-ext-inv-summary {
+    background: #f8f9fc;
+    border: 1px solid #e4e7ef;
+    border-radius: 6px;
+    padding: 12px 14px;
+}

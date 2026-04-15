@@ -1,0 +1,74 @@
+/* ============================================================
+   sc-appointment.css  — Appointment page styles
+   ============================================================ */
+
+/* Date strip calendar */
+.cal-strip {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.cal-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 54px;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+}
+.cal-day:hover       { border-color: #032671; background: #f0f4ff; }
+.cal-day.active      { background: #032671; border-color: #032671; color: #fff; }
+.cal-day.off-day     { opacity: .45; cursor: default; }
+.cal-day .cd-dow     { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.cal-day .cd-date    { font-size: 18px; font-weight: 800; line-height: 1.1; }
+.cal-day .cd-month   { font-size: 9px; opacity: .7; }
+.cal-day .cd-count   { font-size: 9px; margin-top: 3px; font-weight: 600; }
+.cal-day.active .cd-count { color: rgba(255,255,255,.8); }
+
+/* Appointment type chip */
+.appt-type-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.appt-type-chip.routine   { background: #e3ecff; color: #032671; }
+.appt-type-chip.breakdown { background: #fdecea; color: #ea0027; }
+.appt-type-chip.tyre      { background: #f3e5f5; color: #7b1fa2; }
+.appt-type-chip.battery   { background: #e0f7fa; color: #006064; }
+.appt-type-chip.accident  { background: #fff3e0; color: #e65100; }
+.appt-type-chip.pm        { background: #e6f4ea; color: #10863f; }
+
+/* Slot picker card */
+.slot-pick-card {
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+    user-select: none;
+}
+.slot-pick-card:hover         { border-color: #032671; background: #f0f4ff; }
+.slot-pick-card.selected      { border-color: #032671; background: #e3ecff; color: #032671; font-weight: 600; }
+.slot-pick-card.slot-full     { background: #f5f5f5; color: #aaa; cursor: not-allowed; border-color: #e8eaed; }
+
+/* Advance load row (technician assignment) */
+.adv-load-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.adv-load-row:last-child { border-bottom: none; }
+.adv-load-bar-wrap { flex: 1; height: 6px; background: #e8eaed; border-radius: 3px; overflow: hidden; }
+.adv-load-bar      { height: 100%; border-radius: 3px; background: #032671; }

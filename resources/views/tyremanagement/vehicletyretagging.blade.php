@@ -2,7 +2,7 @@
 
 @section('css')
     
-    <link rel="stylesheet" href="{{ asset('css/tyremanagement/vehicletyretagging.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Tyre/tagging.css') }}">
     
 @endsection
 
@@ -49,6 +49,7 @@
                         <div class="col-12 col-md-9">
                             <h6>Mounted Tyre</h6>
                             @forelse($vehicle->vehicletyremappings as $vehicletyremapping)
+                                @if(!$vehicletyremapping->tyreposition) @continue @endif
                                 <div id="{{ $vehicletyremapping->tyreposition->code }}" class="card mt-4 mandtory_tyre_positions">
                                     <input type="hidden" value="{{ $vehicletyremapping->tyreposition->id }}">
                                     <h6>Tyre Details - {{ $vehicletyremapping->tyreposition->code }} <span class="text-danger" style="font-size: 14px">*</span></h6>
@@ -77,7 +78,7 @@
                                                 <!--    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addTyre"><i class="uil uil-pen"></i></a>-->
                                                 <!--    <a href="javascript:void(0)" class="text-danger ms-1"><i class="uil uil-trash-alt"></i></a>-->
                                                 <!--</div>-->
-                                                <a href="tyre-action.php" class="btn btn-success p-3">Take Action</a>
+                                                <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}" class="btn btn-success p-3">Take Action</a>
                                             </div>
                                         </div>
                                     @else
@@ -116,7 +117,8 @@
                                             <!--    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addTyre"><i class="uil uil-pen"></i></a>-->
                                             <!--    <a href="javascript:void(0)" class="text-danger ms-1"><i class="uil uil-trash-alt"></i></a>-->
                                             <!--</div>-->
-                                            <a href="tyre-action.php" class="btn btn-success p-3">Take Action</a>
+                                            {{-- TODO: href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}" once backend is wired --}}
+<a href="javascript:void(0)" class="btn btn-success p-3">Take Action</a>
                                             <div class="icon-wrap">
                                                 <a href="javascript:void(0)" class="text-danger"><i class="uil uil-trash-alt"></i></a>
                                             </div>
@@ -210,7 +212,7 @@
 </script>
 
 <script type="text/javascript" src="{{ asset('arobittyre_management/fleet-tyre.js') }}"></script>
-<script type="text/javascript" src="{{ asset('customjs/tyremanagement/vehicletyretagging.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyremanagement/vehicletyretagging.js') }}"></script>
 
 
 @endsection

@@ -2,15 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/employe-list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Driver/index.css') }}">
 
-<style>
-body{
-    background-color: #fff;
-}
-.table thead tr th { padding: 8px 15px; }
-.table tbody td {  padding: 8px 15px; }
-</style>
 
 @endsection
 

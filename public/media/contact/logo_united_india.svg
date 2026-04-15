@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="16" fill="#003087"/>
+  <polygon points="60,22 75,50 60,78 45,50" fill="none" stroke="#FFC72C" stroke-width="3"/>
+  <polygon points="60,30 70,50 60,70 50,50" fill="#FFC72C" fill-opacity=".3"/>
+  <circle cx="60" cy="50" r="8" fill="#FFC72C"/>
+  <text x="60" y="95" font-family="Arial,sans-serif" font-size="9.5" font-weight="700" fill="#FFC72C" text-anchor="middle" letter-spacing="0.5">UNITED INDIA</text>
+  <text x="60" y="108" font-family="Arial,sans-serif" font-size="8" font-weight="600" fill="#fff" text-anchor="middle">INSURANCE</text>
+</svg>

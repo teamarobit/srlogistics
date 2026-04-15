@@ -1,0 +1,48 @@
+/* ============================================================
+   SC — Workshop Billing Page
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* Invoice number */
+.text-navy { color: #032671 !important; }
+
+/* Bill status badges */
+.sc-bill-paid      { background: #10863f; color: #fff; font-size: 11px; }
+.sc-bill-generated { background: #032671; color: #fff; font-size: 11px; }
+.sc-bill-draft     { background: #6c757d; color: #fff; font-size: 11px; }
+.sc-bill-cancelled { background: #EA0027; color: #fff; font-size: 11px; }
+
+/* Green button */
+.sc-btn-green {
+    background: #10863f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+}
+.sc-btn-green:hover { background: #0d7234; color: #fff; }
+
+/* Subtotal footer row */
+.sc-subtotal-row td {
+    background: #f8f9fc;
+    font-size: 13px;
+}
+
+/* Row action buttons (reuse from job-card-list) */
+.sc-row-actions { display: flex; gap: 4px; justify-content: center; }
+.sc-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 5px;
+    border: 1px solid #dee2e6; background: #fff;
+    color: #485D6B; font-size: 14px; cursor: pointer; transition: all .15s;
+    text-decoration: none;
+}
+.sc-action-btn:hover { background: #f0f2f8; color: #032671; border-color: #032671; }
+.sc-action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Reg badge */
+.sc-reg-badge {
+    background: #f0f2f8; color: #032671; font-weight: 600; font-size: 12px;
+    padding: 2px 7px; border-radius: 4px;
+}
+.sc-jc-link { color: #032671; font-weight: 600; font-size: 13px; text-decoration: none; }
+.sc-jc-link:hover { text-decoration: underline; }

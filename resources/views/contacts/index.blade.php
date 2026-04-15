@@ -1,11 +1,6 @@
 @extends('layouts.app')
 
 @section('css')
-<style>
-    body{
-        background-color: #fff;
-    }
-</style>
 @endsection
 
 @section('content')
@@ -126,5 +121,5 @@
     @endif
     
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/index.js') }}"></script>
 @endsection

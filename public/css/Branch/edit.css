@@ -1,0 +1,61 @@
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+.rental-wrap{
+    display: none;
+}
+
+body{
+    color: red;
+}
+
+
+.rental-wrap{
+    display: none;
+}
+.own-wrap{
+    display: none;
+}
+.iti{
+    width: 100%;
+}
+.form-control.is-invalid {
+     margin-bottom: 0;
+}
+
+.remove-file-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+.remove-file-btn i {
+    font-size: 12px;
+    line-height: 1;
+}
+
+
+
+/**/
+
+
+
+
+

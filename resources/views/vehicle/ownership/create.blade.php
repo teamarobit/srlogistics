@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-ownership.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Ownership/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -108,20 +106,7 @@
 
 @section('js')
 
-<script>
-var LISTING = "{{ route('vehicleownership.index') }}";
-
-$(document).ready(function(){
-    $('.add-vs').click(function(){
-        $('.added-vs-sec').show();
-    })
-    $('.dell-vs').click(function(){
-        $('.added-vs-sec').hide();
-    })
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Ownership/create.js')}}"></script>
 
 @endsection
 

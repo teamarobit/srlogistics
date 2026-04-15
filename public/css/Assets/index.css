@@ -1,0 +1,81 @@
+
+/*--start-css--*/
+.rag-status-wrap input{
+    display: none;
+}
+.rag-status-wrap label{
+    padding: 0px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    min-width: 70px;
+    text-align: center;
+}
+.rag-status-wrap .red-wrap input:checked + label {
+    border-color: #dc4c64;
+    background-color: #dc4c64;
+    color: #fff;
+}
+.rag-status-wrap .yellow-wrap input:checked + label {
+    border-color: #e4a11b;
+    background-color: #e4a11b;
+    color: #fff;
+}
+.rag-status-wrap .green-wrap input:checked + label {
+    border-color: #14a44d;
+    background-color: #14a44d;
+    color: #fff;
+}
+.rag-status-wrap .form-check{
+    padding: 0;
+}
+
+.status-wrap .active input:checked:after{
+    background-color: #14a44d !important;
+}
+.status-wrap .inactive input:checked:after{
+    background-color: #032671 !important;
+}
+.status-wrap .active .form-check-input[type=radio]:checked {
+    border-color: #14a44d !important;
+}
+.status-wrap .inactive .form-check-input[type=radio]:checked {
+    border-color: #032671 !important;
+}
+
+/**/
+
+.motor_vehicle,.electronics {    display: none;    padding: 15px;    margin-top: 10px;   }
+.main-wrap .add-assetbd {    margin: 0 15px;    padding: 30px 50px;   border-radius: 6px; }
+
+/*motorveh_electsec*/
+
+.motorveh_electsec { }
+.motorveh_electsec .form-check-label { font-size: 15px; }
+
+/*motorveh_electsec*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Assets index table styles ── */
+.table thead tr th { padding: 8px 10px; }
+.table tbody td    { padding: 8px 10px; }

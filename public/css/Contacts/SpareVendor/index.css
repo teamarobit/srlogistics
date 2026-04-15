@@ -1,0 +1,5 @@
+body { background:#fff; }
+.sc-table thead th { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#999; background:#fafafa; border-bottom:2px solid #eee; padding:10px 12px; }
+.sc-table tbody td { font-size:13px; padding:10px 12px; vertical-align:middle; }
+.sc-table tbody tr:hover { background:#f9faff; }
+.badge { border-radius:5px; }

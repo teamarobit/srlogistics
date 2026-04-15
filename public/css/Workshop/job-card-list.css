@@ -1,0 +1,138 @@
+/* ============================================================
+   SC — Job Card List Page
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* JC Number link */
+.sc-jc-link {
+    color: #032671;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.sc-jc-link:hover { text-decoration: underline; }
+
+/* SR Number (display-only) */
+.sc-sr-link {
+    color: #485D6B;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Vehicle cell — reg badge + model stacked cleanly */
+.sc-veh-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Vehicle reg badge */
+.sc-reg-badge {
+    display: inline-block;
+    background: #eef1fb;
+    color: #032671;
+    font-weight: 700;
+    font-size: 11.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border: 1px solid #d0d8f0;
+    width: fit-content;
+}
+
+/* Vehicle model name below badge */
+.sc-veh-model {
+    font-size: 11px;
+    color: #6c757d;
+    white-space: nowrap;
+    padding-left: 1px;
+}
+
+/* Started At — compact date + time sub-line */
+.sc-date-cell {
+    font-size: 12px;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.sc-time-sub {
+    font-size: 11px;
+    color: #9aA3ad;
+}
+
+/* Type badges */
+.sc-badge-workshop {
+    background: #032671;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+}
+.sc-badge-onroad {
+    background: #E65100;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Status badges */
+.sc-status-open        { background: #032671; color: #fff; font-size: 11px; }
+.sc-status-inprogress  { background: #E65100; color: #fff; font-size: 11px; }
+.sc-status-pendingparts{ background: #EA0027; color: #fff; font-size: 11px; }
+.sc-status-qc          { background: #6f42c1; color: #fff; font-size: 11px; }
+.sc-status-completed   { background: #10863f; color: #fff; font-size: 11px; }
+.sc-status-billed      { background: #6c757d; color: #fff; font-size: 11px; }
+
+/* Billed row — slightly muted */
+.sc-row-billed td { opacity: 0.75; }
+
+/* Row action buttons */
+.sc-row-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+.sc-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    color: #485D6B;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+    text-decoration: none;
+}
+.sc-action-btn:hover {
+    background: #f0f2f8;
+    color: #032671;
+    border-color: #032671;
+}
+.sc-action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.sc-action-btn-danger:hover {
+    background: #fff0f0;
+    color: #EA0027;
+    border-color: #EA0027;
+}
+
+/* Sortable column header */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+th.sortable:hover { color: #032671; }
+
+/* Pagination active */
+.page-item.active .page-link {
+    background-color: #032671;
+    border-color: #032671;
+}
+.page-link { color: #032671; }

@@ -1,0 +1,70 @@
+/* ============================================================
+   SC — PM Calendar / Preventive Maintenance
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* PM Status badges */
+.sc-pm-overdue  { background: #fdecea; color: #EA0027; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 10px; display: inline-block; }
+.sc-pm-due      { background: #fff3e0; color: #E65100; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 10px; display: inline-block; }
+.sc-pm-upcoming { background: #e3ecff; color: #032671; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 10px; display: inline-block; }
+.sc-pm-done     { background: #e6f4ea; color: #10863f; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 10px; display: inline-block; }
+
+/* KM progress bar */
+.sc-km-bar-wrap {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    width: 100%;
+    min-width: 80px;
+}
+.sc-km-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .3s;
+}
+.sc-km-bar-ok      { background: #10863f; }
+.sc-km-bar-warning { background: #E65100; }
+.sc-km-bar-danger  { background: #EA0027; }
+
+/* Service type chip */
+.sc-svc-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.sc-svc-oil       { background: #fff8e1; color: #f57f17; }
+.sc-svc-tyre      { background: #f3e5f5; color: #7b1fa2; }
+.sc-svc-brake     { background: #fdecea; color: #EA0027; }
+.sc-svc-pm        { background: #e6f4ea; color: #10863f; }
+.sc-svc-filter    { background: #e0f7fa; color: #006064; }
+.sc-svc-battery   { background: #e8f5e9; color: #2e7d32; }
+.sc-svc-alignment { background: #e3ecff; color: #032671; }
+.sc-svc-other     { background: #f0f2f8; color: #485D6B; }
+
+/* Row highlight */
+.sc-row-pm-overdue td { background: #fff5f5 !important; }
+.sc-row-pm-due td     { background: #fffaf5 !important; }
+
+/* Log PM modal — service type grid */
+.sc-svc-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.sc-svc-type-btn {
+    padding: 8px 6px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    background: #f8f9fa;
+    color: #485D6B;
+}
+.sc-svc-type-btn:hover,
+.sc-svc-type-btn.selected { border-color: #032671; background: #e3ecff; color: #032671; }

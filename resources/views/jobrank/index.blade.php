@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/HR/jobrank-index.css') }}">
 
-<style>
-body{ background-color: #fff; }
-</style>
 
 @endsection
 

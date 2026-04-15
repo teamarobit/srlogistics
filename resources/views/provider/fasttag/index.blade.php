@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/department.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/fasttag-index.css') }}">
 
-<style>
-body{ background-color: #fff; }
-</style>
 
 @endsection
 
@@ -154,5 +151,5 @@ body{ background-color: #fff; }
     
    
 </script>
-<script type="text/javascript" src="{{ asset('customjs/provider/fasttag/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/provider/fasttag/index.js') }}"></script>
 @endsection

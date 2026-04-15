@@ -3,8 +3,8 @@
 @section('css')
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/tyre/edit.css') }}">
-<!--<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">-->
+<link rel="stylesheet" href="{{ asset('css/Tyre/edit.css') }}">
+<!--<link rel="stylesheet" href="{{ asset('css/Tyre/edit.css') }}">-->
 
 @endsection
 
@@ -254,7 +254,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{asset('customjs/tyre/edit.js')}}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{asset('customjs/tyre/edit.js')}}"></script>
 
 @endsection
 

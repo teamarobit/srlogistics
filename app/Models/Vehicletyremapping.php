@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Vehicletyremapping extends Model
 {
     use SoftDeletes;
-    
+
     protected $guarded = [];
     
     public function vehicletyremappinglogs()
@@ -16,7 +16,13 @@ class Vehicletyremapping extends Model
         return $this->hasMany(Vehicletyremappinglog::class);
     }
     
-    public function tyreposition(){
+    public function tyre()
+    {
+        return $this->belongsTo(Tyre::class);
+    }
+
+    public function tyreposition()
+    {
         return $this->belongsTo(Tyreposition::class);
     }
 

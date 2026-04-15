@@ -57,7 +57,99 @@ function initDropzone(id) {
     dropzones.push({ id, dz });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    
+    const yesRadio = document.getElementById("legalcase_yes");
+    const noRadio = document.getElementById("legalcase_no");
+    const caseBox = document.querySelector(".opencase_01desc");
 
+    yesRadio.addEventListener("change", function () {
+        if (this.checked) {
+            caseBox.style.display = "block";
+        }
+    });
+
+    noRadio.addEventListener("change", function () {
+        if (this.checked) {
+            caseBox.style.display = "none";
+        }
+    });
+    
+    // new Choices('#multiSelect', {
+    //     removeItemButton: true,
+    // });
+        
+        
+        
+        
+
+    /* =========================
+     Provident Fund Toggle
+     ========================= */
+    document.querySelectorAll('input[name="providentFund"]').forEach((radio) => {
+        radio.addEventListener("change", function () {
+            const pfField = document.getElementById("pf_number_field");
+            pfField.style.display = (this.value === "yes") ? "flex" : "none";
+        });
+    });
+
+    
+});
+
+
+
+
+/* =========================
+   Image Upload (jQuery)
+   ========================= */
+ImgUpload();
+
+function ImgUpload() {
+  var imgWrap = "";
+  var imgArray = [];
+
+  $('.upload__inputfile').each(function () {
+    $(this).on('change', function (e) {
+      imgWrap = $(this).closest('.upload__box').find('.upload__img-wrap');
+      var maxLength = $(this).attr('data-max_length');
+
+      var filesArr = Array.prototype.slice.call(e.target.files);
+
+      filesArr.forEach(function (f) {
+        if (!f.type.match('image.*')) return;
+        if (imgArray.length >= maxLength) return;
+
+        imgArray.push(f);
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var html =
+            "<div class='upload__img-box'>" +
+              "<div style='background-image: url(" + e.target.result + ")' " +
+              "data-file='" + f.name + "' class='img-bg'>" +
+                "<div class='upload__img-close'></div>" +
+              "</div>" +
+            "</div>";
+          imgWrap.append(html);
+        };
+        reader.readAsDataURL(f);
+      });
+    });
+  });
+
+  $('body').on('click', '.upload__img-close', function () {
+    var file = $(this).parent().data('file');
+    imgArray = imgArray.filter(img => img.name !== file);
+    $(this).closest('.upload__img-box').remove();
+  });
+}
+
+$('#assettypeModal').on('shown.bs.modal', function () {
+    $(this).find('.select2').select2({
+        dropdownParent: $('#assettypeModal'),
+        width: '100%'
+    });
+});
 
 // ADD ATTACHMENT
 $('#add_attachment_btn').on('click', function () {
@@ -132,7 +224,44 @@ $(document).ready(function(){
     
     console.log("Initializing dropzone...");
     initDropzone(0);
+
+    $('.add-person').click(function(){
+        $('.added-person').show();
+    });
+
+    $('#filebtn').click(function(){
+        $('#fileInput').click();
+    });
+
+    $('.close-sec').click(function(){
+        $('.added-person').hide();
+    });
+
+    // Address add/remove
+    $('.add-address').click(function(){
+        $('.added-sec').show();
+    });
+
+    $('.close-address').click(function(){
+        $('.added-sec').hide();
+    });
+
+    // Checkbox add/remove class
+    $('.clickto-adclass').change(function(){
+        if ($(this).is(':checked')) {
+            $('.days-beforeexpiry').addClass('active');
+        } else {
+            $('.days-beforeexpiry').removeClass('active');
+        }
+    });
+
+    $('.table .form-control').each(function(index, value) {
+        if($(this).val().length){
+            $(this).addClass('has-val');
+        }
+    });
     
+    $('.select2').select2();    
     
     setupDependentSelect('.dependent-select', 'Choose city');
     
@@ -488,8 +617,8 @@ $(document).ready(function(){
         errorBox.addClass('d-none').text('');
 
         if (!dob) {
-            errorBox.text('Date of birth is required').removeClass('d-none');
-            return false;
+            $('#age').val('');
+            return; // DOB is optional
         }
 
         let dobDate = new Date(dob);
@@ -499,23 +628,25 @@ $(document).ready(function(){
         if (dobDate > today) {
             errorBox.text('Date of birth cannot be a future date').removeClass('d-none');
             $(this).val('');
+            $('#age').val('');
             return false;
         }
 
         // Age calculation
         let age = today.getFullYear() - dobDate.getFullYear();
         let monthDiff = today.getMonth() - dobDate.getMonth();
-        
-        $('#age').val(age);
 
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
             age--;
         }
 
+        $('#age').val(age + ' years');
+
         // Minimum age validation
         if (age < 18) {
             errorBox.text('Age must be at least 18 years').removeClass('d-none');
             $(this).val('');
+            $('#age').val('');
             return false;
         }
     });
@@ -668,7 +799,7 @@ $(document).ready(function(){
             url         : $(this).attr('action'),
             processData : false, // Don't process the files
             contentType : false, // Set content type to false as jQuery will tell the server its a query string request
-            dataType    : 'application/json',
+            dataType    : 'json',
             success     : function(response){
                 if (response.success === true) {
                     Toast.fire({

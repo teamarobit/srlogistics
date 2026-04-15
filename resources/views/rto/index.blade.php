@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/RTO/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -191,7 +189,7 @@
 var DELETE_RTO  = "{{route('rto.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/rto/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/RTO/index.js')}}"></script>
 
 @endsection
 

@@ -1,0 +1,73 @@
+/* ── Spare Part Categories Master Page ──────────── */
+body { background: #fff; }
+
+/* ── Page header ── */
+.sp-page-head {
+    padding: 14px 20px 0;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.sp-page-title { font-size: 16px; font-weight: 800; color: #032671; }
+
+/* ── Filter bar ── */
+.sp-filter {
+    padding: 12px 20px; background: #f8f9fc;
+    border-top: 1px solid #edf0f9; border-bottom: 1px solid #edf0f9;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px;
+}
+.sp-filter .form-control,
+.sp-filter .form-select { font-size: 12px; height: 34px; border-color: #dde4f5; }
+
+/* ── Table wrapper ── */
+.sp-table-wrap { padding: 16px 20px 30px; }
+.sp-table-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+    overflow: hidden; box-shadow: 0 1px 4px rgba(15,23,42,.05);
+}
+
+/* ── Table ── */
+.sp-table { width: 100%; border-collapse: collapse; }
+.sp-table thead tr { background: #f8f9fc; border-bottom: 2px solid #e2e8f0; }
+.sp-table thead th {
+    font-size: 11px; font-weight: 700; color: #64748b;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: 10px 14px; white-space: nowrap; vertical-align: middle;
+}
+.sp-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .1s; }
+.sp-table tbody tr:hover { background: #fafbfe; }
+.sp-table tbody td { padding: 10px 14px; vertical-align: middle; font-size: 12px; color: #475569; }
+.sp-table tbody tr:last-child { border-bottom: none; }
+
+/* ── Name cell ── */
+.sp-cat-name  { font-size: 13px; font-weight: 600; color: #1e293b; }
+.sp-cat-code  { font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700; color: #032671; }
+.sp-cat-desc  { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+/* ── Status badge ── */
+.sp-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+.sp-badge.active   { background: #dcfce7; color: #15803d; }
+.sp-badge.inactive { background: #fef3c7; color: #92400e; }
+
+/* ── Action buttons ── */
+.sp-actions { display: flex; gap: 5px; justify-content: flex-end; }
+.sp-action-btn {
+    width: 28px; height: 28px; border-radius: 6px;
+    border: 1px solid #e2e8f0; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #64748b; cursor: pointer; font-size: 14px; text-decoration: none;
+    transition: all .15s;
+}
+.sp-action-btn:hover            { background: #eef0f8; color: #032671; border-color: #c7d2fe; }
+.sp-action-btn.danger:hover     { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+.sp-action-btn.activate:hover   { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+
+/* ── Empty state ── */
+.sp-empty { text-align: center; padding: 40px; color: #94a3b8; }
+.sp-empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: .4; }
+
+/* ── Modal ── */
+.sp-modal .modal-header { background: #f8f9fc; border-bottom: 1px solid #e2e8f0; }
+.sp-modal .modal-title  { font-size: 14px; font-weight: 700; color: #032671; }
+.sp-modal .form-label   { font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 3px; }
+
+/* ── Toast ── */
+#spToast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; min-width: 280px; }

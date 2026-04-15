@@ -2,7 +2,7 @@
     <h4 class="text-theme text-center sidebar-title">Master Data</h4>
     <div class="search-wrap mt-3">
         <i class="uil uil-search search-icon"></i>
-        <input type="text" class="form-control ms-auto" placeholder="Search" />
+        <input type="text" class="form-control ms-auto" id="sidebarSearch" placeholder="Search" autocomplete="off" />
     </div>
 
     <div class="accordion mt-3" id="accordionExample">
@@ -17,7 +17,7 @@
                             @foreach(allcotypes() as $menucotype)
                                 @php
                                     $name = $menucotype->name;
-                                
+
                                     if (preg_match('/^(.+)\s\((.+)\)$/', $name, $matches)) {
                                         $plural = str($matches[1])->plural() . ' (' . str($matches[2])->plural() . ')';
                                     } else {
@@ -26,10 +26,12 @@
                                 @endphp
 
                                 <p style="background-color: #a2ffe0;"><a href="{{ route('contact.'.$menucotype->slug . '.index') }}" style="color: #261f35; font-size: 13px;">{{ $plural }}</a></p>
-                                
+
                             @endforeach
                         @endif
                     @endif
+
+                    {{-- Spare Part Vendors are already included via allcotypes() loop above --}}
                 </div>
             </div>
         </div>
@@ -106,9 +108,9 @@
                     <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking Master</a></p>
                     @endif
                       
-                    {{-- @if(Route::has('vehicleownership.index')) 
+                    @if(Route::has('vehicleownership.index')) 
                     <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type</a></p>
-                    @endif --}}
+                    @endif
                 
                 </div>
             </div>
@@ -145,22 +147,43 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="serviceH">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#serviceM" aria-expanded="false" aria-controls="serviceM">
-                    <i class="uil uil-building me-2"></i> Service Center Master
+                    <i class="uil uil-store me-2"></i> Workshop Master
                 </button>
             </h2>
-    
+
             <div id="serviceM" class="accordion-collapse collapse show" aria-labelledby="serviceH" >
                 <div class="accordion-body">
-                    <p><a href="service-center.php" style="color: #261f35; font-size: 13px;">Service Center</a></p>
-                    
+                    @if(Route::has('ws.master.workshops'))
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('ws.master.workshops') }}" style="color: #261f35; font-size: 13px;">Workshops</a></p>
+                    @endif
+
                     @if(Route::has('skillset.index'))
                     <p style="background-color: #a2ffe0;"><a href="{{ route('skillset.index') }}" style="color: #261f35; font-size: 13px;">Skill Set</a></p>
                     @endif
-                    
-                    <p><a href="services.php" style="color: #261f35; font-size: 13px;">Services</a></p>
-                    <p><a href="service-key-points.php" style="color: #261f35; font-size: 13px;">Service Key Points</a></p>
-                    <p><a href="spare-parts.php" style="color: #261f35; font-size: 13px;">Spare Parts</a></p>
-                    <p><a href="maintenance-list.php" style="color: #261f35; font-size: 13px;">Maintenance Items</a></p>
+
+                    @if(Route::has('ws.master.services'))
+                    <p><a href="{{ route('ws.master.services') }}" style="color: #261f35; font-size: 13px;">Services</a></p>
+                    @endif
+
+                    @if(Route::has('ws.master.service-key-points'))
+                    <p><a href="{{ route('ws.master.service-key-points') }}" style="color: #261f35; font-size: 13px;">Service Key Points</a></p>
+                    @endif
+
+                    @if(Route::has('ws.master.spare-parts'))
+                    <p><a href="{{ route('ws.master.spare-parts') }}" style="color: #261f35; font-size: 13px;">Spare Parts</a></p>
+                    @endif
+
+                    @if(Route::has('ws.master.spare-part-categories'))
+                    <p><a href="{{ route('ws.master.spare-part-categories') }}" style="color: #261f35; font-size: 13px;">Spare Part Categories</a></p>
+                    @endif
+
+                    @if(Route::has('ws.master.maintenance-items'))
+                    <p><a href="{{ route('ws.master.maintenance-items') }}" style="color: #261f35; font-size: 13px;">Maintenance Items</a></p>
+                    @endif
+
+                    @if(Route::has('ws.master.fault-codes'))
+                    <p><a href="{{ route('ws.master.fault-codes') }}" style="color: #261f35; font-size: 13px;">Fault / Complaint Codes</a></p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -296,12 +319,64 @@
         </div>
         
     </div>
-    
-    
-    
-    
-    
+
 </div>
+
+<script>
+/* ── Sidebar search (vanilla JS — runs before jQuery loads) ── */
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('sidebarSearch');
+    if (!input) return;
+
+    input.addEventListener('input', function () {
+        var q = this.value.toLowerCase().trim();
+        var accordion = document.getElementById('accordionExample');
+        if (!accordion) return;
+
+        var items = accordion.querySelectorAll('.accordion-item');
+
+        if (!q) {
+            items.forEach(function (item) {
+                item.style.display = '';
+                item.querySelectorAll('.accordion-body p').forEach(function (p) { p.style.display = ''; });
+                var panel = item.querySelector('.accordion-collapse');
+                if (panel) panel.classList.add('show');
+                var btn = item.querySelector('.accordion-button');
+                if (btn) { btn.classList.remove('collapsed'); btn.setAttribute('aria-expanded', 'true'); }
+            });
+            return;
+        }
+
+        items.forEach(function (item) {
+            var links      = item.querySelectorAll('.accordion-body p');
+            var headerEl   = item.querySelector('.accordion-header');
+            var headerText = headerEl ? headerEl.textContent.toLowerCase() : '';
+            var anyMatch   = false;
+
+            links.forEach(function (p) {
+                var match = p.textContent.toLowerCase().indexOf(q) !== -1;
+                p.style.display = match ? '' : 'none';
+                if (match) anyMatch = true;
+            });
+
+            /* if section header matches, show all its children */
+            if (headerText.indexOf(q) !== -1) {
+                links.forEach(function (p) { p.style.display = ''; });
+                anyMatch = true;
+            }
+
+            item.style.display = anyMatch ? '' : 'none';
+
+            if (anyMatch) {
+                var panel = item.querySelector('.accordion-collapse');
+                if (panel) panel.classList.add('show');
+                var btn = item.querySelector('.accordion-button');
+                if (btn) { btn.classList.remove('collapsed'); btn.setAttribute('aria-expanded', 'true'); }
+            }
+        });
+    });
+});
+</script>
 
 
 

@@ -2,11 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-vehicle-type.css') }}">
-
-<style>
-
-</style>
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Type/create.css') }}">
 
 @endsection
 
@@ -169,20 +165,7 @@
 
 @section('js')
 
-<script>
-var VEHILE_TYPES = "{{ route('vehicletype.index') }}";
-
-$(document).ready(function(){
-    $('.add-vs').click(function(){
-        $('.added-vs-sec').show();
-    })
-    $('.dell-vs').click(function(){
-        $('.added-vs-sec').hide();
-    })
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/type/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Type/create.js')}}"></script>
 
 @endsection
 

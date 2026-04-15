@@ -1,0 +1,308 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Driver Dashboard  —  driver-dashboard.css
+   Full-width operations page (no left sidebar)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────── */
+.fdr-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 70px 24px 32px;
+    background: #f8fafc;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* ── Page header ───────────────────────────────────────────────────────── */
+.fdr-page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.fdr-page-title {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    font-family: Inter, sans-serif;
+}
+.fdr-page-sub {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 2px;
+    font-family: Inter, sans-serif;
+}
+
+/* ── Stat cards ────────────────────────────────────────────────────────── */
+.fdr-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.fdr-stat-card {
+    flex: 1 1 100px;
+    min-width: 110px;
+    max-width: 180px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-decoration: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+    border-left: 4px solid #cbd5e1;
+}
+.fdr-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.fdr-stat-card.all        { border-left-color: #032671; }
+.fdr-stat-card.active     { border-left-color: #16a34a; }
+.fdr-stat-card.inactive   { border-left-color: #94a3b8; }
+.fdr-stat-card.blacklisted{ border-left-color: #dc2626; }
+.fdr-stat-card.onleave    { border-left-color: #f59e0b; }
+
+.fdr-stat-lbl {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+    font-family: Inter, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+.fdr-stat-num {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    font-family: Inter, sans-serif;
+    line-height: 1.2;
+    margin-top: 4px;
+}
+.fdr-stat-card.all         .fdr-stat-num { color: #032671; }
+.fdr-stat-card.active      .fdr-stat-num { color: #16a34a; }
+.fdr-stat-card.blacklisted .fdr-stat-num { color: #dc2626; }
+.fdr-stat-card.onleave     .fdr-stat-num { color: #f59e0b; }
+
+/* ── Filter bar ────────────────────────────────────────────────────────── */
+.fdr-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+.fdr-filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+.fdr-filter .form-control,
+.fdr-filter .form-select {
+    font-size: 12px;
+    height: 34px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+.fdr-filter .form-control:focus,
+.fdr-filter .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 3px rgba(3,38,113,.08);
+    outline: none;
+}
+
+/* ── Table wrapper ─────────────────────────────────────────────────────── */
+.fdr-table-wrap {
+    background: transparent;
+}
+.fdr-table-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* ── Driver table ──────────────────────────────────────────────────────── */
+.fdr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+}
+.fdr-table thead tr {
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+}
+.fdr-table thead th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+}
+.fdr-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.12s;
+}
+.fdr-table tbody tr:last-child { border-bottom: none; }
+.fdr-table tbody tr:hover { background: #f8fafc; }
+.fdr-table tbody td {
+    padding: 10px 14px;
+    vertical-align: middle;
+    color: #334155;
+}
+
+/* ── Driver name cell ──────────────────────────────────────────────────── */
+.fdr-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.fdr-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #e0e7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fdr-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.fdr-avatar-initials {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    line-height: 1;
+}
+.fdr-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    text-decoration: none;
+    display: block;
+    line-height: 1.3;
+}
+.fdr-name:hover { color: #032671; text-decoration: underline; }
+.fdr-phone {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* ── Category chip ─────────────────────────────────────────────────────── */
+.cat-chip {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.cat-chip.line  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.cat-chip.local { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+/* ── Licence expiry badges ─────────────────────────────────────────────── */
+.lic-ok     { color: #16a34a; font-size: 12px; font-weight: 600; }
+.lic-warn   { color: #d97706; font-size: 12px; font-weight: 600; }
+.lic-danger { color: #dc2626; font-size: 12px; font-weight: 600; }
+.lic-none   { color: #94a3b8; font-size: 12px; }
+
+/* ── RAG badge ─────────────────────────────────────────────────────────── */
+.rag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.rag-green  { background: #dcfce7; color: #166534; }
+.rag-yellow { background: #fef9c3; color: #854d0e; }
+.rag-red    { background: #fee2e2; color: #991b1b; }
+.rag-grey   { background: #f1f5f9; color: #64748b; }
+
+/* ── Driver status badge ───────────────────────────────────────────────── */
+.drv-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.drv-status.active      { background: #dcfce7; color: #166534; }
+.drv-status.inactive    { background: #f1f5f9; color: #64748b; }
+.drv-status.blacklisted { background: #fee2e2; color: #991b1b; }
+.drv-status.on-leave    { background: #fef9c3; color: #854d0e; }
+
+/* ── Action buttons ────────────────────────────────────────────────────── */
+.fdr-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.fdr-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.12s, color 0.12s;
+}
+.fdr-action-btn:hover {
+    background: #032671;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────── */
+.fdr-empty {
+    text-align: center;
+    padding: 64px 24px;
+    color: #94a3b8;
+}
+.fdr-empty i {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+    color: #cbd5e1;
+}
+.fdr-empty p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+.fdr-empty span {
+    font-size: 13px;
+    color: #94a3b8;
+}

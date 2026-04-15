@@ -2,27 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-vehicle.css') }}">
-<link rel="stylesheet" href="{{ asset('css/vehicle-details.css') }}">
-
-<style>
-.table-hover tbody > tr:hover > * {
-    background-color: #f4fbff !important;
-}
-.table tbody tr th {
-    background-color: #f7f7fe;
-    width: auto;
-    min-width: 170px;
-    font-size: 13px;
-}
-.addroute-bd{
-    padding: 30px 0 !important;
-}
-.col-12.col-md-9.d-flex{
-    flex-wrap: wrap;
-    gap: 10px;
-}
-</style>
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Management/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
 
 @endsection
 
@@ -305,18 +286,7 @@
 
 @section('js')
 
-<script>
-var LISTING = "{{ route('vehiclemanagement.index') }}";
-var VEHICLETYPE_SIZES = "{{ route('vehicletype.sizes', ':id') }}";
-
-var FETCH_VEHICLE_INFO = "{{ route('vehiclemanagement.fetchInfo') }}";
-
-$(document).ready(function(){
-    
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/management/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Management/create.js')}}"></script>
 
 @endsection
 

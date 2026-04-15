@@ -1999,3 +1999,486 @@ hr{
 .select2-container .select2-search--inline .select2-search__field{
     height: 24px !important;
 }
+
+/* ============================================================
+   SC MODULE — Common Styles
+   Added: Service Centre module shared components
+   ============================================================ */
+
+/* Layout — no sidebar operational pages */
+.sc-no-sidebar {
+    margin-left: 0 !important;
+    padding: 20px;
+}
+
+/* Breadcrumb */
+.sc-breadcrumb {
+    font-size: 12px;
+    background: none;
+    padding: 0;
+    margin-bottom: 6px;
+}
+.sc-breadcrumb .breadcrumb-item a { color: #032671; }
+.sc-breadcrumb .breadcrumb-item.active { color: #485D6B; }
+
+/* Page Heading */
+.sc-page-head h5 {
+    font-weight: 700;
+    color: #032671;
+    font-size: 16px;
+}
+
+/* Stat Cards */
+.sc-stat-card {
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.sc-stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.sc-stat-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #323130;
+    line-height: 1.1;
+}
+.sc-stat-lbl {
+    font-size: 11px;
+    color: #485D6B;
+    margin-top: 2px;
+}
+
+/* SC Card */
+.sc-card {
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.sc-card-head {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafbfc;
+}
+.sc-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+}
+
+/* SC Table */
+.sc-table-card { margin-bottom: 0; }
+.sc-table-card thead th {
+    background: #f5f6f8;
+    font-size: 11px;
+    font-weight: 600;
+    color: #485D6B;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    border-bottom: 1px solid #e8eaed;
+    padding: 9px 12px;
+}
+.sc-table-card tbody td {
+    font-size: 12px;
+    padding: 9px 12px;
+    vertical-align: middle;
+    color: #323130;
+}
+.sc-table-card tbody tr:hover td { background: #f8faff; }
+
+/* Status Badges */
+.sc-badge-open   { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #e3ecff; color: #032671; }
+.sc-badge-wip    { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #fff3e0; color: #e65100; }
+.sc-badge-done   { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #e6f4ea; color: #10863f; }
+.sc-badge-hold   { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #f3e5f5; color: #7b1fa2; }
+.sc-badge-cancel { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #fdecea; color: #ea0027; }
+
+/* Action Buttons */
+.sc-btn-navy { background: #032671; color: #fff; border: none; font-size: 12px; }
+.sc-btn-navy:hover { background: #021e56; color: #fff; }
+.sc-btn-green { background: #10863f; color: #fff; border: none; font-size: 12px; }
+.sc-btn-green:hover { background: #0a6630; color: #fff; }
+
+/* SC Stepper */
+.sc-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.sc-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #485D6B;
+    flex-shrink: 0;
+}
+.sc-step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #d4d6db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    background: #fff;
+    color: #485D6B;
+}
+.sc-step.active .sc-step-num   { border-color: #032671; background: #032671; color: #fff; }
+.sc-step.done .sc-step-num     { border-color: #10863f; background: #10863f; color: #fff; }
+.sc-step.active .sc-step-label { color: #032671; font-weight: 600; }
+.sc-step-line {
+    flex: 1;
+    min-width: 30px;
+    height: 2px;
+    background: #d4d6db;
+    margin: 0 6px;
+    flex-shrink: 0;
+}
+.sc-step-line.done { background: #10863f; }
+
+/* Vehicle Info Box */
+.sc-vehicle-box {
+    background: #f5f7fb;
+    border: 1px solid #d4d6db;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+}
+.sc-vehicle-box .vb-reg {
+    font-size: 16px;
+    font-weight: 800;
+    color: #032671;
+    letter-spacing: 1px;
+}
+
+/* PRN Print Head */
+@media print {
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    .sc-prn-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #032671;
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+    }
+}
+.print-only { display: none; }
+
+/* SC Tabs */
+.sc-tab-container {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.sc-tab-bar {
+    display: flex;
+    gap: 0;
+    background: #f5f7fb;
+    border-bottom: 1px solid #e4e7ef;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+}
+.sc-tab-bar::-webkit-scrollbar { display: none; }
+.sc-tab {
+    padding: 10px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    text-decoration: none;
+    transition: color .15s, border-color .15s, background .15s;
+    margin-bottom: -1px;
+    letter-spacing: 0.1px;
+}
+.sc-tab:hover {
+    color: #032671;
+    background: #edf0f9;
+    text-decoration: none;
+}
+.sc-tab.active {
+    color: #032671;
+    border-bottom-color: #032671;
+    background: #fff;
+    font-weight: 700;
+}
+.sc-tab-panel-wrap {
+    padding: 20px;
+    background: #fff;
+}
+
+/* ============================================================
+   SC Vehicle Cell — reg badge + model name stacked
+   Global pattern used across all SC tables
+   ============================================================ */
+.sc-veh-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.sc-reg-badge {
+    display: inline-block;
+    background: #eef1fb;
+    color: #032671;
+    font-weight: 700;
+    font-size: 11.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border: 1px solid #d0d8f0;
+    width: fit-content;
+}
+.sc-veh-model {
+    font-size: 11px;
+    color: #6c757d;
+    white-space: nowrap;
+    padding-left: 1px;
+}
+
+/* ============================================================
+   SC Stepper — global (used by in-token page + delivery modal)
+   Two patterns supported:
+     .sc-step.active  (in-token full-page stepper)
+     .sc-step.sc-step-active  (delivery modal — same styles)
+   ============================================================ */
+.sc-stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.sc-stepper .sc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.sc-stepper .sc-step-num,
+.sc-stepper .sc-step span.sc-step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background: #fff;
+    color: #adb5bd;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+}
+.sc-stepper .sc-step-label,
+.sc-stepper .sc-step span.sc-step-label {
+    font-size: 11px;
+    color: #adb5bd;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: color .2s;
+}
+/* Active — all naming conventions */
+.sc-stepper .sc-step.active .sc-step-num,
+.sc-stepper .sc-step.sc-step-active .sc-step-num {
+    border-color: #032671;
+    background: #032671;
+    color: #fff;
+}
+.sc-stepper .sc-step.active .sc-step-label,
+.sc-stepper .sc-step.sc-step-active .sc-step-label {
+    color: #032671;
+    font-weight: 700;
+}
+/* Done — both naming conventions (.done used by in-token + service-request JS) */
+.sc-stepper .sc-step.done .sc-step-num,
+.sc-stepper .sc-step.sc-step-done .sc-step-num {
+    border-color: #10863f;
+    background: #10863f;
+    color: #fff;
+}
+.sc-stepper .sc-step.done .sc-step-label,
+.sc-stepper .sc-step.sc-step-done .sc-step-label {
+    color: #10863f;
+    font-weight: 600;
+}
+/* Connector line */
+.sc-stepper .sc-step-line {
+    flex: 1;
+    height: 2px;
+    background: #dee2e6;
+    margin: 0 6px;
+    margin-bottom: 20px;
+    transition: background .2s;
+}
+/* Done line — all naming conventions */
+.sc-stepper .sc-step-line.done,
+.sc-stepper .sc-step-line.sc-line-done { background: #10863f; }
+
+/* Form control sizing — SC pages */
+.sc-no-sidebar .form-control,
+.sc-no-sidebar .form-select {
+    font-size: 12px;
+    min-height: 35px;
+    border-color: #d4d6db;
+}
+.sc-no-sidebar label { font-size: 12px; font-weight: 600; color: #485D6B; margin-bottom: 4px; }
+
+
+/* ============================================================
+   Location Context Bar — Inventory + SC modules
+   ============================================================ */
+
+.loc-ctx-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f5f7fb;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.loc-ctx-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.loc-ctx-icon {
+    font-size: 16px;
+    color: #032671;
+    flex-shrink: 0;
+}
+.loc-ctx-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.loc-ctx-select {
+    font-size: 12px;
+    font-weight: 600;
+    color: #032671;
+    border: 1px solid #d0d8f0;
+    border-radius: 6px;
+    padding: 4px 10px;
+    background: #fff;
+    min-width: 240px;
+    cursor: pointer;
+}
+.loc-ctx-select:focus { outline: none; border-color: #032671; box-shadow: 0 0 0 2px rgba(3,38,113,.08); }
+
+.loc-ctx-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.loc-ctx-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all .15s;
+}
+.loc-ctx-pill.wh  { background: #e3ecff; color: #032671; border-color: #c8d5f5; }
+.loc-ctx-pill.sc  { background: #e6f4ea; color: #10863f; border-color: #b8e3c3; }
+.loc-ctx-pill.all { background: #f0f2f8; color: #485D6B; border-color: #d4d6db; }
+.loc-ctx-pill.active, .loc-ctx-pill:hover { box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+.loc-ctx-pill.wh.active  { background: #032671; color: #fff; border-color: #032671; }
+.loc-ctx-pill.sc.active  { background: #10863f; color: #fff; border-color: #10863f; }
+.loc-ctx-pill.all.active { background: #485D6B; color: #fff; border-color: #485D6B; }
+
+/* Location badge in table cells */
+.loc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+.loc-badge-wh { background: #e3ecff; color: #032671; }
+.loc-badge-sc { background: #e6f4ea; color: #10863f; }
+
+/* Per-location stat mini-cards (used in dashboards) */
+.loc-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.loc-stat-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+}
+.loc-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+}
+.loc-stat-card.loc-wh::before { background: #032671; }
+.loc-stat-card.loc-sc::before { background: #10863f; }
+.loc-stat-type {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+.loc-wh .loc-stat-type { color: #032671; }
+.loc-sc .loc-stat-type { color: #10863f; }
+.loc-stat-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+.loc-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+}
+.loc-stat-row-label { font-size: 10px; color: #6c757d; }
+.loc-stat-row-val   { font-size: 12px; font-weight: 700; color: #1a1a2e; }
+.loc-stat-alert { color: #EA0027; }

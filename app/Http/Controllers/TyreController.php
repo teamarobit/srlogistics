@@ -14,6 +14,7 @@ use App\Models\Contact;
 use App\Models\Media;
 use App\Models\Mediadocument;
 use App\Models\Tyre;
+use App\Models\TyreMaintenanceSchedule;
 use App\Models\Tyrelog;
 
 use Auth;
@@ -221,10 +222,92 @@ class TyreController extends Controller
         $total_doc_count = $mediadocuments->count();
         $expired_doc_count = $mediadocuments->where('expiry_date', '<', $today)->count();
         $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
-        
+
+        $maintenanceSchedules = $tyre->maintenanceSchedules()
+            ->orderByRaw("FIELD(status,'Overdue','Pending','Scheduled','Done')")
+            ->orderBy('next_due_date')
+            ->get();
+
         $this->storeUseractivity(66, 5, Auth::id(), $tyre->id, 'Tyre details retrieved');
-        
-        return view('tyre.show', compact('tyre', 'comments', 'attachmenttypes', 'mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count'));
+
+        return view('tyre.show', compact(
+            'tyre', 'comments', 'attachmenttypes',
+            'mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
+            'maintenanceSchedules'
+        ));
+    }
+
+    // ── Maintenance Schedule CRUD ──────────────────────────────────────────────
+
+    public function storeMaintenance(Request $request, Tyre $tyre)
+    {
+        $request->validate([
+            'maintenance_item' => 'required|string|max:255',
+            'last_done_date'   => 'nullable|date',
+            'next_due_date'    => 'nullable|date',
+            'odometer_km'      => 'nullable|integer|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $tyre) {
+                $tyre->maintenanceSchedules()->create([
+                    'maintenance_item' => $request->maintenance_item,
+                    'last_done_date'   => $request->last_done_date,
+                    'next_due_date'    => $request->next_due_date,
+                    'odometer_km'      => $request->odometer_km,
+                    'status'           => $request->status,
+                    'notes'            => $request->notes,
+                    'created_by'       => Auth::id(),
+                    'updated_by'       => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['message' => 'Maintenance schedule added successfully.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateMaintenance(Request $request, Tyre $tyre, TyreMaintenanceSchedule $schedule)
+    {
+        $request->validate([
+            'maintenance_item' => 'required|string|max:255',
+            'last_done_date'   => 'nullable|date',
+            'next_due_date'    => 'nullable|date',
+            'odometer_km'      => 'nullable|integer|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $schedule->update([
+                'maintenance_item' => $request->maintenance_item,
+                'last_done_date'   => $request->last_done_date,
+                'next_due_date'    => $request->next_due_date,
+                'odometer_km'      => $request->odometer_km,
+                'status'           => $request->status,
+                'notes'            => $request->notes,
+                'updated_by'       => Auth::id(),
+            ]);
+
+            return response()->json(['message' => 'Maintenance schedule updated successfully.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyMaintenance(Tyre $tyre, TyreMaintenanceSchedule $schedule)
+    {
+        try {
+            $schedule->delete();
+            return response()->json(['message' => 'Maintenance schedule deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
     }
     
     public function edit(Tyre $tyre)

@@ -1,18 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-
-<style>
-body{
-    background-color: #fff;
-}
-.bg-success{
-    /*    background-color: #14a44d !important; */
-}
-.table .badge{
-    border-radius: 5px;
-}
-</style>
+<link href="{{ asset('css/Contacts/BatteryVendor/index.css?v=1.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')

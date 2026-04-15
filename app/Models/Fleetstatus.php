@@ -9,6 +9,7 @@ class Fleetstatus extends Model
 {
     use SoftDeletes;
     
+    protected $guarded = [];
     
     
 }

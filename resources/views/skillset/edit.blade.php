@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-designation.css') }}">
+<link rel="stylesheet" href="{{ asset('css/HR/skillset-edit.css') }}">
 
-<style>
-
-</style>
 
 @endsection
 

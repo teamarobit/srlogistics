@@ -4,56 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Exit & Clearance Form - SR Logistics</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; line-height: 1.4; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; border: 1px solid #ccc; padding: 40px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
-        .header p { margin: 5px 0; font-size: 12px; }
-        
-        h2 { font-size: 16px; }
-        
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .field { margin-bottom: 8px; font-size: 14px; }
-        .label { font-weight: bold; }
-        /*.underline { border-bottom: 1px solid #000; display: inline-block; min-width: 150px; }*/
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        table, th, td { border: 1px solid #333; }
-        th, td { padding: 8px; text-align: left; }
-        th { background-color: #f9f9f9; }
-
-        .checkbox-group { margin: 10px 0; font-size: 14px; }
-        .footer-section { margin-top: 30px; font-size: 13px; }
-        .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 40px; }
-        .sig-line { border-top: 1px solid #000; text-align: center; padding-top: 5px; margin-top: 40px; }
-        
-        .print-btn {
-            position: fixed;
-            top: 20px;
-            right: 30px;
-            z-index: 999;
-        }
-        
-        .print-btn button {
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        @media print {
-            .container { border: none; padding: 0; }
-            .page-break { page-break-before: always; }
-            
-            .print-btn {
-                display: none;
-            }
-            .page {
-                border: none;
-                margin: 0;
-            }
-        }
-    </style>
 </head>
 <body>
     
