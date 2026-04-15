@@ -410,7 +410,7 @@ class TestVehicleSeeder extends Seeder
                 'updated_at'                 => $now,
             ]);
 
-            DB::table('vehicletyremapping')->insert([
+            DB::table('vehicletyremappings')->insert([
                 'vehicle_id'      => $vehicleId,
                 'tyre_id'         => $tyreId,
                 'tyreposition_id' => $positions[$i] ?? ($i + 1),
