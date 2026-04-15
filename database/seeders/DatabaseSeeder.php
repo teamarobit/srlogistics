@@ -58,7 +58,8 @@ class DatabaseSeeder extends Seeder
                         SparePartsSeeder::class,
                         SpareVendorSeeder::class,
                         TestVehicleSeeder::class,
-                        WarehouseSeeder::class
+                        WarehouseSeeder::class,
+                        FleetstatusSeeder::class,
                     ]);
     }
 }
