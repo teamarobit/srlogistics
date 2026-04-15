@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/Fleet/dashboard.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/Fleet/index.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/Fleet/index.css') }}">
 @endsection
 
 @section('content')
@@ -196,7 +196,6 @@
                 <!---->
                 <div class="itemfuelfleet">
                     <div class="row">
-                        
                         <div class="col-12">
                             <div class="itemsec">
                                 <p>Fleet Status</p>

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/Fleet/dashboard.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/Tyre/dashboard.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css') }}">
 @endsection
 
 @section('content')
