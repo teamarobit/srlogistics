@@ -196,7 +196,15 @@
                       <li><a href="{{ route('inventory.dashboard') }}">Inventory Dashboard</a></li>
                       <li><a href="{{ route('inventory.spare-parts') }}">Spare Parts</a></li>
                       <li><a href="{{ route('inventory.tyres') }}">Tyre Inventory</a></li>
+                    </ul>
+                    <ul style="margin-top:10px;">
+                      <li class="title" style="font-size:11px;color:#7fb3f5;padding-bottom:4px;"><span class="icon" style="margin-right:4px;">🔋</span>Battery</li>
+                      <li><a href="{{ route('inventory.battery-dashboard') }}">Battery Dashboard</a></li>
                       <li><a href="{{ route('inventory.batteries') }}">Battery Inventory</a></li>
+                      <li><a href="{{ route('inventory.battery.add') }}">Add Battery</a></li>
+                      @if(Route::has('contact.batteryvendor.index'))
+                      <li><a href="{{ route('contact.batteryvendor.index') }}">Battery Vendors</a></li>
+                      @endif
                     </ul>
                   </div>
 

@@ -78,7 +78,7 @@
                                                 <!--    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addTyre"><i class="uil uil-pen"></i></a>-->
                                                 <!--    <a href="javascript:void(0)" class="text-danger ms-1"><i class="uil uil-trash-alt"></i></a>-->
                                                 <!--</div>-->
-                                                <a href="tyre-action.php" class="btn btn-success p-3">Take Action</a>
+                                                <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}" class="btn btn-success p-3">Take Action</a>
                                             </div>
                                         </div>
                                     @else
@@ -117,7 +117,8 @@
                                             <!--    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addTyre"><i class="uil uil-pen"></i></a>-->
                                             <!--    <a href="javascript:void(0)" class="text-danger ms-1"><i class="uil uil-trash-alt"></i></a>-->
                                             <!--</div>-->
-                                            <a href="tyre-action.php" class="btn btn-success p-3">Take Action</a>
+                                            {{-- TODO: href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}" once backend is wired --}}
+<a href="javascript:void(0)" class="btn btn-success p-3">Take Action</a>
                                             <div class="icon-wrap">
                                                 <a href="javascript:void(0)" class="text-danger"><i class="uil uil-trash-alt"></i></a>
                                             </div>

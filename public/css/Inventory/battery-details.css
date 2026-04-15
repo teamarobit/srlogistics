@@ -1,0 +1,398 @@
+/* =========================================================
+   Battery Details Page — battery-details.css  v1.0
+   Prefix: bdet-
+   ========================================================= */
+
+/* ── Page Header ───────────────────────────────────────── */
+.bdet-page-header {
+    margin-bottom: 0;
+}
+.bdet-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #f0f3f9;
+    color: #032671;
+    text-decoration: none;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.bdet-back-btn:hover { background: #dde5f7; color: #032671; }
+.bdet-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #032671;
+    letter-spacing: 0.5px;
+}
+.bdet-type-chip {
+    display: inline-block;
+    font-size: 11px;
+    background: #f0f3f9;
+    color: #485D6B;
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+
+/* ── Stat Cards ────────────────────────────────────────── */
+.bdet-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-left: 4px solid #dee2e6;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.bdet-stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.bdet-stat-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1.2;
+}
+.bdet-stat-lbl {
+    font-size: 11px;
+    color: #8898aa;
+    margin-top: 1px;
+}
+.bdet-stat-navy  { border-left-color: #032671; }
+.bdet-stat-navy  .bdet-stat-icon { background: #e3ecff; color: #032671; }
+.bdet-stat-green { border-left-color: #10863f; }
+.bdet-stat-green .bdet-stat-icon { background: #e6f4ea; color: #10863f; }
+.bdet-stat-amber { border-left-color: #d97706; }
+.bdet-stat-amber .bdet-stat-icon { background: #fff3e0; color: #d97706; }
+.bdet-stat-grey  { border-left-color: #8898aa; }
+.bdet-stat-grey  .bdet-stat-icon { background: #f4f6f9; color: #8898aa; }
+.bdet-stat-red   { border-left-color: #ea0027; }
+.bdet-stat-red   .bdet-stat-icon { background: #fdecea; color: #ea0027; }
+
+/* ── Lifecycle Strip (overrides for details page) ──────── */
+.bdet-lifecycle {
+    /* btd-lifecycle base comes from battery-dashboard.css */
+    margin-bottom: 0 !important; /* bdet-lifecycle mb-3 handled by Bootstrap */
+}
+
+/* Done step: filled navy circle */
+.btd-lc-done .btd-lc-icon {
+    background: #032671 !important;
+    border-color: #032671 !important;
+    color: #fff !important;
+}
+.btd-lc-done .btd-lc-label {
+    color: #032671 !important;
+    font-weight: 700;
+}
+
+/* Current active step: highlighted with ring */
+.btd-lc-current .btd-lc-icon {
+    background: #032671 !important;
+    border-color: #032671 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 4px rgba(3,38,113,0.2) !important;
+}
+.btd-lc-current .btd-lc-label {
+    color: #032671 !important;
+    font-weight: 700;
+}
+
+/* Arrow: done = navy */
+.btd-lc-arrow-done { color: #032671 !important; }
+
+/* Date below each step */
+.btd-lc-date {
+    font-size: 10px;
+    color: #adb5bd;
+    margin-top: 1px;
+    text-align: center;
+    min-height: 14px;
+}
+
+/* ── Specs Grid ────────────────────────────────────────── */
+.bdet-specs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.bdet-spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f4f6f9;
+    gap: 8px;
+}
+.bdet-spec-row:last-child { border-bottom: none; }
+.bdet-spec-lbl {
+    font-size: 12px;
+    color: #8898aa;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+.bdet-spec-val {
+    font-size: 13px;
+    color: #1a2533;
+    text-align: right;
+}
+.bdet-val-warn { color: #d97706; font-weight: 600; }
+.text-navy { color: #032671 !important; }
+
+/* ── Health Indicators ─────────────────────────────────── */
+.bdet-health-updated { font-size: 11px; color: #adb5bd; }
+.bdet-health-bar-wrap { }
+.bdet-progress {
+    height: 7px;
+    border-radius: 4px;
+    background: #f0f3f9;
+}
+.bdet-pb-green { background-color: #10863f !important; }
+.bdet-pb-amber { background-color: #d97706 !important; }
+.bdet-pb-red   { background-color: #ea0027 !important; }
+.bdet-health-pct {
+    font-size: 12px;
+    font-weight: 600;
+}
+.bdet-hp-good { color: #10863f; }
+.bdet-hp-warn { color: #d97706; }
+.bdet-hp-bad  { color: #ea0027; }
+.bdet-health-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.bdet-hchip {
+    font-size: 11px;
+    border-radius: 20px;
+    padding: 3px 10px;
+    display: inline-flex;
+    align-items: center;
+}
+.bdet-hchip-good { background: #e6f4ea; color: #10863f; }
+.bdet-hchip-warn { background: #fff3e0; color: #d97706; }
+.bdet-hchip-bad  { background: #fdecea; color: #ea0027; }
+
+/* ── Tab Panel ─────────────────────────────────────────── */
+.bdet-tab-panel { }
+
+/* ── Movement Log Summary Strip ───────────────────────── */
+.bdet-log-summary {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #f0f3f9;
+}
+.bdet-log-sum-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    border-right: 1px solid #f0f3f9;
+}
+.bdet-log-sum-item:last-child { border-right: none; }
+.bdet-log-sum-val {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #032671;
+    line-height: 1.2;
+}
+.bdet-log-sum-lbl {
+    display: block;
+    font-size: 11px;
+    color: #8898aa;
+    margin-top: 2px;
+}
+
+/* ── Timeline ──────────────────────────────────────────── */
+.bdet-timeline {
+    position: relative;
+}
+.bdet-tl-event {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+.bdet-tl-dot-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    padding-top: 2px;
+}
+.bdet-tl-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    z-index: 1;
+}
+.bdet-tl-connector {
+    width: 2px;
+    flex: 1;
+    min-height: 32px;
+    background: #e4e8f0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+/* Dot color variants */
+.bdet-dot-purchase  { background: #e3ecff; color: #032671; }
+.bdet-dot-install   { background: #e6f4ea; color: #10863f; }
+.bdet-dot-remove    { background: #fff3e0; color: #d97706; }
+.bdet-dot-workshop  { background: #f0f3f9; color: #485D6B; }
+.bdet-dot-reuse     { background: #e6f4ea; color: #10863f; }
+.bdet-dot-discard   { background: #fdecea; color: #ea0027; }
+.bdet-dot-weak      { background: #fdecea; color: #ea0027; }
+
+/* Timeline card */
+.bdet-tl-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8ecf4;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.bdet-tl-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid #f4f6f9;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.bdet-tl-event-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.bdet-badge-purchase { background: #e3ecff; color: #032671; }
+.bdet-badge-install  { background: #e6f4ea; color: #10863f; }
+.bdet-badge-remove   { background: #fff3e0; color: #d97706; }
+.bdet-badge-workshop { background: #f0f3f9; color: #485D6B; }
+.bdet-badge-reuse    { background: #e6f4ea; color: #10863f; }
+.bdet-badge-discard  { background: #fdecea; color: #ea0027; }
+
+.bdet-tl-event-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2533;
+}
+.bdet-tl-date {
+    font-size: 11px;
+    color: #adb5bd;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.bdet-tl-card-body {
+    padding: 12px 16px;
+}
+.bdet-tl-detail-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 5px;
+    align-items: flex-start;
+}
+.bdet-tl-dl {
+    font-size: 11px;
+    color: #8898aa;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+.bdet-tl-dv {
+    font-size: 12px;
+    color: #1a2533;
+}
+.bdet-tl-notes {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #485D6B;
+    background: #f8f9fc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    border-left: 3px solid #dee2e6;
+}
+
+/* Border-left color on card by event type */
+.bdet-tl-install .bdet-tl-card  { border-left: 3px solid #10863f; }
+.bdet-tl-purchase .bdet-tl-card { border-left: 3px solid #032671; }
+.bdet-tl-remove .bdet-tl-card   { border-left: 3px solid #d97706; }
+.bdet-tl-workshop .bdet-tl-card { border-left: 3px solid #8898aa; }
+.bdet-tl-reuse .bdet-tl-card    { border-left: 3px solid #10863f; }
+.bdet-tl-discard .bdet-tl-card  { border-left: 3px solid #ea0027; }
+
+/* Empty state */
+.bdet-log-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #adb5bd;
+}
+.bdet-log-empty-icon {
+    font-size: 40px;
+    opacity: 0.3;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Load more */
+.bdet-log-loadmore {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #f0f3f9;
+}
+.bdet-log-count {
+    font-size: 11px;
+    color: #adb5bd;
+}
+.bdet-log-filter {
+    font-size: 12px;
+}
+
+/* ── Notes ─────────────────────────────────────────────── */
+.bdet-note-item {
+    padding: 14px 0;
+    border-bottom: 1px solid #f4f6f9;
+}
+.bdet-note-item:last-child { border-bottom: none; }
+.bdet-note-meta {
+    font-size: 11px;
+    color: #adb5bd;
+    margin-bottom: 5px;
+}
+.bdet-note-text {
+    font-size: 13px;
+    color: #1a2533;
+    line-height: 1.6;
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .bdet-page-header { flex-direction: column; gap: 12px; }
+    .bdet-page-header > div:last-child { width: 100%; justify-content: flex-start; }
+    .bdet-spec-lbl { min-width: 110px; }
+    .bdet-log-summary { flex-wrap: wrap; }
+    .bdet-log-sum-item { flex: 1 1 50%; border-bottom: 1px solid #f0f3f9; }
+    .bdet-tl-dot-wrap { width: 28px; }
+    .bdet-tl-dot { width: 28px; height: 28px; font-size: 13px; }
+    .bdet-tl-card-header { flex-direction: column; gap: 4px; }
+}

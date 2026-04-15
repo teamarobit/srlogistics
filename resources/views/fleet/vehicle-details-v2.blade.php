@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=1.3') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=1.4') }}">
 @endsection
 
 @section('content')
@@ -1169,25 +1169,257 @@
                         </div>
 
                         <div id="tyre_bd" class="accordion-collapse collapse show" aria-labelledby="tyre_det" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                @forelse($vehicle->vehicletyremappings()->with(['tyre', 'tyreposition'])->orderBy('status')->get() as $mapping)
-                                <div class="inner-card mb-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="fw-semibold" style="font-size:12px; color:#032671;">
-                                            <i class="uil uil-circle me-1"></i>
-                                            Wheel Position: <strong>{{ $mapping->tyreposition->description ?? $mapping->tyreposition->code ?? '-' }}</strong>
-                                            @if($mapping->status === 'Spare')
-                                                <span class="badge badge-warning ms-1">Stepney</span>
-                                            @elseif($mapping->status === 'Inactive')
-                                                <span class="badge badge-danger ms-1">Removed</span>
-                                            @else
-                                                <span class="badge badge-success ms-1">Fitted</span>
-                                            @endif
-                                        </span>
-                                        <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="text-primary" style="font-size:12px;">
-                                            <i class="uil uil-pen me-1"></i>Edit
-                                        </a>
+                            <div class="accordion-body p-0">
+                                @php
+                                    $tyreMappings = $vehicle->vehicletyremappings()->with(['tyre', 'tyreposition'])->get();
+                                    $byCode = $tyreMappings->keyBy(fn($m) => $m->tyreposition->code ?? '__unknown__');
+                                    $getTyreColor = function($m) {
+                                        if (!$m || !$m->tyre) return 'empty';
+                                        $cond = strtolower($m->tyre->tyre_condition ?? '');
+                                        $kmLife = (int)($m->tyre->fixed_run_km ?? 0);
+                                        $kmRun  = (int)($m->tyre->actual_run_km ?? 0);
+                                        $kmBal  = $kmLife > 0 ? ($kmLife - $kmRun) : null;
+                                        if (in_array($cond, ['replace','worn','bad','dead','scrap'])) return 'critical';
+                                        if ($kmBal !== null && $kmBal <= 0) return 'critical';
+                                        if ($kmBal !== null && $kmBal <= 10000) return 'warn';
+                                        if (in_array($cond, ['used','old','moderate','average'])) return 'warn';
+                                        return 'good';
+                                    };
+                                    $colorHex = ['good'=>'#10863f','warn'=>'#d97706','critical'=>'#ea0027','empty'=>'#dee2e6'];
+                                    $posLabels = [
+                                        'C1'=>'Front Left','D1'=>'Front Right',
+                                        'Ci2'=>'Rear L1 Inner','Co3'=>'Rear L1 Outer',
+                                        'Di2'=>'Rear R1 Inner','Do3'=>'Rear R1 Outer',
+                                        'Ci4'=>'Rear L2 Inner','Co5'=>'Rear L2 Outer',
+                                        'Di4'=>'Rear R2 Inner','Do5'=>'Rear R2 Outer',
+                                        'S1'=>'Spare / Stepney',
+                                    ];
+                                    $totalTyres = $tyreMappings->count();
+                                    $goodCount = 0; $warnCount = 0; $criticalCount = 0;
+                                    foreach($tyreMappings as $_m) {
+                                        $c = $getTyreColor($_m);
+                                        if($c==='good') $goodCount++;
+                                        elseif($c==='warn') $warnCount++;
+                                        elseif($c==='critical') $criticalCount++;
+                                    }
+                                    $leftCodes  = ['C1','Co3','Ci2','Co5','Ci4'];
+                                    $rightCodes = ['D1','Di2','Do3','Di4','Do5'];
+                                @endphp
+
+                                @if($totalTyres === 0)
+                                {{-- Empty State --}}
+                                <div class="vtd-empty">
+                                    <i class="uil uil-circle vtd-empty-icon"></i>
+                                    <div class="vtd-empty-text">No tyres are mapped to this vehicle yet.</div>
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="btn btn-outline-primary btn-sm mt-2">
+                                        <i class="uil uil-plus me-1"></i>Manage Tyres
+                                    </a>
+                                </div>
+                                @else
+
+                                {{-- Summary Strip --}}
+                                <div class="vtd-summary-strip">
+                                    <div class="vtd-sum-item">
+                                        <span class="vtd-sum-val">{{ $totalTyres }}</span>
+                                        <span class="vtd-sum-lbl">Total</span>
                                     </div>
+                                    <div class="vtd-sum-item vtd-sum-good">
+                                        <span class="vtd-sum-dot" style="background:#10863f;"></span>
+                                        <span class="vtd-sum-val">{{ $goodCount }}</span>
+                                        <span class="vtd-sum-lbl">Good</span>
+                                    </div>
+                                    <div class="vtd-sum-item vtd-sum-warn">
+                                        <span class="vtd-sum-dot" style="background:#d97706;"></span>
+                                        <span class="vtd-sum-val">{{ $warnCount }}</span>
+                                        <span class="vtd-sum-lbl">Attention</span>
+                                    </div>
+                                    <div class="vtd-sum-item vtd-sum-crit">
+                                        <span class="vtd-sum-dot" style="background:#ea0027;"></span>
+                                        <span class="vtd-sum-val">{{ $criticalCount }}</span>
+                                        <span class="vtd-sum-lbl">Critical</span>
+                                    </div>
+                                    <div class="vtd-legend ms-auto">
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#10863f;"></span>Good</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#d97706;"></span>Attention</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#ea0027;"></span>Critical</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#dee2e6;border:1px solid #c0c8d8;"></span>Not Assigned</span>
+                                    </div>
+                                </div>
+
+                                {{-- 3-Column Layout --}}
+                                <div class="vtd-layout">
+
+                                    {{-- LEFT CARDS --}}
+                                    <div class="vtd-side vtd-side-left">
+                                        <div class="vtd-side-title"><i class="uil uil-arrow-left me-1"></i>Left Side Tyres</div>
+                                        @foreach($leftCodes as $code)
+                                        @php
+                                            $m = $byCode[$code] ?? null;
+                                            $color = $getTyreColor($m);
+                                            $hex = $colorHex[$color];
+                                            $lbl = $posLabels[$code] ?? $code;
+                                            $kmLife = $m ? (int)($m->tyre->fixed_run_km ?? 0) : 0;
+                                            $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                        @endphp
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attention':($color==='critical'?'Critical':'—')) }}</span>
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
+                                                @if($kmBal !== null)
+                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
+                                                @endif
+                                            </div>
+                                            <div class="vtd-card-foot"><a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="vtd-view-btn"><i class="uil uil-eye me-1"></i>View Details</a></div>
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                    {{-- CENTER TRUCK SVG --}}
+                                    <div class="vtd-center">
+                                        <div class="vtd-svg-wrap">
+                                            <svg id="vtdTruckSvg" viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg" class="vtd-truck-svg">
+                                                {{-- Truck body --}}
+                                                <rect x="60" y="75" width="100" height="340" rx="14" fill="#f0f3f9" stroke="#d0d8ea" stroke-width="2"/>
+                                                {{-- Cab --}}
+                                                <rect x="60" y="75" width="100" height="100" rx="14" fill="#e3ecff" stroke="#b8cef5" stroke-width="1.5"/>
+                                                <rect x="72" y="82" width="76" height="30" rx="5" fill="#c5d5f7" opacity="0.6"/>
+                                                <text x="110" y="103" text-anchor="middle" font-size="9" fill="#032671" font-weight="700" letter-spacing="0.5">CAB</text>
+                                                {{-- Cargo area --}}
+                                                <text x="110" y="270" text-anchor="middle" font-size="8" fill="#adb5bd" letter-spacing="1">CARGO</text>
+                                                {{-- Axle lines --}}
+                                                <line x1="22" y1="125" x2="198" y2="125" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                                <line x1="22" y1="282" x2="198" y2="282" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                                <line x1="22" y1="372" x2="198" y2="372" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                                {{-- Axle labels --}}
+                                                <text x="110" y="118" text-anchor="middle" font-size="7" fill="#adb5bd">FRONT AXLE</text>
+                                                <text x="110" y="278" text-anchor="middle" font-size="7" fill="#adb5bd">REAR AXLE 1</text>
+                                                <text x="110" y="368" text-anchor="middle" font-size="7" fill="#adb5bd">REAR AXLE 2</text>
+                                                {{-- Direction arrow --}}
+                                                <text x="110" y="55" text-anchor="middle" font-size="10" fill="#8898aa" font-weight="600">▲ FRONT</text>
+
+                                                {{-- C1 — Front Left --}}
+                                                @php $c=$getTyreColor($byCode['C1']??null); @endphp
+                                                <rect id="svg-C1" class="vtd-svg-tyre" data-pos="C1" x="30" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="42" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">C1</text>
+
+                                                {{-- D1 — Front Right --}}
+                                                @php $c=$getTyreColor($byCode['D1']??null); @endphp
+                                                <rect id="svg-D1" class="vtd-svg-tyre" data-pos="D1" x="166" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="178" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">D1</text>
+
+                                                {{-- Co3 — Rear Axle 1, Left Outer --}}
+                                                @php $c=$getTyreColor($byCode['Co3']??null); @endphp
+                                                <rect id="svg-Co3" class="vtd-svg-tyre" data-pos="Co3" x="20" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="29" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co3</text>
+
+                                                {{-- Ci2 — Rear Axle 1, Left Inner --}}
+                                                @php $c=$getTyreColor($byCode['Ci2']??null); @endphp
+                                                <rect id="svg-Ci2" class="vtd-svg-tyre" data-pos="Ci2" x="41" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="50" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci2</text>
+
+                                                {{-- Di2 — Rear Axle 1, Right Inner --}}
+                                                @php $c=$getTyreColor($byCode['Di2']??null); @endphp
+                                                <rect id="svg-Di2" class="vtd-svg-tyre" data-pos="Di2" x="160" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="169" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di2</text>
+
+                                                {{-- Do3 — Rear Axle 1, Right Outer --}}
+                                                @php $c=$getTyreColor($byCode['Do3']??null); @endphp
+                                                <rect id="svg-Do3" class="vtd-svg-tyre" data-pos="Do3" x="181" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="190" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do3</text>
+
+                                                {{-- Co5 — Rear Axle 2, Left Outer --}}
+                                                @php $c=$getTyreColor($byCode['Co5']??null); @endphp
+                                                <rect id="svg-Co5" class="vtd-svg-tyre" data-pos="Co5" x="20" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="29" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co5</text>
+
+                                                {{-- Ci4 — Rear Axle 2, Left Inner --}}
+                                                @php $c=$getTyreColor($byCode['Ci4']??null); @endphp
+                                                <rect id="svg-Ci4" class="vtd-svg-tyre" data-pos="Ci4" x="41" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="50" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci4</text>
+
+                                                {{-- Di4 — Rear Axle 2, Right Inner --}}
+                                                @php $c=$getTyreColor($byCode['Di4']??null); @endphp
+                                                <rect id="svg-Di4" class="vtd-svg-tyre" data-pos="Di4" x="160" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="169" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di4</text>
+
+                                                {{-- Do5 — Rear Axle 2, Right Outer --}}
+                                                @php $c=$getTyreColor($byCode['Do5']??null); @endphp
+                                                <rect id="svg-Do5" class="vtd-svg-tyre" data-pos="Do5" x="181" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="190" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do5</text>
+                                            </svg>
+
+                                            {{-- Spare strip --}}
+                                            @php $sm = $byCode['S1'] ?? null; @endphp
+                                            @if($sm && $sm->tyre)
+                                            @php $sc=$getTyreColor($sm); @endphp
+                                            <div class="vtd-spare-strip">
+                                                <span class="vtd-spare-dot" style="background:{{ $colorHex[$sc] }};"></span>
+                                                <span class="vtd-spare-label">Spare (S1)</span>
+                                                <span class="vtd-spare-serial">{{ $sm->tyre->tyre_serial_number ?? '—' }}</span>
+                                                <span class="vtd-spare-brand">{{ $sm->tyre->tyre_brand ?? '' }} {{ $sm->tyre->tyre_model ?? '' }}</span>
+                                            </div>
+                                            @else
+                                            <div class="vtd-spare-strip vtd-spare-empty">
+                                                <span class="vtd-spare-dot" style="background:#dee2e6;"></span>
+                                                <span class="vtd-spare-label">Spare (S1)</span>
+                                                <span class="vtd-spare-brand" style="color:#adb5bd;">Not assigned</span>
+                                            </div>
+                                            @endif
+                                            <div class="vtd-svg-note">Hover on tyre or card to highlight</div>
+                                        </div>
+                                    </div>
+
+                                    {{-- RIGHT CARDS --}}
+                                    <div class="vtd-side vtd-side-right">
+                                        <div class="vtd-side-title">Right Side Tyres <i class="uil uil-arrow-right ms-1"></i></div>
+                                        @foreach($rightCodes as $code)
+                                        @php
+                                            $m = $byCode[$code] ?? null;
+                                            $color = $getTyreColor($m);
+                                            $hex = $colorHex[$color];
+                                            $lbl = $posLabels[$code] ?? $code;
+                                            $kmLife = $m ? (int)($m->tyre->fixed_run_km ?? 0) : 0;
+                                            $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                        @endphp
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attention':($color==='critical'?'Critical':'—')) }}</span>
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
+                                                @if($kmBal !== null)
+                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
+                                                @endif
+                                            </div>
+                                            <div class="vtd-card-foot"><a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="vtd-view-btn"><i class="uil uil-eye me-1"></i>View Details</a></div>
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                </div>{{-- /vtd-layout --}}
+                                @endif
+
+                                @if(false) {{-- Dead code block removed --}}
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -1303,12 +1535,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                @empty
-                                <div class="alert alert-warning text-center p-2" role="alert">
-                                    No tyres are mapped to this vehicle yet.
-                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="alert-link ms-1">Manage Tyres →</a>
-                                </div>
-                                @endforelse
+                                @endif {{-- /Dead code block --}}
                             </div>
                         </div>
 
@@ -6596,6 +6823,38 @@
             $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').show();
         } else {
             $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').hide();
+        }
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       TYRE DETAILS — Truck SVG hover interactions
+    ═══════════════════════════════════════════════════════ */
+    // SVG tyre → highlight card
+    $(document).on('mouseenter', '.vtd-svg-tyre', function () {
+        var pos = $(this).data('pos');
+        $('.vtd-tyre-card[data-pos="' + pos + '"]').addClass('highlighted');
+    }).on('mouseleave', '.vtd-svg-tyre', function () {
+        var pos = $(this).data('pos');
+        $('.vtd-tyre-card[data-pos="' + pos + '"]').removeClass('highlighted');
+    });
+
+    // Card → highlight SVG tyre
+    $(document).on('mouseenter', '.vtd-tyre-card', function () {
+        var pos = $(this).data('pos');
+        $('#svg-' + pos).addClass('highlighted');
+    }).on('mouseleave', '.vtd-tyre-card', function () {
+        var pos = $(this).data('pos');
+        $('#svg-' + pos).removeClass('highlighted');
+    });
+
+    // SVG tyre click → scroll to card
+    $(document).on('click', '.vtd-svg-tyre', function () {
+        var pos = $(this).data('pos');
+        var $card = $('.vtd-tyre-card[data-pos="' + pos + '"]');
+        if ($card.length) {
+            $('html,body').animate({ scrollTop: $card.offset().top - 120 }, 300);
+            $card.addClass('highlighted');
+            setTimeout(function () { $card.removeClass('highlighted'); }, 1500);
         }
     });
 

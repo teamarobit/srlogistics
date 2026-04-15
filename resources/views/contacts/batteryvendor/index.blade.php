@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-
+<link href="{{ asset('css/Contacts/BatteryVendor/index.css?v=1.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')

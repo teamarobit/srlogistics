@@ -382,8 +382,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
         Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
-        
-    }); 
+        Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
+    });
     
     /******************************** Vehicle Master **********************************************************/
     
@@ -630,75 +630,81 @@ Route::group(['middleware' => ['auth']], function() {
     Route::prefix('workshop')->name('ws.')->group(function () {
 
         // Service Requests
-        Route::get('/dashboard',        [App\Http\Controllers\ServiceCentreController::class, 'dashboard'])->name('dashboard');
-        Route::get('/service-request',  [App\Http\Controllers\ServiceCentreController::class, 'serviceRequest'])->name('service-request.index');
-        Route::get('/appointment',      [App\Http\Controllers\ServiceCentreController::class, 'appointment'])->name('appointment.index');
-        Route::get('/in-token',         [App\Http\Controllers\ServiceCentreController::class, 'inToken'])->name('in-token.index');
+        Route::get('/dashboard',        [App\Http\Controllers\WorkshopController::class, 'dashboard'])->name('dashboard');
+        Route::get('/service-request',  [App\Http\Controllers\WorkshopController::class, 'serviceRequest'])->name('service-request.index');
+        Route::get('/appointment',      [App\Http\Controllers\WorkshopController::class, 'appointment'])->name('appointment.index');
+        Route::get('/in-token',         [App\Http\Controllers\WorkshopController::class, 'inToken'])->name('in-token.index');
 
         // Workshop
-        Route::get('/workshop/job-cards',       [App\Http\Controllers\ServiceCentreController::class, 'jobCardList'])->name('workshop.job-list');
-        Route::get('/workshop/job-cards/{id}',  [App\Http\Controllers\ServiceCentreController::class, 'jobCardDetails'])->name('workshop.job-details');
-        // HIDDEN (not in use yet): Route::get('/workshop/technicians', [App\Http\Controllers\ServiceCentreController::class, 'technicianDashboard'])->name('workshop.tech-dashboard');
-        Route::get('/workshop/billing',         [App\Http\Controllers\ServiceCentreController::class, 'billing'])->name('workshop.billing');
-        Route::get('/workshop/delivery',        [App\Http\Controllers\ServiceCentreController::class, 'delivery'])->name('workshop.delivery');
-        Route::get('/workshop/onroad',          [App\Http\Controllers\ServiceCentreController::class, 'onroadService'])->name('workshop.onroad');
+        Route::get('/workshop/job-cards',       [App\Http\Controllers\WorkshopController::class, 'jobCardList'])->name('workshop.job-list');
+        Route::get('/workshop/job-cards/{id}',  [App\Http\Controllers\WorkshopController::class, 'jobCardDetails'])->name('workshop.job-details');
+        // HIDDEN (not in use yet): Route::get('/workshop/technicians', [App\Http\Controllers\WorkshopController::class, 'technicianDashboard'])->name('workshop.tech-dashboard');
+        Route::get('/workshop/billing',         [App\Http\Controllers\WorkshopController::class, 'billing'])->name('workshop.billing');
+        Route::get('/workshop/delivery',        [App\Http\Controllers\WorkshopController::class, 'delivery'])->name('workshop.delivery');
+        Route::get('/workshop/onroad',          [App\Http\Controllers\WorkshopController::class, 'onroadService'])->name('workshop.onroad');
 
         // Alerts & Reports
-        Route::get('/alerts',  [App\Http\Controllers\ServiceCentreController::class, 'alerts'])->name('alerts');
-        Route::get('/reports', [App\Http\Controllers\ServiceCentreController::class, 'reports'])->name('reports');
+        Route::get('/alerts',  [App\Http\Controllers\WorkshopController::class, 'alerts'])->name('alerts');
+        Route::get('/reports', [App\Http\Controllers\WorkshopController::class, 'reports'])->name('reports');
 
         // External Service Centre
-        Route::get('/external/dispatch', [App\Http\Controllers\ServiceCentreController::class, 'externalDispatch'])->name('external.dispatch');
-        Route::get('/external/tracker',  [App\Http\Controllers\ServiceCentreController::class, 'externalTracker'])->name('external.tracker');
-        Route::get('/external/billing',  [App\Http\Controllers\ServiceCentreController::class, 'externalBilling'])->name('external.billing');
-        Route::get('/external/return',   [App\Http\Controllers\ServiceCentreController::class, 'externalReturn'])->name('external.return');
+        Route::get('/external/dispatch', [App\Http\Controllers\WorkshopController::class, 'externalDispatch'])->name('external.dispatch');
+        Route::get('/external/tracker',  [App\Http\Controllers\WorkshopController::class, 'externalTracker'])->name('external.tracker');
+        Route::get('/external/billing',  [App\Http\Controllers\WorkshopController::class, 'externalBilling'])->name('external.billing');
+        Route::get('/external/return',   [App\Http\Controllers\WorkshopController::class, 'externalReturn'])->name('external.return');
 
         // Maintenance
-        Route::get('/maintenance/pm-calendar', [App\Http\Controllers\ServiceCentreController::class, 'pmCalendar'])->name('maintenance.pm-calendar');
-        Route::get('/maintenance/insurance',            [App\Http\Controllers\ServiceCentreController::class, 'insurance'])->name('maintenance.insurance');
-        Route::get('/maintenance/insurance/{id}',       [App\Http\Controllers\ServiceCentreController::class, 'insuranceDetail'])->name('maintenance.insurance.detail');
-        Route::post('/maintenance/insurance/vehicle/{vehicleId}/note', [App\Http\Controllers\ServiceCentreController::class, 'insuranceAddNote'])->name('maintenance.insurance.add-note');
+        Route::get('/maintenance/pm-calendar', [App\Http\Controllers\WorkshopController::class, 'pmCalendar'])->name('maintenance.pm-calendar');
+        Route::get('/maintenance/insurance',            [App\Http\Controllers\WorkshopController::class, 'insurance'])->name('maintenance.insurance');
+        Route::get('/maintenance/insurance/{id}',       [App\Http\Controllers\WorkshopController::class, 'insuranceDetail'])->name('maintenance.insurance.detail');
+        Route::post('/maintenance/insurance/vehicle/{vehicleId}/note', [App\Http\Controllers\WorkshopController::class, 'insuranceAddNote'])->name('maintenance.insurance.add-note');
 
         // Master Data — Workshops (unified Own + External; BA CIAA approved April 2026)
-        Route::get('/master/workshops',            [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshops'])->name('master.workshops');
-        Route::post('/master/workshops',           [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopStore'])->name('master.workshops.store');
-        Route::put('/master/workshops/{id}',       [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
-        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\ServiceCentreController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
+        Route::get('/master/workshops',            [App\Http\Controllers\WorkshopController::class, 'masterWorkshops'])->name('master.workshops');
+        Route::post('/master/workshops',           [App\Http\Controllers\WorkshopController::class, 'masterWorkshopStore'])->name('master.workshops.store');
+        Route::put('/master/workshops/{id}',       [App\Http\Controllers\WorkshopController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
+        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
         // Legacy redirects so any bookmarked URLs don't hard-404
         Route::redirect('/master/service-centers', '/workshop/master/workshops', 301);
         Route::redirect('/master/external-sc',     '/workshop/master/workshops', 301);
-        Route::get('/master/services',             [App\Http\Controllers\ServiceCentreController::class, 'masterServices'])->name('master.services');
-        Route::get('/master/service-key-points',   [App\Http\Controllers\ServiceCentreController::class, 'masterServiceKeyPoints'])->name('master.service-key-points');
+        Route::get('/master/services',             [App\Http\Controllers\WorkshopController::class, 'masterServices'])->name('master.services');
+        Route::get('/master/service-key-points',   [App\Http\Controllers\WorkshopController::class, 'masterServiceKeyPoints'])->name('master.service-key-points');
         // Spare Parts CRUD
-        Route::get   ('/master/spare-parts',             [App\Http\Controllers\ServiceCentreController::class, 'masterSpareParts'])->name('master.spare-parts');
-        Route::post  ('/master/spare-parts',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartStore'])->name('master.spare-parts.store');
-        Route::put   ('/master/spare-parts/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartUpdate'])->name('master.spare-parts.update');
-        Route::delete('/master/spare-parts/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartDestroy'])->name('master.spare-parts.destroy');
-        Route::patch ('/master/spare-parts/{id}/status', [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartToggleStatus'])->name('master.spare-parts.toggle-status');
+        Route::get   ('/master/spare-parts',             [App\Http\Controllers\WorkshopController::class, 'masterSpareParts'])->name('master.spare-parts');
+        Route::post  ('/master/spare-parts',             [App\Http\Controllers\WorkshopController::class, 'masterSparePartStore'])->name('master.spare-parts.store');
+        Route::put   ('/master/spare-parts/{id}',        [App\Http\Controllers\WorkshopController::class, 'masterSparePartUpdate'])->name('master.spare-parts.update');
+        Route::delete('/master/spare-parts/{id}',        [App\Http\Controllers\WorkshopController::class, 'masterSparePartDestroy'])->name('master.spare-parts.destroy');
+        Route::patch ('/master/spare-parts/{id}/status', [App\Http\Controllers\WorkshopController::class, 'masterSparePartToggleStatus'])->name('master.spare-parts.toggle-status');
 
-        Route::get   ('/master/spare-part-categories',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategories'])->name('master.spare-part-categories');
-        Route::post  ('/master/spare-part-categories',             [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryStore'])->name('master.spare-part-categories.store');
-        Route::put   ('/master/spare-part-categories/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryUpdate'])->name('master.spare-part-categories.update');
-        Route::delete('/master/spare-part-categories/{id}',        [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryDestroy'])->name('master.spare-part-categories.destroy');
-        Route::patch ('/master/spare-part-categories/{id}/status', [App\Http\Controllers\ServiceCentreController::class, 'masterSparePartCategoryToggleStatus'])->name('master.spare-part-categories.toggle-status');
+        Route::get   ('/master/spare-part-categories',             [App\Http\Controllers\WorkshopController::class, 'masterSparePartCategories'])->name('master.spare-part-categories');
+        Route::post  ('/master/spare-part-categories',             [App\Http\Controllers\WorkshopController::class, 'masterSparePartCategoryStore'])->name('master.spare-part-categories.store');
+        Route::put   ('/master/spare-part-categories/{id}',        [App\Http\Controllers\WorkshopController::class, 'masterSparePartCategoryUpdate'])->name('master.spare-part-categories.update');
+        Route::delete('/master/spare-part-categories/{id}',        [App\Http\Controllers\WorkshopController::class, 'masterSparePartCategoryDestroy'])->name('master.spare-part-categories.destroy');
+        Route::patch ('/master/spare-part-categories/{id}/status', [App\Http\Controllers\WorkshopController::class, 'masterSparePartCategoryToggleStatus'])->name('master.spare-part-categories.toggle-status');
 
-        Route::get('/master/maintenance-items',    [App\Http\Controllers\ServiceCentreController::class, 'masterMaintenanceItems'])->name('master.maintenance-items');
-        Route::get('/master/fault-codes',          [App\Http\Controllers\ServiceCentreController::class, 'masterFaultCodes'])->name('master.fault-codes');
+        Route::get('/master/maintenance-items',    [App\Http\Controllers\WorkshopController::class, 'masterMaintenanceItems'])->name('master.maintenance-items');
+        Route::get('/master/fault-codes',          [App\Http\Controllers\WorkshopController::class, 'masterFaultCodes'])->name('master.fault-codes');
 
     });
 
     /******************************** Inventory Module ******************************************/
 
     Route::prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/dashboard',        [App\Http\Controllers\ServiceCentreController::class, 'inventoryDashboard'])->name('dashboard');
-        Route::get('/spare-parts',      [App\Http\Controllers\ServiceCentreController::class, 'spareParts'])->name('spare-parts');
-        Route::get('/tyres',            [App\Http\Controllers\ServiceCentreController::class, 'tyreInventory'])->name('tyres');
-        Route::get('/batteries',        [App\Http\Controllers\ServiceCentreController::class, 'batteryInventory'])->name('batteries');
-        Route::get('/purchase-orders',      [App\Http\Controllers\ServiceCentreController::class, 'poList'])->name('purchase-orders');
-        Route::get('/purchase-orders/{id}', [App\Http\Controllers\ServiceCentreController::class, 'poDetail'])->name('po-detail');
-        Route::get('/goods-receipt',        [App\Http\Controllers\ServiceCentreController::class, 'grn'])->name('goods-receipt');
-        Route::get('/goods-receipt/{id}',   [App\Http\Controllers\ServiceCentreController::class, 'grnDetail'])->name('grn-detail');
-        Route::get('/stock-transfer',       [App\Http\Controllers\ServiceCentreController::class, 'stockTransfer'])->name('stock-transfer');
+        Route::get('/dashboard',        [App\Http\Controllers\WorkshopController::class, 'inventoryDashboard'])->name('dashboard');
+        Route::get('/spare-parts',      [App\Http\Controllers\WorkshopController::class, 'spareParts'])->name('spare-parts');
+        Route::get('/tyres',            [App\Http\Controllers\WorkshopController::class, 'tyreInventory'])->name('tyres');
+        Route::get('/batteries',        [App\Http\Controllers\WorkshopController::class, 'batteryInventory'])->name('batteries');
+        Route::get('/battery-dashboard',[App\Http\Controllers\WorkshopController::class, 'batteryDashboard'])->name('battery-dashboard');
+        Route::get('/battery/add',          [App\Http\Controllers\WorkshopController::class, 'createBattery'])->name('battery.add');
+        Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
+        Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
+        Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
+        Route::get('/battery/{id}/replace', [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
+        Route::get('/purchase-orders',      [App\Http\Controllers\WorkshopController::class, 'poList'])->name('purchase-orders');
+        Route::get('/purchase-orders/{id}', [App\Http\Controllers\WorkshopController::class, 'poDetail'])->name('po-detail');
+        Route::get('/goods-receipt',        [App\Http\Controllers\WorkshopController::class, 'grn'])->name('goods-receipt');
+        Route::get('/goods-receipt/{id}',   [App\Http\Controllers\WorkshopController::class, 'grnDetail'])->name('grn-detail');
+        Route::get('/stock-transfer',       [App\Http\Controllers\WorkshopController::class, 'stockTransfer'])->name('stock-transfer');
     });
 
 
