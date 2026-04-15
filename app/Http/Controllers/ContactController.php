@@ -66,6 +66,7 @@ use App\Models\Drivervehiclephoto;
 use App\Models\Contactactivity;
 use App\Models\Vehicle;
 use App\Models\Tyre;
+use App\Models\WsSparePartCategory;
 
 use App\Models\Actmodel;
 
@@ -104,6 +105,8 @@ class ContactController extends Controller
     const CONTACT_TYPE_VEHICLE_VENDOR   = 5;  
     const CONTACT_TYPE_TYRE_VENDOR      = 6;  
     const CONTACT_TYPE_BATTERY_VENDOR   = 7;
+    const CONTACT_TYPE_SPARE_VENDOR     = 8;
+    const CONTACT_TYPE_INSURANCE_PROVIDER = 9;
     
     public function index(Request $request): View
     {
@@ -1068,7 +1071,7 @@ class ContactController extends Controller
                 
                 $lastcontact = Contact::withTrashed()->orderBy('id', 'DESC')->first();
                 if($lastcontact){
-                    $lastcontactno = $lastcontact->contactno;
+                    $lastcontactno = (int) $lastcontact->contactno;
                     $incr_lastcontact = $lastcontactno+1;
                     if(strlen($incr_lastcontact)<5){
                         $contactno = '0';
@@ -6730,7 +6733,6 @@ class ContactController extends Controller
         $coattachtypes = Coattachtype::all();       
         $cotype        = $cotypes->firstWhere('id', self::CONTACT_TYPE_DRIVER);
         
-        
         $lastDriver = Contact::where('cotype_id',self::CONTACT_TYPE_DRIVER)->orderBy('id','desc')->first();
         if ($lastDriver) {
             $newNumber = $lastDriver->id + 1;
@@ -6832,18 +6834,18 @@ class ContactController extends Controller
             //'whatsapp_code'     => 'nullable|exists:countries,ph_code',
             'whatsapp'            => ['nullable','digits:10',$validate_whatsapp],
             
-            'dob'                 => 'required|date_format:Y-m-d',
-            'doj'                 => 'required|date|after:dob|before_or_equal:today',
-            'blood_group'         => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'religion_id'         => 'required|exists:religions,id',
-            
-            'driving_licence_no'  => 'required||string|max:255',
+            'dob'                 => 'nullable|date_format:Y-m-d',
+            'doj'                 => 'required|date|before_or_equal:today',
+            'blood_group'         => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'religion_id'         => 'nullable|exists:religions,id',
+
+            'driving_licence_no'  => 'required|string|max:255',
             'licence_issue_date'  => 'required|date_format:Y-m-d',
             'licence_expiry_date' => 'required|date_format:Y-m-d',
-            'original_licence_location' => 'required||string|max:255',
+            'original_licence_location' => 'required|string|max:255',
             'driving_license_proof_file' => 'required|file|max:2048',
-            
-            'aadhaar_no' => 'required||string|max:255',
+
+            'aadhaar_no' => 'required|string|max:255',
             'aadhaar_card_proof_file' => 'required|file|max:2048',
             'signed_driver_form_file' => 'required|file|max:2048',
             
@@ -7571,49 +7573,31 @@ class ContactController extends Controller
     {
         $request->merge([
             'phone'    => preg_replace('/\s+/', '', $request->phone),
-            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp), 
+            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp),
             'guarantor_phone' => preg_replace('/\s+/', '', $request->guarantor_phone),
             'change_vehicle' => $request->change_vehicle ? 'Yes' : 'No',
             'set_reminder' => $request->set_reminder ? 'Yes' : 'No',
         ]);
 
-
         $validate_phone = function ($attribute, $value, $fail) use ($request, $id) {
-            $code = $request->phone_code;
-        
-            if (!$code) {
-                $fail('Phone number required country code to be selected.');
-                return;
+            // phone_code optional — check uniqueness without prefix if absent
+            $code  = $request->phone_code;
+            $query = Contact::where('phone', $value)->where('id', '!=', $id);
+            if ($code) {
+                $query->where('ph_prefix', $code);
             }
-        
-            $exists = Contact::where('phone', $value)
-                ->where('ph_prefix', $code)
-                ->where('id', '!=', $id)   // IMPORTANT
-                ->exists();
-        
-            if ($exists) {
+            if ($query->exists()) {
                 $fail('This phone number already exists.');
             }
         };
 
-        
         $validate_whatsapp = function ($attribute, $value, $fail) use ($request) {
-            if (!$value) return;
-        
-            $code = $request->whatsapp_code ?? null;
-        
-            if (!$code) {
-                $fail('WhatsApp number required country code to be selected.');
-            }
+            if (!$value) return; // whatsapp optional — no code check
         };
 
-        
         $validate_cp_phone = function (string $attribute, mixed $value, Closure $fail) use ($request) {
-            $index = explode('.', $attribute)[1] ?? null;
-            $code = $request->get('contact_person_ph_code')[$index];
-            if($code === NULL){
-                $fail('Phone number required country code to be selected.');
-            }
+            // contact_person_phone optional — skip if value empty
+            if (!$value) return;
         };
         
         // if (User::where('email', $request->email)->exists()) {
@@ -7683,18 +7667,18 @@ class ContactController extends Controller
             //'whatsapp_code'     => 'nullable|exists:countries,ph_code',
             'whatsapp'            => 'nullable|digits:10',
             
-            'dob'                 => 'required|date_format:Y-m-d',
-            'doj'                 => 'required|date|after:dob|before_or_equal:today',
-            'blood_group'         => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'religion_id'         => 'required|exists:religions,id',
-            
-            'driving_licence_no'  => 'required||string|max:255',
+            'dob'                 => 'nullable|date_format:Y-m-d',
+            'doj'                 => 'required|date|before_or_equal:today',
+            'blood_group'         => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'religion_id'         => 'nullable|exists:religions,id',
+
+            'driving_licence_no'  => 'required|string|max:255',
             'licence_issue_date'  => 'required|date_format:Y-m-d',
             'licence_expiry_date' => 'required|date_format:Y-m-d',
-            'original_licence_location' => 'required||string|max:255',
+            'original_licence_location' => 'required|string|max:255',
             'driving_license_proof_file' => 'nullable|file|max:2048',
-            
-            'aadhaar_no' => 'required||string|max:255',
+
+            'aadhaar_no' => 'required|string|max:255',
             'aadhaar_card_proof_file' => 'nullable|file|max:2048',
             'signed_driver_form_file' => 'nullable|file|max:2048',
             
@@ -7730,63 +7714,58 @@ class ContactController extends Controller
             'vehicle_photos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             
             
-            'hisab_category'       => 'required|in:Fixed,Fuel',
-            'opening_balance_date' => 'required|date|date_format:Y-m-d',
-            'opening_balance_type' => 'required|in:Credit,Debit',
-            'opening_balance'      => 'required|numeric|min:0',
-            'guarantor_name'    => 'required|string|max:255',
-            'guarantor_phone'   => ['required','digits:10',$validate_phone],
+            'hisab_category'       => 'nullable|in:Fixed,Fuel',
+            'opening_balance_date' => 'nullable|date|date_format:Y-m-d',
+            'opening_balance_type' => 'nullable|in:Credit,Debit',
+            'opening_balance'      => 'nullable|numeric|min:0',
+            'guarantor_name'    => 'nullable|string|max:255',
+            'guarantor_phone'   => 'nullable|digits:10',
             'contact_comment'   => 'nullable|string|max:255',
-            
-            
-            'is_primary' => 'required|array',
-            'is_primary.*' => 'required|in:Yes,No',
-            
-            'bank_id' => 'required|array',
-            'bank_id.*' => 'required|exists:banks,id',
-            
+
+            'is_primary' => 'nullable|array',
+            'is_primary.*' => 'nullable|in:Yes,No',
+
+            'bank_id' => 'nullable|array',
+            'bank_id.*' => 'nullable|exists:banks,id',
+
             'beneficiary_name' => 'nullable|array',
             'beneficiary_name.*' => 'nullable|string|max:255',
-            
-            'account_number' => 'required|array',
-            'account_number.*' => 'required|string|max:50',
 
-            
-            'ifsc_code' => 'required|array',
-            'ifsc_code.*' => 'required|string|max:20',
-            
+            'account_number' => 'nullable|array',
+            'account_number.*' => 'nullable|string|max:50',
+
+            'ifsc_code' => 'nullable|array',
+            'ifsc_code.*' => 'nullable|string|max:20',
+
             'upi_id' => 'nullable|array',
             'upi_id.*' => 'nullable|string|max:100',
-            
-            
-            'contact_person_name'         => 'required|array|min:1',
-            'contact_person_name.*'       => 'required|string|distinct|min:1',
-            'contact_person_relation'     => 'required|array|min:1',
-            'contact_person_relation.*'   => 'required|string|min:1',
-            'contact_person_blood_group'  => 'nullable|array|min:1',
-            'contact_person_blood_group.*'=> 'nullable|string|min:1',
-            'contact_person_address'      => 'nullable|array|min:1',
-            'contact_person_address.*'    => 'nullable|string|min:1',
-            'contact_person_ph_code'      => 'nullable|array|min:1',
-            //'contact_person_ph_code.*'    => 'nullable|string|exists:countries,ph_code',
-            'contact_person_phone'        => 'required|array|min:1',
-            'contact_person_phone.*'      => ['required','string','distinct',$validate_cp_phone],
-            'contact_person_whatsapp_code'      => 'nullable|array|min:1',
-            //'contact_person_whatsapp_code.*'    => 'nullable|string|exists:countries,ph_code',
-            'contact_person_whatsapp'     => 'nullable|array|min:1',
-            'contact_person_whatsapp.*'   => ['nullable','string','distinct',$validate_cp_phone],
-            'contact_person_comment'      => 'nullable|array|min:1',
-            'contact_person_comment.*'    => 'nullable|string|distinct|min:1',
-            
-            'permanent_address'          => 'required|string|max:255',
-            'permanent_addr_state_id'    => 'required|exists:states,id',
+
+            'contact_person_name'         => 'nullable|array',
+            'contact_person_name.*'       => 'nullable|string|distinct',
+            'contact_person_relation'     => 'nullable|array',
+            'contact_person_relation.*'   => 'nullable|string',
+            'contact_person_blood_group'  => 'nullable|array',
+            'contact_person_blood_group.*'=> 'nullable|string',
+            'contact_person_address'      => 'nullable|array',
+            'contact_person_address.*'    => 'nullable|string',
+            'contact_person_ph_code'      => 'nullable|array',
+            'contact_person_phone'        => 'nullable|array',
+            'contact_person_phone.*'      => 'nullable|string|distinct',
+            'contact_person_whatsapp_code'=> 'nullable|array',
+            'contact_person_whatsapp'     => 'nullable|array',
+            'contact_person_whatsapp.*'   => 'nullable|string|distinct',
+            'contact_person_comment'      => 'nullable|array',
+            'contact_person_comment.*'    => 'nullable|string',
+
+            'permanent_address'          => 'nullable|string|max:255',
+            'permanent_addr_state_id'    => 'nullable|exists:states,id',
             'permanent_addr_city_id'     => 'nullable|exists:cities,id',
-            'permanent_addr_postal_code' => 'required|digits:6',
-            
-            'present_address'            => 'required|string|max:255',
-            'present_addr_state_id'      => 'required|exists:states,id',
+            'permanent_addr_postal_code' => 'nullable|digits:6',
+
+            'present_address'            => 'nullable|string|max:255',
+            'present_addr_state_id'      => 'nullable|exists:states,id',
             'present_addr_city_id'       => 'nullable|exists:cities,id',
-            'present_addr_postal_code'   => 'required|digits:6',
+            'present_addr_postal_code'   => 'nullable|digits:6',
             
             //------------------------------------------------------------------
             
@@ -10925,7 +10904,7 @@ class ContactController extends Controller
     
     
     // Battery Vendor Section ------------------------------------------------------------------------------------------------
-    
+
     public function batteryVendorList(Request $request): View
     {
         $cotypeId = self::CONTACT_TYPE_BATTERY_VENDOR;
@@ -12058,8 +12037,742 @@ class ContactController extends Controller
             ]);
         }
     }
-    
-    
+
+
+    // Spare Part Vendor Section ------------------------------------------------------------------------------------------------
+
+    public function spareVendorList(Request $request)
+    {
+        $cotypeId = self::CONTACT_TYPE_SPARE_VENDOR;
+
+        $search_name = $request->name;
+        $search_city = $request->city;
+
+        $contacts = Contact::query()->where('cotype_id', $cotypeId);
+
+        if ($request->filled('name')) {
+            $contacts->where('contact_name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('city')) {
+            $contacts->where('city_id', $request->city);
+        }
+
+        $contacts = $contacts
+            ->with(['cotype', 'relcontacts', 'createdby', 'city'])
+            ->orderBy('id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $cotypes = Cotype::all();
+        $cotype  = $cotypes->firstWhere('id', self::CONTACT_TYPE_SPARE_VENDOR);
+
+        $cities = City::whereHas('state.country', function ($q) {
+                            $q->where('iso2', 'IN');
+                        })->orderBy('name')->get();
+
+        return view('contacts.sparevendor.index', compact('contacts', 'cities', 'cotype', 'search_name', 'search_city'));
+    }
+
+    public function createSpareVendor(Request $request)
+    {
+        $organisation_id = optional(Auth::user()->organisation)->id;
+
+        $countries = Country::all();
+        $states    = State::whereHas('country', fn($q) => $q->where('iso2', 'IN'))
+                        ->orderBy('name')->get();
+
+        $cotypes           = Cotype::all();
+        $customerabouttype = Customerabouttype::orderBy('name')->get();
+        $gsttreats         = Gsttreat::all();
+        $coattachtypes     = Coattachtype::all();
+        $cotype            = $cotypes->firstWhere('id', self::CONTACT_TYPE_SPARE_VENDOR);
+        $pan_statuses      = Panstatus::where('organisation_id', $organisation_id)->orderBy('name')->get();
+        $banks             = Bank::orderBy('name')->get();
+        $spareCategories   = WsSparePartCategory::active()->orderBy('name')->get();
+
+        return view('contacts.sparevendor.create',
+            compact('customerabouttype', 'countries', 'states', 'cotype', 'cotypes',
+                    'gsttreats', 'coattachtypes', 'pan_statuses', 'banks', 'spareCategories'));
+    }
+
+    public function storeSpareVendor(Request $request)
+    {
+        $request->merge([
+            'phone'    => preg_replace('/\s+/', '', $request->phone),
+            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp),
+        ]);
+
+        $validate_phone = function ($attribute, $value, $fail) use ($request) {
+            $code = $request->phone_code ?? getPhoneCode();
+            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+                $fail('This phone number already exists.');
+            }
+        };
+
+        $validate_cp_phone = function (string $attribute, mixed $value, Closure $fail) use ($request) {
+            $index = explode('.', $attribute)[1] ?? null;
+            $code  = $request->get('contact_person_ph_code')[$index] ?? null;
+        };
+
+        $validator = Validator::make($request->all(), [
+            'gst_number'                  => 'nullable|max:100',
+            'company_name'                => 'required|max:100',
+            'contact_name'                => 'required|max:100',
+            'contact_code'                => 'required|max:100',
+            'phone'                       => ['required', 'digits:10', $validate_phone],
+            'whatsapp'                    => ['nullable', 'digits:10'],
+            'status'                      => 'nullable|in:Active,Inactive,Blacklisted',
+            'blacklist_reason'            => 'required_if:status,Blacklisted',
+            'contact_comment'             => 'nullable|string|max:255',
+            'full_company_name'           => 'nullable|max:100',
+            'company_owner'               => 'nullable|max:100',
+            'company_registration_no'     => 'nullable|max:100',
+            'company_registration_date'   => 'nullable|date|before_or_equal:today',
+            'working_since'               => 'nullable|date|before_or_equal:today',
+            'pan_no'                      => 'nullable|max:100',
+            'pan_status_id'               => 'nullable|integer|exists:panstatuses,id',
+            'tds_percentage'              => 'nullable|numeric|min:0|max:100',
+            'address'                     => 'required|string|max:1000',
+            'state_id'                    => 'required|exists:states,id',
+            'city_id'                     => 'required|exists:cities,id',
+            'post_code'                   => 'nullable|digits:6',
+            'additional_info'             => 'nullable|string|max:10000',
+            'is_primary'                  => 'required|array',
+            'is_primary.*'                => 'required|in:Yes,No',
+            'bank_id'                     => 'required|array',
+            'bank_id.*'                   => 'required|exists:banks,id',
+            'beneficiary_name'            => 'nullable|array',
+            'beneficiary_name.*'          => 'nullable|string|max:255',
+            'account_number'              => 'required|array',
+            'account_number.*'            => 'required|string|max:50',
+            'ifsc_code'                   => 'required|array',
+            'ifsc_code.*'                 => 'required|string|max:20',
+            'upi_id'                      => 'nullable|array',
+            'upi_id.*'                    => 'nullable|string|max:100',
+            'contact_person_name'         => 'required|array|min:1',
+            'contact_person_name.*'       => 'required|string|distinct|min:1',
+            'contact_person_designation'  => 'required|array|min:1',
+            'contact_person_designation.*'=> 'required|string|min:1',
+            'contact_person_phone'        => 'required|array|min:1',
+            'contact_person_phone.*'      => ['required', 'string', 'distinct', $validate_cp_phone],
+            'contact_person_email'        => 'nullable|array|min:1',
+            'contact_person_email.*'      => 'nullable|email:rfc,dns|distinct',
+            'attachtypes'                 => 'nullable|array',
+            'attachtypes.*'               => 'nullable|exists:coattachtypes,id',
+            'files'                       => 'nullable|array',
+            'files.*'                     => 'nullable|array|max:2',
+            'files.*.*'                   => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ], [
+            'required'    => 'This field is required.',
+            'max'         => 'Maximum 100 characters allowed.',
+            'exists'      => "This field's value is invalid.",
+            'distinct'    => 'Duplicate value.',
+            'email'       => 'This email is invalid.',
+            'phone.digits'=> 'Must be 10 digits.',
+        ]);
+
+        $validator->after(function ($validator) use ($request) {
+            $isPrimaryArr = $request->is_primary ?? [];
+            $primaryCount = collect($isPrimaryArr)->filter(fn($v) => $v === 'Yes')->count();
+            if ($primaryCount === 0) $validator->errors()->add('is_primary', 'At least one bank must be Primary.');
+            if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
+        });
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'data' => $validator->errors()->toArray(), 'message' => 'Validation error.'], 422);
+        }
+
+        try {
+            $contact = null;
+
+            DB::transaction(function () use ($request, &$contact) {
+                $last = Contact::withTrashed()->orderBy('id', 'DESC')->first();
+                $n    = $last ? (int)$last->contactno + 1 : 1;
+                $contactno = str_pad($n, 6, '0', STR_PAD_LEFT);
+
+                $phoneCode = getPhoneCode();
+
+                $contact = new Contact;
+                $contact->contactno       = $contactno;
+                $contact->cotype_id       = self::CONTACT_TYPE_SPARE_VENDOR;
+                $contact->organisation_id = optional(Auth::user()?->organisation)->id;
+                $contact->contact_name    = $request->contact_name;
+                $contact->company_name    = $request->company_name;
+                $contact->contact_code    = $request->contact_code;
+                $contact->ph_prefix       = $request->phone_code ?? $phoneCode;
+                $contact->phone           = $request->phone;
+                $contact->whatsapp_prefix = $request->whatsapp_code ?? $phoneCode;
+                $contact->whatsapp        = $request->whatsapp;
+                $contact->status          = $request->status ?? 'Active';
+                $contact->blacklist_reason= $request->blacklist_reason;
+                $contact->comment         = $request->contact_comment;   // contacts.comment
+                $contact->specialisation  = $request->specialisation ? implode(',', (array)$request->specialisation) : null;
+                $contact->full_company_name = $request->full_company_name;
+                $contact->company_owner   = $request->company_owner;
+                $contact->company_registration_no   = $request->company_registration_no;
+                $contact->company_registration_date = $request->company_registration_date;
+                $contact->working_since   = $request->working_since;
+                $contact->pan_no          = $request->pan_no;
+                $contact->pan_status_id   = $request->pan_status_id;
+                $contact->tds_percentage  = $request->tds_percentage;
+                $contact->address1        = $request->address;           // contacts.address1
+                $contact->state_id        = $request->state_id;
+                $contact->city_id         = $request->city_id;
+                $contact->zipcode         = $request->post_code;         // contacts.zipcode
+                $contact->additional_info = $request->additional_info;
+                $contact->created_by      = Auth::id();
+                $contact->save();
+
+                // Contact persons — stored in relcontacts table
+                $names        = $request->contact_person_name         ?? [];
+                $designations = $request->contact_person_designation  ?? [];
+                $phCodes      = $request->contact_person_ph_code      ?? [];
+                $whatsappCodes= $request->contact_person_whatsapp_code ?? [];
+                $whatsapps    = $request->contact_person_whatsapp     ?? [];
+                $phones       = $request->contact_person_phone        ?? [];
+                $emails       = $request->contact_person_email        ?? [];
+                $comments     = $request->contact_person_comment      ?? [];
+
+                foreach ($names as $idx => $name) {
+                    if (!$name) continue;
+                    $cp = new \App\Models\Relcontact;
+                    $cp->contact_id      = $contact->id;
+                    $cp->name            = $name;                          // relcontacts.name
+                    $cp->position        = $designations[$idx] ?? null;   // relcontacts.position
+                    $cp->ph_prefix       = $phCodes[$idx] ?? $phoneCode;
+                    $cp->phone           = $phones[$idx] ?? null;
+                    $cp->whatsapp_prefix = $whatsappCodes[$idx] ?? $phoneCode;
+                    $cp->whatsapp        = $whatsapps[$idx] ?? null;
+                    $cp->email           = $emails[$idx] ?? null;
+                    $cp->comment         = $comments[$idx] ?? null;
+                    $cp->created_by      = Auth::id();
+                    $cp->save();
+                }
+
+                // Bank details
+                $bankIds   = $request->bank_id        ?? [];
+                $benefNames= $request->beneficiary_name ?? [];
+                $accNos    = $request->account_number  ?? [];
+                $ifscCodes = $request->ifsc_code       ?? [];
+                $upiIds    = $request->upi_id          ?? [];
+                $isPrimary = $request->is_primary      ?? [];
+
+                foreach ($bankIds as $idx => $bankId) {
+                    if (!$bankId) continue;
+                    \App\Models\Contactbank::create([
+                        'contact_id'       => $contact->id,
+                        'bank_id'          => $bankId,
+                        'beneficiary_name' => $benefNames[$idx] ?? null,
+                        'account_number'   => $accNos[$idx]     ?? null,
+                        'ifsc_code'        => $ifscCodes[$idx]  ?? null,
+                        'upi_id'           => $upiIds[$idx]     ?? null,
+                        'is_primary'       => $isPrimary[$idx]  ?? 'No',
+                    ]);
+                }
+            });
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Spare vendor added successfully.',
+                'redirect' => route('contact.sparevendor.index'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function editSpareVendor(Request $request, $id)
+    {
+        $contact = Contact::with([
+                'country.states', 'state.cities', 'relcontacts',
+                'bankDetails', 'coattachments.coattachtype',
+                'activities', 'activities.createdBy',
+            ])
+            ->where('cotype_id', self::CONTACT_TYPE_SPARE_VENDOR)
+            ->findOrFail($id);
+
+        $organisation_id = optional(Auth::user()->organisation)->id;
+
+        $countries         = Country::all();
+        $states            = State::whereHas('country', fn($q) => $q->where('iso2', 'IN'))->orderBy('name')->get();
+        $cotypes           = Cotype::all();
+        $customerabouttype = Customerabouttype::orderBy('name')->get();
+        $gsttreats         = Gsttreat::all();
+        $coattachtypes     = Coattachtype::all();
+        $cotype            = $cotypes->firstWhere('id', self::CONTACT_TYPE_SPARE_VENDOR);
+        $pan_statuses      = Panstatus::where('organisation_id', $organisation_id)->orderBy('name')->get();
+        $banks             = Bank::orderBy('name')->get();
+        $spareCategories   = WsSparePartCategory::active()->orderBy('name')->get();
+
+        $description  = 'Retrieve spare vendor ' . $contact->contact_name . ' to edit.';
+        $this->storeUseractivity(69, 5, Auth::user()->id, $contact->id, $description);
+
+        return view('contacts.sparevendor.edit',
+            compact('contact', 'customerabouttype', 'countries', 'states', 'cotype', 'cotypes',
+                    'gsttreats', 'coattachtypes', 'pan_statuses', 'banks', 'spareCategories'));
+    }
+
+    public function updateSpareVendor(Request $request, $id)
+    {
+        $request->merge([
+            'phone'    => preg_replace('/\s+/', '', $request->phone    ?? ''),
+            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+        ]);
+
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_SPARE_VENDOR)->findOrFail($id);
+
+        $validate_phone = function (string $attribute, mixed $value, Closure $fail) use ($id) {
+            $code = getPhoneCode();
+            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+                $fail('This phone number already exists.');
+            }
+        };
+
+        $validator = Validator::make($request->all(), [
+            'gst_number'                  => 'nullable|max:100',
+            'company_name'                => 'required|max:100',
+            'contact_name'                => 'required|max:100',
+            'contact_code'                => 'required|max:100',
+            'phone'                       => ['required', 'digits:10', $validate_phone],
+            'whatsapp'                    => ['nullable', 'digits:10'],
+            'status'                      => 'nullable|in:Active,Inactive,Blacklisted',
+            'blacklist_reason'            => 'required_if:status,Blacklisted',
+            'contact_comment'             => 'nullable|string|max:255',
+            'full_company_name'           => 'nullable|max:100',
+            'company_owner'               => 'nullable|max:100',
+            'company_registration_no'     => 'nullable|max:100',
+            'company_registration_date'   => 'nullable|date|before_or_equal:today',
+            'working_since'               => 'nullable|date|before_or_equal:today',
+            'pan_no'                      => 'nullable|max:100',
+            'pan_status_id'               => 'nullable|integer|exists:panstatuses,id',
+            'tds_percentage'              => 'nullable|numeric|min:0|max:100',
+            'address'                     => 'required|string|max:1000',
+            'state_id'                    => 'required|exists:states,id',
+            'city_id'                     => 'required|exists:cities,id',
+            'post_code'                   => 'nullable|digits:6',
+            'additional_info'             => 'nullable|string|max:10000',
+            'is_primary'                  => 'required|array',
+            'is_primary.*'                => 'required|in:Yes,No',
+            'bank_id'                     => 'required|array',
+            'bank_id.*'                   => 'required|exists:banks,id',
+            'account_number'              => 'required|array',
+            'account_number.*'            => 'required|string|max:50',
+            'ifsc_code'                   => 'required|array',
+            'ifsc_code.*'                 => 'required|string|max:20',
+            'upi_id'                      => 'nullable|array',
+            'upi_id.*'                    => 'nullable|string|max:100',
+            'contact_person_name'         => 'required|array|min:1',
+            'contact_person_name.*'       => 'required|string|distinct|min:1',
+            'contact_person_designation'  => 'required|array|min:1',
+            'contact_person_designation.*'=> 'required|string|min:1',
+            'contact_person_phone'        => 'required|array|min:1',
+            'contact_person_phone.*'      => ['required', 'string', 'distinct'],
+            'contact_person_email'        => 'nullable|array|min:1',
+            'contact_person_email.*'      => 'nullable|email:rfc,dns|distinct',
+        ], [
+            'required' => 'This field is required.',
+            'max'      => 'Maximum 100 characters allowed.',
+            'exists'   => "This field's value is invalid.",
+            'distinct' => 'Duplicate value.',
+            'email'    => 'This email is invalid.',
+        ]);
+
+        $validator->after(function ($validator) use ($request) {
+            $isPrimaryArr = $request->is_primary ?? [];
+            $primaryCount = collect($isPrimaryArr)->filter(fn($v) => $v === 'Yes')->count();
+            if ($primaryCount === 0) $validator->errors()->add('is_primary', 'At least one bank must be Primary.');
+            if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
+        });
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'data' => $validator->errors()->toArray(), 'message' => 'Validation error.'], 422);
+        }
+
+        try {
+            DB::transaction(function () use ($request, $contact) {
+                $phoneCode = getPhoneCode();
+
+                $contact->contact_name    = $request->contact_name;
+                $contact->company_name    = $request->company_name;
+                $contact->contact_code    = $request->contact_code;
+                $contact->ph_prefix       = $request->phone_code ?? $phoneCode;
+                $contact->phone           = $request->phone;
+                $contact->whatsapp_prefix = $request->whatsapp_code ?? $phoneCode;
+                $contact->whatsapp        = $request->whatsapp;
+                $contact->status          = $request->status ?? 'Active';
+                $contact->blacklist_reason= $request->blacklist_reason;
+                $contact->comment         = $request->contact_comment;
+                $contact->specialisation  = $request->specialisation ? implode(',', (array)$request->specialisation) : null;
+                $contact->full_company_name = $request->full_company_name;
+                $contact->company_owner   = $request->company_owner;
+                $contact->company_registration_no   = $request->company_registration_no;
+                $contact->company_registration_date = $request->company_registration_date;
+                $contact->working_since   = $request->working_since;
+                $contact->pan_no          = $request->pan_no;
+                $contact->pan_status_id   = $request->pan_status_id;
+                $contact->tds_percentage  = $request->tds_percentage;
+                $contact->address1        = $request->address;
+                $contact->state_id        = $request->state_id;
+                $contact->city_id         = $request->city_id;
+                $contact->zipcode         = $request->post_code;
+                $contact->additional_info = $request->additional_info;
+                $contact->updated_by      = Auth::id();
+                $contact->save();
+
+                // Sync contact persons — stored in relcontacts table
+                $existingIds  = $request->contact_person_id      ?? [];
+                $names        = $request->contact_person_name        ?? [];
+                $desigs       = $request->contact_person_designation ?? [];
+                $phCodes      = $request->contact_person_ph_code     ?? [];
+                $whatsappCodes= $request->contact_person_whatsapp_code ?? [];
+                $whatsapps    = $request->contact_person_whatsapp   ?? [];
+                $phones       = $request->contact_person_phone       ?? [];
+                $emails       = $request->contact_person_email       ?? [];
+                $comments     = $request->contact_person_comment     ?? [];
+
+                $submittedIds = [];
+                foreach ($names as $idx => $name) {
+                    if (!$name) continue;
+                    $personId = $existingIds[$idx] ?? null;
+                    if ($personId) {
+                        $cp = \App\Models\Relcontact::find($personId);
+                        if (!$cp) continue;
+                        $submittedIds[] = (int) $personId;
+                    } else {
+                        $cp = new \App\Models\Relcontact;
+                        $cp->contact_id  = $contact->id;
+                        $cp->created_by  = Auth::id();
+                    }
+                    $cp->name            = $name;                          // relcontacts.name
+                    $cp->position        = $desigs[$idx]          ?? null; // relcontacts.position
+                    $cp->ph_prefix       = $phCodes[$idx]         ?? $phoneCode;
+                    $cp->phone           = $phones[$idx]           ?? null;
+                    $cp->whatsapp_prefix = $whatsappCodes[$idx]   ?? $phoneCode;
+                    $cp->whatsapp        = $whatsapps[$idx]        ?? null;
+                    $cp->email           = $emails[$idx]           ?? null;
+                    $cp->comment         = $comments[$idx]         ?? null;
+                    $cp->updated_by      = Auth::id();
+                    $cp->save();
+                }
+                // Soft-delete removed persons
+                \App\Models\Relcontact::where('contact_id', $contact->id)
+                    ->whereNotIn('id', $submittedIds)
+                    ->delete();
+
+                // Sync bank details — delete all and re-insert
+                \App\Models\Contactbank::where('contact_id', $contact->id)->delete();
+                $bankIds    = $request->bank_id        ?? [];
+                $benefNames = $request->beneficiary_name ?? [];
+                $accNos     = $request->account_number  ?? [];
+                $ifscCodes  = $request->ifsc_code       ?? [];
+                $upiIds     = $request->upi_id          ?? [];
+                $isPrimary  = $request->is_primary      ?? [];
+                foreach ($bankIds as $idx => $bankId) {
+                    if (!$bankId) continue;
+                    \App\Models\Contactbank::create([
+                        'contact_id'       => $contact->id,
+                        'bank_id'          => $bankId,
+                        'beneficiary_name' => $benefNames[$idx] ?? null,
+                        'account_number'   => $accNos[$idx]     ?? null,
+                        'ifsc_code'        => $ifscCodes[$idx]  ?? null,
+                        'upi_id'           => $upiIds[$idx]     ?? null,
+                        'is_primary'       => $isPrimary[$idx]  ?? 'No',
+                    ]);
+                }
+            });
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Spare vendor updated successfully.',
+                'redirect' => route('contact.sparevendor.index'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function toggleSpareVendorStatus(Request $request, $id)
+    {
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_SPARE_VENDOR)->findOrFail($id);
+        $contact->status     = $contact->status === 'Active' ? 'Inactive' : 'Active';
+        $contact->updated_by = Auth::id();
+        $contact->save();
+
+        return response()->json([
+            'success'    => true,
+            'new_status' => $contact->status,
+            'message'    => 'Status updated to ' . $contact->status . '.',
+        ]);
+    }
+
+    public function destroySpareVendor($id)
+    {
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_SPARE_VENDOR)->findOrFail($id);
+        $contact->deleted_by = Auth::id();
+        $contact->save();
+        $contact->delete(); // SoftDeletes
+
+        return response()->json(['success' => true, 'message' => 'Vendor deleted.']);
+    }
+
+    public function sparevendor_contactPersonWrapper(Request $request){
+        $rowindex = $request->rowindex ?? 0;
+        $html = view('contacts.contact-person-wrapper.sparevendor-contact-person', compact('rowindex'))->render();
+        return response()->json(['html' => $html]);
+    }
+
+    public function sparevendor_bankWrapper(Request $request){
+        $rowindex = $request->rowindex ?? 0;
+        $banks = Bank::orderBy('name')->get();
+        $html = view('contacts.contact-bank-detail-wrapper.sparevendor-bank-detail', compact('rowindex','banks'))->render();
+        return response()->json(['html' => $html]);
+    }
+
+
+    // ─── Insurance Providers ────────────────────────────────────────────────────
+
+    public function insuranceProviderList(Request $request): View
+    {
+        $cotypeId    = self::CONTACT_TYPE_INSURANCE_PROVIDER;
+        $search_name = $request->name;
+        $search_city = $request->city;
+
+        $contacts = Contact::query()->where('cotype_id', $cotypeId);
+
+        if ($request->filled('name')) {
+            $contacts->where('contact_name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('city')) {
+            $contacts->where('city_id', $request->city);
+        }
+
+        $contacts = $contacts
+            ->with(['cotype', 'relcontacts'])
+            ->orderBy('id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $cotypes = Cotype::all();
+        $cotype  = $cotypes->firstWhere('id', self::CONTACT_TYPE_INSURANCE_PROVIDER)
+                   ?? (object)['id' => self::CONTACT_TYPE_INSURANCE_PROVIDER, 'name' => 'Insurance Provider'];
+
+        $cities  = City::whereHas('state.country', fn($q) => $q->where('iso2', 'IN'))
+                       ->orderBy('name')->get();
+        $states  = State::whereHas('country', fn($q) => $q->where('iso2', 'IN'))
+                        ->orderBy('name')->get();
+
+        return view('contacts.insuranceprovider.index',
+            compact('contacts', 'cities', 'states', 'cotype', 'search_name', 'search_city'));
+    }
+
+    /** GET /contacts/insurance-provider/{id}/json — used by edit modal */
+    public function getInsuranceProvider(int $id)
+    {
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_INSURANCE_PROVIDER)->findOrFail($id);
+        return response()->json(['success' => true, 'contact' => $contact]);
+    }
+
+    public function storeInsuranceProvider(Request $request)
+    {
+        $request->merge([
+            'phone'    => preg_replace('/\s+/', '', $request->phone),
+            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+        ]);
+
+        $validate_phone = function ($attribute, $value, $fail) use ($request) {
+            $code = $request->phone_code ?? getPhoneCode();
+            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+                $fail('This phone number already exists.');
+            }
+        };
+
+        $validator = Validator::make($request->all(), [
+            'company_name'    => 'required|max:100',
+            'contact_name'    => 'required|max:100',
+            'contact_code'    => 'required|max:100',
+            'phone'           => ['required', 'digits:10', $validate_phone],
+            'whatsapp'        => ['nullable', 'digits:10'],
+            'status'          => 'nullable|in:Active,Inactive,Blacklisted',
+            'contact_comment' => 'nullable|string|max:255',
+            'email'           => 'nullable|email|max:100',
+            'country_id'      => 'nullable|exists:countries,id',
+            'state_id'        => 'nullable|exists:states,id',
+            'city_id'         => 'nullable|exists:cities,id',
+            'contact_image'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'data' => $validator->errors()], 422);
+        }
+
+        $contact = NULL;
+        try{
+            DB::transaction(function() use ($request, &$contact){
+                $lastcontact = Contact::withTrashed()->orderBy('id', 'DESC')->first();
+                if($lastcontact){
+                    $lastcontactno = $lastcontact->contactno;
+                    $incr_lastcontact = $lastcontactno+1;
+                    if(strlen($incr_lastcontact)<5){
+                        $contactno = '0';
+                        for($i = 0; $i<(5-strlen($incr_lastcontact)); $i++){
+                            $contactno .= '0';
+                        }
+                        $contactno .= $incr_lastcontact;
+                    } else {
+                        $contactno = $incr_lastcontact;
+                    }
+                    
+                } else {
+                    $contactno = '000001';
+                }
+                
+                $phoneCode = getPhoneCode();
+
+                $cotype = Cotype::where('slug', 'insuranceprovider')->first();
+
+                $contact = new Contact();
+                $contact->contactno      = $contactno;
+                $contact->cotype_id      = self::CONTACT_TYPE_INSURANCE_PROVIDER;
+                $contact->company_name   = $request->company_name;
+                $contact->contact_name   = $request->contact_name;
+                $contact->contact_code   = $request->contact_code;
+                $contact->phone          = $request->phone;
+                $contact->ph_prefix      = $request->phone_code ?? getPhoneCode();
+                $contact->whatsapp       = $request->whatsapp;
+                $contact->email          = $request->email;
+                $contact->address1       = $request->address;
+                $contact->country_id     = $request->country_id;
+                $contact->state_id       = $request->state_id;
+                $contact->city_id        = $request->city_id;
+                $contact->zipcode        = $request->pincode;
+                $contact->gst_number     = $request->gst_number;
+                $contact->pan_no         = $request->pan_number;
+                $contact->tds_percentage = $request->tds_percentage ?? 0;
+                $contact->status         = $request->status ?? 'Active';
+                $contact->comment = $request->contact_comment;
+                $contact->created_by     = Auth::id();
+
+                if ($request->hasFile('contact_image') && $request->file('contact_image')->isValid()) {
+                    $uploadPath = public_path('media/contact');
+                    if (!\File::exists($uploadPath)) { \File::makeDirectory($uploadPath, 0755, true); }
+                    $filename = 'ip_' . time() . '_' . uniqid() . '.' . $request->file('contact_image')->getClientOriginalExtension();
+                    $request->file('contact_image')->move($uploadPath, $filename);
+                    $contact->contact_image = $filename;
+                }
+
+                $contact->save();
+            });
+        }catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+        
+
+        return response()->json([
+            'success' => true,
+            'message' => $contact->company_name . ' added successfully.',
+        ]);
+    }
+
+    public function updateInsuranceProvider(Request $request, $id)
+    {
+        $request->merge([
+            'phone'    => preg_replace('/\s+/', '', $request->phone    ?? ''),
+            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+        ]);
+
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_INSURANCE_PROVIDER)->findOrFail($id);
+
+        $validate_phone = function (string $attribute, mixed $value, Closure $fail) use ($id) {
+            $code = getPhoneCode();
+            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+                $fail('This phone number already exists.');
+            }
+        };
+
+        $validator = Validator::make($request->all(), [
+            'company_name'    => 'required|max:100',
+            'contact_name'    => 'required|max:100',
+            'contact_code'    => 'required|max:100',
+            'phone'           => ['required', 'digits:10', $validate_phone],
+            'whatsapp'        => ['nullable', 'digits:10'],
+            'status'          => 'nullable|in:Active,Inactive,Blacklisted',
+            'contact_comment' => 'nullable|string|max:255',
+            'email'           => 'nullable|email|max:100',
+            'country_id'      => 'nullable|exists:countries,id',
+            'state_id'        => 'nullable|exists:states,id',
+            'city_id'         => 'nullable|exists:cities,id',
+            'contact_image'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'data' => $validator->errors()], 422);
+        }
+
+        $contact->company_name    = $request->company_name;
+        $contact->contact_name    = $request->contact_name;
+        $contact->contact_code    = $request->contact_code;
+        $contact->phone           = $request->phone;
+        $contact->ph_prefix       = $request->phone_code ?? getPhoneCode();
+        $contact->whatsapp        = $request->whatsapp;
+        $contact->email           = $request->email;
+        $contact->address         = $request->address;
+        $contact->country_id      = $request->country_id;
+        $contact->state_id        = $request->state_id;
+        $contact->city_id         = $request->city_id;
+        $contact->pincode         = $request->pincode;
+        $contact->gst_number      = $request->gst_number;
+        $contact->pan_number      = $request->pan_number;
+        $contact->tds_percentage  = $request->tds_percentage ?? 0;
+        $contact->status          = $request->status ?? 'Active';
+        $contact->contact_comment = $request->contact_comment;
+        $contact->updated_by      = Auth::id();
+
+        if ($request->hasFile('contact_image') && $request->file('contact_image')->isValid()) {
+            // Delete old image
+            if ($contact->contact_image) {
+                $old = public_path('media/contact/' . $contact->contact_image);
+                if (\File::exists($old)) { \File::delete($old); }
+            }
+            $uploadPath = public_path('media/contact');
+            if (!\File::exists($uploadPath)) { \File::makeDirectory($uploadPath, 0755, true); }
+            $filename = 'ip_' . time() . '_' . uniqid() . '.' . $request->file('contact_image')->getClientOriginalExtension();
+            $request->file('contact_image')->move($uploadPath, $filename);
+            $contact->contact_image = $filename;
+        }
+
+        $contact->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $contact->company_name . ' updated successfully.',
+        ]);
+    }
+
+    public function toggleInsuranceProviderStatus(Request $request, $id)
+    {
+        $contact   = Contact::where('cotype_id', self::CONTACT_TYPE_INSURANCE_PROVIDER)->findOrFail($id);
+        $newStatus = $contact->status === 'Active' ? 'Inactive' : 'Active';
+        $contact->update(['status' => $newStatus, 'updated_by' => Auth::id()]);
+
+        return response()->json([
+            'success'    => true,
+            'new_status' => $newStatus,
+            'message'    => $contact->company_name . ' marked as ' . $newStatus . '.',
+        ]);
+    }
+
+    public function destroyInsuranceProvider($id)
+    {
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_INSURANCE_PROVIDER)->findOrFail($id);
+        $contact->update(['deleted_by' => Auth::id()]);
+        $contact->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => $contact->company_name . ' removed.',
+        ]);
+    }
+
     // Other Section ---------------------------------------------------------------------------------------------------------
     
     

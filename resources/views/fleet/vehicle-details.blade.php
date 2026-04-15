@@ -4,7 +4,7 @@
     
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=0.02') }}">
+<link rel="stylesheet" href="{{ asset('css/Fleet/vehicle-details.css?v=0.02') }}">
     
 @endsection
 
@@ -834,134 +834,167 @@
                     </div>
                     
                     <div class="accordion-item mt-3">
-                        
+
                         <div class="accordion-header vehicleinfor_head" id="tyre_det">
-                            
                             <div class="row vehicleinfo_toprow align-items-center">
-                             
                                 <div class="col-12 col-md-11 d-flex align-items-center">
-                                    <span class="titletext">Tyres Details</span>
-                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="badge badge-primary"><i class="uil uil-plus me-1"></i>Add Tyre Details</a>
+                                    <span class="titletext">Tyre Details</span>
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="badge badge-primary ms-2">
+                                        <i class="uil uil-plus me-1"></i>Manage Tyres
+                                    </a>
                                 </div>
-                                
                                 <div class="col-12 col-md-1">
                                     <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#tyre_bd"
                                         aria-expanded="true" aria-controls="tyre_bd">
                                     </button>
                                 </div>
                             </div>
-                            
                         </div>
 
                         <div id="tyre_bd" class="accordion-collapse collapse show" aria-labelledby="tyre_det" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                {{--
-                                @forelse($vehicle->tyres as $tyre)
-                                <div class="inner-card">
-                                    <div class="icon-wrap">
-                                        <a href="javascript:void(0)" data-id="{{ $tyre->id }}" class="editTyre"><i class="uil uil-pen"></i></a>
-                                        <a href="javascript:void(0)" data-id="{{ $tyre->id }}" class="deleteTyre text-danger ms-1"><i class="uil uil-trash-alt"></i></a>
+                                @forelse($vehicle->vehicletyremappings()->with(['tyre', 'tyreposition'])->orderBy('status')->get() as $mapping)
+                                <div class="inner-card mb-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="fw-semibold" style="font-size:12px; color:#032671;">
+                                            <i class="uil uil-circle me-1"></i>
+                                            Wheel Position: <strong>{{ $mapping->tyreposition->description ?? $mapping->tyreposition->code ?? '-' }}</strong>
+                                            @if($mapping->status === 'Spare')
+                                                <span class="badge badge-warning ms-1">Stepney</span>
+                                            @elseif($mapping->status === 'Inactive')
+                                                <span class="badge badge-danger ms-1">Removed</span>
+                                            @else
+                                                <span class="badge badge-success ms-1">Fitted</span>
+                                            @endif
+                                        </span>
+                                        <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="text-primary" style="font-size:12px;">
+                                            <i class="uil uil-pen me-1"></i>Edit
+                                        </a>
                                     </div>
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <p>Tyre Model</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_model ?? '-' }}</span>
+                                                        <p>Make</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_brand ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Type</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_type ?? '-' }}</span>
+                                                        <p>Model</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_model ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Brand</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_brand ?? '-' }}</span>
+                                                        <p>Type</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_type ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Price</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_price ?? '-' }}</span>
+                                                        <p>Condition</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_condition ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Serial Numbers</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_serial_number ?? '-' }}</span>
+                                                        <p>Serial No.</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_serial_number ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Position</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_position ?? '-' }}</span>
+                                                        <p>Purchase Price (₹)</p>
+                                                        <span class="text-secondary d-block">
+                                                            {{ $mapping->tyre->tyre_price ? '₹'.number_format($mapping->tyre->tyre_price, 2) : '-' }}
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <p>Warranty (Months)</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_warranty_months ?? '-' }}</span>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->tyre_warranty_months ?? '-' }}</span>
                                                     </td>
-                                                    
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <p>Purchase Date</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_purchase_date ?? '-' }}</span>
+                                                        <span class="text-secondary d-block">
+                                                            {{ $mapping->tyre->tyre_purchase_date ? \Carbon\Carbon::parse($mapping->tyre->tyre_purchase_date)->format('d/m/Y') : '-' }}
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Issue Date</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_issue_date ?? '-' }}</span>
+                                                        <p>Fitment Date</p>
+                                                        <span class="text-secondary d-block">
+                                                            {{ $mapping->fitment_date ? \Carbon\Carbon::parse($mapping->fitment_date)->format('d/m/Y') : '-' }}
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Fixed Run KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->fixed_run_km ?? '-' }}</span>
+                                                        <p>KM at Fitment</p>
+                                                        <span class="text-secondary d-block">
+                                                            {{ $mapping->km_at_fitment ? number_format($mapping->km_at_fitment).' KM' : '-' }}
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Fixed Life (Months)</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->fixed_life_months ?? '-' }}</span>
+                                                        <p>KM Life</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->fixed_run_km ? number_format($mapping->tyre->fixed_run_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Actual Run KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_km ?? '-' }}</span>
+                                                        <p>Month Life</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->fixed_life_months ? $mapping->tyre->fixed_life_months.' Months' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Actual Run Month</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_month ?? '-' }}</span>
+                                                        <p>KM Run</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->actual_run_km ? number_format($mapping->tyre->actual_run_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Remaining Run KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->remaining_run_km ?? '-' }}</span>
+                                                        <p>Months Run</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->actual_run_month ? $mapping->tyre->actual_run_month.' Months' : '-' }}</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <p>Remaining Life (Months)</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->remaining_life_month ?? '-' }}</span>
+                                                        <p>KM Balance</p>
+                                                        <span class="d-block">
+                                                            @php
+                                                                $kmLife    = $mapping->tyre->fixed_run_km ?? 0;
+                                                                $kmRun     = $mapping->tyre->actual_run_km ?? 0;
+                                                                $kmBalance = $kmLife - $kmRun;
+                                                            @endphp
+                                                            @if($kmLife > 0)
+                                                                @if($kmBalance <= 0)
+                                                                    <span class="text-danger fw-bold">Overdue</span>
+                                                                @elseif($kmBalance <= 10000)
+                                                                    <span class="text-warning fw-bold">{{ number_format($kmBalance) }} KM</span>
+                                                                @else
+                                                                    <span class="text-success">{{ number_format($kmBalance) }} KM</span>
+                                                                @endif
+                                                            @else
+                                                                <span class="text-secondary">-</span>
+                                                            @endif
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Alignment Every KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->alignment_interval_km ?? '-' }}</span>
+                                                        <p>Alignment Interval (KM)</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->alignment_interval_km ? number_format($mapping->tyre->alignment_interval_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Rotation Every KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->rotation_interval_km ?? '-' }}</span>
+                                                        <p>Last Alignment at KM</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->last_alignment_km ? number_format($mapping->tyre->last_alignment_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Last Alignment KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->last_alignment_km ?? '-' }}</span>
+                                                        <p>Rotation Interval (KM)</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->rotation_interval_km ? number_format($mapping->tyre->rotation_interval_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Last Rotation KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->last_rotation_km ?? '-' }}</span>
+                                                        <p>Last Rotation at KM</p>
+                                                        <span class="text-secondary d-block">{{ $mapping->tyre->last_rotation_km ? number_format($mapping->tyre->last_rotation_km).' KM' : '-' }}</span>
                                                     </td>
-                                                    <td></td>
+                                                    <td colspan="2"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 @empty
-                                @endforelse
-                                --}}
                                 <div class="alert alert-warning text-center p-2" role="alert">
-                                    Please Add Tyre Details, No Data is Added yet. 
+                                    No tyres are mapped to this vehicle yet.
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="alert-link ms-1">Manage Tyres →</a>
                                 </div>
+                                @endforelse
                             </div>
                         </div>
-                        
+
                     </div>
                     
                     <div class="accordion-item mt-3">
@@ -1267,6 +1300,13 @@
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#emi_book">
                             <span class="icon"><img src="{{ asset('images/icons/emi-bookicon.png') }}" alt="" /></span>
                             EMI Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
+                            <span class="icon"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
+                            Insurance
                         </button>
                     </li>
 
@@ -2819,6 +2859,130 @@
                     <!--Allotment-End-->
 
                     <!--comment-->
+                    {{-- ═══ INSURANCE TAB ═══ --}}
+                    <div class="tab-pane fade" id="insurance">
+                        <div style="padding:4px 0 20px;">
+
+                            {{-- Tab header with Raise Claim action --}}
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <span style="font-size:14px;font-weight:700;color:#032671;">Insurance</span>
+                                    <span style="font-size:12px;color:#888;margin-left:8px;">Policy details &amp; claim history for this vehicle</span>
+                                </div>
+                                <button class="btn btn-theme btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#newClaimModal"
+                                    onclick="prefillClaimVehicle('{{ $vehicle->vehicle_no ?? '' }}')">
+                                    <i class="uil uil-plus me-1"></i>Raise Claim
+                                </button>
+                            </div>
+
+                            {{-- Active Policy Card --}}
+                            <div style="background:#fff;border:1px solid #e4e7ef;border-radius:8px;padding:16px 18px;margin-bottom:14px;">
+                                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#032671;margin-bottom:12px;">
+                                    <i class="uil uil-shield-check me-1"></i>Current Policy
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-3 col-6">
+                                        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;">Insurer</div>
+                                        <div style="font-size:13px;font-weight:600;color:#2d2d2d;">ICICI Lombard</div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;">Policy No.</div>
+                                        <div style="font-size:12px;font-weight:600;color:#2d2d2d;font-family:monospace;">ICICILOM/CV/2025/{{ $vehicle->vehicle_no ?? 'TS09AB1234' }}</div>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;">Type</div>
+                                        <div style="font-size:13px;color:#2d2d2d;">Comprehensive</div>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;">Valid Until</div>
+                                        <div style="font-size:13px;font-weight:700;color:#10863f;">14 Apr 2027</div>
+                                        <div style="font-size:10px;color:#10863f;">367 days left</div>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;">IDV</div>
+                                        <div style="font-size:13px;font-weight:700;color:#032671;">₹28,50,000</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Claims for this vehicle --}}
+                            <div style="background:#fff;border:1px solid #e4e7ef;border-radius:8px;overflow:hidden;">
+                                <div style="background:#f8f9fc;border-bottom:1px solid #e4e7ef;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+                                    <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#032671;">
+                                        <i class="uil uil-file-alt me-1"></i>Claims History
+                                    </span>
+                                    <a href="{{ route('fleet.insurance.index') }}" style="font-size:11px;color:#032671;">View all claims →</a>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" style="font-size:12px;">
+                                        <thead>
+                                            <tr style="background:#f8f9fc;">
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;white-space:nowrap;">Claim #</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;">Incident Date</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;">Type</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;">Workshop</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;text-align:right;">Claimed</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;text-align:right;">Received</th>
+                                                <th style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;padding:8px 14px;border-bottom:2px solid #e4e7ef;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <a href="{{ route('fleet.insurance.detail', 1) }}" style="font-weight:700;color:#032671;font-size:11px;text-decoration:none;">CLM-2024-0048</a>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;color:#555;">08 Dec 2024</td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <span style="background:#e3ecff;color:#032671;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Own Damage</span>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;color:#555;">
+                                                    <i class="uil uil-home-alt" style="color:#032671;font-size:12px;"></i> SC-HYD (Own)
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;text-align:right;font-weight:600;color:#032671;">₹2,40,000</td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;text-align:right;color:#adb5bd;">—</td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <span style="background:#fff3e0;color:#e65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;">Survey in Progress</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <a href="{{ route('fleet.insurance.detail', 2) }}" style="font-weight:700;color:#032671;font-size:11px;text-decoration:none;">CLM-2023-0031</a>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;color:#555;">14 Jul 2023</td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <span style="background:#e3ecff;color:#032671;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Own Damage</span>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;color:#555;">
+                                                    <i class="uil uil-store" style="color:#e65100;font-size:12px;"></i> Tata SC, Kurnool
+                                                    <span style="display:block;font-size:10px;color:#adb5bd;">External · Cashless</span>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;text-align:right;font-weight:600;color:#032671;">₹95,000</td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;text-align:right;font-size:11px;">
+                                                    <span style="color:#adb5bd;font-size:10px;display:block;">Excess paid</span>
+                                                    <span style="font-weight:700;color:#10863f;">₹25,000</span>
+                                                </td>
+                                                <td style="padding:9px 14px;border-bottom:1px solid #f0f2f7;vertical-align:middle;">
+                                                    <span style="background:#e6f4ea;color:#10863f;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Settled</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="7" style="padding:16px 14px;text-align:center;color:#adb5bd;font-size:12px;border:0;">
+                                                    <i class="uil uil-info-circle me-1"></i>
+                                                    Showing last 2 claims for this vehicle.
+                                                    <a href="{{ route('fleet.insurance.index') }}" style="color:#032671;">View all →</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {{-- ═══ END INSURANCE TAB ═══ --}}
+
                     <div class="tab-pane fade vdtl_comment1sec" id="comment">
                         <!--comment content here...-->
                         <div class="note-box">
@@ -5195,13 +5359,130 @@
 
 
 
+{{-- ══════════════════════════════════════════════════════════════════════
+     NEW CLAIM MODAL  (shared with fleet.insurance.index)
+     Raise Claim button in Insurance tab triggers this
+═══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="newClaimModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="uil uil-file-plus-alt me-2"></i>File New Insurance Claim</h6>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#032671;border-bottom:1px solid #e4e7ef;padding-bottom:5px;margin-bottom:2px;">Incident</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Vehicle</label>
+                        <input type="text" class="form-control form-control-sm bg-light" readonly
+                               value="{{ $vehicle->vehicle_no }}">
+                        <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Incident Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Incident Location</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="City / Highway / NH number…">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Damage Type <span class="text-danger">*</span></label>
+                        <select class="form-select form-select-sm">
+                            <option value="">— Select —</option>
+                            <option>Own Damage — Road Accident</option>
+                            <option>Own Damage — Fire</option>
+                            <option>Own Damage — Flood / Natural Calamity</option>
+                            <option>Theft / Partial Theft</option>
+                            <option>Third Party Property Damage</option>
+                            <option>Third Party Injury / Death</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">FIR / Police Report #</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="If applicable">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Incident Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control form-control-sm" rows="2" style="resize:none;" placeholder="Brief description of what happened, damage observed…"></textarea>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#032671;border-bottom:1px solid #e4e7ef;padding-bottom:5px;margin-bottom:2px;">Repair & Settlement</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Settlement Mode <span class="text-danger">*</span></label>
+                        <div class="d-flex gap-3 mt-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="vdSettlementMode" id="vdModeReimburse" value="reimbursement" checked onchange="vdToggleSettlementMode(this.value)">
+                                <label class="form-check-label" for="vdModeReimburse" style="font-size:13px;font-weight:600;">
+                                    Reimbursement
+                                    <span style="font-size:11px;color:#888;font-weight:400;display:block;">We pay repair → insurer pays us back</span>
+                                </label>
+                            </div>
+                            <div class="form-check ms-4">
+                                <input class="form-check-input" type="radio" name="vdSettlementMode" id="vdModeCashless" value="cashless" onchange="vdToggleSettlementMode(this.value)">
+                                <label class="form-check-label" for="vdModeCashless" style="font-size:13px;font-weight:600;">
+                                    Cashless
+                                    <span style="font-size:11px;color:#888;font-weight:400;display:block;">Workshop files with insurer → we pay excess only</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    @include('includes.workshop-claim-section', ['prefix' => 'vd', 'workshops' => $workshops ?? collect()])
+                    <div id="vdReimburseCostField" class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Estimated Repair Cost (₹) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control form-control-sm" placeholder="Workshop estimate">
+                    </div>
+                    <div id="vdCashlessExcessField" class="col-md-6" style="display:none;">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Excess Payable (₹)</label>
+                        <input type="number" class="form-control form-control-sm" placeholder="Amount we pay">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Linked Job Card</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="JC number if repair started">
+                    </div>
+                    <div class="col-12 mt-1">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#032671;border-bottom:1px solid #e4e7ef;padding-bottom:5px;margin-bottom:2px;">Insurer & Policy</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Insurer <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" placeholder="e.g. ICICI Lombard, New India…">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Policy Number</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Auto-filled from vehicle (when backend ready)">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Insurer Claim Ref #</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Ref given by insurer at filing">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;">Claim Filed Date</label>
+                        <input type="date" class="form-control form-control-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm"
+                    onclick="Swal.fire({icon:'success',title:'Claim Recorded',text:'Claim has been filed and added to the tracker.',timer:2000,showConfirmButton:false});$('#newClaimModal').modal('hide');">
+                    <i class="uil uil-save me-1"></i>Save Claim
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script>
 
 <script>
 
@@ -5222,8 +5503,71 @@
     
     var EDIT_FINANCE = "{{ route('vehicleemi.edit', ':id') }}";
     var VIEW_FINANCE_NOTES = "{{ route('vehicleemi.finance.note.show', ':id') }}";
-    
-    
+
+    /* ── Pre-fill vehicle in New Claim modal ── */
+    function prefillClaimVehicle(vehicleNo) {
+        if (!vehicleNo) return;
+        $('#claimVehicleSelect option').each(function () {
+            if ($(this).val() && $(this).text().indexOf(vehicleNo) !== -1) {
+                $('#claimVehicleSelect').val($(this).val());
+                return false;
+            }
+        });
+    }
+
+    /* ── New Claim modal: settlement mode toggle ── */
+    function vdToggleSettlementMode(mode) {
+        if (mode === 'cashless') {
+            $('#vdCashlessExcessField').show();
+            $('#vdReimburseCostField').hide();
+            if ($('input[name="vdWorkshopType"]:checked').val() === 'external') {
+                $('#vdCashlessScClaimRef').show();
+            }
+        } else {
+            $('#vdReimburseCostField').show();
+            $('#vdCashlessExcessField').hide();
+            $('#vdCashlessScClaimRef').hide();
+        }
+    }
+
+    /* ── Workshop type filter (called by radio onchange) ── */
+    function vdFilterWorkshopvd(type) {
+        $('#vdWorkshopSelect').val('').trigger('change');
+        $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').hide();
+        // Disable options not matching the selected type
+        $('#vdWorkshopSelect option[data-ownership]').each(function () {
+            $(this).prop('disabled', $(this).data('ownership') !== type);
+        });
+        // Show cashless claim-ref only for External + Cashless
+        if (type === 'External' && $('input[name="vdSettlementMode"]:checked').val() === 'cashless') {
+            $('#vdCashlessScClaimRef').show();
+        } else {
+            $('#vdCashlessScClaimRef').hide();
+        }
+    }
+
+    /* ── Reset modal on open ── */
+    $('#newClaimModal').on('show.bs.modal', function () {
+        $('input[name="vdSettlementMode"][value="reimbursement"]').prop('checked', true);
+        $('input[name="vdWorkshopType"][value="Own"]').prop('checked', true);
+        $('#vdCashlessExcessField, #vdCashlessScClaimRef').hide();
+        $('#vdReimburseCostField').show();
+        vdFilterWorkshopvd('Own');
+    });
+
+    /* ── Workshop auto-fill contact info ── */
+    $('#vdWorkshopSelect').on('change', function () {
+        var sel = $(this).find(':selected');
+        if ($(this).val()) {
+            $('#vdScContactPerson').val(sel.data('contact') || '');
+            $('#vdScPhone').val(sel.data('phone') || '');
+            $('#vdScCity').val(sel.data('city') || '');
+            $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').show();
+        } else {
+            $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').hide();
+        }
+    });
+
 </script>
 
 @endsection

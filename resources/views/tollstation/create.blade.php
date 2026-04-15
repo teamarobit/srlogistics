@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Tollstation/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -215,7 +213,7 @@
 var TOLLSTATIONS = "{{ route('tollstation.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/tollstation/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Tollstation/create.js')}}"></script>
 
 @endsection
 

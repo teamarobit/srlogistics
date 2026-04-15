@@ -1,0 +1,153 @@
+/* ============================================================
+   SC — Vehicle Delivery Page
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+.sc-jc-link { color: #032671; font-weight: 600; font-size: 13px; text-decoration: none; }
+.sc-jc-link:hover { text-decoration: underline; }
+
+.sc-reg-badge {
+    background: #f0f2f8; color: #032671; font-weight: 600; font-size: 12px;
+    padding: 2px 7px; border-radius: 4px;
+}
+.sc-bill-paid      { background: #10863f; color: #fff; font-size: 11px; }
+.sc-bill-generated { background: #032671; color: #fff; font-size: 11px; }
+.sc-bill-draft     { background: #6c757d; color: #fff; font-size: 11px; }
+
+.sc-out-token-issued { background: #0097a7; color: #fff; font-size: 11px; }
+
+.sc-row-delivered td { background: #f0fbf4; }
+
+.sc-row-actions { display: flex; gap: 4px; justify-content: center; }
+.sc-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 5px;
+    border: 1px solid #dee2e6; background: #fff;
+    color: #485D6B; font-size: 14px; cursor: pointer; transition: all .15s;
+}
+.sc-action-btn:hover { background: #f0f2f8; color: #032671; border-color: #032671; }
+
+.text-navy { color: #032671 !important; }
+
+/* ============================================================
+   Out-Token Wizard Stepper
+   ============================================================ */
+.sc-stepper {
+    display: flex;
+    align-items: center;
+}
+.sc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.sc-step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background: #fff;
+    color: #adb5bd;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+}
+.sc-step-label {
+    font-size: 11px;
+    color: #adb5bd;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: color .2s;
+}
+/* Active step */
+.sc-step-active .sc-step-num {
+    border-color: #032671;
+    background: #032671;
+    color: #fff;
+}
+.sc-step-active .sc-step-label {
+    color: #032671;
+    font-weight: 700;
+}
+/* Completed step */
+.sc-step-done .sc-step-num {
+    border-color: #10863f;
+    background: #10863f;
+    color: #fff;
+}
+.sc-step-done .sc-step-label {
+    color: #10863f;
+    font-weight: 600;
+}
+/* Connector line */
+.sc-step-line {
+    flex: 1;
+    height: 2px;
+    background: #dee2e6;
+    margin: 0 6px;
+    margin-bottom: 20px;
+    transition: background .2s;
+}
+.sc-step-line.sc-line-done {
+    background: #10863f;
+}
+
+/* ============================================================
+   Inspection toggle buttons (Step 2)
+   ============================================================ */
+.sc-insp-table th  { font-size: 12px; color: #6c757d; font-weight: 600; }
+.sc-insp-table td  { vertical-align: middle; font-size: 13px; padding: 6px 8px; }
+.sc-insp-toggles   { display: flex; gap: 4px; }
+.sc-insp-btn {
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all .15s;
+}
+.sc-insp-btn.active-ok   { background: #d4edda; color: #10863f; border-color: #10863f; }
+.sc-insp-btn.active-dmg  { background: #fde8ea; color: #EA0027; border-color: #EA0027; }
+.sc-insp-btn.active-na   { background: #e9ecef; color: #6c757d; border-color: #adb5bd; }
+
+/* ============================================================
+   Step 4 — Summary card
+   ============================================================ */
+.sc-ot-summary {
+    background: #f8f9fc;
+    border: 1px solid #dde3f0;
+    border-radius: 8px;
+    padding: 14px 18px;
+}
+.sc-ot-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 4px 0;
+    border-bottom: 1px solid #eaeef6;
+}
+.sc-ot-summary-row:last-child { border-bottom: none; }
+.sc-ot-summary-label { color: #6c757d; }
+.sc-ot-summary-val   { font-weight: 600; color: #1a1a2e; }
+
+/* Issue token button */
+.sc-btn-issue-token {
+    background: #10863f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+}
+.sc-btn-issue-token:hover { background: #0a6b31; color: #fff; }

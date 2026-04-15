@@ -4,9 +4,7 @@
 
 <link rel="stylesheet" href="{{-- asset('css/vehicle-type-list.css') --}}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -148,7 +146,7 @@
 var DELETE_VEHICLE_TYPE  = "{{route('vehicletype.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/type/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Tracking/index.js')}}"></script>
 
 @endsection
 

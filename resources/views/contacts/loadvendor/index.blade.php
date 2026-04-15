@@ -2,11 +2,6 @@
 
 @section('css')
 
-<style>
-body{
-    background-color: #fff;
-}
-</style>
 @endsection
 
 @section('content')

@@ -133,6 +133,13 @@ $(document).ready(function(){
     console.log("Initializing dropzone...");
     initDropzone(0);
     
+    $('.table .form-control').each(function(index, value) {
+        if($(this).val().length){
+            $(this).addClass('has-val');
+        }
+    });
+    
+    $('.select2').select2();
     
     setupDependentSelect('.dependent-select', 'Choose city');
     

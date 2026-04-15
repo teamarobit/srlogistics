@@ -1,70 +1,6 @@
 @extends('layouts.app')
 
 @section('css')
-<style>
-    body{
-        background-color: #fff;
-    }
-    .form-bg{
-        padding: 20px 30px;
-        background: #f1f1f1;
-        margin-bottom: 20px;
-    }
-    .btn-theme.head-btn i{
-        background-color: transparent;
-        color: #000;
-    }
-    /*.btn{*/
-    /*    padding: 8px 12px;*/
-    /*    text-transform: inherit;*/
-    /*}*/
-    .form-check-input[type=checkbox]:checked {
-        background-color: #1f75a8 !important;
-        border-color: #1f75a8 !important;
-    }
-    p{
-        font-size: 14px;
-        margin-bottom: 0px;
-    }
-    .btn-theme i{
-        font-size: 8px;
-    }
-    input[type=radio]{
-        color: #000;
-    }
-    .form-control.has-val{
-        border-color: transparent;
-    }
-    .form-control.has-val:focus{
-        border: #d4d6db;
-    }
-    .head-btn:after{
-        display: none;
-    }
-    .badge.bg-primary {
-        background-color: #c8e5fc !important;
-        padding: 10px 20px;
-        color: #333;
-        font-size: 16px;
-    }
-    .table thead tr th {
-        padding: 8px 15px;
-        vertical-align: middle;
-    }
-    .table tbody tr td {
-        padding: 8px 15px;
-    }
-    .page-head p strong{
-        font-weight: 600 !important;
-    }
-    .accordion-button{
-        background: #ecf2f4 !important;
-        padding: 10px 20px;
-        color: #0b5871;
-        font-weight: 600;
-        font-size: 14px;
-    }
-</style>
 @endsection
 
 @section('content')
@@ -309,5 +245,5 @@
     var EDIT_BOM    = "{{ route('bom.edit', ['id' => $bom->id]) }}";
    
 </script>
-<script type="text/javascript" src="{{ asset('customjs/bom/show.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/bom/show.js') }}"></script>
 @endsection

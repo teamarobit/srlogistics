@@ -291,6 +291,19 @@
     .blacklist_color .c_red {color:#ea0027 !important; }
     /**/
     
+    .table thead tr th {padding: 8px 15px; }
+    .table tbody td {  padding: 8px 20px;  font-size: 13px; }
+
+    /**/
+
+
+    /*dropzone*/
+    .dropzone {
+        border: 2px dashed #dbdee0;
+        padding: 20px;
+        background: #fff;
+        min-height: 120px;
+    }
     
     
     

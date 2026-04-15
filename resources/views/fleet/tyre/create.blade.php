@@ -2,7 +2,7 @@
 
 @section('css')
     
-    <link rel="stylesheet" href="{{ asset('css/fleet/tyre/create.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Fleet/tyre-create.css') }}">
     
 @endsection
 
@@ -304,7 +304,7 @@
 </script>
 
 <script type="text/javascript" src="{{ asset('arobittyre_management/fleet-tyre.js') }}"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/tyre/create.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/tyre/create.js') }}"></script>
 
 
 @endsection

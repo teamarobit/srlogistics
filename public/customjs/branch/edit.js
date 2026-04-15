@@ -1,17 +1,131 @@
-$(document).ready(function() {
-    
-    const Toast = Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-          }
+const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+});
+
+let dt = new DataTransfer();   // Holds selected files
+
+// =============================
+// NEW FILE SELECTION
+// =============================
+$("#branch_documents").on("change", function () {
+
+    let files = this.files;
+
+    for (let i = 0; i < files.length; i++) {
+        dt.items.add(files[i]);
+    }
+
+    this.files = dt.files;
+    renderPreview();
+});
+
+// =============================
+// RENDER NEW FILE PREVIEW
+// =============================
+function renderPreview() {
+
+    const preview = $("#previewContainer");
+    preview.html("");
+
+    Array.from(dt.files).forEach((file, index) => {
+
+        let content = "";
+
+        // IMAGE THUMBNAIL
+        if (file.type.startsWith("image/")) {
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                addBlock(e.target.result, file.name, index, true);
+            };
+
+            reader.readAsDataURL(file);
+        }
+        else {
+            addBlock(null, file.name, index, false);
+        }
     });
-    
+}
+
+
+// =============================
+// ADD NEW FILE BLOCK
+// =============================
+function addBlock(imgSrc, name, index, isImage) {
+
+    let html = `
+        <div style="position:relative;border:1px solid #ddd;padding:5px;">
+            
+            ${isImage 
+                ? `<img src="${imgSrc}" style="width:80px;height:80px;object-fit:cover;">`
+                : `<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:12px;">ðŸ“„</div>`
+            }
+
+            <div style="font-size:11px;width:80px;overflow:hidden;">${name}</div>
+            
+            <button type="button" onclick="removeFile(${index})" class="remove-file-btn">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    `;
+
+    $("#previewContainer").append(html);
+}
+
+
+// =============================
+// REMOVE NEW FILE
+// =============================
+function removeFile(index) {
+
+    dt.items.remove(index);
+
+    document.getElementById("branch_documents").files = dt.files;
+
+    renderPreview();
+}
+
+
+// =============================
+// DELETE EXISTING FILE
+// =============================
+$(document).on("click", ".remove-existing-btn", function () {
+
+    let box = $(this).closest(".file-box");
+
+    let fileId = box.data("id");
+
+    // Put ID inside hidden input
+    box.find(".remove-input").val(fileId);
+
+    // Hide from UI
+    box.hide();
+});
+
+
+
+$('document').ready(function(){
+    $('.if-rental').click(function(){
+        $('.rental-wrap').show();
+        $('.own-wrap').hide();
+    })
+    $('.if-owned').click(function(){
+        $('.rental-wrap').hide();
+        $('.own-wrap').show();
+    })
+});
+
+
+$(document).ready(function() {
     
     setupDependentSelect('.dependent-select', 'Choose city');
     

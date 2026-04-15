@@ -1,0 +1,152 @@
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+.input-group>.form-control{
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 5px 15px;
+}
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+
+
+
+
+
+
+
+
+/**/
+
+
+
+
+
+
+
+
+
+
+/**/
+
+.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
+	border-radius: 6px; }
+
+
+
+/**/
+
+
+
+.documentdtl-bd .sec-tooltip {  position: relative;  display: inline-block;  cursor: pointer; }
+
+.documentdtl-bd .sec-tooltip .uil-info-circle {    color: #070b3e;    font-weight: bold;    font-size: 15px;
+    padding: 1px 2px;    margin-left: 3px;    border-radius: 11px;    line-height: 11px;
+    background: #ffffff45;    height: 18px;    display: inline-flex;
+    width: 18px;    align-items: center;    justify-content: center;
+    font-weight: bold; }
+
+.documentdtl-bd .sec-tooltip p {  visibility: hidden; width: 130px;
+background: #333;  color: #fff; text-align: center;
+padding: 3px 6px; border-radius:5px; position: absolute;
+z-index: 1;  top: 0; left: 26px;
+opacity: 0; transition: opacity 0.3s;  font-size: 12px; line-height: 16px;
+text-align: left; }
+
+.documentdtl-bd .sec-tooltip p:after { content:""; width: 0;height: 0;border-style: solid;border-top: 10px solid transparent;border-bottom: 10px solid transparent;border-right: 12px solid #333;border-left: 0;position: absolute;left: -7px;top: 4px;}
+
+.documentdtl-bd .sec-tooltip:hover p {  visibility: visible;  opacity: 1; }
+
+.days-beforeexpiry.active {	display: block !important; }
+.days-beforeexpiry02.active { display: block !important; }
+
+/* Inline styles from create.blade.php */
+.table-hover tbody > tr:hover > * {
+    background-color: #f4fbff !important;
+}
+.table tbody tr th {
+    background-color: #f7f7fe;
+    width: auto;
+    min-width: 170px;
+    font-size: 13px;
+}
+.addroute-bd{
+    padding: 30px 0 !important;
+}
+.col-12.col-md-9.d-flex{
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+

@@ -2,11 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-vehicle-type.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-edit.css') }}">
 
-<style>
-
-</style>
 
 @endsection
 

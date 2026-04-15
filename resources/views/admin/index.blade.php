@@ -1,14 +1,6 @@
 @extends('layouts.app')
 
 @section('css')
-<style>
-    body{
-        background-color: #fff;
-    }
-    .dropdown-item{
-        padding: 5px 15px;
-    }
-</style>
 @endsection
 
 @section('content')

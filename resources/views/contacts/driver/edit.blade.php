@@ -5,24 +5,6 @@
 <link rel="stylesheet" href="{{ asset('css/driver-management.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
-<style>
-/**/
-.table thead tr th {padding: 8px 15px; }
-.table tbody td {  padding: 8px 20px;  font-size: 13px; }
-
-/**/
-
-
-/*dropzone*/
-.dropzone {
-    border: 2px dashed #dbdee0;
-    padding: 20px;
-    background: #fff;
-    min-height: 120px;
-}
-/*dropzone*/
-
-</style>
 
 @endsection
 
@@ -343,7 +325,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Date of Birth <span class="text-danger">*</span></label>
+                                                <label>Date of Birth</label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="date" class="form-control dob" name="dob" id="dob" value="{{ $contact->dob ?? '' }}" max="{{ date('Y-m-d') }}" />
@@ -496,7 +478,7 @@
                                                       </div>
                                                       <div class="col-12 col-md-7">
                                                           <input type="hidden" name="set_reminder" value="No">
-                                                          <input class="form-check-input" type="checkbox" name="set_reminder" id="set-reminder" value="Yes" {{ ($driverinfo->set_reminder ?? 'No') == 'Yes' ? 'checked' : '' }}>
+                                                          <input class="form-check-input" type="checkbox" name="set_reminder" id="set-reminder" value="Yes" {{ (optional($contact->driverinfo)->set_reminder ?? 'No') == 'Yes' ? 'checked' : '' }}>
                                                           <small class="error text-danger" id="edit_set_reminder_error"></small>
                                                       </div>
                                                     </div>
@@ -835,7 +817,7 @@
                                                 <option value="">Choose..</option>
                                                 @foreach ($states as $state)
                                                     <option value="{{ $state->id }}" data-url="{{ route('getcities', $state->id) }}"
-                                                        {{ $permanentAddress->state_id == $state->id ? 'selected' : '' }}>
+                                                        {{ ($permanentAddress?->state_id) == $state->id ? 'selected' : '' }}>
                                                         {{ $state->name }}
                                                     </option>
                                                 @endforeach
@@ -2037,21 +2019,6 @@
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
     
     
-    
-    $(document).ready(function(){
-        
-        $('.table .form-control').each(function(index, value) {
-            if($(this).val().length){
-                $(this).addClass('has-val');
-            }
-        });
-        
-        $('.select2').select2();
-        
-        $('[data-toggle="tooltip"]').tooltip();
-        
-    });
-    
 
 </script>
 
@@ -2061,7 +2028,7 @@
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
-<script type="text/javascript" src="{{ asset('js/employee-management.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 
 @endsection
 

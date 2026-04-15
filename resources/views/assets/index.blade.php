@@ -1,15 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-
-<link rel="stylesheet" href="{{-- asset('css/department.css') --}}">
-
-<style>
-body { background-color: #fff; }
-.table thead tr th { padding: 8px 10px; }
-.table tbody td { padding: 8px 10px; }
-</style>
-
+<link rel="stylesheet" href="{{ asset('css/Assets/index.css?v=1.0') }}">
 @endsection
 
 @section('content')
@@ -226,5 +218,5 @@ body { background-color: #fff; }
     
    
 </script>
-<script type="text/javascript" src="{{ asset('customjs/asset/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Assets/index.js') }}"></script>
 @endsection

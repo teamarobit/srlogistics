@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
                         ActmodelsTableSeeder::class,
                         ActoperationsTableSeeder::class,
                         AttachmentTypeSeeder::class,
+                        BankSeeder::class,
                         GsttreatsTableSeeder::class,
                         CotypesTableSeeder::class,
                         CustomerabouttypesSeeder::class,
@@ -50,6 +51,15 @@ class DatabaseSeeder extends Seeder
                         ReligionSeeder::class,
                         JobrankSeeder::class,
                         TyrepositionSeeder::class,
+                        InsurancecompanySeeder::class,
+                        InsuranceProviderSeeder::class,
+                        PanstatusesSeeder::class,
+                        SparePartCategoriesSeeder::class,
+                        SparePartsSeeder::class,
+                        SpareVendorSeeder::class,
+                        TestVehicleSeeder::class,
+                        WarehouseSeeder::class,
+                        FleetstatusSeeder::class,
                     ]);
     }
 }

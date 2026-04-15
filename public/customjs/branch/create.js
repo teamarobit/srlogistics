@@ -1,20 +1,90 @@
+const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+});
+
+let dt = new DataTransfer();   // Holds selected files
+
+$("#branch_documents").on("change", function () {
+
+    let files = this.files;
+
+    for (let i = 0; i < files.length; i++) {
+        dt.items.add(files[i]);
+    }
+
+    this.files = dt.files;
+    renderPreview();
+});
+
+function renderPreview() {
+
+    const preview = $("#previewContainer");
+    preview.html("");
+
+    Array.from(dt.files).forEach((file, index) => {
+
+        let content = "";
+
+        // IMAGE THUMBNAIL
+        if (file.type.startsWith("image/")) {
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                addBlock(e.target.result, file.name, index, true);
+            };
+
+            reader.readAsDataURL(file);
+        }
+        else {
+            addBlock(null, file.name, index, false);
+        }
+    });
+}
+
+
+function addBlock(imgSrc, name, index, isImage) {
+
+    let html = `
+        <div style="position:relative;border:1px solid #ddd;padding:5px;">
+            
+            ${isImage 
+                ? `<img src="${imgSrc}" style="width:80px;height:80px;object-fit:cover;">`
+                : `<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:12px;">ðŸ“„</div>`
+            }
+
+            <div style="font-size:11px;width:80px;overflow:hidden;">${name}</div>
+            
+            <button type="button" onclick="removeFile(${index})" class="remove-file-btn">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    `;
+
+    $("#previewContainer").append(html);
+}
+
+
+function removeFile(index) {
+
+    dt.items.remove(index);
+
+    document.getElementById("branch_documents").files = dt.files;
+
+    renderPreview();
+}
+
+
 
 $(document).ready(function() {
-    
-    const Toast = Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-          }
-    });
-    
-    
-    
     setupDependentSelect('.dependent-select', 'Choose city');
     
     function setupDependentSelect(firstSelectSelector, placeholder = 'Select option...') {
@@ -65,7 +135,14 @@ $(document).ready(function() {
     }
     
     
-    
+    $('.if-rental').click(function(){
+        $('.rental-wrap').show();
+        $('.own-wrap').hide();
+    })
+    $('.if-owned').click(function(){
+        $('.rental-wrap').hide();
+        $('.own-wrap').show();
+    })
     
     
     $(document).on('click', '#addBtn', function () {

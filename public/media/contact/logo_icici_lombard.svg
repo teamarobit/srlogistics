@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="16" fill="#1B3A7A"/>
+  <rect x="20" y="32" width="80" height="8" rx="4" fill="#F47920"/>
+  <rect x="28" y="48" width="64" height="6" rx="3" fill="#F47920" fill-opacity=".6"/>
+  <rect x="36" y="62" width="48" height="5" rx="2.5" fill="#F47920" fill-opacity=".35"/>
+  <text x="60" y="92" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="#F47920" text-anchor="middle" letter-spacing="1">ICICI</text>
+  <text x="60" y="106" font-family="Arial,sans-serif" font-size="9" font-weight="600" fill="#fff" text-anchor="middle" letter-spacing="0.5">LOMBARD</text>
+</svg>

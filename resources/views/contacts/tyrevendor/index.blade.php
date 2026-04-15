@@ -2,17 +2,6 @@
 
 @section('css')
 
-<style>
-body{
-    background-color: #fff;
-}
-.bg-success{
-    /*    background-color: #14a44d !important; */
-}
-.table .badge{
-    border-radius: 5px;
-}
-</style>
 @endsection
 
 @section('content')

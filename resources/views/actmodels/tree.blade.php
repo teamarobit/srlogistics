@@ -1,31 +1,6 @@
 @extends('layouts.app')
 
 @section('css')
-<style>
-    body{
-        background-color: #fff;
-    }
-    
-    .sidemenu .accordion-button{
-        background: #f7f7fe !important;
-    }
-    .collapse-right{
-        position: absolute;
-        right: 60px;
-        top: 3px;
-        z-index: 9;
-    }
-    
-    /* Make node labels bold */
-    #tree .node field_0 {
-        font-weight: bold !important;
-    }
-    
-    /* Alternative (works on most templates) */
-    .orgchart .boc .field_0 {
-        font-weight: bold !important;
-    }
-</style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
 

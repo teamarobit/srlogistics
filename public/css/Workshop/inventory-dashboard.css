@@ -1,0 +1,53 @@
+/* ============================================================
+   Inventory Dashboard
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* Module quick-link cards */
+.sc-inv-module-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 10px;
+    padding: 18px 12px 14px;
+    text-decoration: none;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
+}
+.sc-inv-module-card:hover {
+    border-color: #032671;
+    box-shadow: 0 4px 14px rgba(3,38,113,.09);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+.sc-inv-module-icon {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+.sc-stat-navy  .sc-inv-module-icon  { background: #e3ecff; color: #032671; }
+.sc-stat-amber .sc-inv-module-icon  { background: #fff3e0; color: #E65100; }
+.sc-stat-green .sc-inv-module-icon  { background: #e6f4ea; color: #10863f; }
+.sc-stat-grey  .sc-inv-module-icon  { background: #f5f7fb; color: #6c757d; }
+
+.sc-inv-module-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+.sc-inv-module-meta {
+    font-size: 10px;
+    color: #adb5bd;
+    line-height: 1.3;
+}
+
+/* Stock status badges */
+.sc-stock-warning  { background: #fff3e0; color: #E65100; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; display:inline-block; }
+.sc-stock-critical { background: #fdecea; color: #EA0027; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; display:inline-block; }
+.sc-stock-out      { background: #d9d9d9; color: #6c757d; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; display:inline-block; }

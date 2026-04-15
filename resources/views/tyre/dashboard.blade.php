@@ -1,25 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-    
+<link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
 <link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/dashboard-table.css') }}">
-
-<style>
-    .bg-empty{
-        background-color: #bccb2d;
-    }
-    .prev-wrap{
-        width: 120px;
-        height: 130px;
-        display: flex !important;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        align-items: center;
-        justify-content: center;
-    }
-</style>
-
 @endsection
 
 @section('content')
@@ -100,7 +83,7 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($warehouse_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($warehouse_count * 100 / $all_count) : 0 }}%</div>
                         
                                     <div class="item3">
                                         <img src="{{ asset('images/icons/tyre-default.png') }}" />
@@ -122,7 +105,7 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($service_center_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($service_center_count * 100 / $all_count) : 0 }}%</div>
                         
                                     <!--<div class="item2">Inactive Vehicles</div>-->
                         
@@ -146,7 +129,7 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($vehicle_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($vehicle_count * 100 / $all_count) : 0 }}%</div>
                         
                                     <!--<div class="item2">Without Driver</div>-->
                         
@@ -170,7 +153,7 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ round($discarded_count * 100 / $all_count) }}%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($discarded_count * 100 / $all_count) : 0 }}%</div>
                                     <div class="item3">
                                         <img src="{{ asset('images/icons/tyre-default.png') }}" />
                                     </div>
@@ -922,7 +905,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{ asset('customjs/tyre/dashboard.js') }}?v={{ uniqid() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/dashboard.js') }}"></script>
 
 
 @endsection

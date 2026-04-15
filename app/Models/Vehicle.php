@@ -40,6 +40,10 @@ class Vehicle extends Model
         return $this->hasMany(VehicleAllocation::class, 'vehicle_id')->latest();
     }
 
+    public function vehicletype(){
+        return $this->belongsTo(Vehicletype::class);
+    }
+
     public function contacts()
     {
         return $this->belongsToMany(
@@ -98,6 +102,11 @@ class Vehicle extends Model
     public function loanaccounts()
     {
         return $this->hasMany(Loanaccount::class, 'vehicle_id')->latest();
+    }
+
+    public function insuranceclaims()
+    {
+        return $this->hasMany(Insuranceclaim::class, 'vehicle_id')->latest();
     }
     
     public function chassisLoanAccounts()

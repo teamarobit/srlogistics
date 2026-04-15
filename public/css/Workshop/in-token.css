@@ -1,0 +1,175 @@
+/* ============================================================
+   sc-in-token.css  — Gate Entry / In-Token page styles
+   ============================================================ */
+
+/* Token number display */
+.sc-token-display {
+    background: #032671;
+    color: #fff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sc-token-num { font-size: 28px; font-weight: 800; letter-spacing: 1px; }
+.sc-token-sub { font-size: 11px; opacity: .8; margin-top: 2px; }
+
+/* Vehicle condition checklist */
+.condition-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.condition-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    padding: 6px 10px;
+    border: 1px solid #e8eaed;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+}
+.condition-item:hover       { border-color: #032671; background: #f0f4ff; }
+.condition-item.ok          { border-color: #10863f; background: #e6f4ea; color: #10863f; }
+.condition-item.damaged     { border-color: #ea0027; background: #fdecea; color: #ea0027; }
+.condition-item .ci-icon    { font-size: 14px; flex-shrink: 0; }
+
+/* Fuel level bar */
+.fuel-bar-wrap { position: relative; height: 14px; background: #e8eaed; border-radius: 7px; overflow: hidden; }
+.fuel-bar       { height: 100%; border-radius: 7px; transition: width .3s; }
+.fuel-labels    { display: flex; justify-content: space-between; font-size: 10px; color: #485D6B; margin-top: 3px; }
+
+/* Gate-in list (recent tokens) */
+.token-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+    transition: background .15s;
+}
+.token-list-item:hover { background: #f8faff; }
+.token-list-item:last-child { border-bottom: none; }
+
+/* Photo upload zone */
+.photo-zone {
+    border: 2px dashed #d4d6db;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 12px;
+    color: #485D6B;
+}
+.photo-zone:hover { border-color: #032671; background: #f0f4ff; }
+
+/* Success token card */
+.token-success-card {
+    background: linear-gradient(135deg, #032671 0%, #1a4ba8 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+}
+.token-success-card .ts-num  { font-size: 36px; font-weight: 800; letter-spacing: 2px; }
+.token-success-card .ts-sub  { font-size: 12px; opacity: .8; margin-bottom: 4px; }
+.token-success-card .ts-veh  { font-size: 16px; font-weight: 600; margin-top: 6px; }
+
+/* ── Print Token Slip (hidden on screen) ─────────────────────────────── */
+.prn-token-wrap { display: none; }
+
+.prn-token-card {
+    width: 220px;
+    border: 1.5px solid #032671;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+}
+.prn-token-header {
+    background: #032671;
+    color: #fff;
+    text-align: center;
+    padding: 9px 10px 7px;
+}
+.prn-th-company { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+.prn-th-sub     { font-size: 8.5px; opacity: .85; margin-top: 2px; letter-spacing: .5px; }
+
+.prn-token-num-block {
+    text-align: center;
+    padding: 14px 10px 10px;
+    border-bottom: 1px dashed #b8c8f0;
+}
+.prn-token-num {
+    font-size: 44px;
+    font-weight: 900;
+    color: #032671;
+    letter-spacing: 3px;
+    line-height: 1;
+}
+
+.prn-token-details { padding: 10px 12px 4px; }
+.prn-td-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10px;
+    padding: 3.5px 0;
+    border-bottom: 1px dotted #e4e7ef;
+}
+.prn-td-row:last-child { border-bottom: none; }
+.prn-td-label { color: #6c757d; font-weight: 600; flex-shrink: 0; margin-right: 8px; }
+.prn-td-val   { font-weight: 700; color: #1a1a2e; text-align: right; word-break: break-all; }
+
+.prn-token-divider { border-top: 1.5px dashed #b8c8f0; margin: 8px 10px 4px; }
+
+.prn-token-sigs {
+    display: flex;
+    gap: 14px;
+    padding: 6px 12px 8px;
+}
+.prn-sig-col   { flex: 1; text-align: center; }
+.prn-sig-line  { border-bottom: 1px solid #aaa; height: 24px; margin-bottom: 3px; }
+.prn-sig-lbl   { font-size: 8px; color: #6c757d; }
+
+.prn-token-footer {
+    background: #f5f7fb;
+    text-align: center;
+    font-size: 7.5px;
+    color: #6c757d;
+    padding: 5px 8px;
+    border-top: 1px solid #e4e7ef;
+    line-height: 1.4;
+}
+
+/* ── @media print ────────────────────────────────────────────────────── */
+@media print {
+    /* Hide everything except the token slip */
+    .layout-wrapper { display: none !important; }
+
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    /* Show and centre the token slip */
+    .prn-token-wrap {
+        display: flex !important;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .prn-token-card {
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

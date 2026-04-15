@@ -17,6 +17,13 @@ class Vehiclebasicinfo extends Model
     {
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
+
+    // Insurance policies
+    public function insurancePolicies()
+    {
+        return $this->hasMany(VehicleInsurancePolicy::class, 'vehicle_id')
+                    ->orderByDesc('policy_end_date');
+    }
     
 
     

@@ -1,0 +1,296 @@
+/* ============================================================
+   SC — Job Card Details Page (8-Tab)
+   sr-v1 | SR Logistics ERP
+   ============================================================ */
+
+/* Status badges (shared — also in job-card-list.css) */
+.sc-status-open        { background: #032671; color: #fff; font-size: 11px; }
+.sc-status-inprogress  { background: #E65100; color: #fff; font-size: 11px; }
+.sc-status-pendingparts{ background: #EA0027; color: #fff; font-size: 11px; }
+.sc-status-qc          { background: #6f42c1; color: #fff; font-size: 11px; }
+.sc-status-completed   { background: #10863f; color: #fff; font-size: 11px; }
+.sc-status-billed      { background: #6c757d; color: #fff; font-size: 11px; }
+
+/* Type badges */
+.sc-badge-workshop { background: #032671; color: #fff; font-size: 11px; font-weight: 500; }
+.sc-badge-onroad   { background: #E65100; color: #fff; font-size: 11px; font-weight: 500; }
+
+/* Action buttons (shared) */
+.sc-row-actions { display: flex; gap: 4px; justify-content: center; }
+.sc-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 5px;
+    border: 1px solid #dee2e6; background: #fff;
+    color: #485D6B; font-size: 14px; cursor: pointer; transition: all .15s;
+}
+.sc-action-btn:hover { background: #f0f2f8; color: #032671; border-color: #032671; }
+
+/* Reg badge */
+.sc-reg-badge {
+    background: #f0f2f8; color: #032671; font-weight: 600; font-size: 12px;
+    padding: 2px 7px; border-radius: 4px;
+}
+
+/* JC Number badge in header */
+.sc-jcd-num-badge {
+    background: #032671;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 5px 14px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* Vehicle Reg large display */
+.sc-jcd-reg {
+    font-size: 20px;
+    font-weight: 700;
+    color: #032671;
+    letter-spacing: 0.5px;
+}
+
+/* Info boxes */
+.sc-info-box {
+    background: #fff;
+    border: 1px solid #e8eaf0;
+    border-radius: 8px;
+    padding: 16px;
+}
+.sc-info-box-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #032671;
+    border-bottom: 1px solid #f0f2f8;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+.sc-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 4px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f8f9fa;
+}
+.sc-info-row:last-child { border-bottom: none; }
+.sc-info-label { color: #485D6B; flex: 0 0 42%; }
+.sc-info-val { color: #323130; text-align: right; flex: 0 0 55%; }
+.text-navy { color: #032671 !important; }
+
+/* Technician avatar */
+.sc-tech-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #032671;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Status flow */
+.sc-status-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.sc-flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+}
+.sc-flow-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background: #fff;
+    margin-bottom: 6px;
+}
+.sc-flow-line {
+    flex: 1;
+    height: 2px;
+    background: #dee2e6;
+    min-width: 30px;
+    margin-bottom: 20px;
+}
+.sc-flow-line-done { background: #10863f; }
+.sc-flow-done .sc-flow-dot { border-color: #10863f; background: #10863f; }
+.sc-flow-active .sc-flow-dot { border-color: #E65100; background: #E65100; }
+.sc-flow-pending .sc-flow-dot { border-color: #adb5bd; }
+.sc-flow-label { font-size: 12px; font-weight: 500; color: #485D6B; }
+.sc-flow-date { font-size: 11px; color: #adb5bd; }
+
+/* Subtotal row */
+.sc-subtotal-row td {
+    background: #f8f9fc;
+    font-weight: 600;
+}
+
+/* Billing summary */
+.sc-bill-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f2f8;
+}
+.sc-bill-divider { border-top: 2px solid #dee2e6; margin: 4px 0; }
+.sc-bill-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #032671;
+    border-bottom: none;
+}
+
+/* Checklist table */
+.sc-checklist-table tr td { padding: 7px 4px; border-bottom: 1px solid #f0f2f8; vertical-align: middle; }
+.sc-checklist-table tr:last-child td { border-bottom: none; }
+
+/* Toggle group */
+.sc-toggle-group {
+    display: inline-flex;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+.sc-toggle-btn {
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    background: #fff;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all .15s;
+}
+.sc-toggle-btn + .sc-toggle-btn { border-left: 1px solid #dee2e6; }
+.sc-toggle-btn.active-ok   { background: #10863f; color: #fff; }
+.sc-toggle-btn.active-fail { background: #EA0027; color: #fff; }
+.sc-toggle-btn.active-na   { background: #6c757d; color: #fff; }
+
+/* Photo grid */
+.sc-photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.sc-photo-thumb {
+    width: 100px;
+    height: 80px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+.sc-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    color: #adb5bd;
+    font-size: 24px;
+}
+
+/* Upload zone */
+.sc-upload-zone {
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+.sc-upload-zone:hover, .sc-upload-zone.drag-over {
+    border-color: #032671;
+    background: #f0f2f8;
+}
+
+/* ============================================================
+   Activity Log — .sc-log-* (used in tab-log panel)
+   ============================================================ */
+.sc-activity-log {
+    position: relative;
+}
+.sc-log-item {
+    display: flex;
+    gap: 14px;
+    padding-bottom: 22px;
+    position: relative;
+}
+.sc-log-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 16px;
+}
+.sc-log-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+    margin-top: 3px;
+    position: relative;
+    z-index: 1;
+}
+.sc-log-navy  { background: #032671; box-shadow: 0 0 0 2px #c5ceee; }
+.sc-log-amber { background: #E65100; box-shadow: 0 0 0 2px #f5cdb3; }
+.sc-log-teal  { background: #0097a7; box-shadow: 0 0 0 2px #b2e5ea; }
+.sc-log-blue  { background: #1565c0; box-shadow: 0 0 0 2px #bbdefb; }
+
+.sc-log-line {
+    flex: 1;
+    width: 2px;
+    background: #e4e7ef;
+    margin-top: 4px;
+    min-height: 20px;
+}
+.sc-log-item:last-child .sc-log-line { display: none; }
+
+.sc-log-body {
+    flex: 1;
+    padding-bottom: 4px;
+}
+.sc-log-meta {
+    font-size: 11px;
+    color: #adb5bd;
+}
+.sc-log-desc {
+    font-size: 13px;
+    color: #323130;
+    line-height: 1.5;
+    margin-top: 4px;
+}
+
+/* Badge colours for log events */
+.sc-log-badge-navy  { background: #032671; color: #fff; font-size: 11px; }
+.sc-log-badge-amber { background: #E65100; color: #fff; font-size: 11px; }
+.sc-log-badge-teal  { background: #0097a7; color: #fff; font-size: 11px; }
+.sc-log-badge-blue  { background: #1565c0; color: #fff; font-size: 11px; }
+
+/* Post note area */
+.sc-log-add-entry { }
+
+/* ============================================================
+   Legacy Timeline aliases (kept for compatibility)
+   ============================================================ */
+.sc-tl-dot-navy  { background: #032671; }
+.sc-tl-dot-amber { background: #E65100; }
+.sc-tl-dot-teal  { background: #0097a7; }
+.sc-tl-dot-green { background: #10863f; }
+.sc-tl-badge-navy  { background: #032671; color: #fff; font-size: 11px; }
+.sc-tl-badge-amber { background: #E65100; color: #fff; font-size: 11px; }
+.sc-tl-badge-teal  { background: #0097a7; color: #fff; font-size: 11px; }
+.sc-tl-badge-green { background: #10863f; color: #fff; font-size: 11px; }
+.sc-tl-meta { font-size: 11px; color: #adb5bd; margin: 3px 0; }
+.sc-tl-desc { font-size: 13px; color: #323130; }

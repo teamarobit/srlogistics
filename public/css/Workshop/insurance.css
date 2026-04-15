@@ -1,0 +1,72 @@
+/* ── Compact table overrides ── */
+.ins-table th {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    background: #f8f9fc;
+    border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px;
+    white-space: nowrap;
+}
+.ins-table td {
+    font-size: 12px;
+    padding: 7px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7;
+    color: #2d2d2d;
+}
+.ins-table tbody tr:hover td { background: #f4f7fe; }
+.ins-table tbody tr:last-child td { border-bottom: 0; }
+
+/* reg badge */
+.ins-reg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: .3px;
+}
+.ins-model { font-size: 11px; color: #888; margin-top: 2px; }
+
+/* Amount cell */
+.ins-amt-claimed { font-size: 12px; font-weight: 600; color: #2d2d2d; }
+.ins-amt-settled { font-size: 11px; color: #10863f; font-weight: 600; }
+.ins-amt-pending { font-size: 11px; color: #adb5bd; }
+
+/* Dot-dd action matches rest of ERP */
+.ins-table .dot-dd .dropdown-toggle { cursor: pointer; color: #adb5bd; font-size: 18px; padding: 0 4px; }
+.ins-table .dot-dd .dropdown-toggle:hover { color: #032671; }
+
+/* Policy expiry table */
+.pol-table th {
+    font-size: 11px; font-weight: 700; color: #6c757d; text-transform: uppercase;
+    letter-spacing: .4px; background: #f8f9fc; border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px; white-space: nowrap;
+}
+.pol-table td {
+    font-size: 12px; padding: 7px 10px; vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7; color: #2d2d2d;
+}
+.pol-table tbody tr:hover td { background: #f4f7fe; }
+.pol-table tbody tr:last-child td { border-bottom: 0; }
+.pol-exp-critical { color: #ea0027; font-weight: 700; }
+.pol-exp-warning  { color: #e65100; font-weight: 600; }
+.pol-exp-ok       { color: #10863f; }
+.pol-chip-expired  { background:#fdecea; color:#ea0027; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; display:inline-block; }
+.pol-chip-expiring { background:#fff3e0; color:#e65100; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; display:inline-block; }
+.pol-chip-ok       { background:#e6f4ea; color:#10863f; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; display:inline-block; }
+
+/* Tab nav */
+.ins-tab-nav { border-bottom: 2px solid #e4e7ef; margin-bottom: 0; }
+.ins-tab-nav .nav-link {
+    font-size: 12px; font-weight: 600; color: #6c757d;
+    padding: 8px 18px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    border-radius: 0;
+}
+.ins-tab-nav .nav-link.active { color: #032671; border-bottom-color: #032671; background: transparent; }
+.ins-tab-nav .nav-link:hover:not(.active) { color: #032671; background: #f4f7fe; }

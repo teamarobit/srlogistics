@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicletyremapping', function (Blueprint $table) {
+        Schema::create('vehicletyremappings', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('vehicle_id');
             $table->bigInteger('tyre_id');

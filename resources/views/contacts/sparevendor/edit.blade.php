@@ -1,0 +1,773 @@
+@extends('layouts.app')
+
+@section('css')
+
+<link rel="stylesheet" href="{{ asset('css/Contacts/SpareVendor/edit.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
+
+
+@endsection
+
+@section('content')
+
+<div class="layout-wrapper">
+    @include('includes.header')
+
+    <form class="wrapper srlog-bdwrapper" action="{{ Route::has('contact.sparevendor.update') ? route('contact.sparevendor.update', $contact->id) : '#' }}" id="editContactForm">
+        @csrf
+
+        <input type="hidden" name="contactid" id="edit_contactid_input" value="{{ $contact->id }}">
+
+        <div class="itemtop-secwrap">
+            <div class="container-fluid">
+                <h5 class="d-inline-block">Edit Spare Part Vendor</h5>
+
+                <div class="item1-cbdhed">
+                    <div class="row align-items-end">
+
+                        <div class="col-12 text-end item_016btn">
+
+                            @if($contact->status === 'Blacklisted' && $contact->blacklisted_at)
+                            <div class="item_blacklisted">
+                                <p>Blacklisted</p>
+                                <span>Blacklisted on - {{ \Carbon\Carbon::parse($contact->blacklisted_at)->format('d/m/y') }}</span>
+                            </div>
+                            @endif
+
+                            @if(Route::has('contact.sparevendor.update'))
+                                <a href="javascript:void(0)" class="btn btn-dark me-2" id="editContactBtn">Save</a>
+                            @endif
+
+                            <a href="{{ route('contact.sparevendor.index') }}" class="btn btn-danger me-2">Close</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="item2-cbdwrap">
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    {{-- LEFT COL --}}
+                    <div class="col-12 col-md-4">
+                        <div class="mt-4">
+
+                            {{-- ABOUT --}}
+                            <div class="form-bg">
+                                <div class="row">
+                                    <div class="col-12 col-md-6"><h6>About</h6></div>
+                                    <div class="col-12 col-md-6 text-end">
+                                        <i data-bs-toggle="collapse" href="#collapse01" aria-expanded="true" aria-controls="collapse01" class="uil uil-angle-down"></i>
+                                    </div>
+                                </div>
+
+                                <div class="collapse show" id="collapse01">
+                                    <div class="contact-wrap">
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>Spare Part Vendor Name <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <input type="text" name="contact_name" value="{{ $contact->contact_name ?? '' }}" class="form-control" />
+                                                <small class="error text-danger" id="edit_contact_name_error"></small>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>Company Name <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <input type="text" name="company_name" value="{{ $contact->company_name ?? '' }}" class="form-control" />
+                                                <small class="error text-danger" id="edit_company_name_error"></small>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>Phone Number <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <div class="row">
+                                                    <input type="hidden" name="phone_code" value="{{ $contact->ph_prefix ?? '' }}" class="phone_code">
+                                                    <div class="col-12 col-md-12">
+                                                        <input type="text" name="phone" value="{{ $contact->phone ?? '' }}" class="form-control telinput" />
+                                                        <small class="error text-danger" id="edit_phone_error"></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>WhatsApp</label>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <div class="row">
+                                                    <input type="hidden" name="whatsapp_code" value="{{ $contact->whatsapp_prefix ?? '' }}" class="phone_code">
+                                                    <div class="col-12 col-md-12">
+                                                        <input type="text" name="whatsapp" value="{{ $contact->whatsapp ?? '' }}" class="form-control telinput" />
+                                                        <small class="error text-danger" id="edit_whatsapp_error"></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>Spare Part Vendor Code <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control" />
+                                                <small class="error text-danger" id="edit_contact_code_error"></small>
+                                            </div>
+                                        </div>
+
+                                        {{-- Specialisation chips (driven by wssparepartscategories) --}}
+                                        @php $savedSpecs = $contact->specialisation ? array_map('trim', explode(',', $contact->specialisation)) : []; @endphp
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5">
+                                                <label>Specialisation</label>
+                                                <small class="text-muted d-block" style="font-size:11px;">Optional</small>
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <div class="spec-check-group">
+                                                    @forelse($spareCategories as $cat)
+                                                    @php $checked = in_array((string)$cat->id, $savedSpecs); @endphp
+                                                    <label class="spec-chip {{ $checked ? 'selected' : '' }}">
+                                                        <input type="checkbox" name="specialisation[]" value="{{ $cat->id }}" {{ $checked ? 'checked' : '' }}>{{ $cat->name }}
+                                                    </label>
+                                                    @empty
+                                                    <span class="text-muted" style="font-size:12px;">No categories found. Add categories under <strong>Workshop &rarr; Master &rarr; Spare Part Categories</strong>.</span>
+                                                    @endforelse
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5"><label>Status</label></div>
+                                            <div class="col-12 col-md-7 d-flex flex-wrap status-wrap">
+                                                <div class="form-check me-2 active">
+                                                    <input class="form-check-input contact-status" type="radio" name="status" id="status_active" value="Active" {{ $contact->status == 'Active' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="status_active">Active</label>
+                                                </div>
+                                                <div class="form-check mx-1 inactive">
+                                                    <input class="form-check-input contact-status" type="radio" name="status" id="status_inactive" value="Inactive" {{ $contact->status == 'Inactive' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="status_inactive">Inactive</label>
+                                                </div>
+                                                <div class="form-check mx-0">
+                                                    <input class="form-check-input status-trigger contact-status" type="radio" name="status" id="status_blacklist" value="Blacklisted" {{ $contact->status == 'Blacklisted' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="status_blacklist">Blacklist</label>
+                                                </div>
+                                            </div>
+                                            <small class="error text-danger" id="edit_status_error"></small>
+                                        </div>
+
+                                        <div class="status-content statusblacklist" style="display: {{ $contact->blacklist_reason != '' ? 'block' : 'none' }};">
+                                            <div class="row form-group">
+                                                <div class="col-12 col-md-5">
+                                                    <label>Blacklist Reason <span class="text-danger">*</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <textarea class="form-control" name="blacklist_reason" rows="3">{{ $contact->blacklist_reason ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-12 col-md-5"><label>Comment</label></div>
+                                            <div class="col-12 col-md-7">
+                                                <textarea class="form-control" name="contact_comment" id="contactComment" rows="3">{{ $contact->comment ?? '' }}</textarea>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>{{-- /About --}}
+
+
+                            {{-- CONTACT PERSONS --}}
+                            <div class="form-bg">
+                                <div class="row">
+                                    <div class="col-12 col-md-9"><h6>Contact Persons</h6></div>
+                                    <div class="col-12 col-md-3 text-end">
+                                        <i data-bs-toggle="collapse" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" class="uil uil-angle-down"></i>
+                                    </div>
+                                </div>
+
+                                <div class="collapse show" id="collapseTwo">
+                                    <div class="contact-wrap">
+                                        <div id="contactPersonContainer">
+
+                                            @foreach($contact->relcontacts as $index => $relcontact)
+                                            <div class="contact-person border p-3 mb-3 position-relative" data-index="{{ $index }}">
+
+                                                @if($index > 0)
+                                                <a href="javascript:void(0)" class="text-end text-secondary d-block mb-0 close-sec"><i class="uil uil-times-circle"></i></a>
+                                                @endif
+
+                                                <input type="hidden" name="contact_person_id[{{ $index }}]" value="{{ $relcontact->id }}">
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Name <span class="text-danger">*</span></label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="contact_person_name[{{ $index }}]" value="{{ $relcontact->name }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_contact_person_name_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Designation</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="contact_person_designation[{{ $index }}]" value="{{ $relcontact->position }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_contact_person_designation_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Phone <span class="text-danger">*</span></label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <div class="row">
+                                                            <input type="hidden" name="contact_person_ph_code[{{ $index }}]" class="phone_code">
+                                                            <div class="col-12 col-md-12">
+                                                                <input type="text" class="form-control telinput" name="contact_person_phone[{{ $index }}]" value="{{ $relcontact->phone }}" />
+                                                                <small class="error text-danger" id="edit_contact_person_phone_{{ $index }}_error"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>WhatsApp</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <div class="row">
+                                                            <input type="hidden" name="contact_person_whatsapp_code[{{ $index }}]" class="phone_code">
+                                                            <div class="col-12 col-md-12">
+                                                                <input type="text" class="form-control telinput" name="contact_person_whatsapp[{{ $index }}]" value="{{ $relcontact->whatsapp }}" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Email</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <div class="row">
+                                                            <div class="col-9 pe-0">
+                                                                <input type="text" class="form-control" name="contact_person_email[{{ $index }}]" value="{{ $relcontact->email }}" />
+                                                                <small class="error text-danger" id="edit_contact_person_email_{{ $index }}_error"></small>
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <span class="badge bg-secondary"><i class="uil uil-envelope-alt"></i></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Comment</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <textarea name="contact_person_comment[{{ $index }}]" class="form-control" rows="3">{{ $relcontact->comment }}</textarea>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            @endforeach
+
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <a href="javascript:void(0)" class="btn btn-theme add-person"><i class="uil uil-plus me-1"></i>Contact</a>
+                                    </div>
+                                </div>
+                            </div>{{-- /Contact Persons --}}
+
+
+                            {{-- COMPANY & TAX --}}
+                            <div class="form-bg">
+                                <div class="row">
+                                    <div class="col-12 col-md-9"><h6>Company & Tax Details</h6></div>
+                                    <div class="col-12 col-md-3 text-end">
+                                        <i data-bs-toggle="collapse" href="#collapse03" aria-expanded="true" aria-controls="collapse03" class="uil uil-angle-down"></i>
+                                    </div>
+                                </div>
+                                <div class="collapse show" id="collapse03">
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Full Company Name</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="text" name="full_company_name" value="{{ $contact->full_company_name ?? '' }}" class="form-control" />
+                                            <small class="error text-danger" id="edit_full_company_name_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Company Owner</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="text" name="company_owner" value="{{ $contact->company_owner ?? '' }}" class="form-control">
+                                            <small class="error text-danger" id="edit_company_owner_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Registration Number</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="text" name="company_registration_no" value="{{ $contact->company_registration_no ?? '' }}" class="form-control">
+                                            <small class="error text-danger" id="edit_company_registration_no_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Registration Date</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input name="company_registration_date" value="{{ $contact->company_registration_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date">
+                                            <small class="error text-danger" id="edit_company_registration_date_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5">
+                                            <label>Working with {{ optional(Auth::user()->organisation)->short_name }} Since</label>
+                                        </div>
+                                        <div class="col-12 col-md-7">
+                                            <input name="working_since" value="{{ $contact->working_since ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date">
+                                            <small class="error text-danger" id="edit_working_since_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>PAN</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input name="pan_no" value="{{ $contact->pan_no ?? '' }}" type="text" class="form-control">
+                                            <small class="error text-danger" id="edit_pan_no_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>PAN Status</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <select name="pan_status_id" class="form-select select2">
+                                                <option value="">Choose..</option>
+                                                @foreach($pan_statuses as $status)
+                                                    <option value="{{ $status->id }}" @selected($status->id === $contact->pan_status_id)>{{ $status->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="error text-danger" id="edit_pan_status_id_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>GST Treatment</label></div>
+                                        <div class="col-12 col-md-7 d-flex">
+                                            <div class="form-check me-2">
+                                                <input class="form-check-input" type="radio" name="gst_treatment" id="gst_reg" value="Registered" {{ $contact->gst_treatment == 'Registered' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="gst_reg">Registered</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gst_treatment" id="gst_unreg" value="Unregistered" {{ $contact->gst_treatment == 'Unregistered' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="gst_unreg">Unregistered</label>
+                                            </div>
+                                        </div>
+                                        <small class="error text-danger" id="edit_gst_treatment_error"></small>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>GSTIN</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="text" name="gst_number" value="{{ $contact->gst_number ?? '' }}" class="form-control">
+                                            <small class="error text-danger" id="edit_gst_number_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>TDS %</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="number" name="tds_percentage" value="{{ $contact->tds_percentage ?? '' }}" class="form-control" min="0" max="100" step="0.01">
+                                            <small class="error text-danger" id="edit_tds_percentage_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>State <span class="text-danger">*</span></label></div>
+                                        <div class="col-12 col-md-7">
+                                            <select class="form-select select2 dependent-select" name="state_id" id="gstState" data-target="gstCity">
+                                                <option value="">Choose..</option>
+                                                @foreach ($states as $state)
+                                                    <option value="{{ $state->id }}" data-url="{{ route('getcities', $state->id) }}"
+                                                        {{ $contact->state_id == $state->id ? 'selected' : '' }}>
+                                                        {{ $state->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <small class="error text-danger" id="edit_state_id_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>City <span class="text-danger">*</span></label></div>
+                                        <div class="col-12 col-md-7">
+                                            <select class="form-select select2" name="city_id" id="gstCity">
+                                                <option value="">Choose..</option>
+                                                @if(isset($contact) && $contact->state)
+                                                    @foreach($contact->state->cities as $city)
+                                                        <option value="{{ $city->id }}" {{ $contact->city_id == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <small class="error text-danger" id="edit_city_id_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Address <span class="text-danger">*</span></label></div>
+                                        <div class="col-12 col-md-7">
+                                            <textarea name="address" class="form-control" rows="3">{{ $contact->address1 ?? '' }}</textarea>
+                                            <small class="error text-danger" id="edit_address_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Postal Code</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <input type="text" name="post_code" value="{{ $contact->zipcode ?? '' }}" class="form-control">
+                                            <small class="error text-danger" id="edit_post_code_error"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-5"><label>Additional Info</label></div>
+                                        <div class="col-12 col-md-7">
+                                            <textarea name="additional_info" class="form-control" rows="3">{{ $contact->additional_info ?? '' }}</textarea>
+                                            <small class="error text-danger" id="edit_additional_info_error"></small>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>{{-- /Company & Tax --}}
+
+
+                            {{-- BANK DETAILS --}}
+                            <div class="form-bg">
+                                <div class="row">
+                                    <div class="col-12 col-md-9"><h6>Bank Details</h6></div>
+                                    <div class="col-12 col-md-3 text-end">
+                                        <i data-bs-toggle="collapse" href="#collapse05" aria-expanded="true" aria-controls="collapse05" class="uil uil-angle-down"></i>
+                                    </div>
+                                </div>
+
+                                <div class="collapse show" id="collapse05">
+                                    <div class="bank-details-wrap">
+                                        <div id="bankDetailsContainer">
+
+                                            @foreach($contact->bankDetails as $index => $contactBank)
+                                            <div class="bank-data border p-3 mb-3 position-relative" data-index="{{ $index }}">
+
+                                                @if($index > 0)
+                                                <a href="javascript:void(0)" class="text-end text-secondary d-block mb-0 close-bank"><i class="uil uil-times-circle"></i></a>
+                                                @endif
+
+                                                <input type="hidden" name="contact_bank_id[{{ $index }}]" value="{{ $contactBank->id }}">
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5">
+                                                        <label>Is Primary ? <span class="text-danger">*</span></label>
+                                                    </div>
+                                                    <div class="col-12 col-md-7 d-flex">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes_{{ $index }}" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_yes_{{ $index }}">Yes</label>
+                                                        </div>
+                                                        <div class="form-check mx-2">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_no_{{ $index }}" value="No" {{ $contactBank->is_primary == 'No' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_no_{{ $index }}">No</label>
+                                                        </div>
+                                                    </div>
+                                                    <small class="error text-danger" id="edit_is_primary_{{ $index }}_error"></small>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Bank Name <span class="text-danger">*</span></label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <select name="bank_id[{{ $index }}]" class="form-select select2">
+                                                            <option value="">Choose..</option>
+                                                            @foreach ($banks as $bank)
+                                                            <option value="{{ $bank->id }}" {{ $contactBank->bank_id == $bank->id ? 'selected' : '' }}>{{ $bank->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <small class="error text-danger" id="edit_bank_id_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Beneficiary Name</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="beneficiary_name[{{ $index }}]" value="{{ $contactBank->beneficiary_name ?? '' }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_beneficiary_name_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>Account Number <span class="text-danger">*</span></label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="account_number[{{ $index }}]" value="{{ $contactBank->account_number ?? '' }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_account_number_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>IFSC Code <span class="text-danger">*</span></label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="ifsc_code[{{ $index }}]" value="{{ $contactBank->ifsc_code ?? '' }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_ifsc_code_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row form-group">
+                                                    <div class="col-12 col-md-5"><label>UPI ID</label></div>
+                                                    <div class="col-12 col-md-7">
+                                                        <input type="text" name="upi_id[{{ $index }}]" value="{{ $contactBank->upi_id ?? '' }}" class="form-control" />
+                                                        <small class="error text-danger" id="edit_upi_id_{{ $index }}_error"></small>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            @endforeach
+
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <a href="javascript:void(0)" class="btn btn-theme add-bank"><i class="uil uil-plus me-1"></i>Bank</a>
+                                    </div>
+                                </div>
+                            </div>{{-- /Bank Details --}}
+
+                        </div>
+                    </div>{{-- /left col --}}
+
+
+                    {{-- RIGHT COL: Tabs --}}
+                    <div class="col-12 col-md-8 mt-4">
+                        <div class="right-side-wrap">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#document" type="button" role="tab">
+                                        Document
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#spareparts" type="button" role="tab">
+                                        Spare Parts
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
+                                        Activity
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="pills-tabContent">
+
+                                {{-- Document Tab --}}
+                                <div class="tab-pane fade show active" id="document" role="tabpanel">
+                                    <div>
+                                        <div class="row form-group align-items-center">
+                                            <div class="col-12 col-md-2">
+                                                <label>Document Type: <span class="text-danger">*</span></label>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <select class="form-select select2 atypin" name="coattachtypes[]" id="coattachtypes_0">
+                                                    <option value="">Select ID</option>
+                                                    @if($coattachtypes->count())
+                                                        @foreach($coattachtypes as $type)
+                                                           <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                <small class="error text-danger atyperr" id="edit_coattachtype_0_error"></small>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="dropzone" id="dropzone0">
+                                            <div class="dz-message needsclick">
+                                                <i class="uil uil-upload me-2"></i>
+                                                Drop files here or click to upload (Max 2 files)
+                                            </div>
+                                        </div>
+                                        <small class="error text-danger atterr" id="edit_coattachments_0_error"></small>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <button type="button" class="add-item btn btn-success btn-sm" id="add_attachment_btn"><i class="uil uil-plus"></i> Add New</button>
+                                        </div>
+                                    </div>
+
+                                    <div id="uploadContainer"></div>
+
+                                    {{-- Existing attachments hidden field --}}
+                                    <input type="hidden" id="existing_attachtypes" value='@json($contact->coattachments->pluck("coattachtype_id"))'>
+
+                                    @foreach($coattachtypes->whereIn('id', $contact->coattachments->pluck('coattachtype.id')->toArray()) as $coattachtype)
+                                        <div class="row mt-4 attachment-container">
+                                            <div class="col-12"><h6>{{ $coattachtype->name }}</h6></div>
+                                            @foreach($contact->coattachments->where('coattachtype.id', $coattachtype->id) as $coattachment)
+                                                <div class="col-12 col-md-4 attachment-box">
+                                                    <div class="preview-img d-block w-100">
+                                                        <div class="d-flex justify-content-between">
+                                                            <a href="{{ asset('media/contact/'.$coattachment->name) }}" download="{{ $coattachment->original_name }}">
+                                                                <img src="{{ asset('media/contact/'.$coattachment->name) }}" class="me-3">
+                                                            </a>
+                                                            <div style="font-size: 14px;">
+                                                                <a href="{{ asset('media/contact/'.$coattachment->name) }}" download="{{ $coattachment->original_name }}">
+                                                                    <p class="mb-0 file-name">{{ $coattachment->original_name }}</p>
+                                                                </a>
+                                                                <p class="mb-0">Size: <span class="text-secondary">{{ round((float)$coattachment->file_size, 2) }} MB</span></p>
+                                                            </div>
+                                                            <i class="uil-edit text-success ms-4 edit-attachment-btn" data-id="{{ $coattachment->id }}" style="cursor:pointer;"></i>
+                                                            <i class="uil-trash-alt text-danger ms-4 delete-attachment-btn" data-url="{{ route('contact.deleteattachment', $coattachment->id) }}" style="cursor:pointer;"></i>
+                                                        </div>
+                                                        <small class="text-secondary d-block mt-2">Attached by <span class="text-theme">{{ $coattachment->createdby?->name }}</span> on {{ $coattachment->created_at->format('d/m/y [h:i A]') }}</small>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                </div>{{-- /Document Tab --}}
+
+
+                                {{-- Spare Parts Tab --}}
+                                <div class="tab-pane fade" id="spareparts" role="tabpanel">
+                                    <div class="table-responsive mt-3">
+                                        <table class="table table-hover invoice-table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sl No.</th>
+                                                    <th>Part No.</th>
+                                                    <th>Part Name</th>
+                                                    <th>Category</th>
+                                                    <th>Unit</th>
+                                                    <th>Standard Cost</th>
+                                                    <th>Created By</th>
+                                                    <th class="text-end">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8" class="text-center text-muted py-4">
+                                                        <i class="uil uil-box me-1"></i> No spare parts linked to this vendor yet.
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>{{-- /Spare Parts Tab --}}
+
+
+                                {{-- Activity Tab --}}
+                                <div class="tab-pane fade" id="activity" role="tabpanel">
+                                    <div class="e-activitywrapper">
+
+                                        <div class="note-wrap">
+                                            <div class="form-group">
+                                                <label>Note</label>
+                                                <textarea name="activity_notes" id="activity_notes" class="form-control" rows="4" placeholder="Write your message here"></textarea>
+                                                <small class="error text-danger" id="err_activity_notes"></small>
+                                            </div>
+                                            <div class="text-end">
+                                                <button id="activityBtn" class="btn btn-primary">Submit <i class="uil uil-message ms-1"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="cmnt-wrap mt-4">
+                                            @forelse($contact->activities as $activity)
+                                                <div class="d-flex {{ ($activity->is_blacklisted === 'Yes') ? 'blacklist_color' : '' }}">
+                                                    <span class="avatar {{ ($activity->is_blacklisted === 'Yes') ? 'bg-circlesec btn-danger' : 'bg-avatar-primary' }} me-3">
+                                                        {{ strtoupper(substr(optional($activity->createdBy)->name, 0, 1)) }}
+                                                    </span>
+                                                    <div class="w-90">
+                                                        <h6 class="mb-0 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                            {{ optional($activity->createdBy)->name ?? 'User' }}
+                                                        </h6>
+                                                        <small class="d-block text-secondary {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                            {{ $activity->created_at->format('d M | h:i A') }}
+                                                        </small>
+                                                        <p class="text-secondary mb-2 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                            {{ $activity->notes }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <p class="text-muted">No activities found.</p>
+                                            @endforelse
+                                        </div>
+
+                                    </div>
+                                </div>{{-- /Activity Tab --}}
+
+                            </div>
+                        </div>
+                    </div>{{-- /right col --}}
+
+                </div>
+            </div>
+
+        </div>{{-- /item2-cbdwrap --}}
+
+    </form>
+
+</div>{{-- /layout-wrapper --}}
+
+
+{{-- Edit Attachment Modal --}}
+<div class="modal fade" id="editAttachmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Attachment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editAttachmentForm" action="{{ route('contact.updateattachment') }}">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" id="attachment_id" name="attachment_id">
+                    <div class="mb-3">
+                        <label class="form-label">Upload File <span class="text-danger">*</span></label>
+                        <input type="file" name="attachment_file" class="form-control">
+                        <small class="error text-danger" id="edit_attachment_file_error"></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="editAttachmentBtn" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('js')
+
+<script>
+    var CONTACTS              = "{{ route('contact.sparevendor.index') }}";
+    var CONTACTPERSON_WRAPPER = "{{ route('contact.sparevendor.contactpersonwrapper') }}";
+    var BANK_WRAPPER          = "{{ route('contact.sparevendor.bankwrapper') }}";
+    var ATTACHMENT_WRAPPER    = "{{ route('contact.attachmentwrapper') }}";
+    var ACTIVITY_NOTE_URL     = "{{ route('contact.activitynotes.save') }}";
+
+    window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<script type="text/javascript" src="{{ asset('customjs/contact/sparevendor/edit.js') }}"></script>
+
+<script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
+
+@endsection

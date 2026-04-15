@@ -2,11 +2,9 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/add-toll-master.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Tollstation/create.css') }}">
 
-<style>
 
-</style>
 
 @endsection
 
@@ -209,7 +207,7 @@
 var DELETE_TOLLSTATION  = "{{route('tollstation.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/tollstation/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Tollstation/index.js')}}"></script>
 
 @endsection
 

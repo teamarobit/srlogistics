@@ -2,11 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{-- asset('css/vehicle-type-list.css') --}}">
-
-<style>
-
-</style>
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Type/index.css') }}">
 
 @endsection
 
@@ -192,11 +188,7 @@
 
 @section('js')
 
-<script>
-var DELETE_VEHICLE_TYPE  = "{{route('vehicletype.delete')}}";
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/type/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Vehicle/Type/index.js')}}"></script>
 
 @endsection
 
