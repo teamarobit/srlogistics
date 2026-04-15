@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/Fleet/compliance-document-expiry.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/compliance-document-expiry.css') }}">
 @endsection
 
 @section('content')

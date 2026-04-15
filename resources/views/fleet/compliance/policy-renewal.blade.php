@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/Fleet/compliance-policy-renewal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/compliance-policy-renewal.css') }}">
 @endsection
 
 @section('content')
