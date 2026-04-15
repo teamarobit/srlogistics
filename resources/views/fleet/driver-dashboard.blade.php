@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Fleet/driver-dashboard.css') }}?v={{ uniqid() }}" rel="stylesheet">
+<link href="{{ asset('css/fleet/driver-dashboard.css') }}?v={{ uniqid() }}" rel="stylesheet">
 @endsection
 
 @section('content')

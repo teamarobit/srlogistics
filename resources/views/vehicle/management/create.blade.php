@@ -3,7 +3,7 @@
 @section('css')
 
 <link rel="stylesheet" href="{{ asset('css/Vehicle/Management/create.css') }}">
-<link rel="stylesheet" href="{{ asset('css/Fleet/vehicle-details.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
 
 @endsection
 

@@ -9,8 +9,6 @@ class Vehicletyremapping extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'vehicletyremapping';
-
     protected $guarded = [];
     
     public function vehicletyremappinglogs()
