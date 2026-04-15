@@ -1,0 +1,501 @@
+/* ============================================================
+   Battery Dashboard — /inventory/battery-dashboard
+   CSS: public/css/Inventory/battery-dashboard.css  v2.0
+   Scope: all btd-* classes + shared sc-* overrides
+   ============================================================ */
+
+/* ── Location Bar (pill-style, replaces old loc-ctx-bar) ── */
+.btd-loc-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #e8ecf4;
+    border-radius: 10px;
+    padding: 10px 18px;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.btd-loc-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.btd-loc-icon {
+    font-size: 16px;
+    color: #032671;
+    flex-shrink: 0;
+}
+.btd-loc-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #485D6B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+.btd-loc-divider {
+    width: 1px;
+    height: 18px;
+    background: #dee2e6;
+    flex-shrink: 0;
+}
+.btd-loc-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.btd-loc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #dee2e6;
+    background: #f8f9fc;
+    color: #485D6B;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.4;
+}
+.btd-loc-pill:hover {
+    background: #e3ecff;
+    border-color: #032671;
+    color: #032671;
+}
+.btd-loc-pill.active {
+    background: #032671;
+    border-color: #032671;
+    color: #fff;
+    font-weight: 600;
+}
+.btd-loc-pill.active .btd-loc-pill-type { color: rgba(255,255,255,0.75); }
+.btd-loc-pill-type {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 4px;
+}
+.btd-loc-ws {
+    color: #10863f;
+    background: #e6f4ea;
+}
+.btd-loc-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #adb5bd;
+    flex-shrink: 0;
+}
+.btd-loc-sync-icon {
+    font-size: 13px;
+    color: #10863f;
+}
+
+/* ── Serial number link in table ── */
+.btd-serial-link {
+    color: #032671;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+}
+.btd-serial-link:hover {
+    color: #0549c2;
+    text-decoration: underline;
+}
+
+/* ---- Stat Card Colour Variants ---- */
+.btd-stat-card {
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: box-shadow .15s;
+}
+.btd-stat-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.08); }
+
+.btd-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.btd-stat-body { flex: 1; min-width: 0; }
+.btd-stat-val {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1a1f36;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.btd-stat-label {
+    font-size: 11.5px;
+    color: #6c757d;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.btd-stat-sub {
+    font-size: 10px;
+    margin-top: 3px;
+    color: #adb5bd;
+}
+
+/* Navy */
+.btd-navy .btd-stat-icon  { background: #e3ecff; color: #032671; }
+.btd-navy .btd-stat-val   { color: #032671; }
+.btd-navy                  { border-left: 4px solid #032671; }
+
+/* Green */
+.btd-green .btd-stat-icon { background: #e6f4ea; color: #10863f; }
+.btd-green .btd-stat-val  { color: #10863f; }
+.btd-green                 { border-left: 4px solid #10863f; }
+
+/* Amber */
+.btd-amber .btd-stat-icon { background: #fff3e0; color: #d97706; }
+.btd-amber .btd-stat-val  { color: #d97706; }
+.btd-amber                 { border-left: 4px solid #d97706; }
+
+/* Red */
+.btd-red .btd-stat-icon   { background: #fdecea; color: #ea0027; }
+.btd-red .btd-stat-val    { color: #ea0027; }
+.btd-red                   { border-left: 4px solid #ea0027; }
+
+/* Grey — Discarded */
+.btd-grey .btd-stat-icon  { background: #f0f2f5; color: #6c757d; }
+.btd-grey .btd-stat-val   { color: #6c757d; }
+.btd-grey                  { border-left: 4px solid #adb5bd; }
+
+/* ---- Lifecycle Flow Strip ---- */
+.btd-lifecycle {
+    display: flex;
+    align-items: center;
+    background: #f5f7fb;
+    border: 1px solid #e4e7ef;
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 0;
+}
+.btd-lifecycle::-webkit-scrollbar { display: none; }
+
+.btd-lc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    cursor: default;
+}
+.btd-lc-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #d0d8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #6c757d;
+    transition: all .2s;
+}
+.btd-lc-step:hover .btd-lc-icon {
+    border-color: #032671;
+    background: #032671;
+    color: #fff;
+}
+.btd-lc-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6c757d;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.btd-lc-arrow {
+    flex-shrink: 0;
+    color: #c8d5f5;
+    font-size: 16px;
+    margin: 0 6px;
+    margin-bottom: 18px;
+}
+
+/* ---- Secondary Metrics Bar ---- */
+.btd-metrics {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+.btd-metric-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid transparent;
+    cursor: default;
+}
+.btd-metric-chip i { font-size: 14px; }
+
+.btd-metric-expiry  { background: #fff3e0; color: #d97706; border-color: #fcd27a; }
+.btd-metric-warranty{ background: #e3ecff; color: #032671; border-color: #b8ccf5; }
+.btd-metric-charging{ background: #e6f4ea; color: #10863f; border-color: #9cd4b0; }
+.btd-metric-faulty  { background: #fdecea; color: #ea0027; border-color: #f5b0b8; }
+
+.btd-metric-chip .btd-metric-count {
+    background: rgba(0,0,0,.08);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-size: 11px;
+}
+
+/* ---- Battery Condition Badges ---- */
+.btd-cond {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.btd-cond-new   { background: #e3ecff; color: #032671; }
+.btd-cond-used  { background: #e6f4ea; color: #10863f; }
+.btd-cond-weak  { background: #fff3e0; color: #d97706; }
+.btd-cond-dead  { background: #fdecea; color: #ea0027; }
+
+/* ---- Battery Status Badges ---- */
+.btd-st {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.btd-st-active    { background: #e6f4ea; color: #10863f; }
+.btd-st-warehouse { background: #e3ecff; color: #032671; }
+.btd-st-workshop  { background: #f3e5f5; color: #7b1fa2; }
+.btd-st-allocated { background: #fff3e0; color: #d97706; }
+.btd-st-discarded { background: #f0f2f5; color: #6c757d; }
+.btd-st-faulty    { background: #fdecea; color: #ea0027; }
+.btd-st-charging  { background: #e0f4ff; color: #0277bd; }
+
+/* ---- Row Actions ---- */
+.btd-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.btd-action-btn {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid #e4e7ef;
+    background: #fff;
+    color: #485D6B;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .15s;
+    text-decoration: none;
+}
+.btd-action-btn:hover {
+    background: #032671;
+    border-color: #032671;
+    color: #fff;
+}
+.btd-action-btn-history {
+    border-color: #b8ccf5;
+    background: #e3ecff;
+    color: #032671;
+}
+.btd-action-btn-history:hover {
+    background: #032671;
+    color: #fff;
+}
+
+/* ---- Serial / Doc link ---- */
+.btd-serial {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1f36;
+    letter-spacing: 0.3px;
+}
+.btd-doc-link {
+    font-size: 11px;
+    color: #032671;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dashed #aab8e0;
+}
+.btd-doc-link:hover { color: #021e56; border-bottom-color: #032671; }
+
+/* ---- Greyed row (discarded) ---- */
+.btd-row-discarded td { opacity: 0.55; }
+
+/* ---- Add Battery Path Chooser ---- */
+.btd-path-choose {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+.btd-path-card {
+    flex: 1;
+    border: 2px solid #e4e7ef;
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .18s;
+    background: #fafbfc;
+}
+.btd-path-card:hover,
+.btd-path-card.selected {
+    border-color: #032671;
+    background: #e8eeff;
+}
+.btd-path-card.selected .btd-path-icon { color: #032671; }
+.btd-path-icon {
+    font-size: 32px;
+    color: #6c757d;
+    margin-bottom: 10px;
+    display: block;
+    transition: color .18s;
+}
+.btd-path-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1f36;
+    margin-bottom: 4px;
+}
+.btd-path-desc {
+    font-size: 11px;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+/* ---- Movement History Timeline (Offcanvas) ---- */
+.btd-bat-info-bar {
+    background: #f5f7fb;
+    border: 1px solid #e4e7ef;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.btd-bat-info-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e3ecff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #032671;
+    flex-shrink: 0;
+}
+.btd-bat-serial { font-size: 13px; font-weight: 700; color: #032671; }
+.btd-bat-desc   { font-size: 11px; color: #6c757d; margin-top: 2px; }
+
+.btd-timeline { padding: 4px 0; }
+.btd-tl-item {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    padding-bottom: 20px;
+}
+.btd-tl-item:last-child { padding-bottom: 0; }
+.btd-tl-item:last-child .btd-tl-line { display: none; }
+
+.btd-tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.btd-tl-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+}
+.btd-tl-line {
+    width: 2px;
+    flex: 1;
+    background: #e4e7ef;
+    margin-top: 4px;
+    min-height: 20px;
+}
+
+.btd-tl-content { flex: 1; padding-top: 4px; }
+.btd-tl-event {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #1a1f36;
+    margin-bottom: 2px;
+}
+.btd-tl-detail {
+    font-size: 11px;
+    color: #485D6B;
+    margin-bottom: 2px;
+}
+.btd-tl-date {
+    font-size: 10.5px;
+    color: #adb5bd;
+}
+
+/* Timeline dot colours */
+.btd-tl-purchase  .btd-tl-dot { background: #e3ecff; color: #032671; border-color: #b8ccf5; }
+.btd-tl-install   .btd-tl-dot { background: #e6f4ea; color: #10863f; border-color: #9cd4b0; }
+.btd-tl-remove    .btd-tl-dot { background: #fff3e0; color: #d97706; border-color: #fcd27a; }
+.btd-tl-workshop  .btd-tl-dot { background: #f3e5f5; color: #7b1fa2; border-color: #d9a8e8; }
+.btd-tl-reuse     .btd-tl-dot { background: #e0f4ff; color: #0277bd; border-color: #90caf9; }
+.btd-tl-weak      .btd-tl-dot { background: #fdecea; color: #ea0027; border-color: #f5b0b8; }
+.btd-tl-discard   .btd-tl-dot { background: #f0f2f5; color: #6c757d; border-color: #ced4da; }
+
+/* ---- Location badge — vehicle ---- */
+.loc-badge-veh { background: #fff3e0; color: #d97706; }
+
+/* ---- Filter card ---- */
+.btd-filter-card {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+.btd-filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #485D6B;
+    margin-bottom: 4px;
+    display: block;
+}

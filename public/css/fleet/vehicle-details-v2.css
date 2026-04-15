@@ -648,4 +648,279 @@
     .v2-id-actions { width: 100%; justify-content: flex-end; margin-top: 8px; }
 }
 
+/* ═══════════════════════════════════════════════════════
+   TYRE DETAILS VISUAL LAYOUT — vtd- prefix  v1.4
+   3-col: Left Cards | Truck SVG | Right Cards
+════════════════════════════════════════════════════════ */
+
+/* ── Empty State ─────────────────────────────────────── */
+.vtd-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #adb5bd;
+}
+.vtd-empty-icon { font-size: 40px; opacity: 0.3; display: block; margin-bottom: 10px; }
+.vtd-empty-text { font-size: 13px; margin-bottom: 4px; }
+
+/* ── Summary Strip ───────────────────────────────────── */
+.vtd-summary-strip {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e8ecf4;
+    flex-wrap: wrap;
+}
+.vtd-sum-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.vtd-sum-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.vtd-sum-val {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1;
+}
+.vtd-sum-lbl {
+    font-size: 11px;
+    color: #8898aa;
+}
+.vtd-sum-good .vtd-sum-val  { color: #10863f; }
+.vtd-sum-warn .vtd-sum-val  { color: #d97706; }
+.vtd-sum-crit .vtd-sum-val  { color: #ea0027; }
+
+/* ── Legend ──────────────────────────────────────────── */
+.vtd-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.vtd-leg-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #485D6B;
+}
+.vtd-leg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── 3-Column Layout ─────────────────────────────────── */
+.vtd-layout {
+    display: grid;
+    grid-template-columns: 1fr 200px 1fr;
+    gap: 0;
+    align-items: start;
+    padding: 16px;
+}
+
+/* ── Side Columns (cards) ────────────────────────────── */
+.vtd-side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 12px;
+}
+.vtd-side-left  { border-right: 1px solid #f0f3f9; }
+.vtd-side-right { border-left: 1px solid #f0f3f9; }
+.vtd-side-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8898aa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f3f9;
+    margin-bottom: 4px;
+}
+
+/* ── Tyre Card ───────────────────────────────────────── */
+.vtd-tyre-card {
+    border: 1px solid #e8ecf4;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    transition: all 0.15s;
+    cursor: default;
+}
+.vtd-tyre-card:hover,
+.vtd-tyre-card.highlighted {
+    border-color: #032671;
+    background: #f5f8ff;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.08);
+}
+.vtd-card-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 10px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #f0f3f9;
+}
+.vtd-pos-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.vtd-pos-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a2533;
+    flex: 1;
+}
+.vtd-status-chip {
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 1px 8px;
+    flex-shrink: 0;
+}
+.vtd-chip-good     { background: #e6f4ea; color: #10863f; }
+.vtd-chip-warn     { background: #fff3e0; color: #d97706; }
+.vtd-chip-critical { background: #fdecea; color: #ea0027; }
+.vtd-chip-empty    { background: #f4f6f9; color: #adb5bd; }
+
+.vtd-card-body {
+    padding: 8px 10px;
+}
+.vtd-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 2px 0;
+    gap: 6px;
+}
+.vtd-fl {
+    font-size: 10px;
+    color: #8898aa;
+    flex-shrink: 0;
+    min-width: 60px;
+}
+.vtd-fv {
+    font-size: 11px;
+    color: #1a2533;
+    text-align: right;
+    word-break: break-word;
+}
+
+.vtd-card-empty-body {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 10px;
+    color: #adb5bd;
+    font-size: 12px;
+}
+
+.vtd-card-foot {
+    padding: 6px 10px;
+    border-top: 1px solid #f4f6f9;
+    background: #fafbfc;
+}
+.vtd-view-btn {
+    font-size: 11px;
+    color: #032671;
+    text-decoration: none;
+    font-weight: 600;
+}
+.vtd-view-btn:hover { text-decoration: underline; color: #032671; }
+
+/* ── Center SVG ──────────────────────────────────────── */
+.vtd-center {
+    display: flex;
+    justify-content: center;
+    padding: 0 8px;
+}
+.vtd-svg-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 200px;
+}
+.vtd-truck-svg {
+    width: 100%;
+    height: auto;
+}
+.vtd-svg-tyre {
+    cursor: pointer;
+    transition: filter 0.15s, stroke-width 0.15s, stroke 0.15s;
+}
+.vtd-svg-tyre:hover {
+    filter: brightness(0.8);
+    stroke: #f0a500 !important;
+    stroke-width: 2.5 !important;
+}
+.vtd-svg-tyre.highlighted {
+    stroke: #f0a500 !important;
+    stroke-width: 3 !important;
+    filter: brightness(0.85);
+}
+
+/* ── Spare Strip ─────────────────────────────────────── */
+.vtd-spare-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fc;
+    border: 1px solid #e8ecf4;
+    border-radius: 6px;
+    padding: 6px 10px;
+    width: 100%;
+    font-size: 11px;
+}
+.vtd-spare-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.vtd-spare-label { font-weight: 700; color: #485D6B; flex-shrink: 0; }
+.vtd-spare-serial { color: #032671; font-weight: 600; }
+.vtd-spare-brand  { color: #8898aa; }
+.vtd-spare-empty  { opacity: 0.65; }
+
+.vtd-svg-note {
+    font-size: 10px;
+    color: #adb5bd;
+    text-align: center;
+    padding: 2px 0;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 992px) {
+    .vtd-layout {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+    .vtd-center {
+        order: -1;
+        border-bottom: 1px solid #f0f3f9;
+        padding-bottom: 16px;
+        margin-bottom: 4px;
+    }
+    .vtd-side { border: none; padding: 0; }
+    .vtd-svg-wrap { max-width: 180px; }
+}
+@media (max-width: 576px) {
+    .vtd-truck-svg { display: none; }
+    .vtd-svg-note  { display: none; }
+    .vtd-center    { display: none; }
+}
+
 

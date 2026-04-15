@@ -3,7 +3,8 @@
 @section('css')
 
 
-<link rel="stylesheet" href="{{ asset('css/Contacts/BatteryVendor/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/driver-management.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/BatteryVendor/create.css?v=1.0') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 

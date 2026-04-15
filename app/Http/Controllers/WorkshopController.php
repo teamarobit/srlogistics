@@ -12,7 +12,7 @@ use App\Models\SparePart;
 use App\Models\WsSparePartCategory;
 use Illuminate\Support\Facades\Auth;
 
-class ServiceCentreController extends Controller
+class WorkshopController extends Controller
 {
     // ─── Service Requests ────────────────────────────────────────────────────
 
@@ -534,6 +534,36 @@ class ServiceCentreController extends Controller
     public function batteryInventory()
     {
         return view('ws.battery-inventory');
+    }
+
+    public function batteryDashboard()
+    {
+        return view('inventory.battery-dashboard');
+    }
+
+    public function createBattery()
+    {
+        return view('inventory.battery-add');
+    }
+
+    public function batteryDetails($id)
+    {
+        return view('inventory.battery-details', compact('id'));
+    }
+
+    public function batteryFit($id)
+    {
+        return view('inventory.battery-fit', compact('id'));
+    }
+
+    public function batteryReplace($id)
+    {
+        return view('inventory.battery-replace', compact('id'));
+    }
+
+    public function batteryAction()
+    {
+        return view('inventory.battery-action');
     }
 
     public function poList()

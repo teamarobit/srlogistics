@@ -1,0 +1,273 @@
+/* =========================================================
+   Tyre Fitment / Replacement Wizard — tyre-action.css  v1.0
+   Uses bwiz- shared classes from battery-wizard.css
+   tact- prefix for tyre-action-specific overrides
+   ========================================================= */
+
+/* ── Mode selector (2-col: Fit | Replace) ────────────────── */
+.tact-mode-hint {
+    font-size: 12px;
+    color: #8898aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.tact-mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+@media (max-width: 640px) {
+    .tact-mode-grid { grid-template-columns: 1fr; }
+}
+.tact-mode-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px;
+    border: 2px solid #e8ecf4;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    margin-bottom: 0;
+}
+.tact-mode-card:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.tact-mode-card.active {
+    border-color: #032671;
+    background: #eef2fb;
+}
+.tact-mode-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+.tact-icon-fit     { background: #e6f4ea; color: #10863f; }
+.tact-icon-replace { background: #fdecea; color: #ea0027; }
+.tact-mode-info { flex: 1; }
+.tact-mode-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+.tact-mode-card.active .tact-mode-title { color: #032671; }
+.tact-mode-desc {
+    font-size: 12px;
+    color: #8898aa;
+    line-height: 1.5;
+}
+.tact-mode-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.tact-mode-card.active .tact-mode-radio {
+    border-color: #032671;
+    background: #032671;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* ── Position badge ──────────────────────────────────────── */
+.tact-pos-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eef2fb;
+    color: #032671;
+    border: 1px solid #c9d8f7;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ── Tyre position select grid ───────────────────────────── */
+.tact-pos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+.tact-pos-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    border: 2px solid #e8ecf4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    text-align: center;
+}
+.tact-pos-card:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.tact-pos-card.active {
+    border-color: #032671;
+    background: #eef2fb;
+}
+.tact-pos-card.occupied { border-color: #ea0027; background: #fff8f8; cursor: not-allowed; opacity: 0.65; }
+.tact-pos-card.occupied:hover { border-color: #ea0027; background: #fff8f8; }
+.tact-pos-code {
+    font-size: 15px;
+    font-weight: 800;
+    color: #032671;
+    line-height: 1;
+}
+.tact-pos-lbl {
+    font-size: 10px;
+    color: #8898aa;
+    line-height: 1.3;
+}
+.tact-pos-chip {
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+.tact-pos-chip-free    { background: #e6f4ea; color: #10863f; }
+.tact-pos-chip-occ     { background: #fdecea; color: #ea0027; }
+
+/* ── Tyre info card (read-only) ─────────────────────────── */
+.tact-tyre-card {
+    background: #f8f9fc;
+    border: 1px solid #e8ecf4;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+.tact-tyre-header {
+    background: #032671;
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tact-tyre-serial {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ── Source toggle (Replace Step 3) ─────────────────────── */
+.tact-source-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+@media (max-width: 640px) { .tact-source-grid { grid-template-columns: 1fr; } }
+.tact-source-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #e8ecf4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+}
+.tact-source-card:hover { border-color: #032671; background: #f5f8ff; }
+.tact-source-card.active { border-color: #032671; background: #eef2fb; }
+.tact-src-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    background: #f0f3fb; color: #032671;
+}
+.tact-src-title { font-size: 13px; font-weight: 700; color: #1a2533; margin-bottom: 2px; }
+.tact-source-card.active .tact-src-title { color: #032671; }
+.tact-src-desc { font-size: 11px; color: #8898aa; line-height: 1.4; }
+.tact-src-radio {
+    width: 16px; height: 16px;
+    border-radius: 50%; border: 2px solid #dee2e6;
+    flex-shrink: 0; margin-left: auto; transition: all 0.15s;
+}
+.tact-source-card.active .tact-src-radio {
+    border-color: #032671; background: #032671;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* ── Disposal cards (Replace Step 2) ────────────────────── */
+.tact-disposal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+.tact-disposal-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid #e8ecf4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+}
+.tact-disposal-card:hover { border-color: #032671; background: #f5f8ff; }
+.tact-disposal-card.active,
+.tact-disposal-card:has(input:checked) { border-color: #032671; background: #eef2fb; }
+.tact-disp-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+}
+.tact-disp-title { font-size: 12px; font-weight: 700; color: #1a2533; line-height: 1.3; }
+.tact-disposal-card.active .tact-disp-title,
+.tact-disposal-card:has(input:checked) .tact-disp-title { color: #032671; }
+
+/* ── Swap card (Replace Step 4) ─────────────────────────── */
+.tact-swap-wrap { display: flex; gap: 14px; align-items: stretch; }
+.tact-swap-card { flex: 1; border: 1px solid #e8ecf4; border-radius: 10px; overflow: hidden; }
+.tact-swap-header { padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.tact-swap-out .tact-swap-header { background: #fdecea; color: #ea0027; border-bottom: 1px solid #f9ccc8; }
+.tact-swap-in  .tact-swap-header { background: #e6f4ea; color: #10863f; border-bottom: 1px solid #b7e0c3; }
+.tact-swap-body { padding: 14px; background: #fafbfc; }
+.tact-swap-arrow {
+    display: flex; align-items: center; justify-content: center;
+    color: #dee2e6; font-size: 26px; flex-shrink: 0; padding-top: 24px;
+}
+@media (max-width: 768px) {
+    .tact-swap-wrap { flex-direction: column; }
+    .tact-swap-arrow { transform: rotate(90deg); padding: 0; }
+}
+
+/* ── Step label spans (JS target for dynamic labels) ────── */
+.tact-sl-1, .tact-sl-2, .tact-sl-3, .tact-sl-4 {
+    transition: opacity 0.1s;
+}
+
+/* ── Back button ────────────────────────────────────────── */
+.tact-back-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 8px;
+    background: #f0f3f9; color: #032671;
+    text-decoration: none; font-size: 18px; flex-shrink: 0;
+    transition: background 0.15s;
+}
+.tact-back-btn:hover { background: #dde5f7; color: #032671; }
+
+/* ── Spinner ─────────────────────────────────────────────── */
+@keyframes tact-spin { to { transform: rotate(360deg); } }
+.tact-spin { display: inline-block; animation: tact-spin 0.8s linear infinite; }

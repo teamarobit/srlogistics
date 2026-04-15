@@ -52,7 +52,13 @@ class TyreManagementController extends Controller
         
         return view('tyremanagement.vehicletyretagging', compact('tyrepositions', 'vehicle'));
     }
-    
+
+    public function tyreFitment(Vehicle $vehicle)
+    {
+        $vehicle->load('vehicletyremappings.tyre', 'vehicletyremappings.tyreposition');
+        return view('tyremanagement.tyre-fitment', compact('vehicle'));
+    }
+
     public function tagTyreToVehicle(Request $request, Vehicle $vehicle){
         $rules = [];
         

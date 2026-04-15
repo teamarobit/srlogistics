@@ -1,0 +1,487 @@
+/* =========================================================
+   Battery Wizard — battery-wizard.css  v1.2
+   Shared by: battery-fit, battery-replace, battery-action
+   ========================================================= */
+
+/* ── Mode Selector (battery-action page) ────────────────── */
+.bact-mode-hint {
+    font-size: 12px;
+    color: #8898aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.bact-mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.bact-mode-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 2px solid #e8ecf4;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    margin-bottom: 0;
+}
+.bact-mode-card:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.bact-mode-card.active {
+    border-color: #032671;
+    background: #eef2fb;
+}
+.bact-mode-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.bact-icon-fit     { background: #e6f4ea; color: #10863f; }
+.bact-icon-replace { background: #fdecea; color: #ea0027; }
+.bact-mode-info {
+    flex: 1;
+}
+.bact-mode-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1.3;
+    margin-bottom: 3px;
+}
+.bact-mode-card.active .bact-mode-title { color: #032671; }
+.bact-mode-desc {
+    font-size: 12px;
+    color: #8898aa;
+    line-height: 1.5;
+}
+.bact-mode-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.bact-mode-card.active .bact-mode-radio {
+    border-color: #032671;
+    background: #032671;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+@media (max-width: 640px) {
+    .bact-mode-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Mode grid (3-col variant for Fit/Replace/Rotate) ──── */
+.bact-mode-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+}
+@media (max-width: 640px) {
+    .bact-mode-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ── Mode wrapper ───────────────────────────────────────── */
+.bact-mode-wrap {
+    padding: 4px 0;
+}
+
+/* ── Rotate icon ────────────────────────────────────────── */
+.bact-icon-rotate { background: #e8f0ff; color: #032671; }
+
+/* ── Step label spans (updated by JS per mode) ─────────── */
+.bact-sl-1, .bact-sl-2, .bact-sl-3, .bact-sl-4 {
+    transition: opacity 0.1s;
+}
+
+/* ── Step nav buttons (mode-specific IDs for JS) ────────── */
+.bact-fit-back, .bact-fit-next,
+.bact-rep-back, .bact-rep-next,
+.bact-rot-back, .bact-rot-next {
+    /* Inherits from Bootstrap btn classes — no extra styles needed */
+}
+
+/* ── Source toggle (Replace Step 3: Inventory vs Vehicle) ── */
+.bact-source-toggle {
+    margin-top: 4px;
+}
+.bact-source-hint {
+    font-size: 12px;
+    color: #8898aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+    display: block;
+}
+.bact-source-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+@media (max-width: 640px) {
+    .bact-source-grid { grid-template-columns: 1fr; }
+}
+.bact-source-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #e8ecf4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+}
+.bact-source-card:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.bact-source-card.active {
+    border-color: #032671;
+    background: #eef2fb;
+}
+.bact-src-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    background: #f0f3fb;
+    color: #032671;
+}
+.bact-src-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+.bact-source-card.active .bact-src-title { color: #032671; }
+.bact-src-desc {
+    font-size: 11px;
+    color: #8898aa;
+    line-height: 1.4;
+}
+.bact-src-radio {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: all 0.15s;
+}
+.bact-source-card.active .bact-src-radio {
+    border-color: #032671;
+    background: #032671;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* ── Disposal card (Replace Step 2) ────────────────────── */
+.bwiz-disposal-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #e8ecf4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    margin-bottom: 0;
+}
+.bwiz-disposal-card:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.bwiz-disposal-card.active,
+.bwiz-disposal-card:has(input:checked) {
+    border-color: #032671;
+    background: #eef2fb;
+}
+.bwiz-disp-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.bwiz-disp-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2533;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+.bwiz-disposal-card.active .bwiz-disp-title,
+.bwiz-disposal-card:has(input:checked) .bwiz-disp-title { color: #032671; }
+.bwiz-disp-desc {
+    font-size: 11px;
+    color: #8898aa;
+    line-height: 1.4;
+}
+
+/* ── Back button ────────────────────────────────────────── */
+.bdet-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #f0f3f9;
+    color: #032671;
+    text-decoration: none;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.bdet-back-btn:hover { background: #dde5f7; color: #032671; }
+
+/* ── Step wrapper ───────────────────────────────────────── */
+.bwiz-step { }
+
+/* ── Step navigation bar ────────────────────────────────── */
+.bwiz-step-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ── Battery info card (read-only) ─────────────────────── */
+.bwiz-bat-card,
+.bwiz-veh-card {
+    background: #f8f9fc;
+    border: 1px solid #e8ecf4;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+.bwiz-bat-header,
+.bwiz-veh-header {
+    background: #032671;
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.bwiz-bat-serial {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.bwiz-veh-reg {
+    font-size: 14px;
+    font-weight: 700;
+}
+.bwiz-veh-model {
+    font-size: 12px;
+    opacity: 0.75;
+}
+.bwiz-bat-field {
+    padding: 10px 16px;
+    border-right: 1px solid #e8ecf4;
+    border-bottom: 1px solid #e8ecf4;
+}
+.bwiz-bat-fl {
+    display: block;
+    font-size: 10px;
+    color: #8898aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 3px;
+}
+.bwiz-bat-fv {
+    display: block;
+    font-size: 13px;
+    color: #1a2533;
+    font-weight: 500;
+}
+.bwiz-veh-cur-bat {
+    color: #d97706;
+}
+
+/* Vehicle alert within card */
+.bwiz-veh-alert {
+    background: #fff3e0;
+    border-top: 1px solid #ffe0b2;
+    color: #d97706;
+    font-size: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+/* ── Form label ─────────────────────────────────────────── */
+.bwiz-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #485D6B;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* ── Upload zone ────────────────────────────────────────── */
+.bwiz-upload-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 24px 16px;
+    text-align: center;
+    color: #8898aa;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.bwiz-upload-zone:hover {
+    border-color: #032671;
+    background: #f5f8ff;
+}
+.bwiz-upload-icon {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 6px;
+    color: #adb5bd;
+}
+.bwiz-upload-link {
+    color: #032671;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ── Confirm summary ────────────────────────────────────── */
+.bwiz-confirm-summary {
+    background: #f8f9fc;
+    border: 1px solid #e8ecf4;
+    border-radius: 10px;
+    padding: 16px;
+}
+.bwiz-confirm-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8898aa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8ecf4;
+}
+.bwiz-conf-field {
+    padding: 6px 0;
+}
+.bwiz-conf-l {
+    display: block;
+    font-size: 11px;
+    color: #8898aa;
+    margin-bottom: 2px;
+}
+.bwiz-conf-v {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2533;
+}
+
+/* ── Confirm checkbox area ──────────────────────────────── */
+.bwiz-confirm-check {
+    background: #f0f4ff;
+    border: 1px solid #c9d8f7;
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+.bwiz-confirm-check .form-check-label {
+    font-size: 12.5px;
+    color: #1a2533;
+    line-height: 1.6;
+}
+
+/* ── Swap card (replace wizard step 4) ─────────────────── */
+.bwiz-swap-wrap {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+}
+.bwiz-swap-card {
+    flex: 1;
+    border: 1px solid #e8ecf4;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.bwiz-swap-header {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.bwiz-swap-out .bwiz-swap-header {
+    background: #fdecea;
+    color: #ea0027;
+    border-bottom: 1px solid #f9ccc8;
+}
+.bwiz-swap-in .bwiz-swap-header {
+    background: #e6f4ea;
+    color: #10863f;
+    border-bottom: 1px solid #b7e0c3;
+}
+.bwiz-swap-body {
+    padding: 14px;
+    background: #fafbfc;
+}
+.bwiz-swap-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dee2e6;
+    font-size: 26px;
+    flex-shrink: 0;
+    padding-top: 24px;
+}
+
+/* ── Stock select table ─────────────────────────────────── */
+.bwiz-stock-table th {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8898aa;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e8ecf4;
+    padding: 10px 12px;
+}
+.bwiz-stock-table td {
+    font-size: 13px;
+    color: #1a2533;
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f3f9;
+}
+.bwiz-stock-table tr:hover td { background: #f5f8ff; cursor: pointer; }
+.bwiz-stock-table tr.selected td { background: #eef2fb; }
+.bwiz-stock-table .form-check-input { cursor: pointer; }
+
+/* ── Spinner ────────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .bwiz-swap-wrap { flex-direction: column; }
+    .bwiz-swap-arrow { transform: rotate(90deg); padding: 0; }
+    .bwiz-bat-field { border-right: none; }
+}
