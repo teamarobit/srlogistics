@@ -1,0 +1,113 @@
+/* =========================================================
+   Warehouse Form (Add / Edit) — form.css  v1.0
+   SR Logistics — Warehouse create/edit pages
+   ========================================================= */
+
+body { background-color: #fff; }
+
+/* ── Warehouse code chip (shown in edit header) ──────────── */
+.wh-code {
+    color: #032671;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    background: #eef2fb;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+/* ── Page breadcrumb ─────────────────────────────────────── */
+.wh-breadcrumb { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+.wh-breadcrumb a { color: #032671; text-decoration: none; }
+.wh-breadcrumb a:hover { text-decoration: underline; }
+.wh-breadcrumb .sep { margin: 0 6px; }
+
+/* ── Form card ───────────────────────────────────────────── */
+.wh-form-card {
+    background: #fff;
+    border: 1px solid #e8ecf4;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+}
+
+/* ── Section title ───────────────────────────────────────── */
+.wh-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #032671;
+    border-bottom: 1px solid #e8ecf4;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    margin-top: 4px;
+}
+
+/* ── Form label ──────────────────────────────────────────── */
+.wh-form-card .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2533;
+    margin-bottom: 5px;
+}
+
+/* ── Input / select focus ────────────────────────────────── */
+.wh-form-card .form-control:focus,
+.wh-form-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 0.2rem rgba(3, 38, 113, 0.12);
+}
+
+/* ── Select2 override to match Bootstrap inside form card ── */
+.wh-form-card .select2-container--default .select2-selection--single {
+    height: calc(1.5em + 0.75rem + 2px);
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+.wh-form-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5;
+    padding: 0;
+    color: #212529;
+}
+.wh-form-card .select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 6px;
+    right: 8px;
+}
+.wh-form-card .select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #032671;
+    box-shadow: 0 0 0 0.2rem rgba(3, 38, 113, 0.12);
+    outline: none;
+}
+
+/* Tags (city) select2 */
+.wh-form-card .select2-container--default .select2-selection--multiple {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    min-height: calc(1.5em + 0.75rem + 2px);
+    padding: 3px 8px;
+}
+.wh-form-card .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #032671;
+    box-shadow: 0 0 0 0.2rem rgba(3, 38, 113, 0.12);
+    outline: none;
+}
+
+/* ── Footer action bar ───────────────────────────────────── */
+.wh-form-footer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid #e8ecf4;
+    margin-top: 24px;
+}
+
+/* ── City help text ──────────────────────────────────────── */
+.wh-city-hint {
+    font-size: 11px;
+    color: #8898aa;
+    margin-top: 4px;
+}

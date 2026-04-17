@@ -34,7 +34,21 @@ Route::post('/update-password', [App\Http\Controllers\Auth\ForgotPasswordControl
 Route::group(['middleware' => ['auth']], function() {
     
     Route::get('/admin-console', [App\Http\Controllers\AdminController::class, 'index'])->name('adminconsole.index');
-    
+
+    /******************************** Warehouse Module ******************************************/
+
+    Route::prefix('warehouse')->name('warehouse.')->group(function () {
+        Route::get   ('/master',                    [App\Http\Controllers\WarehouseController::class, 'index'])->name('master.index');
+        Route::get   ('/master/create',             [App\Http\Controllers\WarehouseController::class, 'create'])->name('master.create');
+        Route::post  ('/master',                    [App\Http\Controllers\WarehouseController::class, 'store'])->name('master.store');
+        Route::get   ('/master/{warehouse}/edit',   [App\Http\Controllers\WarehouseController::class, 'edit'])->name('master.edit');
+        Route::put   ('/master/{warehouse}',        [App\Http\Controllers\WarehouseController::class, 'update'])->name('master.update');
+        Route::delete('/master/{warehouse}',        [App\Http\Controllers\WarehouseController::class, 'destroy'])->name('master.destroy');
+    });
+
+    // Cities by state_id (used by warehouse + other forms)
+    Route::get('/get-cities-by-state/{stateId}', [App\Http\Controllers\WarehouseController::class, 'getCitiesByState'])->name('warehouse.cities.by-state');
+
     Route::get('/get-cities/{state}', [App\Http\Controllers\CustomController::class, 'getCities'])->name('getcities'); 
     
     Route::get('/get-rto-charges/{id}', [App\Http\Controllers\GeneralController::class, 'getRtoCharges'])->name('rto.charges');

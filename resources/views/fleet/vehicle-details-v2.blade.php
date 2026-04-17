@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=1.4') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=2.1') }}">
 @endsection
 
 @section('content')
@@ -1156,6 +1156,7 @@
                             <div class="row vehicleinfo_toprow align-items-center">
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Tyre Details</span>
+                                    <span class="badge ms-2" style="background:#10863f;font-size:9px;letter-spacing:.5px;padding:3px 8px;border-radius:4px;color:#fff;font-weight:700;">✦ UPDATED</span>
                                     <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="badge badge-primary ms-2">
                                         <i class="uil uil-plus me-1"></i>Manage Tyres
                                     </a>
@@ -1217,6 +1218,11 @@
                                 </div>
                                 @else
 
+                                {{-- NEW LAYOUT MARKER — visible tag for identifying this redesigned block --}}
+                                <div style="background:#e8f5e9;border-left:4px solid #10863f;padding:6px 14px;font-size:11px;font-weight:700;color:#10863f;letter-spacing:.4px;display:flex;align-items:center;gap:8px;">
+                                    <i class="uil uil-check-circle"></i> ✦ NEW TYRE LAYOUT — Redesigned with truck diagram, card highlights &amp; modal view
+                                </div>
+
                                 {{-- Summary Strip --}}
                                 <div class="vtd-summary-strip">
                                     <div class="vtd-sum-item">
@@ -1262,7 +1268,19 @@
                                             $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
                                             $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
                                         @endphp
-                                        <div class="vtd-tyre-card" data-pos="{{ $code }}">
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1272,12 +1290,15 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Condition</span><span class="vtd-fv vtd-condition-{{ $color }}">{{ ucfirst($m->tyre->tyre_condition ?? '—') }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
                                                 @if($kmBal !== null)
                                                 <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
                                                 @endif
                                             </div>
-                                            <div class="vtd-card-foot"><a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="vtd-view-btn"><i class="uil uil-eye me-1"></i>View Details</a></div>
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>View Details</a>
+                                            </div>
                                             @else
                                             <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
                                             @endif
@@ -1289,73 +1310,234 @@
                                     <div class="vtd-center">
                                         <div class="vtd-svg-wrap">
                                             <svg id="vtdTruckSvg" viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg" class="vtd-truck-svg">
-                                                {{-- Truck body --}}
-                                                <rect x="60" y="75" width="100" height="340" rx="14" fill="#f0f3f9" stroke="#d0d8ea" stroke-width="2"/>
-                                                {{-- Cab --}}
-                                                <rect x="60" y="75" width="100" height="100" rx="14" fill="#e3ecff" stroke="#b8cef5" stroke-width="1.5"/>
-                                                <rect x="72" y="82" width="76" height="30" rx="5" fill="#c5d5f7" opacity="0.6"/>
-                                                <text x="110" y="103" text-anchor="middle" font-size="9" fill="#032671" font-weight="700" letter-spacing="0.5">CAB</text>
-                                                {{-- Cargo area --}}
-                                                <text x="110" y="270" text-anchor="middle" font-size="8" fill="#adb5bd" letter-spacing="1">CARGO</text>
-                                                {{-- Axle lines --}}
-                                                <line x1="22" y1="125" x2="198" y2="125" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
-                                                <line x1="22" y1="282" x2="198" y2="282" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
-                                                <line x1="22" y1="372" x2="198" y2="372" stroke="#dee2e6" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                                {{-- ▲ Direction --}}
+                                                <text x="110" y="48" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700" letter-spacing="1">▲ FRONT</text>
+
+                                                {{-- Truck outer body shadow/frame --}}
+                                                <rect x="57" y="70" width="106" height="354" rx="16" fill="#e2e8f0" stroke="none"/>
+
+                                                {{-- Truck main body --}}
+                                                <rect x="59" y="72" width="102" height="350" rx="14" fill="#f0f3f9" stroke="#c8d4e8" stroke-width="1.5"/>
+
+                                                {{-- Cab section background --}}
+                                                <rect x="59" y="72" width="102" height="108" rx="14" fill="#dce7ff" stroke="#b0c4f0" stroke-width="1.5"/>
+
+                                                {{-- Windshield --}}
+                                                <rect x="71" y="80" width="78" height="34" rx="6" fill="#b8d0f5" opacity="0.85"/>
+                                                {{-- Windshield glare --}}
+                                                <line x1="77" y1="83" x2="77" y2="111" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                                                <line x1="83" y1="81" x2="83" y2="113" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.25"/>
+
+                                                {{-- Hood / front bonnet --}}
+                                                <rect x="71" y="116" width="78" height="14" rx="3" fill="#c8d8f0" stroke="#b0c4e8" stroke-width="1"/>
+
+                                                {{-- Side mirrors --}}
+                                                <rect x="45" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                                <rect x="161" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                                {{-- Mirror stems --}}
+                                                <line x1="59" y1="88" x2="65" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+                                                <line x1="155" y1="88" x2="161" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+
+                                                {{-- Cab label --}}
+                                                <text x="110" y="160" text-anchor="middle" font-size="7" fill="#7b93c4" font-weight="600" letter-spacing="1.5">CAB</text>
+                                                {{-- Cab/cargo separator --}}
+                                                <line x1="64" y1="180" x2="156" y2="180" stroke="#c8d4e8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+                                                {{-- Cargo body --}}
+                                                <rect x="63" y="182" width="94" height="236" rx="4" fill="#f5f7fb" stroke="#dce3f0" stroke-width="1"/>
+                                                {{-- Cargo panel lines --}}
+                                                <line x1="63" y1="228" x2="157" y2="228" stroke="#e0e8f4" stroke-width="1"/>
+                                                <line x1="63" y1="310" x2="157" y2="310" stroke="#e0e8f4" stroke-width="1"/>
+                                                <line x1="63" y1="392" x2="157" y2="392" stroke="#e0e8f4" stroke-width="1"/>
+                                                {{-- Cargo label --}}
+                                                <text x="110" y="266" text-anchor="middle" font-size="7" fill="#b0bcce" letter-spacing="2">CARGO</text>
+
+                                                {{-- ─── AXLE RODS ─── --}}
+                                                {{-- Front axle rod --}}
+                                                <rect x="30" y="124" width="160" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Front hub centres --}}
+                                                <circle cx="42" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="178" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                                {{-- Rear axle 1 rod --}}
+                                                <rect x="16" y="280" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Rear 1 hub centres (outer & inner each side) --}}
+                                                <circle cx="29" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="50" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="170" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="191" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                                {{-- Rear axle 2 rod --}}
+                                                <rect x="16" y="370" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Rear 2 hub centres --}}
+                                                <circle cx="29" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="50" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="170" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="191" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
                                                 {{-- Axle labels --}}
-                                                <text x="110" y="118" text-anchor="middle" font-size="7" fill="#adb5bd">FRONT AXLE</text>
-                                                <text x="110" y="278" text-anchor="middle" font-size="7" fill="#adb5bd">REAR AXLE 1</text>
-                                                <text x="110" y="368" text-anchor="middle" font-size="7" fill="#adb5bd">REAR AXLE 2</text>
-                                                {{-- Direction arrow --}}
-                                                <text x="110" y="55" text-anchor="middle" font-size="10" fill="#8898aa" font-weight="600">▲ FRONT</text>
+                                                <text x="110" y="119" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">FRONT AXLE</text>
+                                                <text x="110" y="276" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 1</text>
+                                                <text x="110" y="366" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 2</text>
 
                                                 {{-- C1 — Front Left --}}
-                                                @php $c=$getTyreColor($byCode['C1']??null); @endphp
-                                                <rect id="svg-C1" class="vtd-svg-tyre" data-pos="C1" x="30" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['C1']??null); $tm=$byCode['C1']??null; @endphp
+                                                <rect id="svg-C1" class="vtd-svg-tyre" data-pos="C1"
+                                                    data-label="{{ $posLabels['C1'] ?? 'C1' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="30" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="42" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">C1</text>
 
                                                 {{-- D1 — Front Right --}}
-                                                @php $c=$getTyreColor($byCode['D1']??null); @endphp
-                                                <rect id="svg-D1" class="vtd-svg-tyre" data-pos="D1" x="166" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['D1']??null); $tm=$byCode['D1']??null; @endphp
+                                                <rect id="svg-D1" class="vtd-svg-tyre" data-pos="D1"
+                                                    data-label="{{ $posLabels['D1'] ?? 'D1' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="166" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="178" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">D1</text>
 
                                                 {{-- Co3 — Rear Axle 1, Left Outer --}}
-                                                @php $c=$getTyreColor($byCode['Co3']??null); @endphp
-                                                <rect id="svg-Co3" class="vtd-svg-tyre" data-pos="Co3" x="20" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Co3']??null); $tm=$byCode['Co3']??null; @endphp
+                                                <rect id="svg-Co3" class="vtd-svg-tyre" data-pos="Co3"
+                                                    data-label="{{ $posLabels['Co3'] ?? 'Co3' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="20" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="29" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co3</text>
 
                                                 {{-- Ci2 — Rear Axle 1, Left Inner --}}
-                                                @php $c=$getTyreColor($byCode['Ci2']??null); @endphp
-                                                <rect id="svg-Ci2" class="vtd-svg-tyre" data-pos="Ci2" x="41" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Ci2']??null); $tm=$byCode['Ci2']??null; @endphp
+                                                <rect id="svg-Ci2" class="vtd-svg-tyre" data-pos="Ci2"
+                                                    data-label="{{ $posLabels['Ci2'] ?? 'Ci2' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="41" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="50" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci2</text>
 
                                                 {{-- Di2 — Rear Axle 1, Right Inner --}}
-                                                @php $c=$getTyreColor($byCode['Di2']??null); @endphp
-                                                <rect id="svg-Di2" class="vtd-svg-tyre" data-pos="Di2" x="160" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Di2']??null); $tm=$byCode['Di2']??null; @endphp
+                                                <rect id="svg-Di2" class="vtd-svg-tyre" data-pos="Di2"
+                                                    data-label="{{ $posLabels['Di2'] ?? 'Di2' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="160" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="169" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di2</text>
 
                                                 {{-- Do3 — Rear Axle 1, Right Outer --}}
-                                                @php $c=$getTyreColor($byCode['Do3']??null); @endphp
-                                                <rect id="svg-Do3" class="vtd-svg-tyre" data-pos="Do3" x="181" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Do3']??null); $tm=$byCode['Do3']??null; @endphp
+                                                <rect id="svg-Do3" class="vtd-svg-tyre" data-pos="Do3"
+                                                    data-label="{{ $posLabels['Do3'] ?? 'Do3' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="181" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="190" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do3</text>
 
                                                 {{-- Co5 — Rear Axle 2, Left Outer --}}
-                                                @php $c=$getTyreColor($byCode['Co5']??null); @endphp
-                                                <rect id="svg-Co5" class="vtd-svg-tyre" data-pos="Co5" x="20" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Co5']??null); $tm=$byCode['Co5']??null; @endphp
+                                                <rect id="svg-Co5" class="vtd-svg-tyre" data-pos="Co5"
+                                                    data-label="{{ $posLabels['Co5'] ?? 'Co5' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="20" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="29" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co5</text>
 
                                                 {{-- Ci4 — Rear Axle 2, Left Inner --}}
-                                                @php $c=$getTyreColor($byCode['Ci4']??null); @endphp
-                                                <rect id="svg-Ci4" class="vtd-svg-tyre" data-pos="Ci4" x="41" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Ci4']??null); $tm=$byCode['Ci4']??null; @endphp
+                                                <rect id="svg-Ci4" class="vtd-svg-tyre" data-pos="Ci4"
+                                                    data-label="{{ $posLabels['Ci4'] ?? 'Ci4' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="41" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="50" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci4</text>
 
                                                 {{-- Di4 — Rear Axle 2, Right Inner --}}
-                                                @php $c=$getTyreColor($byCode['Di4']??null); @endphp
-                                                <rect id="svg-Di4" class="vtd-svg-tyre" data-pos="Di4" x="160" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Di4']??null); $tm=$byCode['Di4']??null; @endphp
+                                                <rect id="svg-Di4" class="vtd-svg-tyre" data-pos="Di4"
+                                                    data-label="{{ $posLabels['Di4'] ?? 'Di4' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="160" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="169" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di4</text>
 
                                                 {{-- Do5 — Rear Axle 2, Right Outer --}}
-                                                @php $c=$getTyreColor($byCode['Do5']??null); @endphp
-                                                <rect id="svg-Do5" class="vtd-svg-tyre" data-pos="Do5" x="181" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                @php $c=$getTyreColor($byCode['Do5']??null); $tm=$byCode['Do5']??null; @endphp
+                                                <rect id="svg-Do5" class="vtd-svg-tyre" data-pos="Do5"
+                                                    data-label="{{ $posLabels['Do5'] ?? 'Do5' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="181" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
                                                 <text x="190" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do5</text>
                                             </svg>
 
@@ -1393,7 +1575,19 @@
                                             $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
                                             $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
                                         @endphp
-                                        <div class="vtd-tyre-card" data-pos="{{ $code }}">
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1403,12 +1597,15 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Condition</span><span class="vtd-fv vtd-condition-{{ $color }}">{{ ucfirst($m->tyre->tyre_condition ?? '—') }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
                                                 @if($kmBal !== null)
                                                 <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
                                                 @endif
                                             </div>
-                                            <div class="vtd-card-foot"><a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="vtd-view-btn"><i class="uil uil-eye me-1"></i>View Details</a></div>
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>View Details</a>
+                                            </div>
                                             @else
                                             <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
                                             @endif
@@ -6566,6 +6763,40 @@
     </div>
     </div>{{-- end vehicledtl-bd --}}
     </div>{{-- end srlog-bdwrapper --}}
+{{-- ═══════════════════════════════════════════════════════
+     TYRE DETAIL MODAL — vtd-detail-modal
+     Populated via vehicle-details-tyre.js when user clicks
+     View Details on a card or clicks a tyre on the SVG.
+═══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="vtdTyreDetailModal" tabindex="-1" aria-labelledby="vtdTyreDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+        <div class="modal-content vtd-modal-content">
+            <div class="modal-header vtd-modal-header" id="vtdModalHeader">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="vtd-modal-pos-dot" id="vtdModalPosDot"></span>
+                    <div>
+                        <div class="vtd-modal-title" id="vtdTyreDetailModalLabel">Tyre Details</div>
+                        <div class="vtd-modal-subtitle" id="vtdModalSubtitle"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vtd-modal-body" id="vtdModalBody">
+                {{-- Populated by JS --}}
+            </div>
+            <div class="modal-footer vtd-modal-footer">
+                <a href="#" class="btn btn-sm vtd-modal-manage-btn" id="vtdModalManageBtn" target="_blank">
+                    <i class="uil uil-cog me-1"></i>Manage Tyres
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- SVG Hover Tooltip --}}
+<div id="vtdSvgTooltip" class="vtd-svg-tooltip" style="display:none;"></div>
+
 </div>{{-- end layout-wrapper --}}
 
 @endsection
@@ -6575,6 +6806,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=1.0') }}"></script>
 
 <script>
 
@@ -6826,37 +7058,7 @@
         }
     });
 
-    /* ═══════════════════════════════════════════════════════
-       TYRE DETAILS — Truck SVG hover interactions
-    ═══════════════════════════════════════════════════════ */
-    // SVG tyre → highlight card
-    $(document).on('mouseenter', '.vtd-svg-tyre', function () {
-        var pos = $(this).data('pos');
-        $('.vtd-tyre-card[data-pos="' + pos + '"]').addClass('highlighted');
-    }).on('mouseleave', '.vtd-svg-tyre', function () {
-        var pos = $(this).data('pos');
-        $('.vtd-tyre-card[data-pos="' + pos + '"]').removeClass('highlighted');
-    });
-
-    // Card → highlight SVG tyre
-    $(document).on('mouseenter', '.vtd-tyre-card', function () {
-        var pos = $(this).data('pos');
-        $('#svg-' + pos).addClass('highlighted');
-    }).on('mouseleave', '.vtd-tyre-card', function () {
-        var pos = $(this).data('pos');
-        $('#svg-' + pos).removeClass('highlighted');
-    });
-
-    // SVG tyre click → scroll to card
-    $(document).on('click', '.vtd-svg-tyre', function () {
-        var pos = $(this).data('pos');
-        var $card = $('.vtd-tyre-card[data-pos="' + pos + '"]');
-        if ($card.length) {
-            $('html,body').animate({ scrollTop: $card.offset().top - 120 }, 300);
-            $card.addClass('highlighted');
-            setTimeout(function () { $card.removeClass('highlighted'); }, 1500);
-        }
-    });
+    /* TYRE DETAILS — interactions moved to vehicle-details-tyre.js (SD-1 compliance) */
 
 </script>
 

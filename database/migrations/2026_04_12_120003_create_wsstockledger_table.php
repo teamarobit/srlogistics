@@ -25,6 +25,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wsstockledger')) {
+            return;
+        }
+
         Schema::create('wsstockledger', function (Blueprint $table) {
             $table->id();
 

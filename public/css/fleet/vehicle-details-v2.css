@@ -721,7 +721,7 @@
 /* ── 3-Column Layout ─────────────────────────────────── */
 .vtd-layout {
     display: grid;
-    grid-template-columns: 1fr 200px 1fr;
+    grid-template-columns: 1fr 250px 1fr;
     gap: 0;
     align-items: start;
     padding: 16px;
@@ -831,6 +831,9 @@
     border-top: 1px solid #f4f6f9;
     background: #fafbfc;
 }
+/* JS selector hook only — no visual styling required */
+.vtd-open-modal { cursor: pointer; }
+
 .vtd-view-btn {
     font-size: 11px;
     color: #032671;
@@ -844,6 +847,9 @@
     display: flex;
     justify-content: center;
     padding: 0 8px;
+    position: sticky;
+    top: 80px;         /* clears fixed top-nav; SVG stays in view while cards scroll */
+    align-self: start;
 }
 .vtd-svg-wrap {
     display: flex;
@@ -903,6 +909,129 @@
 }
 
 /* ── Responsive ──────────────────────────────────────── */
+/* ── Tyre condition value colours ────────────────────────── */
+.vtd-condition-good     { color: #10863f; font-weight: 600; }
+.vtd-condition-warn     { color: #d97706; font-weight: 600; }
+.vtd-condition-critical { color: #ea0027; font-weight: 600; }
+.vtd-condition-empty    { color: #adb5bd; }
+
+/* ── SVG Hover Tooltip ───────────────────────────────────── */
+.vtd-svg-tooltip {
+    position: fixed;
+    z-index: 9999;
+    background: #1a2340;
+    color: #fff;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 11px;
+    min-width: 150px;
+    max-width: 200px;
+    pointer-events: none;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    line-height: 1.5;
+}
+.vtd-tip-label  { font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 4px; }
+.vtd-tip-serial { font-family: 'Courier New', monospace; font-size: 10px; color: #94d0ff; margin-bottom: 2px; }
+.vtd-tip-brand  { font-size: 10px; color: #94a3b8; margin-bottom: 3px; }
+.vtd-tip-row    { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+.vtd-tip-dot    { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.vtd-tip-fitted { font-size: 10px; color: #94a3b8; margin-top: 3px; }
+.vtd-tip-empty  { font-size: 11px; color: #64748b; font-style: italic; }
+
+/* ── Tyre Detail Modal ───────────────────────────────────── */
+.vtd-modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(3,38,113,0.18);
+}
+.vtd-modal-header {
+    background: linear-gradient(135deg, #1a2340 0%, #032671 100%);
+    color: #fff;
+    padding: 14px 18px;
+    border-bottom: 3px solid #10863f; /* overridden by JS per status */
+    align-items: flex-start;
+}
+.vtd-modal-pos-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    flex-shrink: 0; border: 2px solid rgba(255,255,255,0.4);
+    margin-top: 4px;
+}
+.vtd-modal-title {
+    font-size: 15px; font-weight: 700;
+    color: #fff; line-height: 1.2;
+}
+.vtd-modal-subtitle { margin-top: 3px; }
+.vtd-modal-status-chip {
+    font-size: 10px; font-weight: 700;
+    border-radius: 20px; padding: 1px 8px;
+}
+
+.vtd-modal-body {
+    padding: 16px 18px;
+    background: #fff;
+}
+.vtd-modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid #f4f6f9;
+    gap: 8px;
+}
+.vtd-modal-row:last-of-type { border-bottom: none; }
+.vtd-modal-lbl {
+    font-size: 11px; color: #8898aa; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .3px;
+    flex-shrink: 0; min-width: 90px;
+}
+.vtd-modal-val {
+    font-size: 12px; color: #1a2533; font-weight: 600;
+    text-align: right;
+}
+.vtd-modal-mono { font-family: 'Courier New', monospace; color: #032671; }
+.vtd-modal-divider {
+    border: none; border-top: 1px dashed #e8ecf4;
+    margin: 8px 0;
+}
+.vtd-modal-progress-wrap {
+    margin-top: 10px;
+}
+.vtd-modal-progress-track {
+    height: 7px; border-radius: 4px;
+    background: #e8ecf4; overflow: hidden;
+}
+.vtd-modal-progress-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.vtd-modal-progress-lbl {
+    font-size: 10px; color: #8898aa;
+    text-align: right; margin-top: 3px;
+}
+.vtd-modal-footer {
+    background: #f8f9fc;
+    border-top: 1px solid #e8ecf4;
+    padding: 10px 18px;
+    gap: 8px;
+}
+.vtd-modal-manage-btn {
+    background: #032671; color: #fff;
+    border: none; font-size: 12px; font-weight: 600;
+    padding: 5px 14px; border-radius: 6px;
+    text-decoration: none; transition: background .15s;
+}
+.vtd-modal-manage-btn:hover { background: #0a3d9e; color: #fff; text-decoration: none; }
+
+.vtd-modal-empty {
+    text-align: center; padding: 24px 16px; color: #8898aa;
+}
+.vtd-modal-empty-icon {
+    font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.35;
+}
+.vtd-modal-empty-sub { font-size: 11px; margin-top: 4px; color: #adb5bd; }
+
+/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 992px) {
     .vtd-layout {
         grid-template-columns: 1fr;
@@ -910,17 +1039,17 @@
     }
     .vtd-center {
         order: -1;
+        position: static;   /* cancel sticky on stacked layout */
         border-bottom: 1px solid #f0f3f9;
         padding-bottom: 16px;
         margin-bottom: 4px;
     }
     .vtd-side { border: none; padding: 0; }
-    .vtd-svg-wrap { max-width: 180px; }
+    .vtd-svg-wrap { max-width: 200px; }
 }
 @media (max-width: 576px) {
     .vtd-truck-svg { display: none; }
     .vtd-svg-note  { display: none; }
     .vtd-center    { display: none; }
 }
-
 
