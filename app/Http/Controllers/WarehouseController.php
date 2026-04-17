@@ -50,12 +50,13 @@ class WarehouseController extends Controller
     public function store(WarehouseRequest $request): JsonResponse
     {
         try {
-            DB::transaction(function () use ($request): Warehouse {
+            $warehouse = DB::transaction(function () use ($request): Warehouse {
                 $this->resolveCity($request->state_id, $request->city_name);
 
-                $data                   = $request->validated();
-                $data['warehouse_code'] = Warehouse::nextCode();
-                $data['created_by']     = Auth::id();
+                $data                    = $request->validated();
+                $data['warehouse_code']  = Warehouse::nextCode();
+                $data['organisation_id'] = Auth::user()->organisation_id ?? 1;
+                $data['created_by']      = Auth::id();
 
                 return Warehouse::create($data);
             });

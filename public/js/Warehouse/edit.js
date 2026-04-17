@@ -1,6 +1,6 @@
 /**
  * Warehouse Master — Edit Page JS
- * SR Logistics | public/js/Warehouse/edit.js v1.1
+ * SR Logistics | public/js/Warehouse/edit.js v1.2
  *
  * Blade config via data-* on #whEditForm:
  *   data-cities-url   — URL template with __STATE_ID__ placeholder
@@ -8,13 +8,14 @@
  *   data-saved-city   — $wh->city_name
  *   data-index-url    — route('warehouse.master.index')
  *
- * SD-1: No inline JS in blade.
- * SD-3: Form submit via $.ajax(). No plain POST.
- * SD-4: Validation errors as red text below field — no red border.
- * SD-7: Toast.fire() for all notifications.
+ * SD-1:  No inline JS in blade.
+ * SD-3:  Form submit via $.ajax(). No plain POST.
+ * SD-4:  Validation errors as red text below field — no red border.
+ * SD-7:  Toast.fire() for all notifications.
+ * SD-13: intl-tel-input on #wh_contact_number, default country IN (+91).
  */
 
-// SD-7: Define Toast mixin once at top of file
+/* ── SD-7: Toast mixin ───────────────────────────────── */
 const Toast = Swal.mixin({
     toast: true,
     position: 'top',
@@ -33,6 +34,23 @@ $(function () {
     var CITIES_URL = $form.data('cities-url');
     var savedState = $form.data('saved-state');
     var savedCity  = $form.data('saved-city');
+
+    // ── SD-13: intl-tel-input — Contact Number ────────────────
+    var itiPhone = null;
+    var phoneEl  = document.getElementById('wh_contact_number');
+    if (phoneEl && typeof window.intlTelInput === 'function') {
+        itiPhone = window.intlTelInput(phoneEl, {
+            initialCountry:   'in',            // +91 India default
+            separateDialCode: true,
+            preferredCountries: ['in'],
+            utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js',
+        });
+        // If saved number is in E.164 (+91…) or plain format, set it
+        var savedNumber = phoneEl.value;
+        if (savedNumber) {
+            itiPhone.setNumber(savedNumber);
+        }
+    }
 
     // ── Select2: State ────────────────────────────────────────
     $('#wh_state_id').select2({ placeholder: 'Select State', width: '100%' });
@@ -124,6 +142,11 @@ $(function () {
     $form.on('submit', function (e) {
         e.preventDefault();
         clearValidationErrors();
+
+        // SD-13: set full E.164 number (+919876543210) before serialize
+        if (itiPhone) {
+            $('#wh_contact_number').val(itiPhone.getNumber());
+        }
 
         var $btn = $('#btnSave');
         $('#btnSaveText').text('Updating…');
