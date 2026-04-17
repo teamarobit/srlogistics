@@ -1,4 +1,16 @@
 /* Insurance Providers — index.js */
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
+
 (function () {
     'use strict';
 
@@ -7,11 +19,16 @@
     /* ── Toast ── */
     function showToast(msg, ok) {
         ok = ok !== false;
-        const el = document.getElementById('ipToast');
-        document.getElementById('ipToastMsg').textContent = msg;
-        el.classList.remove('bg-success', 'bg-danger', 'text-white');
-        el.classList.add(ok ? 'bg-success' : 'bg-danger', 'text-white');
-        bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
+        // const el = document.getElementById('ipToast');
+        // document.getElementById('ipToastMsg').textContent = msg;
+        // el.classList.remove('bg-success', 'bg-danger', 'text-white');
+        // el.classList.add(ok ? 'bg-success' : 'bg-danger', 'text-white');
+        // bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
+
+        Toast.fire({
+            icon: ok ? 'success' : 'error',
+            title: msg
+        });
     }
 
     /* ── Clear errors ── */
@@ -158,7 +175,7 @@
         var sp  = document.getElementById('editSpinner');
         btn.disabled = true; sp.classList.remove('d-none');
 
-        apiFetch(window.IP_JSON_URL + '/' + id + '/update', 'PUT', this)
+        apiFetch(window.IP_JSON_URL + '/' + id + '/update', 'POST', this)
             .then(function (d) {
                 if (d.success) {
                     bootstrap.Modal.getInstance(document.getElementById('editProviderModal')).hide();
