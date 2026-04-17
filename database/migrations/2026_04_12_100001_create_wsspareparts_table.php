@@ -13,6 +13,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wsspareparts')) {
+            return;
+        }
+
         Schema::create('wsspareparts', function (Blueprint $table) {
             $table->id();
             $table->string('part_no', 50)->unique()->comment('Unique part number / SKU, e.g. SP-0001');

@@ -15,12 +15,15 @@ class Warehouse extends Model
         'organisation_id',
         'warehouse_code',
         'name',
-        'city',
-        'state',
+        'warehouse_type',
         'address',
+        'location_name',
+        'state_id',
+        'city_name',
         'pincode',
-        'manager_name',
-        'contact_phone',
+        'manager_contact_id',
+        'contact_number',
+        'storage_type',
         'notes',
         'status',
         'created_by',
@@ -36,6 +39,16 @@ class Warehouse extends Model
     }
 
     // ─── Relationships ────────────────────────────────────────────────────────
+
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Contact::class, 'manager_contact_id');
+    }
 
     /** Existing tyre relationship (preserved) */
     public function tyres()

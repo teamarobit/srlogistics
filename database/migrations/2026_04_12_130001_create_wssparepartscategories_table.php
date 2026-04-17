@@ -13,6 +13,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wssparepartscategories')) {
+            return;
+        }
+
         Schema::create('wssparepartscategories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('organisation_id')->nullable();
