@@ -2,6 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Warehouse/form.css?v=1.1') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css">
 @endsection
 
 @section('content')
@@ -165,10 +166,12 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Contact Number</label>
-                                    <input type="text" class="form-control numberonly"
+                                    {{-- SD-13: intl-tel-input, default country IN (+91). Init in edit.js. --}}
+                                    <input type="tel" class="form-control"
                                            name="contact_number" id="wh_contact_number"
-                                           value="{{ old('contact_number', $wh->contact_number) }}" maxlength="15"
-                                           placeholder="e.g. 9876543210">
+                                           value="{{ old('contact_number', $wh->contact_number) }}"
+                                           placeholder="9876543210"
+                                           data-intl-phone="1">
                                     @error('contact_number')
                                         <span class="text-danger small d-block mt-1">{{ $message }}</span>
                                     @enderror
@@ -219,5 +222,7 @@
 
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whEditForm. --}}
-<script src="{{ asset('js/Warehouse/edit.js?v=1.0') }}"></script>
+{{-- SD-13: intl-tel-input must load before edit.js --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script src="{{ asset('js/Warehouse/edit.js?v=1.2') }}"></script>
 @endsection

@@ -32,7 +32,7 @@ class WarehouseRequest extends FormRequest
             'location_name'     => 'nullable|string|max:150',
             'pincode'           => 'nullable|string|max:10',
             'manager_contact_id'=> 'nullable|exists:contacts,id',
-            'contact_number'    => 'nullable|digits_between:7,15',
+            'contact_number'    => 'nullable|string|max:20',   // intl-tel-input stores E.164 e.g. +919876543210
             'storage_type'      => 'nullable|in:Rack,Floor,Open Yard',
             'status'            => 'required|in:Active,Inactive',
             'notes'             => 'nullable|string|max:500',

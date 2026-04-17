@@ -62,7 +62,7 @@ class WarehouseFeatureTest extends TestCase
             'city_name'       => 'QATestCity',
             'location_name'   => 'QA Zone',
             'pincode'         => '400001',
-            'contact_number'  => '9876543210',
+            'contact_number'  => '+919876543210',  // E.164 format from intl-tel-input
             'storage_type'    => 'Rack',
             'status'          => 'Active',
             'notes'           => '',
@@ -208,6 +208,19 @@ class WarehouseFeatureTest extends TestCase
     }
 
     /** @test */
+    public function store_sets_organisation_id_from_authenticated_user(): void
+    {
+        // organisation_id must always be set — never null (team rule)
+        $payload = $this->validPayload();
+        $this->actingAs($this->user)
+             ->postJson(route('warehouse.master.store'), $payload);
+
+        $wh = \App\Models\Warehouse::where('name', $payload['name'])->first();
+        $this->assertNotNull($wh);
+        $this->assertNotNull($wh->organisation_id, 'organisation_id must never be null');
+    }
+
+    /** @test */
     public function store_sets_created_by_to_logged_in_user(): void
     {
         $payload = $this->validPayload();
@@ -325,19 +338,21 @@ class WarehouseFeatureTest extends TestCase
     }
 
     /** @test */
-    public function store_fails_when_contact_number_contains_letters(): void
+    public function store_accepts_e164_phone_number_from_intl_tel_input(): void
     {
+        // intl-tel-input submits E.164 format, e.g. +919876543210
         $this->actingAs($this->user)
-             ->postJson(route('warehouse.master.store'), $this->validPayload(['contact_number' => 'ABC1234']))
-             ->assertStatus(422)
-             ->assertJsonValidationErrors('contact_number');
+             ->postJson(route('warehouse.master.store'), $this->validPayload(['contact_number' => '+919876543210']))
+             ->assertStatus(200)
+             ->assertJson(['success' => true]);
     }
 
     /** @test */
-    public function store_fails_when_contact_number_is_too_short(): void
+    public function store_fails_when_contact_number_exceeds_max_length(): void
     {
+        // max:20 validation — 21 chars fails
         $this->actingAs($this->user)
-             ->postJson(route('warehouse.master.store'), $this->validPayload(['contact_number' => '123']))
+             ->postJson(route('warehouse.master.store'), $this->validPayload(['contact_number' => '+919876543210123456789']))
              ->assertStatus(422)
              ->assertJsonValidationErrors('contact_number');
     }
