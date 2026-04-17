@@ -12715,16 +12715,16 @@ class ContactController extends Controller
         $contact->ph_prefix       = $request->phone_code ?? getPhoneCode();
         $contact->whatsapp        = $request->whatsapp;
         $contact->email           = $request->email;
-        $contact->address         = $request->address;
+        // $contact->address         = $request->address;
         $contact->country_id      = $request->country_id;
         $contact->state_id        = $request->state_id;
         $contact->city_id         = $request->city_id;
-        $contact->pincode         = $request->pincode;
+        $contact->zipcode         = $request->pincode;
         $contact->gst_number      = $request->gst_number;
-        $contact->pan_number      = $request->pan_number;
+        $contact->pan_no          = $request->pan_number;
         $contact->tds_percentage  = $request->tds_percentage ?? 0;
         $contact->status          = $request->status ?? 'Active';
-        $contact->contact_comment = $request->contact_comment;
+        $contact->comment = $request->contact_comment;
         $contact->updated_by      = Auth::id();
 
         if ($request->hasFile('contact_image') && $request->file('contact_image')->isValid()) {
