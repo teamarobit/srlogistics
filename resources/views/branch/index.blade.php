@@ -218,5 +218,5 @@ body{ background-color: #fff; }
     var DELETE_BRANCH  = "{{route('branch.delete')}}";
     
 </script>
-<script type="text/javascript" src="{{ asset('js/Branch/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/branch/index.js') }}?v={{ time() }}"></script>
 @endsection

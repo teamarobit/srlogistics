@@ -406,7 +406,7 @@ var BRANCHES = "{{ route('branch.index') }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/Branch/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}"></script>
 
 @endsection
 
