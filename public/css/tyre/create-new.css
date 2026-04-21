@@ -1,0 +1,202 @@
+/* ==========================================================================
+   Tyre Create-New — supplementary styles (tcn-* prefix)
+   Base layout inherits from css/Inventory/battery-add.css (badd-*, sc-*)
+   ========================================================================== */
+
+/* ---------- Radio chip row (Radial/Nylon, New/Used/Retread, Tube/Tubeless) */
+.tcn-radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.tcn-radio-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    padding: 8px 16px;
+    border: 1.5px solid #e3e7ef;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #485D6B;
+    transition: all 0.15s ease;
+    user-select: none;
+    margin-bottom: 0;
+}
+.tcn-radio-chip input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.tcn-radio-chip:hover {
+    border-color: #bcc7d9;
+    background: #f7f9fc;
+}
+.tcn-radio-chip.active,
+.tcn-radio-chip input[type="radio"]:checked + span {
+    /* active state applied via JS on the parent label */
+}
+.tcn-radio-chip.active {
+    border-color: #032671;
+    background: #032671;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(3, 38, 113, 0.18);
+}
+
+/* ---------- Toggle switch (reminder on/off) */
+.tcn-reminder-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tcn-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+.tcn-switch input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.tcn-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #d8dde6;
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+}
+.tcn-slider::before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    top: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.tcn-switch input:checked + .tcn-slider {
+    background-color: #10863f;
+}
+.tcn-switch input:checked + .tcn-slider::before {
+    transform: translateX(18px);
+}
+.tcn-switch-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #485D6B;
+}
+
+/* ---------- Read-only pill (Stock Status, Current Status) */
+.tcn-readonly-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #e3ecff;
+    color: #032671;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+.tcn-readonly-pill i {
+    font-size: 14px;
+}
+
+/* ---------- Dropzone overrides */
+.tcn-dropzone {
+    border: 2px dashed #bcc7d9;
+    border-radius: 8px;
+    background: #f7f9fc;
+    min-height: 130px;
+    padding: 20px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.tcn-dropzone:hover {
+    border-color: #032671;
+    background: #eef3fc;
+}
+.tcn-dropzone .dz-message {
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    color: #485D6B;
+}
+.tcn-dropzone .dz-message i {
+    font-size: 18px;
+    vertical-align: -2px;
+}
+.tcn-dropzone .dz-preview {
+    margin: 8px;
+}
+.tcn-dropzone .dz-preview .dz-image {
+    border-radius: 6px;
+}
+
+/* ---------- Conditional PO reference field reveal */
+.tcn-po-field {
+    display: none;
+}
+.tcn-po-field.tcn-visible,
+.tcn-po-field:not(.d-none) {
+    display: block;
+}
+
+/* ---------- Select2 alignment inside badd-input wrapper */
+.tcn-select2 + .select2-container {
+    width: 100% !important;
+}
+.tcn-select2 + .select2-container .select2-selection--single {
+    height: 40px;
+    border: 1px solid #dfe4ec;
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: #fff;
+}
+.tcn-select2 + .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 30px;
+    font-size: 13px;
+    color: #32414A;
+}
+.tcn-select2 + .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+}
+.tcn-select2 + .select2-container--focus .select2-selection--single,
+.tcn-select2 + .select2-container--open .select2-selection--single {
+    border-color: #032671;
+    box-shadow: 0 0 0 0.15rem rgba(3, 38, 113, 0.15);
+}
+
+/* ---------- Small mobile tweaks */
+@media (max-width: 576px) {
+    .tcn-radio-chip {
+        min-width: 80px;
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+    .tcn-dropzone {
+        min-height: 110px;
+        padding: 14px;
+    }
+}
+
+/* ---------- Validation error span (SD-4) */
+.field-error {
+    color: #dc3545;
+    font-size: 12px;
+    display: block;
+    margin-top: 4px;
+}

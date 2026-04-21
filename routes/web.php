@@ -378,6 +378,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/', [App\Http\Controllers\TyreController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\TyreController::class, 'create'])->name('create');
         Route::post('/save', [App\Http\Controllers\TyreController::class, 'store'])->name('save');
+        // New redesigned create page (Battery-add style) — does not modify existing /create
+        Route::get('/create-new', [App\Http\Controllers\TyreController::class, 'createNew'])->name('createNew');
+        Route::post('/save-new', [App\Http\Controllers\TyreController::class, 'storeNew'])->name('saveNew');
         Route::get('/{tyre}/edit', [App\Http\Controllers\TyreController::class, 'edit'])->name('edit');
         Route::post('/{tyre}/update', [App\Http\Controllers\TyreController::class, 'update'])->name('update');
         Route::get('/{tyre}/details', [App\Http\Controllers\TyreController::class, 'show'])->name('show');
