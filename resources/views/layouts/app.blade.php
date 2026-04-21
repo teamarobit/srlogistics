@@ -210,6 +210,20 @@
     <!-- Page JS -->
     @yield('js')
     
+    @if(session('error'))
+    <script>
+        window.onload = function () {
+            if (typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'error',
+                    title: @json(session('error'))
+                });
+            } else {
+                alert(@json(session('error'))); // fallback
+            }
+        };
+    </script>
+    @endif
     
 </body>
 
