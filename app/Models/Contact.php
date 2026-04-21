@@ -75,6 +75,10 @@ class Contact extends Model
     {
         return $this->belongsTo(Designation::class, 'office_designation_id');
     }
+    public function officeJobrank()
+    {
+        return $this->belongsTo(Jobrank::class, 'office_jobrank_id');
+    }
     
     
     
@@ -92,7 +96,10 @@ class Contact extends Model
     {
         return $this->belongsTo(Designation::class, 'service_center_designation_id');
     }
-    
+    public function serviceCenterJobrank()
+    {
+        return $this->belongsTo(Jobrank::class, 'service_center_jobrank_id');
+    }
     
     
     // Contract Pricing

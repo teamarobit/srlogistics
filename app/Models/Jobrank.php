@@ -19,6 +19,16 @@ class Jobrank extends Model
     {
         return $this->belongsTo(Designation::class, 'designation_id');
     }
+
+    public function officeContacts()
+    {
+        return $this->hasMany(Contact::class, 'office_jobrank_id');
+    }
+
+    public function serviceCenterContacts()
+    {
+        return $this->hasMany(Contact::class, 'service_center_jobrank_id');
+    }
     
     public function createdBy()
     {

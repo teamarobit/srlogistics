@@ -145,4 +145,6 @@ var DEPARTMENTS = "{{ route('department.index') }}";
 
 <script type="text/javascript" src="{{asset('customjs/department/create.js')}}"></script>
 
+
+
 @endsection

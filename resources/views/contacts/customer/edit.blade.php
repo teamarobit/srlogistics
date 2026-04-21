@@ -783,16 +783,43 @@
                                                           <h6>{{$coattachtype->name}}</h6>
                                                       </div>
                                                       @foreach($contact->coattachments->where('coattachtype.id',$coattachtype->id) as $coattachment)
+
+                                                            @php
+                                                                $fileUrl = asset('media/contact/'.$coattachment->name);
+                                                                $extension = strtolower(pathinfo($coattachment->name, PATHINFO_EXTENSION));
+
+                                                                $imageExtensions = ['jpg','jpeg','png','gif','webp','bmp'];
+                                                            @endphp
                                                            <div class="col-12 col-md-4 attachment-box">
                                                               <div class="preview-img d-block w-100">
                                                                   <div class="d-flex justify-content-between">
                                                                       <div>
-                                                                          <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                              <img src="{{asset('media/contact/'.$coattachment->name)}}" class="me-3">
-                                                                          </a>
+                                                                            <a href="{{ $fileUrl }}" download="{{ $coattachment->original_name }}">
+                                
+                                                                                @if(in_array($extension, $imageExtensions))
+                                                                                    <!-- Image Preview -->
+                                                                                    <img src="{{ $fileUrl }}" class="me-3" width="60">
+
+                                                                                @elseif($extension == 'pdf')
+                                                                                    <i class="uil-file-alt me-3" style="font-size:40px;"></i>
+
+                                                                                @elseif(in_array($extension, ['doc','docx']))
+                                                                                    <i class="uil-file-word me-3" style="font-size:40px;"></i>
+
+                                                                                @elseif(in_array($extension, ['xls','xlsx']))
+                                                                                    <i class="uil-file-exclamation-alt me-3" style="font-size:40px;"></i>
+
+                                                                                @elseif(in_array($extension, ['zip','rar']))
+                                                                                    <i class="uil-file-archive me-3" style="font-size:40px;"></i>
+
+                                                                                @else
+                                                                                    <i class="uil-file me-3" style="font-size:40px;"></i>
+                                                                                @endif
+
+                                                                            </a>
                                                                           <div style="font-size: 14px;">
-                                                                              <a href="{{asset('media/contact/'.$coattachment->name)}}" download="{{$coattachment->original_name}}">
-                                                                                  <p class="mb-0 file-name">{{$coattachment->original_name}} </p>
+                                                                              <a href="{{ $fileUrl }}" download="{{ $coattachment->original_name }}">
+                                                                                <p class="mb-0 file-name">{{ $coattachment->original_name }}</p>
                                                                               </a>
                                                                               <p class="mb-0">Size: <span class="text-secondary">{{round((float)$coattachment->file_size,2)}} MB</span></p>
                                                                           </div>
@@ -1552,7 +1579,7 @@
                                     <div class="vehicleRows">
                                 
                                         <div class="vehicleRow row form-group">
-                                            <div class="col-12 col-md-4">
+                                            <div class="col-12 col-md-3">
                                                 <div class="form-floating">
                                                     <select name="vehicle_type_id[]" class="form-select vehicleTypeId">
                                                         <option value="">Choose</option>
@@ -1567,7 +1594,7 @@
                                                 <span class="error text-danger vehicle_type_id_error"></span>
                                             </div>
                                 
-                                            <div class="col-12 col-md-4">
+                                            <div class="col-12 col-md-3">
                                                 <div class="form-floating">
                                                     <select name="vehicletype_size_id[]" class="form-select vehicleTypeSizeId">
                                                         <option value="">Choose</option>
@@ -1575,6 +1602,14 @@
                                                     <label>Vehicle Size</label>
                                                 </div>
                                                 <span class="error text-danger vehicletype_size_id_error"></span>
+                                            </div>
+
+                                            <div class="col-12 col-md-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="vehicletype_weight[]" class="form-control priceInput">
+                                                    <label>Weight</label>
+                                                </div>
+                                                <span class="error text-danger vehicletype_weight_error"></span>
                                             </div>
                                 
                                             <div class="col-12 col-md-3">

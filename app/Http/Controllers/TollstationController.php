@@ -188,6 +188,13 @@ class TollstationController extends Controller
         if($tollstation == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Tollstation not found.']);
         }
+
+        // if ($tollstation->routetollstations()->exists()) {
+
+        //     return redirect()->back()->with('error', 'This Toll Station is linked with routes. You cannot edit it.');
+        // }
+
+        $hasRoutes = $tollstation->routetollstations()->exists();
         
         
         $states = State::whereHas('country', function ($q) {
@@ -200,7 +207,7 @@ class TollstationController extends Controller
         $description = 'Retrieve a tollstation named '.$tollstation->station_name.' to edit.';
         $useractivity = $this->storeUseractivity(42, 5, Auth::user()->id, $tollstation->id, $description);
         
-        return view('tollstation.edit', compact('tollstation','states'));
+        return view('tollstation.edit', compact('tollstation','states','hasRoutes'));
     }
     
     

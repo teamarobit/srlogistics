@@ -88,10 +88,22 @@ $(document).ready(function(){
     
                     }
                 },
-                error: function () {
+                error: function (xhr) {
+
+                    let message = "Something went wrong.";
+
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    } 
+                    else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        message = Object.values(xhr.responseJSON.errors)
+                                        .flat()
+                                        .join(', ');
+                    }
+
                     Toast.fire({
                         icon: "error",
-                        title: "Something went wrong."
+                        title: message
                     });
                 }
             });

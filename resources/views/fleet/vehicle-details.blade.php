@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=0.02') }}">
+<link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=0.02') }}">
     
 @endsection
 
@@ -2416,6 +2417,7 @@
                                     class="addtripbtn"
                                     data-bs-toggle="modal"
                                     data-bs-target="#add_v_documents"
+                                    data-bs-target="#add_v_documents"
                                 >
                                     <i class="uil uil-plus me-1"></i> Documents</a
                                 >
@@ -2435,6 +2437,84 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        
+                                        @forelse($mediadocuments as $mediadocument)
+                                            @php
+                                                $medias = $mediadocument->medias;
+                                                $files = $medias->map(function ($media) {
+                                                                $media->url = asset('medias/' . $media->file_path);
+                                                                $media->delete_url = route('tyre.document.destroy', $media->id);
+                                                                return $media;
+                                                            });
+                                            @endphp
+                                            <tr>
+                                                <td>
+                                                    <span class="value">{{ $mediadocument->attachmenttype->name }}</span>
+                                                </td>
+                                                
+                                                <td><span class="value">{{ $mediadocument->document_number }}</span></td>
+                                                
+                                                <td><span class="value">{{ date('d/m/Y', strtotime($mediadocument->issue_date)) }}</span></td>
+                                                
+                                                <td><span class="value">{{ $mediadocument->expiry_date ? date('d/m/Y', strtotime($mediadocument->expiry_date)) : '-' }}</span></td>
+                                                
+                                                <td>
+                                                    @if($mediadocument->expiry_date)
+                                                        @if(date('Y-m-d', strtotime($mediadocument->expiry_date)) > date('Y-m-d', strtotime('+10days')))
+                                                            <span class="badge badge-success">Active</span>
+                                                        @elseif(date('Y-m-d', strtotime($mediadocument->expiry_date)) >= date('Y-m-d'))
+                                                            <span class="badge badge-warning">Expiring Soon</span>
+                                                        @else
+                                                            <span class="badge badge-danger">Expired</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="badge badge-secondary">N/A</span>
+                                                    @endif
+                                                </td>
+                                                
+                                                <td>
+                                                    <span class="value">
+                                                        @if(!empty($mediadocument->notes))
+                                                            {{ \Illuminate\Support\Str::limit($mediadocument->notes, 20, '...') }}
+                                                    
+                                                            @if(strlen($mediadocument->notes) > 20)
+                                                                <a href="javascript:void(0)" 
+                                                                    class="showMore"
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#modalNotes"
+                                                                    data-notes="{{ $mediadocument->notes }}">
+                                                                   <i class="me-1 uil uil-eye"></i>
+                                                                </a>
+                                                            @endif
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </span>
+                                                </td>
+        
+                                                <td class="text-center">
+                                                    <a class="text-info view-files" data-files='@json($files)'><i class="uil uil-document-info"></i></a>
+                                                    <a class="item-edit text-success" 
+                                                        data-url="{{ route('tyre.document.update', $mediadocument->id) }}" 
+                                                        
+                                                        data-attachment_type="{{ $mediadocument->attachmenttype->name }}"
+                                                        data-document_number="{{ $mediadocument->document_number }}"
+                                                        data-issue_date="{{ \Carbon\Carbon::parse($mediadocument->issue_date)->format('d/m/Y') }}"
+                                                        data-expiry_date="{{ $mediadocument->expiry_date ? \Carbon\Carbon::parse($mediadocument->expiry_date)->format('d/m/Y') : '' }}"
+                                                        data-notes="{{ $mediadocument->notes }}"
+                                                        data-reminder_days="{{ $mediadocument->reminder_days ?? '' }}"
+                                                        data-has_reminder="{{ $mediadocument->set_reminder }}"
+
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#edit_documents">
+                                                        <i class="uil uil-pen me-2"></i>
+                                                    </a>
+                                                    <!--<a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>-->
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                        
                                         
                                         @forelse($mediadocuments as $mediadocument)
                                             @php
@@ -4550,6 +4630,12 @@
                         </div>
                         
 
+                        <div class="col-12 col-md-12 form-group">
+                            <div class="d-flex">
+                                <input class="form-check-input clickto-adclass" name="set_reminder" type="checkbox" id="edit_setReminder" />
+
+                                <label class="me-1">Set Reminder </label>
+                            </div>
 
                             <div class="days-beforeexpiry" style="display: none">
                                 <div class="row form-group">
@@ -5481,8 +5567,12 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script>
+<!-- <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 
 <script>
 

@@ -199,11 +199,30 @@ class DepartmentController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! id not found.']);
         }
         
-        $department = Department::with(['city', 'createdBy'])->find($id);
+        $department = Department::with(['city', 'createdBy', 'designations'])->find($id);
         
         if($department == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Department not found.']);
         }
+
+        
+        if ($department->designations()->exists()) {
+
+            // \Log::warning('Edit blocked - department has designations', [
+            //     'department_id' => $department->id
+            // ]);
+
+            return redirect()->back()->with('error', 'This department has designations. You cannot edit it.');
+        }
+
+        if ($department->officeContacts()->exists() || $department->serviceCenterContacts()->exists()) {
+            // \Log::warning('Edit blocked - department tagged with contacts', [
+            //     'department_id' => $department->id
+            // ]);
+
+            return redirect()->back()->with('error', 'This department is linked with contacts. You cannot edit it.');
+        }
+
         
         $cities = City::whereHas('state.country', function ($q) {
                             $q->where('iso2', 'IN');   

@@ -31,6 +31,12 @@
 
                 <div class="addroute-bd">
                   <div class="container-fluid">
+                    
+                    @if($hasRoutes)
+                        <div class="alert alert-warning">
+                            This Toll Station is linked with routes. Charges fields are locked!
+                        </div>
+                    @endif
 
                     <form action="{{route('tollstation.update')}}" method="POST" id="editForm">
                         @csrf
@@ -137,7 +143,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge', $tollstation->large_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge', $tollstation->large_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_large_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -151,7 +157,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge', $tollstation->medium_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge', $tollstation->medium_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_medium_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -165,7 +171,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge', $tollstation->small_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge', $tollstation->small_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" {{ $hasRoutes ? 'disabled' : '' }}>
                                   <small class="error text-danger" id="edit_small_vehicle_charge_error"></small>
                               </div>
                           </div>

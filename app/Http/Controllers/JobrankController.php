@@ -177,6 +177,14 @@ class JobrankController extends Controller
         if($data == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Department not found.']);
         }
+
+        if ($data->officeContacts()->exists() || $data->serviceCenterContacts()->exists()) {
+            // \Log::warning('Edit blocked - jobrank tagged with contacts', [
+            //     'jobrank_id' => $jobrank->id
+            // ]);
+
+            return redirect()->back()->with('error', 'This Job Rank is linked with contacts. You cannot edit it.');
+        }
         
         $departments = Department::where('status', 'Active')->orderBy('name')->get();
         $designations = Designation::orderBy('name')->get();

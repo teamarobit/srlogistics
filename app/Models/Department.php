@@ -42,6 +42,16 @@ class Department extends Model
     {
         return $this->hasMany(Jobrank::class, 'department_id');
     }
+
+    public function officeContacts()
+    {
+        return $this->hasMany(Contact::class, 'office_department_id');
+    }
+
+    public function serviceCenterContacts()
+    {
+        return $this->hasMany(Contact::class, 'service_center_department_id');
+    }
     
     public function createdby()
     {
