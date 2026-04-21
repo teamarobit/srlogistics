@@ -186,6 +186,7 @@ $(document).ready(function() {
     });
     
     $('form#editForm').on('submit', function(){
+        $('.error_msg').html('');
         var formData = new FormData(this);
         // Ensure hidden field is included
         formData.append('branchid', $('#edit_branchid_input').val());
@@ -227,34 +228,34 @@ $(document).ready(function() {
                     // $(`#edit_${field}_error`).text('');
             
                     if ($input.length) {
+                        $(`#edit_${field}_error`).text(messages[0]);
+                        // // If radio or checkbox group
+                        // if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
             
-                        // If radio or checkbox group
-                        if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
+                        //     // Add invalid styling if needed
+                        //     $input.addClass('is-invalid');
             
-                            // Add invalid styling if needed
-                            $input.addClass('is-invalid');
+                        //     // Put the message into your existing small.error span
+                        //     $(`#edit_${field}_error`).text(messages[0]);
             
-                            // Put the message into your existing small.error span
-                            $(`#edit_${field}_error`).text(messages[0]);
+                        // } else {
+                        //     // Normal inputs
             
-                        } else {
-                            // Normal inputs
+                        //     $input.addClass('is-invalid');
             
-                            $input.addClass('is-invalid');
+                        //     // Try to find existing small.error span
+                        //     let $small = $(`#edit_${field}_error`);
             
-                            // Try to find existing small.error span
-                            let $small = $(`#edit_${field}_error`);
-            
-                            if ($small.length) {
-                                // set text
-                                $small.text(messages[0]);
-                            } else {
-                                // fallback: create the small.error right after the input
-                                $input.after(
-                                    `<small class="error text-danger" id="edit_${field}_error">${messages[0]}</small>`
-                                );
-                            }
-                        }
+                        //     if ($small.length) {
+                        //         // set text
+                        //         $small.text(messages[0]);
+                        //     } else {
+                        //         // fallback: create the small.error right after the input
+                        //         $input.after(
+                        //             `<small class="error text-danger" id="edit_${field}_error">${messages[0]}</small>`
+                        //         );
+                        //     }
+                        // }
             
                     } else {
                         // Fallback if input not found

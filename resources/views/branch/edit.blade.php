@@ -41,7 +41,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="branch_location" value="{{ $branch->location ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_branch_location_error"></small>
+                            <small class="error text-danger error_msg" id="edit_branch_location_error"></small>
                         </div>
                       </div>
                       
@@ -76,7 +76,7 @@
                               </div>                                    
                               
                           </div>
-                          <small class="error text-danger" id="edit_branch_type_error"></small>
+                          <small class="error text-danger error_msg" id="edit_branch_type_error"></small>
                       </div>
                       
                       <div class="form-group row">
@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="date" name="start_date" value="{{ $branch->start_date ?? '' }}" class="form-control general_date">
-                            <small class="error text-danger" id="edit_start_date_error"></small>
+                            <small class="error text-danger error_msg" id="edit_start_date_error"></small>
                         </div>
                       </div>
                       
@@ -95,7 +95,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="branch_code" value="{{ $branch->code ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_branch_code_error"></small>
+                            <small class="error text-danger error_msg" id="edit_branch_code_error"></small>
                         </div>
                       </div>
                       
@@ -105,7 +105,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="branch_head_name" value="{{ $branch->head_name ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_branch_head_name_error"></small>
+                            <small class="error text-danger error_msg" id="edit_branch_head_name_error"></small>
                         </div>
                       </div>
                       
@@ -118,7 +118,7 @@
                                 <input type="hidden" name="phone_code" class="phone_code"> 
                                 <div class="col-12 col-md-12">
                                     <input type="text" name="phone" value="{{ $branch->phone ?? '' }}" class="form-control telinput"/>
-                                    <small class="error text-danger" id="edit_phone_error"></small>
+                                    <small class="error text-danger error_msg" id="edit_phone_error"></small>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="no_of_employee" value="{{ $branch->no_of_employee ?? '' }}" class="form-control numericonly">
-                            <small class="error text-danger" id="edit_no_of_employee_error"></small>
+                            <small class="error text-danger error_msg" id="edit_no_of_employee_error"></small>
                         </div>
                       </div>
                       
@@ -141,7 +141,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="address" value="{{ $branch->address ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_address_error"></small>
+                            <small class="error text-danger error_msg" id="edit_address_error"></small>
                         </div>
                       </div>
                       
@@ -162,7 +162,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <small class="error text-danger" id="edit_state_id_error"></small>
+                            <small class="error text-danger error_msg" id="edit_state_id_error"></small>
                         </div>
                       </div>
                       
@@ -184,7 +184,7 @@
                                 @endforeach
                             @endif
                           </select>
-                          <small class="error text-danger" id="edit_city_id_error"></small>
+                          <small class="error text-danger error_msg" id="edit_city_id_error"></small>
                         </div>
                       </div>
                       
@@ -195,7 +195,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="post_code" value="{{ $branch->postal_code ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_post_code_error"></small>
+                            <small class="error text-danger error_msg" id="edit_post_code_error"></small>
                         </div>
                       </div>
                       
@@ -221,7 +221,7 @@
                               </div>  
                               
                           </div>
-                          <small class="error text-danger" id="edit_branch_ownership_error"></small>
+                          <small class="error text-danger error_msg" id="edit_branch_ownership_error"></small>
                       </div>
                       
                       <div class="own-wrap">
@@ -235,7 +235,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="branch_owner_name" value="{{ $branch->branch_owner_name ?? '' }}" class="form-control" />
-                                <small class="error text-danger" id="edit_branch_owner_name_error"></small>
+                                <small class="error text-danger error_msg" id="edit_branch_owner_name_error"></small>
                             </div>
                           </div>
                           
@@ -248,7 +248,7 @@
                                     <div class="col-12">
                                         <input type="hidden" name="branch_owner_phone_code" class="phone_code"> 
                                         <input type="text" name="branch_owner_phone" value="{{ $branch->branch_owner_phone ?? '' }}" class="form-control telinput">
-                                        <small class="error text-danger" id="edit_branch_owner_phone_error"></small>
+                                        <small class="error text-danger error_msg" id="edit_branch_owner_phone_error"></small>
                                     </div>
                                 </div>
                             </div>
@@ -263,7 +263,7 @@
                                   <span class="input-group-text bg-light text-dark" id="">₹</span>
                                   <input type="text" name="rent_amount" value="{{ $branch->rent_amount ?? '' }}" class="form-control" style="min-height: 30px !important;height: 20px;">
                                 </div>
-                                <small class="error text-danger" id="edit_rent_amount_error"></small>
+                                <small class="error text-danger error_msg" id="edit_rent_amount_error"></small>
                             </div>
                           </div>
                           
@@ -273,7 +273,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="date" name="rent_due_date" value="{{ $branch->rent_due_date ?? '' }}" class="form-control " />
-                                <small class="error text-danger" id="edit_rent_due_date_error"></small>
+                                <small class="error text-danger error_msg" id="edit_rent_due_date_error"></small>
                             </div>
                           </div>
                       </div>
@@ -286,7 +286,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="electricity_service_provider" value="{{ $branch->electricity_service_provider ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_electricity_service_provider_error"></small>
+                            <small class="error text-danger error_msg" id="edit_electricity_service_provider_error"></small>
                         </div>
                       </div>
                       
@@ -296,7 +296,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <input type="text" name="electricity_consumer_number" value="{{ $branch->electricity_consumer_number ?? '' }}" class="form-control">
-                            <small class="error text-danger" id="edit_electricity_consumer_number_error"></small>
+                            <small class="error text-danger error_msg" id="edit_electricity_consumer_number_error"></small>
                         </div>
                       </div>
                       
@@ -345,7 +345,7 @@
                                 
                             </div>
 
-                            <small class="error text-danger" id="edit_documents_error"></small>
+                            <small class="error text-danger error_msg" id="edit_documents_error"></small>
                         </div>
                       </div>
                       
@@ -376,7 +376,7 @@
                                   </label>
                               </div>     
                           </div>
-                          <small class="error text-danger" id="edit_status_error"></small>
+                          <small class="error text-danger error_msg" id="edit_status_error"></small>
                           
                         </div>
                       
@@ -406,7 +406,7 @@ var BRANCHES = "{{ route('branch.index') }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}?v=0.1"></script>
 
 @endsection
 

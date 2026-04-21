@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="branch_location" class="form-control">
-                                <small class="error text-danger" id="add_branch_location_error"></small>
+                                <small class="error text-danger error_msg" id="add_branch_location_error"></small>
                             </div>
                           </div>
                           
@@ -63,7 +63,7 @@
                                           </label>
                                       </div>                                    
                                   </div>
-                                  <small class="error text-danger" id="add_branch_type_error"></small>
+                                  <small class="error text-danger error_msg" id="add_branch_type_error"></small>
                               </div>
                               
                           </div>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="date" name="start_date" class="form-control general_date">
-                                <small class="error text-danger" id="add_start_date_error"></small>
+                                <small class="error text-danger error_msg" id="add_start_date_error"></small>
                             </div>
                           </div>
                           
@@ -84,7 +84,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="branch_code" class="form-control">
-                                <small class="error text-danger" id="add_branch_code_error"></small>
+                                <small class="error text-danger error_msg" id="add_branch_code_error"></small>
                             </div>
                           </div>
                           
@@ -94,7 +94,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="branch_head_name" class="form-control">
-                                <small class="error text-danger" id="add_branch_head_name_error"></small>
+                                <small class="error text-danger error_msg" id="add_branch_head_name_error"></small>
                             </div>
                           </div>
                           
@@ -107,7 +107,7 @@
                                     <input type="hidden" name="phone_code" class="phone_code"> 
                                     <div class="col-12 col-md-12">
                                         <input type="text" name="phone" class="form-control telinput"/>
-                                        <small class="error text-danger" id="add_phone_error"></small>
+                                        <small class="error text-danger error_msg" id="add_phone_error"></small>
                                     </div>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="no_of_employee" class="form-control numericonly">
-                                <small class="error text-danger" id="add_no_of_employee_error"></small>
+                                <small class="error text-danger error_msg" id="add_no_of_employee_error"></small>
                             </div>
                           </div>
                           
@@ -130,7 +130,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="address" class="form-control">
-                                <small class="error text-danger" id="add_address_error"></small>
+                                <small class="error text-danger error_msg" id="add_address_error"></small>
                             </div>
                           </div>
                           
@@ -151,7 +151,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="error text-danger" id="add_state_id_error"></small>
+                                <small class="error text-danger error_msg" id="add_state_id_error"></small>
                             </div>
                           </div>
                           
@@ -164,7 +164,7 @@
                               <select class="form-select select2" name="city_id" id="gstCity">
                                 <option value="">Choose..</option>
                               </select>
-                              <small class="error text-danger" id="add_city_id_error"></small>
+                              <small class="error text-danger error_msg" id="add_city_id_error"></small>
                             </div>
                           </div>
                           
@@ -175,7 +175,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="post_code" class="form-control">
-                                <small class="error text-danger" id="add_post_code_error"></small>
+                                <small class="error text-danger error_msg" id="add_post_code_error"></small>
                             </div>
                           </div>
                           
@@ -198,7 +198,7 @@
                                           </label>
                                       </div>  
                                   </div>
-                                  <small class="error text-danger" id="add_branch_ownership_error"></small>
+                                  <small class="error text-danger error_msg" id="add_branch_ownership_error"></small>
                               </div>
                               
                           </div>
@@ -214,7 +214,7 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input type="text" name="branch_owner_name" class="form-control" />
-                                    <small class="error text-danger" id="add_branch_owner_name_error"></small>
+                                    <small class="error text-danger error_msg" id="add_branch_owner_name_error"></small>
                                 </div>
                               </div>
                               
@@ -227,7 +227,7 @@
                                         <div class="col-12">
                                             <input type="hidden" name="branch_owner_phone_code" class="phone_code"> 
                                             <input type="text" name="branch_owner_phone" class="form-control telinput">
-                                            <small class="error text-danger" id="add_branch_owner_phone_error"></small>
+                                            <small class="error text-danger error_msg" id="add_branch_owner_phone_error"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -242,7 +242,7 @@
                                       <span class="input-group-text bg-light text-dark" id="">₹</span>
                                       <input type="text" name="rent_amount" class="form-control" style="min-height: 30px !important;height: 20px;">
                                     </div>
-                                    <small class="error text-danger" id="add_rent_amount_error"></small>
+                                    <small class="error text-danger error_msg" id="add_rent_amount_error"></small>
                                 </div>
                               </div>
                               
@@ -252,7 +252,7 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input type="date" name="rent_due_date" class="form-control " />
-                                    <small class="error text-danger" id="add_rent_due_date_error"></small>
+                                    <small class="error text-danger error_msg" id="add_rent_due_date_error"></small>
                                 </div>
                               </div>
                           </div>
@@ -265,7 +265,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="electricity_service_provider" class="form-control">
-                                <small class="error text-danger" id="add_electricity_service_provider_error"></small>
+                                <small class="error text-danger error_msg" id="add_electricity_service_provider_error"></small>
                             </div>
                           </div>
                           
@@ -275,7 +275,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <input type="text" name="electricity_consumer_number" class="form-control">
-                                <small class="error text-danger" id="add_electricity_consumer_number_error"></small>
+                                <small class="error text-danger error_msg" id="add_electricity_consumer_number_error"></small>
                             </div>
                           </div>
                           
@@ -290,7 +290,7 @@
                                 <div id="previewContainer"
                                      style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;">
                                 </div>
-                                <small class="error text-danger" id="add_documents_error"></small>
+                                <small class="error text-danger error_msg" id="add_documents_error"></small>
                             </div>
                           </div>
                           
@@ -322,7 +322,7 @@
                                           </label>
                                       </div> 
                                   </div>
-                                  <small class="error text-danger" id="add_status_error"></small>
+                                  <small class="error text-danger error_msg" id="add_status_error"></small>
                               </div>
                           </div>
                           
@@ -353,7 +353,7 @@ var BRANCHES = "{{ route('branch.index') }}";
 </script>
 
 
-<script type="text/javascript" src="{{asset('customjs/branch/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/branch/create.js')}}?v=0.1"></script>
 
 @endsection
 

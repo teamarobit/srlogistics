@@ -150,6 +150,7 @@ $(document).ready(function() {
     });
 
     $('form#addForm').on('submit', function () {
+        $('.error_msg').html('');
         var formData = new FormData(this);
     
         // Clear previous errors
@@ -196,34 +197,34 @@ $(document).ready(function() {
                     // $(`#add_${field}_error`).text('');
             
                     if ($input.length) {
+                        $(`#add_${field}_error`).text(messages[0]);
             
                         // If radio or checkbox group
-                        if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
+                        // if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
             
-                            // Add invalid styling if needed
-                            $input.addClass('is-invalid');
+                        //     // Add invalid styling if needed
+                        //     $input.addClass('is-invalid');
             
-                            // Put the message into your existing small.error span
-                            $(`#add_${field}_error`).text(messages[0]);
+                        //     // Put the message into your existing small.error span
             
-                        } else {
-                            // Normal inputs
+                        // } else {
+                        //     // Normal inputs
             
-                            $input.addClass('is-invalid');
+                        //     $input.addClass('is-invalid');
             
-                            // Try to find existing small.error span
-                            let $small = $(`#add_${field}_error`);
+                        //     // Try to find existing small.error span
+                        //     let $small = $(`#add_${field}_error`);
             
-                            if ($small.length) {
-                                // set text
-                                $small.text(messages[0]);
-                            } else {
-                                // fallback: create the small.error right after the input
-                                $input.after(
-                                    `<small class="error text-danger" id="add_${field}_error">${messages[0]}</small>`
-                                );
-                            }
-                        }
+                        //     if ($small.length) {
+                        //         // set text
+                        //         $small.text(messages[0]);
+                        //     } else {
+                        //         // fallback: create the small.error right after the input
+                        //         $input.after(
+                        //             `<small class="error text-danger" id="add_${field}_error">${messages[0]}</small>`
+                        //         );
+                        //     }
+                        // }
             
                     } else {
                         // Fallback if input not found
