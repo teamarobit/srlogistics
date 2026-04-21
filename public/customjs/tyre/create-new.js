@@ -45,9 +45,11 @@ function tcnShowValidationErrors(errors) {
         }
         if ($input.length) {
             var $target = $input;
-            // If inside input-group, push error after the group
+            // If inside input-group or a radio-card picker, push error after the group
             var $group = $input.closest('.input-group');
             if ($group.length) $target = $group;
+            var $locGroup = $input.closest('.badd-loc-group');
+            if ($locGroup.length) $target = $locGroup;
             $('<span class="text-danger small d-block mt-1 field-error"></span>')
                 .text(messages[0])
                 .insertAfter($target);
@@ -141,20 +143,26 @@ function tcnBindInitialCondition() {
     });
 }
 
-/* ---------- Source toggle (Existing / New PO) ---------- */
+/* ---------- Source toggle (Existing / New PO) — mirrors Battery #batSourceToggle ---------- */
 function tcnBindSourceToggle() {
-    $(document).on('change', 'input[name="tyre_source_mode"]', function () {
-        var mode = $('input[name="tyre_source_mode"]:checked').val();
+    $('#tcnSourceToggle').on('click', '.badd-source-option', function () {
         $('.badd-source-option').removeClass('active');
-        $(this).closest('.badd-source-option').addClass('active');
+        $(this).addClass('active');
+        var mode = $(this).find('input[type="radio"]').val();
+        $(this).find('input[type="radio"]').prop('checked', true);
 
-        if (mode === 'New PO') {
-            $('.tcn-po-field').removeClass('d-none');
-            $('#tcnPoRef').prop('required', true);
+        if (mode === 'Existing') {
+            $('#tcnModeExisting').addClass('active');
+            $('#tcnModeNewPO').removeClass('active');
+            $('#tcnSourceNote').prop('required', true);
+            $('#tcnPoGrnSelect').prop('required', false);
         } else {
-            $('.tcn-po-field').addClass('d-none');
-            $('#tcnPoRef').prop('required', false).val('');
+            $('#tcnModeNewPO').addClass('active');
+            $('#tcnModeExisting').removeClass('active');
+            $('#tcnPoGrnSelect').prop('required', true);
+            $('#tcnSourceNote').prop('required', false);
         }
+        $('#tcnSourceNote, #tcnPoGrnSelect').removeClass('is-invalid');
     });
 }
 
@@ -188,6 +196,15 @@ function tcnSetSaving(isSaving) {
         $('#tcnSubmitText').removeClass('d-none');
         $('#tcnSubmitSpinner').addClass('d-none');
     }
+}
+
+/* ---------- Stock Location picker (mirrors Battery #batLocGroup pattern) ---------- */
+function tcnBindLocationPicker() {
+    $('#tcnLocGroup').on('click', '.badd-loc-option', function () {
+        $('#tcnLocGroup .badd-loc-option').removeClass('active');
+        $(this).addClass('active');
+        $(this).find('input[type="radio"]').prop('checked', true).trigger('change');
+    });
 }
 
 /* ---------- Form submit (SD-3 $.ajax) ---------- */
@@ -249,6 +266,9 @@ $(document).ready(function () {
         });
     });
 
+    /* Select2 for PO / GRN picker (matches Battery pattern) */
+    $('.select2-po-grn').select2({ width: '100%', placeholder: 'Search PO or GRN...' });
+
     /* Dropzone */
     tcnInitDropzone();
 
@@ -257,6 +277,7 @@ $(document).ready(function () {
     tcnBindInitialCondition();
     tcnBindSourceToggle();
     tcnBindInvoiceFileZone();
+    tcnBindLocationPicker();
     tcnBindSubmit();
 
     /* Auto-calcs */

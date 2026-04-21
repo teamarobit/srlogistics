@@ -90,9 +90,8 @@ class TyreCreateNewFeatureTest extends TestCase
             'condition'                => 'New',            // SD-11 Title Case
             'tyre_category'            => 'Drive',          // SD-11 Title Case
 
-            // Stock Location
-            'warehouse_id'             => $this->warehouse->id,
-            'bin_rack'                 => 'A-12-3',
+            // Stock Location — unified radio group: wh:<id> | ws:<id> | ''
+            'stock_location'           => 'wh:' . $this->warehouse->id,
 
             // Purchase & Cost
             'tyre_price'               => 18500.00,

@@ -50,6 +50,10 @@ return new class extends Migration
             if (! Schema::hasColumn('tyres', 'bin_rack')) {
                 $table->string('bin_rack', 50)->nullable()->after('warehouse_id');
             }
+            if (! Schema::hasColumn('tyres', 'workshop_id')) {
+                $table->bigInteger('workshop_id')->nullable()->after('warehouse_id');
+                $table->index('workshop_id', 'tyres_workshop_id_index');
+            }
             if (! Schema::hasColumn('tyres', 'stock_status')) {
                 $table->enum('stock_status', ['Warehouse', 'Mounted', 'In Transit'])->default('Warehouse')->after('bin_rack');
             }
@@ -129,6 +133,7 @@ return new class extends Migration
                 'invoice_reference',
                 'invoice_file_path',
                 'bin_rack',
+                'workshop_id',
                 'stock_status',
                 'current_status',
                 'allocated_vehicle_id',

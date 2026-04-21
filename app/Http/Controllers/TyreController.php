@@ -715,9 +715,17 @@ class TyreController extends Controller
     public function createNew()
     {
         $tyrevendors = Contact::where('cotype_id', 6)->where('status', 'Active')->get();
-        $warehouses  = \App\Models\Warehouse::where('status', 'Active')->orderBy('name')->get(['id', 'name']);
+        $warehouses  = \App\Models\Warehouse::where('status', 'Active')
+            ->orderBy('warehouse_type')
+            ->orderBy('name')
+            ->get(['id', 'name', 'warehouse_type']);
 
-        return view('tyre.create-new', compact('tyrevendors', 'warehouses'));
+        $workshops   = \App\Models\Workshop::active()
+            ->orderBy('ownership')
+            ->orderBy('name')
+            ->get(['id', 'name', 'workshop_code', 'ownership']);
+
+        return view('tyre.create-new', compact('tyrevendors', 'warehouses', 'workshops'));
     }
 
     public function storeNew(Request $request)
@@ -749,9 +757,11 @@ class TyreController extends Controller
             'condition'               => 'required|in:New,Used,Retread',
             'tyre_category'           => 'required|in:Drive,Steer,Trailer',
 
-            // Stock Location
-            'warehouse_id'            => 'required|integer|exists:warehouses,id',
-            'bin_rack'                => 'nullable|string|max:50',
+            // Stock Location — single radio group value:
+            //   ''              → not assigned
+            //   'wh:<id>'       → warehouse
+            //   'ws:<id>'       → workshop
+            'stock_location'          => ['nullable', 'string', 'regex:/^(wh:\d+|ws:\d+)?$/'],
 
             // Purchase & Cost
             'tyre_price'              => 'required|numeric|min:0',
@@ -866,14 +876,35 @@ class TyreController extends Controller
                 // 4) Serial trim + uppercase for consistency (BR-4)
                 $serial = strtoupper(trim((string)$request->tyre_serial_number));
 
-                // 5) Current_status forced to Warehouse at create (BR-3)
+                // 5) Parse Stock Location single-value radio group (wh:<id> | ws:<id> | '')
+                $warehouseId  = null;
+                $workshopId   = null;
+                $locationTag  = 'Warehouse';      // high-level location label
+                $stockStatus  = 'Warehouse';      // stock_status ENUM
+                $currentStatus = 'Warehouse';     // current_status ENUM
+                $stockLoc     = (string) $request->stock_location;
+                if ($stockLoc !== '' && preg_match('/^(wh|ws):(\d+)$/', $stockLoc, $m)) {
+                    if ($m[1] === 'wh') {
+                        $warehouseId   = (int) $m[2];
+                        $locationTag   = 'Warehouse';
+                        $stockStatus   = 'Warehouse';
+                        $currentStatus = 'Warehouse';
+                    } else { // 'ws'
+                        $workshopId    = (int) $m[2];
+                        $locationTag   = 'Workshop';
+                        // stock_status ENUM lacks 'Workshop' — mark as In Transit until further action
+                        $stockStatus   = 'In Transit';
+                        $currentStatus = 'Workshop';
+                    }
+                }
+
                 $data = [
                     'organisation_id'           => $orgId,                              // SD-12
-                    'location'                  => 'Warehouse',
-                    'warehouse_id'              => $request->warehouse_id,
-                    'bin_rack'                  => $request->bin_rack,
-                    'stock_status'              => 'Warehouse',
-                    'current_status'            => 'Warehouse',
+                    'location'                  => $locationTag,
+                    'warehouse_id'              => $warehouseId,
+                    'workshop_id'               => $workshopId,
+                    'stock_status'              => $stockStatus,
+                    'current_status'            => $currentStatus,
                     'allocated_vehicle_id'      => $request->allocated_vehicle_id,
                     'installation_date'         => $request->installation_date ? date('Y-m-d', strtotime($request->installation_date)) : null,
 

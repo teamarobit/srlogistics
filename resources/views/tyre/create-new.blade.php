@@ -75,39 +75,64 @@
                         </label>
                     </div>
 
-                    {{-- Source Info card --}}
-                    <div class="sc-card mb-0">
-                        <div class="sc-card-head">
-                            <span class="sc-card-title"><i class="uil uil-notes me-2"></i>Tyre Source Information</span>
-                        </div>
-                        <div class="p-3 p-md-4">
-                            <div class="row g-3">
-                                <div class="col-12 col-md-8">
-                                    <label class="badd-label" for="tcnSourceNote">Source / Origin Note <span class="text-danger">*</span></label>
-                                    <textarea class="form-control badd-input" name="source_origin_note" id="tcnSourceNote" rows="2"
-                                              placeholder="e.g. Purchased from XYZ dealer, transferred from vehicle KA01AB1234, retreaded by ABC"></textarea>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <label class="badd-label">Invoice / Bill (optional)</label>
-                                    <div class="badd-file-zone" id="tcnFileZone">
-                                        <input type="file" name="invoice_file" id="tcnInvoiceFile" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
-                                        <i class="uil uil-file-upload-alt badd-file-icon"></i>
-                                        <span class="badd-file-text">Click to attach or drop file</span>
-                                        <span class="badd-file-hint">PDF, JPG, PNG · max 5 MB</span>
+                    {{-- Mode: Existing Tyre —— note + bill only --}}
+                    <div class="badd-mode-section active" id="tcnModeExisting">
+                        <div class="sc-card mb-0">
+                            <div class="sc-card-head">
+                                <span class="sc-card-title"><i class="uil uil-notes me-2"></i>Source Information</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-8">
+                                        <label class="badd-label" for="tcnSourceNote">Source / Origin Note <span class="text-danger">*</span></label>
+                                        <textarea class="form-control badd-input" name="source_origin_note" id="tcnSourceNote" rows="2"
+                                                  placeholder="e.g. Received from MRF dealer outside system, repurposed from retired vehicle, transferred from another depot..."></textarea>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-6 tcn-po-field d-none">
-                                    <label class="badd-label" for="tcnPoRef">PO / GRN Reference <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control badd-input" name="purchase_order_reference" id="tcnPoRef" maxlength="100" placeholder="e.g. PO-2026-00041 or GRN-2026-01003">
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label class="badd-label" for="tcnInvoiceRef">Invoice / PO Reference</label>
-                                    <input type="text" class="form-control badd-input" name="invoice_reference" id="tcnInvoiceRef" maxlength="100" placeholder="e.g. AMR-INV-0298734">
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label">Invoice / Bill (optional)</label>
+                                        <div class="badd-file-zone" id="tcnFileZone">
+                                            <input type="file" name="invoice_file" id="tcnInvoiceFile" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
+                                            <i class="uil uil-file-upload-alt badd-file-icon"></i>
+                                            <span class="badd-file-text">Click to attach or drop file</span>
+                                            <span class="badd-file-hint">PDF, JPG, PNG · max 10MB</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    {{-- Mode: New Tyre from PO/GRN --}}
+                    <div class="badd-mode-section" id="tcnModeNewPO">
+                        <div class="sc-card mb-0">
+                            <div class="sc-card-head">
+                                <span class="sc-card-title"><i class="uil uil-receipt-alt me-2"></i>Select PO / GRN</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-7">
+                                        <label class="badd-label" for="tcnPoGrnSelect">PO / GRN Reference <span class="text-danger">*</span></label>
+                                        <select class="form-select select2-po-grn badd-input" name="purchase_order_reference" id="tcnPoGrnSelect" style="width:100%;">
+                                            <option value="">Search PO or GRN number...</option>
+                                            <option value="PO-2026-00041">PO-2026-00041 — MRF (50 units · 12 available)</option>
+                                            <option value="GRN-2026-01003">GRN-2026-01003 — Apollo (25 received · 25 available)</option>
+                                            <option value="PO-2026-00038">PO-2026-00038 — JK Tyre (100 units · 78 available)</option>
+                                            <option value="GRN-2026-01001">GRN-2026-01001 — CEAT (15 received · 15 available)</option>
+                                        </select>
+                                        {{-- TODO: AJAX → on select, populate Brand/Model/Serial fields below --}}
+                                    </div>
+                                    <div class="col-12 col-md-5 d-flex align-items-end">
+                                        <div class="badd-grn-hint">
+                                            <i class="uil uil-info-circle me-1"></i>
+                                            Selecting a PO/GRN will auto-fill brand, model, and serial number below once connected to backend.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>{{-- end source toggle wrap --}}
 
                 <div class="row g-4">
 
@@ -229,6 +254,10 @@
                                         <label class="badd-label" for="tcnEndOfLife">End of Life Date</label>
                                         <input type="date" class="form-control badd-input" id="tcnEndOfLife" readonly>
                                         <div class="form-text text-muted">Auto: Purchase Date + Fixed Life Months</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="badd-label" for="tcnInvoiceRef">Invoice / PO Reference</label>
+                                        <input type="text" class="form-control badd-input" name="invoice_reference" id="tcnInvoiceRef" maxlength="100" placeholder="e.g. AMR-INV-0298734 or PO-2026-00041">
                                     </div>
                                 </div>
                             </div>
@@ -418,22 +447,38 @@
                                 <span class="sc-card-title"><i class="uil uil-map-marker me-2"></i>Stock Location <span class="text-danger">*</span></span>
                             </div>
                             <div class="p-3">
-                                <label class="badd-label" for="tcnWarehouse">Warehouse / Depot <span class="text-danger">*</span></label>
-                                <select class="form-select tcn-select2 badd-input" name="warehouse_id" id="tcnWarehouse" style="width:100%;">
-                                    <option value="">Select warehouse...</option>
-                                    @foreach($warehouses as $w)
-                                        <option value="{{ $w->id }}">{{ $w->name }}</option>
-                                    @endforeach
-                                </select>
+                                <p class="badd-loc-hint">Where is this tyre being stored?</p>
+                                <div class="badd-loc-group" id="tcnLocGroup">
+                                    <label class="badd-loc-option active" for="tcnLocNone">
+                                        <input type="radio" name="stock_location" id="tcnLocNone" value="" class="d-none" checked>
+                                        <span class="badd-loc-radio"></span>
+                                        <span class="badd-loc-name">Not assigned yet</span>
+                                    </label>
 
-                                <label class="badd-label mt-3" for="tcnBinRack">Bin / Rack Location</label>
-                                <input type="text" class="form-control badd-input" name="bin_rack" id="tcnBinRack" placeholder="e.g. A-12-3" maxlength="50">
+                                    @if($warehouses->count())
+                                        <div class="badd-loc-section-label">Warehouses</div>
+                                        @foreach($warehouses as $w)
+                                            <label class="badd-loc-option" for="tcnLocWh{{ $w->id }}">
+                                                <input type="radio" name="stock_location" id="tcnLocWh{{ $w->id }}" value="wh:{{ $w->id }}" class="d-none">
+                                                <span class="badd-loc-radio"></span>
+                                                <span class="badd-loc-code badd-loc-wh">WH</span>
+                                                <span class="badd-loc-name">{{ $w->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    @endif
 
-                                <label class="badd-label mt-3">Stock Status</label>
-                                <div class="tcn-readonly-pill">
-                                    <i class="uil uil-package me-1"></i> Warehouse
+                                    @if($workshops->count())
+                                        <div class="badd-loc-section-label">Workshops</div>
+                                        @foreach($workshops as $s)
+                                            <label class="badd-loc-option" for="tcnLocWs{{ $s->id }}">
+                                                <input type="radio" name="stock_location" id="tcnLocWs{{ $s->id }}" value="ws:{{ $s->id }}" class="d-none">
+                                                <span class="badd-loc-radio"></span>
+                                                <span class="badd-loc-code badd-loc-ws">WS</span>
+                                                <span class="badd-loc-name">{{ $s->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    @endif
                                 </div>
-                                <div class="form-text text-muted">Always set to Warehouse at creation</div>
                             </div>
                         </div>
 
@@ -515,5 +560,5 @@
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('customjs/tyre/create-new.js?v=1.0') }}"></script>
+<script src="{{ asset('customjs/tyre/create-new.js?v=1.3') }}"></script>
 @endsection

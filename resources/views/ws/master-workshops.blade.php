@@ -202,9 +202,9 @@
                 <h6 class="modal-title fw-semibold"><i class="uil uil-store-alt me-2"></i>Add Workshop</h6>
                 <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
             </div>
-            <form id="addWsForm" method="POST" action="{{ route('ws.master.workshops.store') }}">
-                @csrf
-                <div class="modal-body">
+            <div class="modal-body">
+                <form id="addWsForm" method="POST" action="{{ route('ws.master.workshops.store') }}">
+                    @csrf
                     <div class="row g-3">
 
                         {{-- Ownership toggle --}}
@@ -294,14 +294,14 @@
                             <textarea class="form-control" name="notes" rows="2" placeholder="Any notes…"></textarea>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-theme btn-sm" id="btnSaveWs">
-                        <i class="uil uil-save me-1"></i> Save Workshop
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-theme btn-sm" id="btnSaveWs">
+                    <i class="uil uil-save me-1"></i> Save Workshop
+                </button>
+            </div>
         </div>
     </div>
 </div>
