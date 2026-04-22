@@ -270,9 +270,12 @@ class TollstationController extends Controller
         
         if($tollstation == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops ! Tollstation not found.'], 422);
+            }
+            
+        $hasRoutes = $tollstation->routetollstations()->exists();
+        if($hasRoutes && $request->status == 'Inactive'){
+            return response()->json(['success' => false, 'data' => [], 'message' => 'This toll is tagged with route hence you cannot inactive it.'], 422);
         }
-        
-        
         
         try{
             
