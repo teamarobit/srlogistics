@@ -13,7 +13,7 @@ return new class extends Migration
         });
 
         Schema::table('branches', function (Blueprint $table) {
-            $table->unsignedTinyInteger('rent_due_count')->nullable()->change();
+            $table->unsignedBigInteger('rent_due_count')->nullable()->change();
         });
     }
 
