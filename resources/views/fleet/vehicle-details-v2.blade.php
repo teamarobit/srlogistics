@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=2.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=3.0') }}">
 @endsection
 
 @section('content')
@@ -1172,7 +1172,7 @@
                         <div id="tyre_bd" class="accordion-collapse collapse show" aria-labelledby="tyre_det" data-bs-parent="#accordionExample">
                             <div class="accordion-body p-0">
                                 @php
-                                    $tyreMappings = $vehicle->vehicletyremappings()->with(['tyre', 'tyreposition'])->get();
+                                    $tyreMappings = $vehicle->vehicletyremappings()->with(['tyre.images', 'tyreposition'])->get();
                                     $byCode = $tyreMappings->keyBy(fn($m) => $m->tyreposition->code ?? '__unknown__');
                                     $getTyreColor = function($m) {
                                         if (!$m || !$m->tyre) return 'empty';
@@ -1205,6 +1205,30 @@
                                     }
                                     $leftCodes  = ['C1','Co3','Ci2','Co5','Ci4'];
                                     $rightCodes = ['D1','Di2','Do3','Di4','Do5'];
+
+                                    // Build tyre image data map for JS gallery (keyed by position code)
+                                    $tyreImagesMap = [];
+                                    foreach($tyreMappings as $_tm) {
+                                        if($_tm->tyre && $_tm->tyre->images && $_tm->tyre->images->count() > 0) {
+                                            $_posCode = $_tm->tyreposition->code ?? '__unknown__';
+                                            $tyreImagesMap[$_posCode] = $_tm->tyre->images->map(fn($img) => [
+                                                'url'  => asset('storage/' . ltrim($img->file_path, '/')),
+                                                'name' => $img->file_name,
+                                                'date' => $img->created_at ? \Carbon\Carbon::parse($img->created_at)->format('d M Y, h:i A') : '—',
+                                            ])->values()->toArray();
+                                        }
+                                    }
+
+                                    // Warranty remaining helper (returns months remaining or null)
+                                    $getWarrantyRemaining = function($tyre) {
+                                        if(!$tyre) return null;
+                                        $wm = (int)($tyre->tyre_warranty_months ?? 0);
+                                        if($wm <= 0) return null;
+                                        $issueDate = $tyre->tyre_issue_date ?? $tyre->tyre_purchase_date;
+                                        if(!$issueDate) return null;
+                                        $wEnd = \Carbon\Carbon::parse($issueDate)->addMonths($wm);
+                                        return max(0, (int)\Carbon\Carbon::today()->diffInMonths($wEnd, false));
+                                    };
                                 @endphp
 
                                 @if($totalTyres === 0)
@@ -1260,13 +1284,18 @@
                                         <div class="vtd-side-title"><i class="uil uil-arrow-left me-1"></i>Left Side Tyres</div>
                                         @foreach($leftCodes as $code)
                                         @php
-                                            $m = $byCode[$code] ?? null;
-                                            $color = $getTyreColor($m);
-                                            $hex = $colorHex[$color];
-                                            $lbl = $posLabels[$code] ?? $code;
-                                            $kmLife = $m ? (int)($m->tyre->fixed_run_km ?? 0) : 0;
-                                            $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
-                                            $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $m        = $byCode[$code] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels[$code] ?? $code;
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->images ? $m->tyre->images->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
                                         @endphp
                                         <div class="vtd-tyre-card" data-pos="{{ $code }}"
                                             data-label="{{ $lbl }}"
@@ -1275,29 +1304,44 @@
                                             data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
                                             data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
                                             data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
                                             data-status="{{ $color }}"
                                             data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
                                             data-kmlife="{{ $kmLife ?: '' }}"
                                             data-kmrun="{{ $kmRun ?: '' }}"
                                             data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
-                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attention':($color==='critical'?'Critical':'—')) }}</span>
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
                                             </div>
                                             @if($m && $m->tyre)
                                             <div class="vtd-card-body">
-                                                <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Condition</span><span class="vtd-fv vtd-condition-{{ $color }}">{{ ucfirst($m->tyre->tyre_condition ?? '—') }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
-                                                @if($kmBal !== null)
-                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
-                                                @endif
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
                                             </div>
                                             <div class="vtd-card-foot">
-                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>View Details</a>
+                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>Details</a>
+                                                @if($imgCount > 0)
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery ms-auto" data-pos="{{ $code }}"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                                @endif
                                             </div>
                                             @else
                                             <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
@@ -1567,13 +1611,18 @@
                                         <div class="vtd-side-title">Right Side Tyres <i class="uil uil-arrow-right ms-1"></i></div>
                                         @foreach($rightCodes as $code)
                                         @php
-                                            $m = $byCode[$code] ?? null;
-                                            $color = $getTyreColor($m);
-                                            $hex = $colorHex[$color];
-                                            $lbl = $posLabels[$code] ?? $code;
-                                            $kmLife = $m ? (int)($m->tyre->fixed_run_km ?? 0) : 0;
-                                            $kmRun  = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
-                                            $kmBal  = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $m        = $byCode[$code] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels[$code] ?? $code;
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->images ? $m->tyre->images->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
                                         @endphp
                                         <div class="vtd-tyre-card" data-pos="{{ $code }}"
                                             data-label="{{ $lbl }}"
@@ -1582,29 +1631,44 @@
                                             data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
                                             data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
                                             data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
                                             data-status="{{ $color }}"
                                             data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
                                             data-kmlife="{{ $kmLife ?: '' }}"
                                             data-kmrun="{{ $kmRun ?: '' }}"
                                             data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
-                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attention':($color==='critical'?'Critical':'—')) }}</span>
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'Good':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
                                             </div>
                                             @if($m && $m->tyre)
                                             <div class="vtd-card-body">
-                                                <div class="vtd-field"><span class="vtd-fl">Serial</span><span class="vtd-fv">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Brand / Model</span><span class="vtd-fv">{{ ($m->tyre->tyre_brand ?? '—') }} · {{ ($m->tyre->tyre_model ?? '—') }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Condition</span><span class="vtd-fv vtd-condition-{{ $color }}">{{ ucfirst($m->tyre->tyre_condition ?? '—') }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Fitted</span><span class="vtd-fv">{{ $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '—' }}</span></div>
-                                                @if($kmBal !== null)
-                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBal<=0?'#ea0027':($kmBal<=10000?'#d97706':'#10863f') }};font-weight:600;">{{ $kmBal<=0?'Overdue':number_format($kmBal).' KM' }}</span></div>
-                                                @endif
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Balance</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
                                             </div>
                                             <div class="vtd-card-foot">
-                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>View Details</a>
+                                                <a href="#" class="vtd-view-btn vtd-open-modal" data-pos="{{ $code }}"><i class="uil uil-eye me-1"></i>Details</a>
+                                                @if($imgCount > 0)
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery ms-auto" data-pos="{{ $code }}"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                                @endif
                                             </div>
                                             @else
                                             <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
@@ -6764,6 +6828,42 @@
     </div>{{-- end vehicledtl-bd --}}
     </div>{{-- end srlog-bdwrapper --}}
 {{-- ═══════════════════════════════════════════════════════
+     TYRE IMAGE GALLERY MODAL — vtd-gallery-modal
+     Populated via vehicle-details-tyre.js when user clicks
+     "View Images" on a tyre card. Shows multiple photos
+     with date & time, and prev/next navigation.
+═══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="vtdGalleryModal" tabindex="-1" aria-labelledby="vtdGalleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered vtd-gallery-dialog">
+        <div class="modal-content vtd-gallery-content">
+            <div class="modal-header vtd-gallery-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="uil uil-image vtd-gallery-icon"></i>
+                    <div>
+                        <div class="vtd-gallery-title" id="vtdGalleryModalLabel">Tyre Photos</div>
+                        <div class="vtd-gallery-subtitle" id="vtdGallerySubtitle"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vtd-gallery-body" id="vtdGalleryBody">
+                {{-- Populated by JS --}}
+            </div>
+            <div class="modal-footer vtd-gallery-footer">
+                <button type="button" class="btn btn-sm vtd-gallery-nav" id="vtdGalleryPrev" disabled>
+                    <i class="uil uil-angle-left"></i> Prev
+                </button>
+                <span class="vtd-gallery-counter" id="vtdGalleryCounter">1 / 1</span>
+                <button type="button" class="btn btn-sm vtd-gallery-nav" id="vtdGalleryNext" disabled>
+                    Next <i class="uil uil-angle-right"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
      TYRE DETAIL MODAL — vtd-detail-modal
      Populated via vehicle-details-tyre.js when user clicks
      View Details on a card or clicks a tyre on the SVG.
@@ -6806,7 +6906,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=2.0') }}"></script>
 
 <script>
 
@@ -6817,6 +6917,9 @@
     
     var EDIT_TYRE = "{{ route('fleetdashboard.editTyreDetail', ':id') }}";
     var DELETE_TYRE = "{{ route('fleetdashboard.deleteTyre') }}";
+
+    /* Tyre image gallery data — keyed by position code (e.g. 'C1', 'D1') */
+    var VTD_TYRE_IMAGES = @json($tyreImagesMap ?? []);
     
     var EDIT_BATTERY = "{{ route('fleetdashboard.editBatteryDetail', ':id') }}";
     var DELETE_BATTERY = "{{ route('fleetdashboard.deleteBattery') }}";
