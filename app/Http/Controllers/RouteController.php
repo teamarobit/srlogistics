@@ -123,7 +123,7 @@ class RouteController extends Controller
             'destination_state_id'    => 'required|integer|exists:states,id',
             'destination_city_id'     => 'required',
             'fixed_km'                => 'required|numeric|min:1|max:999999999999999.99999',
-            'transit_time_days'       => 'required|integer|min:1|max:365',
+            'transit_time_days'       => 'required|integer|min:0|max:365',
             'transit_time_hrs'        => 'required|numeric|min:0|max:999.99',
             'fixed_diesel_bs3_bs4'    => 'required|numeric|min:0|max:9999.99',
             'fixed_diesel_bs6'        => 'required|numeric|min:0|max:9999.99',
@@ -131,14 +131,14 @@ class RouteController extends Controller
             'remarks'                 => 'nullable',
             'route_type'              => 'required|in:Line,Local',
             'status'                  => 'required|in:Active,Inactive',
-            
+
             'rto_id' => ['required', 'array', 'min:1'],
             'rto_id.*' => ['required', 'integer', 'exists:rtos,id'],
-            
+
             'tollstation_id' => ['required', 'array', 'min:1'],
             'tollstation_id.*' => ['required', 'integer', 'exists:tollstations,id'],
-            
-        
+
+
         ], [
             'required' => 'This field is required.',
             'max'      => 'Maximum 100 characters allowed.',
@@ -148,8 +148,12 @@ class RouteController extends Controller
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
         ]);
-    
-    
+
+        $validator->sometimes('transit_time_hrs', 'gt:1', function ($input) {
+            return (int) $input->transit_time_days === 0;
+        });
+
+
         if ($validator->fails()) {
             // \Log::error('Validation failed', [
             //     'errors' => $validator->errors()->toArray(),
@@ -368,7 +372,7 @@ class RouteController extends Controller
                         'destination_state_id'    => 'required|integer|exists:states,id',
                         'destination_city_id'     => 'required',
                         'fixed_km'                => 'required|numeric|min:1|max:999999999999999.99999',
-                        'transit_time_days'       => 'required|integer|min:1|max:365',
+                        'transit_time_days'       => 'required|integer|min:0|max:365',
                         'transit_time_hrs'        => 'required|numeric|min:0|max:999.99',
                         'fixed_diesel_bs3_bs4'    => 'required|numeric|min:0|max:9999.99',
                         'fixed_diesel_bs6'        => 'required|numeric|min:0|max:9999.99',
@@ -392,8 +396,12 @@ class RouteController extends Controller
                         'max'      => 'Maximum allowed value is :max.',
                         'in'       => 'Invalid selection.',
                     ]);
-    
-        
+
+        $validator->sometimes('transit_time_hrs', 'gt:1', function ($input) {
+            return (int) $input->transit_time_days === 0;
+        });
+
+
         if ($validator->fails()) {
             \Log::error('Validation failed', [
                 'errors' => $validator->errors()->toArray(),
