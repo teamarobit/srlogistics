@@ -142,15 +142,28 @@ class BranchController extends Controller
                 'errors' => $validator->errors()->toArray(),
                 //'input' => request()->all(), // optional: log the input data for context
             ]);
-    
+
             return response()->json([
                 'success' => false,
                 'data' => $validator->errors(),
                 'message' => 'Please check validation errors.'
             ], 422);
         }
-        
-    
+
+        if (in_array('Head Office', (array) $request->branch_type)) {
+            $headOfficeExists = Branch::where('city_id', $request->city_id)
+                ->whereJsonContains('type', 'Head Office')
+                ->exists();
+
+            if ($headOfficeExists) {
+                return response()->json([
+                    'success' => false,
+                    'data' => ['city_id' => ['This city already have head office.']],
+                    'message' => 'This city already have head office.'
+                ], 422);
+            }
+        }
+
         try {
             
             $branch = null;
@@ -340,16 +353,29 @@ class BranchController extends Controller
             \Log::error('Validation failed', [
                 'errors' => $validator->errors()->toArray(),
             ]);
-    
+
             return response()->json([
                 'success' => false,
                 'data' => $validator->errors(),
                 'message' => 'Please check validation errors.'
             ], 422);
         }
-        
 
-        
+        if (in_array('Head Office', (array) $request->branch_type)) {
+            $headOfficeExists = Branch::where('city_id', $request->city_id)
+                ->whereJsonContains('type', 'Head Office')
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($headOfficeExists) {
+                return response()->json([
+                    'success' => false,
+                    'data' => ['city_id' => ['This city already have head office.']],
+                    'message' => 'This city already have head office.'
+                ], 422);
+            }
+        }
+
         $branch = Branch::find($request->get('branchid'));
         
         if($branch == NULL){
