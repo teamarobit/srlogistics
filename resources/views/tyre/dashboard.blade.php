@@ -22,7 +22,7 @@
                    </div>
                    <div class="col-12 col-md-6 text-end">
                        <div class="dropdown mt-2 mb-2">
-                            <a class="btn btn-primary" href="{{ route('tyre.create') }}">
+                            <a class="btn btn-primary" href="{{ route('tyre.createNew') }}">
                                 <i class="uil uil-plus me-1"></i>Add Tyre
                             </a>               
                            
