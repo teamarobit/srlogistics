@@ -70,7 +70,7 @@
                             <label>Branch <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-12 col-md-6">
-                            <select class="form-select select2" name="branch_id[]" multiple data-placeholder="Filter by branch"> 
+                            <select class="form-select select2" name="branch_id[]" multiple data-placeholder="Select branch"> 
                                 <!--<option id="" value="">Filter by branch</option> -->
                                 @forelse ($branches as $branch)
                                 <option value="{{ $branch->id }}">

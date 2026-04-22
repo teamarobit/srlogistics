@@ -71,8 +71,8 @@
                             <label>Branch <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-12 col-md-6">
-                            <select class="form-select select2" name="branch_id[]" multiple data-placeholder="Filter by branch"> 
-                                <option value="">Filter by branch</option> 
+                            <select class="form-select select2" name="branch_id[]" multiple data-placeholder="Select branch"> 
+                                <option value="">Select branch</option> 
                                 @forelse ($branches as $branch)
                                 <option value="{{ $branch->id }}"
                                     {{ in_array($branch->id, $department->branches->pluck('id')->toArray()) ? 'selected' : '' }}>
