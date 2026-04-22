@@ -35,6 +35,7 @@ class RtoController extends Controller
         $search_rto_name = $request->get('rto');
         $search_state = $request->get('state_id');
         $search_city = $request->get('city_id');
+        $search_status = $request->get('search_status');
         
         $states = State::whereHas('country', function ($q) {
                             $q->where('iso2', 'IN');
@@ -58,12 +59,15 @@ class RtoController extends Controller
                         ->when($search_city, function ($query, $search_city) {
                             $query->where('city_id', $search_city);
                         })
+                        ->when($search_status, function ($query, $search_status) {
+                            $query->where('status', $search_status);
+                        })
                         ->orderBy('id', 'DESC')
                         ->paginate(10)
                         ->withQueryString(); // preserves search query in pagination links
         
         
-        return view('rto.index', compact('rtos','states','cities','search_rto_name','search_state','search_city'));
+        return view('rto.index', compact('rtos','states','cities','search_rto_name','search_state','search_city', 'search_status'));
     }
     
     

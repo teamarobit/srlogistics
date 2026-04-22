@@ -59,10 +59,10 @@
                                   </div>
                                   
                                   <div class="search-wrap d-inline-block ms-2" style="width: 125px;">
-                                    <select name="" id="" class="form-select">
+                                    <select name="search_status" id="search_status" class="form-select">
                                         <option value="">Filter by Status</option>
-                                            <option>Active</option>
-                                            <option>Inactive</option>
+                                        <option value="Active" @if($search_status == 'Active') selected @endif>Active</option>
+                                        <option value="Inactive" @if($search_status == 'Inactive') selected @endif>Inactive</option>
                                     </select>
                                   </div>
                                   
@@ -189,7 +189,7 @@
 var DELETE_RTO  = "{{route('rto.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/RTO/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/rto/index.js')}}"></script>
 
 @endsection
 
