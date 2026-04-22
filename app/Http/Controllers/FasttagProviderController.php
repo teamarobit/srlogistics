@@ -107,7 +107,7 @@ class FasttagProviderController extends Controller
             DB::transaction(function () use($request, &$provider){
                 
                 $lastCode = Fasttagprovider::withTrashed()->orderBy('id', 'DESC')->first();
-                $provider_code = $lastCode ? str_pad($lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
+                $provider_code = $lastCode ? str_pad((int) $lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
                    
         
                 $provider = new Fasttagprovider;
