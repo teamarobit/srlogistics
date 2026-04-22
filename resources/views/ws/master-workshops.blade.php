@@ -63,7 +63,8 @@
                 </div>
 
                 <div class="table-responsive mt-3">
-                    <table class="table table-hover invoice-table mb-0" id="wsTable">
+                    <table class="table table-hover invoice-table mb-0" id="wsTable"
+                           data-destroy-url="{{ route('ws.master.workshops.destroy', ['id' => '__ID__']) }}">
                         <thead>
                             <tr>
                                 <th>Code</th>
@@ -205,6 +206,7 @@
             <div class="modal-body">
                 <form id="addWsForm" method="POST" action="{{ route('ws.master.workshops.store') }}">
                     @csrf
+                    {{-- SD-1: submit button is placed inside the form below (modal-footer) via form="addWsForm" --}}
                     <div class="row g-3">
 
                         {{-- Ownership toggle --}}
@@ -298,7 +300,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-theme btn-sm" id="btnSaveWs">
+                <button type="submit" class="btn btn-theme btn-sm" id="btnSaveWs" form="addWsForm">
                     <i class="uil uil-save me-1"></i> Save Workshop
                 </button>
             </div>
@@ -315,10 +317,14 @@
                 <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editWsForm">
+                {{-- data-update-url: named route with __ID__ placeholder replaced by JS --}}
+                <form id="editWsForm"
+                      data-update-url="{{ route('ws.master.workshops.update', ['id' => '__ID__']) }}">
                     @csrf
                     @method('PUT')
                     <input type="hidden" id="editWsId">
+                    {{-- hidden ownership field: carries value for controller validation --}}
+                    <input type="hidden" name="ownership" id="editWsOwnershipHidden">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Code</label>
@@ -326,54 +332,55 @@
                         </div>
                         <div class="col-md-8">
                             <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="editWsName">
+                            <input type="text" class="form-control" name="name" id="editWsName">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Ownership</label>
+                            {{-- display-only; actual value sent via hidden #editWsOwnershipHidden --}}
                             <input type="text" class="form-control" id="editWsOwnership" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Workshop Type</label>
-                            <select class="form-select" id="editWsType">
+                            <select class="form-select" name="workshop_type" id="editWsType">
                                 <option>Workshop</option><option>Mobile Unit</option><option>Hybrid</option>
                                 <option>Brand ASC</option><option>Third Party</option><option>Warranty</option><option>Multi-Brand</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Brand</label>
-                            <input type="text" class="form-control" id="editWsBrand">
+                            <input type="text" class="form-control" name="brand" id="editWsBrand">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">City</label>
-                            <input type="text" class="form-control" id="editWsCity">
+                            <input type="text" class="form-control" name="city" id="editWsCity">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">State</label>
-                            <input type="text" class="form-control" id="editWsState">
+                            <input type="text" class="form-control" name="state" id="editWsState">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact</label>
-                            <input type="text" class="form-control" id="editWsManager">
+                            <input type="text" class="form-control" name="manager_name" id="editWsManager">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Phone</label>
-                            <input type="text" class="form-control" id="editWsPhone">
+                            <input type="text" class="form-control" name="contact_phone" id="editWsPhone">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email</label>
-                            <input type="email" class="form-control" id="editWsEmail">
+                            <input type="email" class="form-control" name="contact_email" id="editWsEmail">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">Technicians</label>
-                            <input type="number" class="form-control" id="editWsTechs" min="0">
+                            <input type="number" class="form-control" name="technician_count" id="editWsTechs" min="0">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">Status</label>
-                            <select class="form-select" id="editWsStatus"><option>Active</option><option>Inactive</option></select>
+                            <select class="form-select" name="status" id="editWsStatus"><option>Active</option><option>Inactive</option></select>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold">Notes</label>
-                            <textarea class="form-control" id="editWsNotes" rows="2"></textarea>
+                            <textarea class="form-control" name="notes" id="editWsNotes" rows="2"></textarea>
                         </div>
                     </div>
                 </form>
@@ -390,138 +397,5 @@
 @endsection
 
 @section('js')
-<script>
-$(function () {
-
-    // ── Ownership tab filter ──────────────────────────────────────────────────
-    $('#ownershipTabs .nav-link').on('click', function (e) {
-        e.preventDefault();
-        $('#ownershipTabs .nav-link').removeClass('active');
-        $(this).addClass('active');
-        applyWsFilters();
-    });
-
-    // ── Add modal: toggle fields by ownership ─────────────────────────────────
-    $('input[name="ownership"]').on('change', function () {
-        var own = $(this).val() === 'Own';
-        $('.ws-own-only').toggle(own);
-        $('.ws-external-only').toggle(!own);
-        // reset type select
-        $('#addWsType').val('');
-        // show/hide relevant optgroups
-        $('.opt-own').toggle(own);
-        $('.opt-external').toggle(!own);
-    });
-    // init
-    $('.ws-external-only').hide();
-    $('.opt-external').hide();
-
-    // ── Unified client-side filter ────────────────────────────────────────────
-    function applyWsFilters() {
-        var ownership = $('#ownershipTabs .nav-link.active').data('ownership') || '';
-        var type      = $('#wsTypeFilter').val().toLowerCase();
-        var status    = $('#wsStatusFilter').val().toLowerCase();
-        var search    = $('#wsSearch').val().toLowerCase();
-        var count     = 0;
-
-        $('#wsTable tbody tr[data-ownership]').each(function () {
-            var $tr  = $(this);
-            var match = true;
-            if (ownership && $tr.data('ownership') !== ownership.toLowerCase()) match = false;
-            if (type   && $tr.data('type').indexOf(type)     === -1) match = false;
-            if (status && $tr.data('status').indexOf(status) === -1) match = false;
-            if (search) {
-                var haystack = $tr.data('name') + ' ' + $tr.data('city') + ' ' + $tr.data('code');
-                if (haystack.indexOf(search) === -1) match = false;
-            }
-            $tr.toggle(match);
-            if (match) count++;
-        });
-        $('#wsCount').text('Showing ' + count + ' workshop(s)');
-    }
-
-    $('#wsTypeFilter, #wsStatusFilter').on('change', applyWsFilters);
-    $('#wsSearch').on('keyup', applyWsFilters);
-
-    // ── Add form submission ───────────────────────────────────────────────────
-    $('#addWsForm').on('submit', function (e) {
-        e.preventDefault();
-        var form = $(this);
-        $.ajax({
-            url:  form.attr('action'),
-            type: 'POST',
-            data: form.serialize(),
-            success: function (res) {
-                if (res.success) {
-                    Swal.fire({ icon:'success', title:'Workshop Added', text: res.message, timer:1600, showConfirmButton:false })
-                        .then(() => location.reload());
-                }
-            },
-            error: function (xhr) {
-                var errors = xhr.responseJSON?.errors || {};
-                var msg = Object.values(errors).flat().join('\n') || 'Something went wrong.';
-                Swal.fire({ icon:'error', title:'Error', text: msg });
-            }
-        });
-    });
-
-    // ── Edit modal populate ───────────────────────────────────────────────────
-    $(document).on('click', '.btn-edit-ws', function () {
-        var b = $(this);
-        $('#editWsId').val(b.data('id'));
-        $('#editWsCode').val(b.data('code'));
-        $('#editWsName').val(b.data('name'));
-        $('#editWsOwnership').val(b.data('ownership'));
-        $('#editWsType').val(b.data('type'));
-        $('#editWsBrand').val(b.data('brand'));
-        $('#editWsCity').val(b.data('city'));
-        $('#editWsState').val(b.data('state'));
-        $('#editWsManager').val(b.data('manager'));
-        $('#editWsPhone').val(b.data('phone'));
-        $('#editWsEmail').val(b.data('email'));
-        $('#editWsTechs').val(b.data('techs'));
-        $('#editWsNotes').val(b.data('notes'));
-        $('#editWsStatus').val(b.data('status'));
-    });
-
-    $('#btnUpdateWs').on('click', function () {
-        var id = $('#editWsId').val();
-        $.ajax({
-            url:  '{{ url("service-centre/master/workshops") }}/' + id,
-            type: 'POST',
-            data: $('#editWsForm').serialize() + '&_method=PUT',
-            success: function (res) {
-                if (res.success) {
-                    Swal.fire({ icon:'success', title:'Updated', timer:1500, showConfirmButton:false })
-                        .then(() => location.reload());
-                }
-            },
-            error: function () {
-                Swal.fire({ icon:'error', title:'Update failed' });
-            }
-        });
-    });
-
-    // ── Toggle active/inactive ────────────────────────────────────────────────
-    $(document).on('click', '.btn-toggle-ws', function () {
-        var name    = $(this).data('name');
-        var current = $(this).data('current');
-        var action  = current === 'Active' ? 'Deactivate' : 'Activate';
-        Swal.fire({
-            title: action + ' workshop?',
-            text:  '"' + name + '"',
-            icon:  'warning',
-            showCancelButton: true,
-            confirmButtonColor: current === 'Active' ? '#ea0027' : '#10863f',
-            confirmButtonText: action
-        }).then(r => {
-            if (r.isConfirmed) {
-                Swal.fire({ icon:'success', title:'Done', timer:1400, showConfirmButton:false })
-                    .then(() => location.reload());
-            }
-        });
-    });
-
-});
-</script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.1') }}"></script>
 @endsection
