@@ -101,7 +101,7 @@ class DepartmentController extends Controller
             'department_head_name' => 'nullable|max:100',
             'number_of_employees' => 'nullable|integer|min:1|max:100',
             
-            'branch_id' => 'nullable|array',
+            'branch_id' => 'required|array',
             'branch_id.*' => 'exists:branches,id',
     
             //'branch_id'         => 'nullable|exists:branches,id',
@@ -256,7 +256,7 @@ class DepartmentController extends Controller
             ],
             'department_head_name' => 'nullable|max:100',
             'number_of_employees' => 'nullable|integer|min:1|max:100',
-            'branch_id' => 'nullable|array',
+            'branch_id' => 'required|array',
             'branch_id.*' => 'exists:branches,id',
             'status'          => 'required|in:Active,Inactive', 
             
