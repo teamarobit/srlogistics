@@ -143,7 +143,24 @@ function tcnBindInitialCondition() {
     });
 }
 
-/* ---------- Source toggle (Existing / New PO) — mirrors Battery #batSourceToggle ---------- */
+/* ---------- Stock Location mode switch (Standard ↔ Fitment) ---------- */
+function tcnApplyLocationMode(mode) {
+    if (mode === 'Fitment') {
+        // Hide standard options (hint, Not assigned, Warehouses, Workshops)
+        $('.tcn-loc-standard').hide();
+        // Show Fitment Tyre option and mark it as selected
+        $('.badd-loc-fitment-only').css('display', 'flex').addClass('active');
+        $('#tcnLocFitment').prop('checked', true);
+    } else {
+        // Hide Fitment option
+        $('.badd-loc-fitment-only').hide().removeClass('active');
+        $('#tcnLocFitment').prop('checked', false);
+        // Show standard options
+        $('.tcn-loc-standard').show();
+    }
+}
+
+/* ---------- Source toggle (Existing / New PO / Fitment) ---------- */
 function tcnBindSourceToggle() {
     $('#tcnSourceToggle').on('click', '.badd-source-option', function () {
         $('.badd-source-option').removeClass('active');
@@ -151,18 +168,30 @@ function tcnBindSourceToggle() {
         var mode = $(this).find('input[type="radio"]').val();
         $(this).find('input[type="radio"]').prop('checked', true);
 
+        // Hide all mode sections, then show the active one
+        $('#tcnModeExisting, #tcnModeNewPO, #tcnModeFitment').removeClass('active');
+
         if (mode === 'Existing') {
             $('#tcnModeExisting').addClass('active');
-            $('#tcnModeNewPO').removeClass('active');
             $('#tcnSourceNote').prop('required', true);
             $('#tcnPoGrnSelect').prop('required', false);
-        } else {
+            $('#tcnFitmentSourceNote').prop('required', false);
+        } else if (mode === 'New PO') {
             $('#tcnModeNewPO').addClass('active');
-            $('#tcnModeExisting').removeClass('active');
             $('#tcnPoGrnSelect').prop('required', true);
             $('#tcnSourceNote').prop('required', false);
+            $('#tcnFitmentSourceNote').prop('required', false);
+        } else if (mode === 'Fitment') {
+            $('#tcnModeFitment').addClass('active');
+            $('#tcnFitmentSourceNote').prop('required', true);
+            $('#tcnSourceNote').prop('required', false);
+            $('#tcnPoGrnSelect').prop('required', false);
         }
-        $('#tcnSourceNote, #tcnPoGrnSelect').removeClass('is-invalid');
+
+        $('#tcnSourceNote, #tcnPoGrnSelect, #tcnFitmentSourceNote').removeClass('is-invalid');
+
+        // Update stock location display based on mode
+        tcnApplyLocationMode(mode);
     });
 }
 
@@ -181,6 +210,22 @@ function tcnBindInvoiceFileZone() {
             return;
         }
         $('#tcnFileZone .badd-file-text').text(f.name);
+    });
+
+    // Fitment invoice file zone
+    $(document).on('click', '#tcnFitmentFileZone', function (e) {
+        if ($(e.target).is('input')) return;
+        $('#tcnFitmentInvoiceFile').trigger('click');
+    });
+    $(document).on('change', '#tcnFitmentInvoiceFile', function () {
+        var f = this.files && this.files[0];
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) {
+            Toast.fire({ icon: 'error', title: 'Invoice file must be under 5 MB.' });
+            this.value = '';
+            return;
+        }
+        $('#tcnFitmentFileZone .badd-file-text').text(f.name);
     });
 }
 

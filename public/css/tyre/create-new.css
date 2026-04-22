@@ -180,6 +180,27 @@
     box-shadow: 0 0 0 0.15rem rgba(3, 38, 113, 0.15);
 }
 
+/* ---------- 3-column source toggle override (Fitment Tyre third option) */
+#tcnSourceToggle {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 768px) {
+    #tcnSourceToggle {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 480px) {
+    #tcnSourceToggle {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Fitment Tyre source icon */
+.badd-src-icon-fitment { background: #fff3e0; color: #e65100; }
+
+/* ---------- Fitment-only location option */
+.badd-loc-fitment-only { display: none; }
+
 /* ---------- Small mobile tweaks */
 @media (max-width: 576px) {
     .tcn-radio-chip {
