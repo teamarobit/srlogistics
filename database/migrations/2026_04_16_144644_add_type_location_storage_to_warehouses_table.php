@@ -13,27 +13,37 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('warehouses', function (Blueprint $table) {
-            $table->enum('warehouse_type', ['Central', 'Regional', 'Site/Yard'])
-                  ->nullable()
-                  ->after('name')
-                  ->comment('Type of warehouse');
+            if (! Schema::hasColumn('warehouses', 'warehouse_type')) {
+                $table->enum('warehouse_type', ['Central', 'Regional', 'Site/Yard'])
+                      ->nullable()
+                      ->after('name')
+                      ->comment('Type of warehouse');
+            }
 
-            $table->string('location_name', 150)
-                  ->nullable()
-                  ->after('address')
-                  ->comment('Landmark / area name');
+            if (! Schema::hasColumn('warehouses', 'location_name')) {
+                $table->string('location_name', 150)
+                      ->nullable()
+                      ->after('address')
+                      ->comment('Landmark / area name');
+            }
 
-            $table->enum('storage_type', ['Rack', 'Floor', 'Open Yard'])
-                  ->nullable()
-                  ->after('contact_phone')
-                  ->comment('Physical storage arrangement');
+            if (! Schema::hasColumn('warehouses', 'storage_type')) {
+                $table->enum('storage_type', ['Rack', 'Floor', 'Open Yard'])
+                      ->nullable()
+                      ->after('contact_phone')
+                      ->comment('Physical storage arrangement');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('warehouses', function (Blueprint $table) {
-            $table->dropColumn(['warehouse_type', 'location_name', 'storage_type']);
+            foreach (['warehouse_type', 'location_name', 'storage_type'] as $col) {
+                if (Schema::hasColumn('warehouses', $col)) {
+                    $table->dropColumn($col);
+                }
+            }
         });
     }
 };

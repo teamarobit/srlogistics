@@ -184,31 +184,49 @@ class WorkshopController extends Controller
             'contact_phone' => 'nullable|string|max:20',
         ]);
 
-        $ws = Workshop::create([
-            'workshop_code'    => Workshop::nextWorkshopCode($request->ownership, $request->city ?? 'GEN'),
-            'name'             => $request->name,
-            'ownership'        => $request->ownership,
-            'workshop_type'    => $request->workshop_type,
-            'brand'            => $request->brand,
-            'city'             => $request->city,
-            'state'            => $request->state,
-            'address'          => $request->address,
-            'pincode'          => $request->pincode,
-            'manager_name'     => $request->manager_name,
-            'contact_phone'    => $request->contact_phone,
-            'contact_email'    => $request->contact_email,
-            'technician_count' => $request->technician_count ?? 0,
-            'notes'            => $request->notes,
-            'status'           => 'Active',
-            'created_by'       => auth()->id(),
-        ]);
+        try {
+            $ws = \DB::transaction(function () use ($request) {
+                return Workshop::create([
+                    'workshop_code'    => Workshop::nextWorkshopCode($request->ownership, $request->city ?? 'GEN'),
+                    'name'             => $request->name,
+                    'ownership'        => $request->ownership,
+                    'workshop_type'    => $request->workshop_type,
+                    'brand'            => $request->brand,
+                    'city'             => $request->city,
+                    'state'            => $request->state,
+                    'address'          => $request->address,
+                    'pincode'          => $request->pincode,
+                    'manager_name'     => $request->manager_name,
+                    'contact_phone'    => $request->contact_phone,
+                    'contact_email'    => $request->contact_email,
+                    'technician_count' => $request->technician_count ?? 0,
+                    'notes'            => $request->notes,
+                    'status'           => 'Active',
+                    'created_by'       => auth()->id(),
+                ]);
+            });
 
-        return response()->json(['success' => true, 'workshop' => $ws, 'message' => $ws->name . ' added successfully.']);
+            return response()->json([
+                'success'  => true,
+                'workshop' => $ws,
+                'message'  => $ws->name . ' added successfully.',
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add workshop. Please try again.',
+            ], 500);
+        }
     }
 
     public function masterWorkshopUpdate(Request $request, int $id)
     {
-        $ws = Workshop::findOrFail($id);
+        // SD-8: use find() + manual 404 — never findOrFail() in AJAX methods
+        $ws = Workshop::find($id);
+        if (! $ws) {
+            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 404);
+        }
 
         $request->validate([
             'name'          => 'required|string|max:255',
@@ -221,33 +239,59 @@ class WorkshopController extends Controller
             'status'        => 'nullable|in:Active,Inactive',
         ]);
 
-        $ws->update([
-            'name'             => $request->name,
-            'ownership'        => $request->ownership,
-            'workshop_type'    => $request->workshop_type,
-            'brand'            => $request->brand,
-            'city'             => $request->city,
-            'state'            => $request->state,
-            'address'          => $request->address,
-            'pincode'          => $request->pincode,
-            'manager_name'     => $request->manager_name,
-            'contact_phone'    => $request->contact_phone,
-            'contact_email'    => $request->contact_email,
-            'technician_count' => $request->technician_count ?? $ws->technician_count,
-            'notes'            => $request->notes,
-            'status'           => $request->status ?? $ws->status,
-            'updated_by'       => auth()->id(),
-        ]);
+        try {
+            \DB::transaction(function () use ($request, $ws) {
+                $ws->update([
+                    'name'             => $request->name,
+                    'ownership'        => $request->ownership,
+                    'workshop_type'    => $request->workshop_type,
+                    'brand'            => $request->brand,
+                    'city'             => $request->city,
+                    'state'            => $request->state,
+                    'address'          => $request->address,
+                    'pincode'          => $request->pincode,
+                    'manager_name'     => $request->manager_name,
+                    'contact_phone'    => $request->contact_phone,
+                    'contact_email'    => $request->contact_email,
+                    'technician_count' => $request->technician_count ?? $ws->technician_count,
+                    'notes'            => $request->notes,
+                    'status'           => $request->status ?? $ws->status,
+                    'updated_by'       => auth()->id(),
+                ]);
+            });
 
-        return response()->json(['success' => true, 'workshop' => $ws->fresh(), 'message' => $ws->name . ' updated successfully.']);
+            return response()->json([
+                'success'  => true,
+                'workshop' => $ws->fresh(),
+                'message'  => $ws->name . ' updated successfully.',
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update workshop. Please try again.',
+            ], 500);
+        }
     }
 
     public function masterWorkshopDestroy(int $id)
     {
-        $ws = Workshop::findOrFail($id);
-        $ws->delete(); // soft delete
+        // SD-8: use find() + manual 404 — never findOrFail() in AJAX methods
+        $ws = Workshop::find($id);
+        if (! $ws) {
+            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 404);
+        }
 
-        return response()->json(['success' => true, 'message' => $ws->name . ' removed from workshop master.']);
+        try {
+            \DB::transaction(function () use ($ws) {
+                $ws->delete(); // soft delete
+            });
+
+            return response()->json(['success' => true, 'message' => $ws->name . ' removed from workshop master.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to remove workshop.'], 500);
+        }
     }
 
     // ─── Master Data — Services ───────────────────────────────────────────────

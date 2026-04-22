@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('imports:process')->everyMinute();
+        // Tyre reminder sweep — alignment & rotation KM-interval checks
+        $schedule->command('tyre:check-reminders')
+                 ->dailyAt('06:00')
+                 ->withoutOverlapping()
+                 ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
