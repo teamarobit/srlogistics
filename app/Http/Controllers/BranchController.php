@@ -117,13 +117,13 @@ class BranchController extends Controller
             'branch_owner_phone_code'       => 'nullable', 
             'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
             'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
-            'rent_due_date'                 => 'exclude_unless:branch_ownership,Rental|required|date_format:Y-m-d',
-            
+            'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
+
             'electricity_service_provider'  => 'nullable|string|max:255',
             'electricity_consumer_number'   => 'nullable|max:255',
             'documents'                     => 'nullable|array',
             'documents.*'                   => 'file|max:10240',
-            'status'                        => 'required|in:Active,Inactive', 
+            'status'                        => 'required|in:Active,Inactive',
 
         ], [
             'required' => 'This field is required.',
@@ -133,9 +133,10 @@ class BranchController extends Controller
             'min'      => 'Value must be at least :min.',
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
+            'integer'  => 'Only whole numbers are allowed.',
         ]);
-    
-    
+
+
         if ($validator->fails()) {
             \Log::error('Validation failed', [
                 'errors' => $validator->errors()->toArray(),
@@ -179,12 +180,12 @@ class BranchController extends Controller
                 $branch->branch_owner_phone_code = $request->branch_owner_phone_code ?? null;
                 $branch->branch_owner_phone = $request->branch_owner_phone ?? null;
                 $branch->rent_amount = $request->rent_amount ?? 0.00;
-                $branch->rent_due_date = $request->rent_due_date ?? null;
+                $branch->rent_due_count = $request->rent_due_count ?? null;
                 $branch->electricity_service_provider = $request->electricity_service_provider ?? null;
                 $branch->electricity_consumer_number = $request->electricity_consumer_number ?? null;
                 $branch->notes = $request->notes ?? null;
                 $branch->status = $request->status;
-                
+
                 $branch->created_by = Auth::user()->id;
                 $branch->save();
                 
@@ -315,8 +316,8 @@ class BranchController extends Controller
             'branch_owner_phone_code'       => 'nullable', 
             'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
             'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
-            'rent_due_date'                 => 'exclude_unless:branch_ownership,Rental|required|date_format:Y-m-d',
-            
+            'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
+
             'electricity_service_provider'  => 'nullable|string|max:255',
             'electricity_consumer_number'   => 'nullable|max:255',
             'documents'                     => 'nullable|array',
@@ -331,6 +332,7 @@ class BranchController extends Controller
             'min'      => 'Value must be at least :min.',
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
+            'integer'  => 'Only whole numbers are allowed.',
         ]);
     
         
@@ -378,7 +380,7 @@ class BranchController extends Controller
                 $branch->branch_owner_phone_code = $request->branch_owner_phone_code ?? null;
                 $branch->branch_owner_phone = $request->branch_owner_phone ?? null;
                 $branch->rent_amount = $request->rent_amount ?? 0.00;
-                $branch->rent_due_date = $request->rent_due_date ?? null;
+                $branch->rent_due_count = $request->rent_due_count ?? null;
                 $branch->electricity_service_provider = $request->electricity_service_provider ?? null;
                 $branch->electricity_consumer_number = $request->electricity_consumer_number ?? null;
                 $branch->notes = $request->notes ?? null;

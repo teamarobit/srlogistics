@@ -269,10 +269,15 @@
                           
                           <div class="form-group row">
                             <div class="col-12 col-md-3">
-                                <label>Rent Due Date <span class="text-danger">*</span></label>
+                                <label>Rent Due <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-12 col-md-6">
-                                <input type="date" name="rent_due_date" value="{{ $branch->rent_due_date ?? '' }}" class="form-control " />
+                                <select name="rent_due_count" class="form-control ">
+                                    <option value="">-- Select --</option>
+                                    @for ($i = 1; $i <= 20; $i++)
+                                        <option value="{{ $i }}" {{ (isset($branch->rent_due_count) && $branch->rent_due_count == $i) ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
                                 <small class="error text-danger error_msg" id="edit_rent_due_date_error"></small>
                             </div>
                           </div>
