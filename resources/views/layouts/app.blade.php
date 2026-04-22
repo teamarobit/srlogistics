@@ -180,8 +180,8 @@
             const input = this;
     
             const iti = window.intlTelInput(input, {
-                loadUtils: () =>
-                    import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js"),
+                // loadUtils: () =>
+                //     import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js"),
                 initialCountry: "in",
                 separateDialCode: true,
                 autoPlaceholder: "off"
