@@ -257,8 +257,12 @@ class RtoController extends Controller
         if($rto == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops ! RTO not found.'], 422);
         }
-        
-        
+            
+        $hasRoutes = $rto->routertos()->exists();
+        if($hasRoutes && $request->status == 'Inactive'){
+            return response()->json(['success' => false, 'data' => [], 'message' => 'This RTO Checkpoint is tagged with route hence you cannot inactive it.'], 422);
+
+        }
         
         try{
             
