@@ -765,8 +765,8 @@
 .vtd-card-head {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 6px 8px;
     background: #f8f9fc;
     border-bottom: 1px solid #f0f3f9;
 }
@@ -795,26 +795,68 @@
 .vtd-chip-empty    { background: #f4f6f9; color: #adb5bd; }
 
 .vtd-card-body {
-    padding: 8px 10px;
+    padding: 5px 8px 4px;
 }
 .vtd-field {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding: 2px 0;
-    gap: 6px;
+    align-items: center;
+    padding: 1.5px 0;
+    gap: 4px;
 }
 .vtd-fl {
-    font-size: 10px;
+    font-size: 9px;
     color: #8898aa;
     flex-shrink: 0;
-    min-width: 60px;
+    min-width: 56px;
+    letter-spacing: .1px;
 }
 .vtd-fv {
-    font-size: 11px;
+    font-size: 10px;
     color: #1a2533;
     text-align: right;
     word-break: break-word;
+}
+/* Monospace serial number */
+.vtd-fv-mono {
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    color: #032671;
+    letter-spacing: -.3px;
+}
+/* N/A placeholder */
+.vtd-na { color: #adb5bd; }
+
+/* Tyre Type badge */
+.vtd-type-badge {
+    background: #e8f0ff;
+    color: #032671;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 1px 5px;
+    letter-spacing: .3px;
+}
+
+/* Remaining Life inline bar */
+.vtd-life-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+}
+.vtd-life-track {
+    width: 46px;
+    height: 5px;
+    border-radius: 3px;
+    background: #e8ecf4;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.vtd-life-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .35s ease;
 }
 
 .vtd-card-empty-body {
@@ -827,20 +869,95 @@
 }
 
 .vtd-card-foot {
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-top: 1px solid #f4f6f9;
     background: #fafbfc;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 /* JS selector hook only — no visual styling required */
-.vtd-open-modal { cursor: pointer; }
+.vtd-open-modal  { cursor: pointer; }
+.vtd-open-gallery { cursor: pointer; }
 
 .vtd-view-btn {
-    font-size: 11px;
+    font-size: 10px;
     color: #032671;
     text-decoration: none;
     font-weight: 600;
 }
 .vtd-view-btn:hover { text-decoration: underline; color: #032671; }
+
+/* ── Eye icon button — card header (beside position label) ── */
+.vtd-eye-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    color: #032671;
+    background: #e8f0ff;
+    font-size: 12px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background .15s ease, color .15s ease;
+}
+.vtd-eye-btn:hover {
+    background: #032671;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ── Tyre photo grid — modal body ───────────────────────── */
+.vtd-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 4px 0;
+}
+.vtd-photo-item {
+    border: 1px solid #e8ecf4;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f8f9fc;
+}
+.vtd-photo-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+}
+.vtd-photo-err {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f0f3f9;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 22px;
+}
+.vtd-photo-meta {
+    padding: 5px 7px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #fff;
+    border-top: 1px solid #f0f3f9;
+}
+.vtd-photo-date {
+    font-size: 10px;
+    color: #344767;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+.vtd-photo-time {
+    font-size: 9.5px;
+    color: #8898aa;
+    display: flex;
+    align-items: center;
+}
 
 /* ── Center SVG ──────────────────────────────────────── */
 .vtd-center {
@@ -878,28 +995,20 @@
     filter: brightness(0.85);
 }
 
-/* ── Spare Strip ─────────────────────────────────────── */
-.vtd-spare-strip {
+/* ── Spare Tyre Divider (inside left column, before spare cards) ─── */
+.vtd-spare-divider {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #f8f9fc;
-    border: 1px solid #e8ecf4;
-    border-radius: 6px;
-    padding: 6px 10px;
-    width: 100%;
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #8898aa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 6px 0 4px;
+    border-top: 1px dashed #dce3f0;
+    margin-top: 4px;
 }
-.vtd-spare-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.vtd-spare-label { font-weight: 700; color: #485D6B; flex-shrink: 0; }
-.vtd-spare-serial { color: #032671; font-weight: 600; }
-.vtd-spare-brand  { color: #8898aa; }
-.vtd-spare-empty  { opacity: 0.65; }
 
 .vtd-svg-note {
     font-size: 10px;
@@ -1051,5 +1160,143 @@
     .vtd-truck-svg { display: none; }
     .vtd-svg-note  { display: none; }
     .vtd-center    { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   TYRE IMAGE GALLERY MODAL  (v3.0 — vtd-gallery-*)
+══════════════════════════════════════════════════════════ */
+.vtd-gallery-dialog { max-width: 520px; }
+
+.vtd-gallery-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 48px rgba(3,38,113,0.22);
+}
+
+.vtd-gallery-header {
+    background: linear-gradient(135deg, #1a2340 0%, #032671 100%);
+    color: #fff;
+    padding: 12px 18px;
+    border-bottom: none;
+    align-items: center;
+}
+.vtd-gallery-icon {
+    font-size: 22px;
+    opacity: .85;
+}
+.vtd-gallery-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+.vtd-gallery-subtitle {
+    font-size: 11px;
+    color: rgba(255,255,255,.65);
+    margin-top: 1px;
+}
+
+.vtd-gallery-body {
+    padding: 0;
+    background: #0d1117;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Main image display */
+.vtd-gallery-img-wrap {
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+.vtd-gallery-img {
+    max-width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 0;
+    display: block;
+    margin: 0 auto;
+}
+.vtd-gallery-img-meta {
+    background: rgba(0,0,0,0.55);
+    color: #e2e8f0;
+    font-size: 10px;
+    padding: 5px 12px;
+    text-align: center;
+    letter-spacing: .2px;
+}
+.vtd-gallery-img-meta strong { color: #fff; }
+
+/* Thumbnail strip */
+.vtd-gallery-thumbs {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #1a2340;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #4a5568 transparent;
+}
+.vtd-gallery-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: .65;
+    transition: all .15s;
+}
+.vtd-gallery-thumb.active,
+.vtd-gallery-thumb:hover {
+    border-color: #4a9dff;
+    opacity: 1;
+}
+
+/* Empty state */
+.vtd-gallery-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: #64748b;
+}
+.vtd-gallery-empty i {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+    opacity: .35;
+}
+
+/* Footer nav */
+.vtd-gallery-footer {
+    background: #f8f9fc;
+    border-top: 1px solid #e8ecf4;
+    padding: 8px 16px;
+    gap: 8px;
+    display: flex;
+    align-items: center;
+}
+.vtd-gallery-nav {
+    background: #032671;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    transition: background .15s;
+}
+.vtd-gallery-nav:hover:not(:disabled) { background: #0a3d9e; color: #fff; }
+.vtd-gallery-nav:disabled { background: #c8d4e8; color: #8898aa; cursor: not-allowed; }
+.vtd-gallery-counter {
+    font-size: 11px;
+    color: #8898aa;
+    font-weight: 600;
+    min-width: 44px;
+    text-align: center;
 }
 

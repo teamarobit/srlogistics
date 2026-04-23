@@ -34,6 +34,17 @@ class Tyre extends Model
     public function images(){
         return $this->morphMany(Media::class, 'mediable')->where('type', 'Image');
     }
+
+    /**
+     * Tyre photos: standalone images (not part of a document bundle).
+     * Used on vehicle details V2 tyre card modal — shows raw upload images with date/time.
+     * Filters: type = 'Image' AND mediadocument_id IS NULL.
+     */
+    public function tyrePhotos(){
+        return $this->morphMany(Media::class, 'mediable')
+                    ->where('type', 'Image')
+                    ->whereNull('mediadocument_id');
+    }
     
     public function documents(){
         return $this->morphMany(Media::class, 'mediable')->where('type', 'Document');

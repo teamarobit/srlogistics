@@ -1,5 +1,5 @@
 /**
- * vehicle-details-tyre.js  v1.0
+ * vehicle-details-tyre.js  v2.1
  * Tyre section interactions for Vehicle Details V2 page.
  *
  * SD-1  : All tyre JS lives here — no inline scripts in blade.
@@ -8,8 +8,11 @@
  *
  * Responsibilities:
  *  - SVG tyre ↔ card hover highlight (bidirectional)
- *  - SVG tyre hover tooltip (serial, condition, fitted date)
- *  - Click on SVG tyre OR "View Details" → open tyre detail modal
+ *  - SVG tyre hover tooltip (serial, condition, km balance)
+ *  - Click on eye icon in card header OR SVG tyre → open tyre photo modal
+ *    Modal body: tyre images with date + time (from VTD_TYRE_IMAGES)
+ *  - Click on "View Images" footer link → open image gallery modal
+ *    (images sourced from VTD_TYRE_IMAGES — blade-injected JSON)
  */
 
 /* ── Toast mixin (SD-7) ─────────────────────────────────── */
@@ -39,6 +42,10 @@ var vtdStatusLabels = {
     critical: 'Critical',
     empty:    'Not Assigned'
 };
+
+/* ── Gallery state ───────────────────────────────────────── */
+var vtdGalleryImages  = [];   // current tyre's image array
+var vtdGalleryIndex   = 0;    // active slide index
 
 /* ═══════════════════════════════════════════════════════════
    HOVER — SVG tyre → highlight corresponding card
@@ -80,6 +87,36 @@ $(document).on('click', '.vtd-open-modal', function (e) {
     }
 });
 
+/* ── CLICK — "View Images" link → open gallery modal ────── */
+$(document).on('click', '.vtd-open-gallery', function (e) {
+    e.preventDefault();
+    var pos   = $(this).data('pos');
+    var $card = $('.vtd-tyre-card[data-pos="' + pos + '"]');
+    var lbl   = $card.data('label') || pos;
+    vtdOpenGallery(pos, lbl);
+});
+
+/* ── GALLERY — Prev / Next buttons ──────────────────────── */
+$(document).on('click', '#vtdGalleryPrev', function () {
+    if (vtdGalleryIndex > 0) {
+        vtdGalleryIndex--;
+        vtdRenderGallerySlide();
+    }
+});
+
+$(document).on('click', '#vtdGalleryNext', function () {
+    if (vtdGalleryIndex < vtdGalleryImages.length - 1) {
+        vtdGalleryIndex++;
+        vtdRenderGallerySlide();
+    }
+});
+
+/* ── GALLERY — Thumbnail click ───────────────────────────── */
+$(document).on('click', '.vtd-gallery-thumb', function () {
+    vtdGalleryIndex = parseInt($(this).data('idx'), 10);
+    vtdRenderGallerySlide();
+});
+
 /* ═══════════════════════════════════════════════════════════
    SVG TOOLTIP — appears near cursor on tyre hover
 ═══════════════════════════════════════════════════════════ */
@@ -98,12 +135,17 @@ function vtdShowSvgTooltip($tyre) {
         var status    = $tyre.data('status')    || 'empty';
         var statusLbl = vtdStatusLabels[status] || status;
         var statusClr = vtdStatusColors[status] || '#dee2e6';
+        var kmBal     = $tyre.data('kmbal')     || '';
 
         html += '<div class="vtd-tip-serial">' + serial + '</div>';
         if (brand || model) {
             html += '<div class="vtd-tip-brand">' + [brand, model].filter(Boolean).join(' · ') + '</div>';
         }
         html += '<div class="vtd-tip-row"><span class="vtd-tip-dot" style="background:' + statusClr + ';"></span>' + statusLbl + '</div>';
+        if (kmBal !== '' && kmBal !== undefined) {
+            var kmBalStr = parseInt(kmBal) <= 0 ? 'Overdue' : Number(kmBal).toLocaleString() + ' KM';
+            html += '<div class="vtd-tip-fitted">KM Balance: ' + kmBalStr + '</div>';
+        }
         if (fitted && fitted !== '—') {
             html += '<div class="vtd-tip-fitted">Fitted: ' + fitted + '</div>';
         }
@@ -130,62 +172,76 @@ function vtdHideSvgTooltip() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   TYRE DETAIL MODAL — build and open
+   TYRE PHOTO MODAL — build and open (v2.1)
+   Modal body shows tyre images with date + time.
+   Buttons retained: Manage Tyres + Close.
 ═══════════════════════════════════════════════════════════ */
 function vtdOpenModalFromData(d) {
     /* Normalise boolean — blade outputs "1"/"0" strings */
-    var hasTyre    = String(d['hasTyre'] || d['has-tyre'] || d.hasTyre) === '1';
-    var label      = d.label      || d.pos || '—';
-    var status     = d.status     || 'empty';
-    var statusLbl  = vtdStatusLabels[status] || status;
-    var statusClr  = vtdStatusColors[status] || '#dee2e6';
-    var manageUrl  = d['manageUrl'] || d['manage-url'] || d.manageUrl || '#';
+    var hasTyre   = String(d['hasTyre'] || d['has-tyre'] || d.hasTyre) === '1';
+    var label     = d.label     || d.pos || '—';
+    var status    = d.status    || 'empty';
+    var statusLbl = vtdStatusLabels[status] || status;
+    var statusClr = vtdStatusColors[status] || '#dee2e6';
+    var manageUrl = d['manageUrl'] || d['manage-url'] || d.manageUrl || '#';
+    var pos       = d.pos || '';
+    var condition       = d.condition || '';
 
-    /* Header */
+    /* ── Header ─────────────────────────────────────────── */
     $('#vtdModalHeader').css('border-bottom', '3px solid ' + statusClr);
     $('#vtdModalPosDot').css('background', statusClr);
     $('#vtdTyreDetailModalLabel').text(label);
     $('#vtdModalSubtitle').html(
-        '<span class="vtd-modal-status-chip vtd-chip-' + status + '">' + statusLbl + '</span>'
+        '<span class="vtd-modal-status-chip vtd-chip-' + status + '">' + condition + '</span>'
     );
     $('#vtdModalManageBtn').attr('href', manageUrl);
 
-    /* Body */
+    /* ── Body: tyre images ───────────────────────────────── */
     var bodyHtml = '';
-    if (hasTyre) {
-        var serial    = d.serial    || '—';
-        var brand     = d.brand     || '—';
-        var model     = d.model     || '—';
-        var condition = d.condition || '—';
-        var fitted    = d.fitted    || '—';
-        var kmLife    = parseInt(d.kmlife  || d['km-life']  || 0);
-        var kmRun     = parseInt(d.kmrun   || d['km-run']   || 0);
-        var kmBal     = parseInt(d.kmbal   || d['km-bal']   || 0);
-        var hasKm     = kmLife > 0;
-        var kmPct     = hasKm ? Math.min(100, Math.round((kmRun / kmLife) * 100)) : 0;
-        var kmBalStr  = hasKm ? (kmBal <= 0 ? 'Overdue' : Number(kmBal).toLocaleString() + ' KM') : '—';
-        var kmBarClr  = kmBal <= 0 ? '#ea0027' : (kmBal <= 10000 ? '#d97706' : '#10863f');
 
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Serial No.</span><span class="vtd-modal-val vtd-modal-mono">' + serial + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Brand</span><span class="vtd-modal-val">' + brand + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Model</span><span class="vtd-modal-val">' + model + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Condition</span><span class="vtd-modal-val">' + condition + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Fitted On</span><span class="vtd-modal-val">' + fitted + '</span></div>';
+    if (!hasTyre) {
+        bodyHtml = '<div class="vtd-modal-empty">' +
+                   '<i class="uil uil-circle vtd-modal-empty-icon"></i>' +
+                   '<div>No tyre assigned to this position.</div>' +
+                   '<div class="vtd-modal-empty-sub">Use Manage Tyres to assign a tyre.</div>' +
+                   '</div>';
+    } else {
+        /* Pull images from blade-injected VTD_TYRE_IMAGES map */
+        var images = (typeof VTD_TYRE_IMAGES !== 'undefined' && VTD_TYRE_IMAGES[pos])
+                     ? VTD_TYRE_IMAGES[pos] : [];
 
-        if (hasKm) {
-            bodyHtml += '<div class="vtd-modal-divider"></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">KM Life</span><span class="vtd-modal-val">' + Number(kmLife).toLocaleString() + ' KM</span></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">KM Run</span><span class="vtd-modal-val">' + Number(kmRun).toLocaleString() + ' KM</span></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">KM Balance</span><span class="vtd-modal-val" style="color:' + kmBarClr + ';font-weight:700;">' + kmBalStr + '</span></div>';
-            bodyHtml += '<div class="vtd-modal-progress-wrap">';
-            bodyHtml +=   '<div class="vtd-modal-progress-track">';
-            bodyHtml +=     '<div class="vtd-modal-progress-fill" style="width:' + kmPct + '%;background:' + kmBarClr + ';"></div>';
-            bodyHtml +=   '</div>';
-            bodyHtml +=   '<div class="vtd-modal-progress-lbl">' + kmPct + '% used</div>';
+        if (images.length === 0) {
+            /* No photos uploaded */
+            bodyHtml = '<div class="vtd-modal-empty">' +
+                       '<i class="uil uil-image-slash vtd-modal-empty-icon"></i>' +
+                       '<div>No photos uploaded for this tyre.</div>' +
+                       '<div class="vtd-modal-empty-sub">Upload images via Manage Tyres.</div>' +
+                       '</div>';
+        } else {
+            /* Image grid with date + time beneath each photo */
+            bodyHtml += '<div class="vtd-photo-grid">';
+            for (var i = 0; i < images.length; i++) {
+                var img = images[i];
+                bodyHtml += '<div class="vtd-photo-item">';
+                bodyHtml +=   '<img src="' + img.url + '" ' +
+                                   'alt="' + (img.name || 'Tyre Photo') + '" ' +
+                                   'class="vtd-photo-img" ' +
+                                   'onerror="this.onerror=null;this.parentNode.querySelector(\'.vtd-photo-err\').style.display=\'flex\';" />';
+                bodyHtml +=   '<div class="vtd-photo-err" style="display:none;">' +
+                               '<i class="uil uil-image-slash"></i>' +
+                               '</div>';
+                bodyHtml +=   '<div class="vtd-photo-meta">';
+                if (img.date) {
+                    bodyHtml += '<span class="vtd-photo-date"><i class="uil uil-calendar-alt me-1"></i>' + img.date + '</span>';
+                }
+                if (img.time) {
+                    bodyHtml += '<span class="vtd-photo-time"><i class="uil uil-clock me-1"></i>' + img.time + '</span>';
+                }
+                bodyHtml +=   '</div>';
+                bodyHtml += '</div>';
+            }
             bodyHtml += '</div>';
         }
-    } else {
-        bodyHtml = '<div class="vtd-modal-empty"><i class="uil uil-circle vtd-modal-empty-icon"></i><div>No tyre assigned to this position.</div><div class="vtd-modal-empty-sub">Use Manage Tyres to assign a tyre.</div></div>';
     }
 
     $('#vtdModalBody').html(bodyHtml);
@@ -195,4 +251,86 @@ function vtdOpenModalFromData(d) {
     if (modalEl) {
         bootstrap.Modal.getOrCreateInstance(modalEl).show();
     }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYRE IMAGE GALLERY — open and render
+═══════════════════════════════════════════════════════════ */
+function vtdOpenGallery(pos, label) {
+    /* Resolve images from blade-injected VTD_TYRE_IMAGES map */
+    var images = (typeof VTD_TYRE_IMAGES !== 'undefined' && VTD_TYRE_IMAGES[pos]) ? VTD_TYRE_IMAGES[pos] : [];
+
+    vtdGalleryImages = images;
+    vtdGalleryIndex  = 0;
+
+    /* Set header */
+    $('#vtdGalleryModalLabel').text('Tyre Photos — ' + label);
+    $('#vtdGallerySubtitle').text(images.length + ' photo' + (images.length !== 1 ? 's' : '') + ' available');
+
+    if (images.length === 0) {
+        /* Empty state */
+        $('#vtdGalleryBody').html(
+            '<div class="vtd-gallery-empty">' +
+            '<i class="uil uil-image-slash"></i>' +
+            '<div>No photos uploaded for this tyre.</div>' +
+            '</div>'
+        );
+        $('#vtdGalleryPrev, #vtdGalleryNext').prop('disabled', true);
+        $('#vtdGalleryCounter').text('—');
+    } else {
+        vtdRenderGallerySlide();
+    }
+
+    /* Open the gallery modal (close detail modal if open) */
+    var detailEl = document.getElementById('vtdTyreDetailModal');
+    if (detailEl) {
+        var detailModal = bootstrap.Modal.getInstance(detailEl);
+        if (detailModal) { detailModal.hide(); }
+    }
+
+    var galleryEl = document.getElementById('vtdGalleryModal');
+    if (galleryEl) {
+        bootstrap.Modal.getOrCreateInstance(galleryEl).show();
+    }
+}
+
+function vtdRenderGallerySlide() {
+    var images = vtdGalleryImages;
+    var idx    = vtdGalleryIndex;
+    var img    = images[idx];
+
+    if (!img) return;
+
+    /* Main image + metadata */
+    var mainHtml =
+        '<div class="vtd-gallery-img-wrap">' +
+            '<img src="' + img.url + '" alt="' + (img.name || 'Tyre Photo') + '" class="vtd-gallery-img" ' +
+                 'onerror="this.onerror=null;this.src=\'\';" />' +
+            '<div class="vtd-gallery-img-meta">' +
+                '<strong>' + (img.name || 'Tyre Image') + '</strong>' +
+                (img.date ? ' &nbsp;·&nbsp; <i class="uil uil-calendar-alt"></i> ' + img.date : '') +
+            '</div>' +
+        '</div>';
+
+    /* Thumbnail strip (show only if >1 image) */
+    if (images.length > 1) {
+        mainHtml += '<div class="vtd-gallery-thumbs">';
+        for (var i = 0; i < images.length; i++) {
+            var activeClass = (i === idx) ? ' active' : '';
+            mainHtml +=
+                '<img src="' + images[i].url + '" ' +
+                     'class="vtd-gallery-thumb' + activeClass + '" ' +
+                     'data-idx="' + i + '" ' +
+                     'title="' + (images[i].date || '') + '" ' +
+                     'onerror="this.style.display=\'none\';" />';
+        }
+        mainHtml += '</div>';
+    }
+
+    $('#vtdGalleryBody').html(mainHtml);
+
+    /* Nav buttons */
+    $('#vtdGalleryPrev').prop('disabled', idx === 0);
+    $('#vtdGalleryNext').prop('disabled', idx === images.length - 1);
+    $('#vtdGalleryCounter').text((idx + 1) + ' / ' + images.length);
 }
