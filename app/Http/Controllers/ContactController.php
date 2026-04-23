@@ -9006,7 +9006,7 @@ class ContactController extends Controller
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
             if (in_array((float)$tds, [0, 1])) {
         
-                if (!in_array(8, $attachTypes)) {
+                if (!in_array(7, $attachTypes)) {
         
                     $validator->errors()->add(
                         'attachtypes',
@@ -9563,7 +9563,7 @@ class ContactController extends Controller
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
             if ($tds === 0.0) {
-                if (!in_array(8, $allAttachTypes)) {
+                if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
                         'TDS Declaration document is mandatory when TDS % is 0.'
@@ -10160,7 +10160,7 @@ class ContactController extends Controller
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
             if (in_array((float)$tds, [0, 1])) {
         
-                if (!in_array(8, $attachTypes)) {
+                if (!in_array(7, $attachTypes)) {
         
                     $validator->errors()->add(
                         'attachtypes',
@@ -10709,7 +10709,7 @@ class ContactController extends Controller
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
             if ($tds === 0.0) {
-                if (!in_array(8, $allAttachTypes)) {
+                if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
                         'TDS Declaration document is mandatory when TDS % is 0.'
@@ -11292,7 +11292,7 @@ class ContactController extends Controller
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
             if (in_array((float)$tds, [0, 1])) {
         
-                if (!in_array(8, $attachTypes)) {
+                if (!in_array(7, $attachTypes)) {
         
                     $validator->errors()->add(
                         'attachtypes',
@@ -11848,7 +11848,7 @@ class ContactController extends Controller
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
             if ($tds === 0.0) {
-                if (!in_array(8, $allAttachTypes)) {
+                if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
                         'TDS Declaration document is mandatory when TDS % is 0.'

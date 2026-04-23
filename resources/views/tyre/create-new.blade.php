@@ -4,7 +4,7 @@
 {{-- Reuse Battery-Add design system for identical patterns --}}
 <link href="{{ asset('css/Inventory/battery-add.css?v=1.1') }}" rel="stylesheet">
 {{-- Tyre-specific additions (reminder toggles, maintenance grid, tube-type picker) --}}
-<link href="{{ asset('css/Tyre/create-new.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/tyre/create-new.css?v=1.1') }}" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">
 @endsection
 
@@ -73,6 +73,19 @@
                                 <span class="badd-source-radio ms-auto flex-shrink-0"></span>
                             </div>
                         </label>
+                        <label class="badd-source-option" for="tcnSrcFitment">
+                            <input type="radio" name="tyre_source_mode" id="tcnSrcFitment" value="Fitment" class="d-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="badd-src-icon badd-src-icon-fitment">
+                                    <i class="uil uil-wrench"></i>
+                                </div>
+                                <div>
+                                    <div class="badd-source-label">Direct Fitment</div>
+                                    <div class="badd-source-desc">Tyre being directly fitted to a vehicle</div>
+                                </div>
+                                <span class="badd-source-radio ms-auto flex-shrink-0"></span>
+                            </div>
+                        </label>
                     </div>
 
                     {{-- Mode: Existing Tyre —— note + bill only --}}
@@ -125,6 +138,33 @@
                                         <div class="badd-grn-hint">
                                             <i class="uil uil-info-circle me-1"></i>
                                             Selecting a PO/GRN will auto-fill brand, model, and serial number below once connected to backend.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Mode: Fitment Tyre —— same source info as Existing --}}
+                    <div class="badd-mode-section" id="tcnModeFitment">
+                        <div class="sc-card mb-0">
+                            <div class="sc-card-head">
+                                <span class="sc-card-title"><i class="uil uil-notes me-2"></i>Source Information</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-8">
+                                        <label class="badd-label" for="tcnFitmentSourceNote">Source / Origin Note <span class="text-danger">*</span></label>
+                                        <textarea class="form-control badd-input" name="fitment_source_origin_note" id="tcnFitmentSourceNote" rows="2"
+                                                  placeholder="e.g. Received from MRF dealer outside system, repurposed from retired vehicle, transferred from another depot..."></textarea>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label">Invoice / Bill (optional)</label>
+                                        <div class="badd-file-zone" id="tcnFitmentFileZone">
+                                            <input type="file" name="fitment_invoice_file" id="tcnFitmentInvoiceFile" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
+                                            <i class="uil uil-file-upload-alt badd-file-icon"></i>
+                                            <span class="badd-file-text">Click to attach or drop file</span>
+                                            <span class="badd-file-hint">PDF, JPG, PNG · max 10MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -447,18 +487,28 @@
                                 <span class="sc-card-title"><i class="uil uil-map-marker me-2"></i>Stock Location <span class="text-danger">*</span></span>
                             </div>
                             <div class="p-3">
-                                <p class="badd-loc-hint">Where is this tyre being stored?</p>
+                                <p class="badd-loc-hint tcn-loc-standard">Where is this tyre being stored?</p>
                                 <div class="badd-loc-group" id="tcnLocGroup">
-                                    <label class="badd-loc-option active" for="tcnLocNone">
+
+                                    {{-- Fitment Tyre pre-selected option (shown only in Fitment mode) --}}
+                                    <label class="badd-loc-option badd-loc-fitment-only active" for="tcnLocFitment">
+                                        <input type="radio" name="stock_location" id="tcnLocFitment" value="fitment" class="d-none">
+                                        <span class="badd-loc-radio"></span>
+                                        <span class="badd-loc-code" style="background:#fff3e0;color:#e65100;">DF</span>
+                                        <span class="badd-loc-name">Direct Fitment</span>
+                                    </label>
+
+                                    {{-- Standard options (hidden in Fitment mode) --}}
+                                    <label class="badd-loc-option tcn-loc-standard active" for="tcnLocNone">
                                         <input type="radio" name="stock_location" id="tcnLocNone" value="" class="d-none" checked>
                                         <span class="badd-loc-radio"></span>
                                         <span class="badd-loc-name">Not assigned yet</span>
                                     </label>
 
                                     @if($warehouses->count())
-                                        <div class="badd-loc-section-label">Warehouses</div>
+                                        <div class="badd-loc-section-label tcn-loc-standard">Warehouses</div>
                                         @foreach($warehouses as $w)
-                                            <label class="badd-loc-option" for="tcnLocWh{{ $w->id }}">
+                                            <label class="badd-loc-option tcn-loc-standard" for="tcnLocWh{{ $w->id }}">
                                                 <input type="radio" name="stock_location" id="tcnLocWh{{ $w->id }}" value="wh:{{ $w->id }}" class="d-none">
                                                 <span class="badd-loc-radio"></span>
                                                 <span class="badd-loc-code badd-loc-wh">WH</span>
@@ -468,9 +518,9 @@
                                     @endif
 
                                     @if($workshops->count())
-                                        <div class="badd-loc-section-label">Workshops</div>
+                                        <div class="badd-loc-section-label tcn-loc-standard">Workshops</div>
                                         @foreach($workshops as $s)
-                                            <label class="badd-loc-option" for="tcnLocWs{{ $s->id }}">
+                                            <label class="badd-loc-option tcn-loc-standard" for="tcnLocWs{{ $s->id }}">
                                                 <input type="radio" name="stock_location" id="tcnLocWs{{ $s->id }}" value="ws:{{ $s->id }}" class="d-none">
                                                 <span class="badd-loc-radio"></span>
                                                 <span class="badd-loc-code badd-loc-ws">WS</span>
@@ -560,5 +610,5 @@
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('customjs/tyre/create-new.js?v=1.3') }}"></script>
+<script src="{{ asset('customjs/tyre/create-new.js?v=1.4') }}"></script>
 @endsection

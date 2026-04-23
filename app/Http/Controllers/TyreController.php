@@ -732,11 +732,13 @@ class TyreController extends Controller
     {
         $rules = [
             // Source
-            'tyre_source_mode'        => 'required|in:Existing,New PO',
-            'source_origin_note'      => 'required|string|max:500',
-            'purchase_order_reference'=> 'nullable|string|max:100|required_if:tyre_source_mode,New PO',
-            'invoice_reference'       => 'nullable|string|max:100',
-            'invoice_file'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'tyre_source_mode'           => 'required|in:Existing,New PO,Fitment',
+            'source_origin_note'         => 'nullable|string|max:500|required_unless:tyre_source_mode,Fitment',
+            'fitment_source_origin_note' => 'nullable|string|max:500|required_if:tyre_source_mode,Fitment',
+            'purchase_order_reference'   => 'nullable|string|max:100|required_if:tyre_source_mode,New PO',
+            'invoice_reference'          => 'nullable|string|max:100',
+            'invoice_file'               => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'fitment_invoice_file'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
 
             // Identity
             'tyre_serial_number'      => 'required|string|max:100|unique:tyres,tyre_serial_number,NULL,id,deleted_at,NULL',
@@ -761,7 +763,8 @@ class TyreController extends Controller
             //   ''              → not assigned
             //   'wh:<id>'       → warehouse
             //   'ws:<id>'       → workshop
-            'stock_location'          => ['nullable', 'string', 'regex:/^(wh:\d+|ws:\d+)?$/'],
+            //   'fitment'       → direct fitment to vehicle
+            'stock_location'          => ['nullable', 'string', 'regex:/^(wh:\d+|ws:\d+|fitment)?$/'],
 
             // Purchase & Cost
             'tyre_price'              => 'required|numeric|min:0',
@@ -840,10 +843,11 @@ class TyreController extends Controller
                 if (! is_dir($tyreDir))         { @mkdir($tyreDir, 0775, true); }
                 if (! is_dir($tyreInvoicesDir)) { @mkdir($tyreInvoicesDir, 0775, true); }
 
-                // 1) Move invoice file if provided
+                // 1) Move invoice file if provided (fitment mode uses fitment_invoice_file)
                 $invoiceFilePath = null;
-                if ($request->hasFile('invoice_file')) {
-                    $file = $request->file('invoice_file');
+                $invoiceFileKey  = $request->tyre_source_mode === 'Fitment' ? 'fitment_invoice_file' : 'invoice_file';
+                if ($request->hasFile($invoiceFileKey)) {
+                    $file = $request->file($invoiceFileKey);
                     $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
                     $file->move($tyreInvoicesDir, $fileName);
                     $invoiceFilePath = 'tyre/invoices/' . $fileName;
@@ -876,14 +880,19 @@ class TyreController extends Controller
                 // 4) Serial trim + uppercase for consistency (BR-4)
                 $serial = strtoupper(trim((string)$request->tyre_serial_number));
 
-                // 5) Parse Stock Location single-value radio group (wh:<id> | ws:<id> | '')
+                // 5) Parse Stock Location single-value radio group (wh:<id> | ws:<id> | 'fitment' | '')
                 $warehouseId  = null;
                 $workshopId   = null;
                 $locationTag  = 'Warehouse';      // high-level location label
-                $stockStatus  = 'Warehouse';      // stock_status ENUM
-                $currentStatus = 'Warehouse';     // current_status ENUM
+                $stockStatus  = 'Warehouse';      // stock_status ENUM: Warehouse|Mounted|In Transit
+                $currentStatus = 'Warehouse';     // current_status ENUM: Warehouse|Allocated|Workshop|Discarded
                 $stockLoc     = (string) $request->stock_location;
-                if ($stockLoc !== '' && preg_match('/^(wh|ws):(\d+)$/', $stockLoc, $m)) {
+                if ($stockLoc === 'fitment') {
+                    // Tyre being directly fitted to a vehicle
+                    $locationTag   = 'Vehicle';
+                    $stockStatus   = 'Mounted';
+                    $currentStatus = 'Allocated';
+                } elseif ($stockLoc !== '' && preg_match('/^(wh|ws):(\d+)$/', $stockLoc, $m)) {
                     if ($m[1] === 'wh') {
                         $warehouseId   = (int) $m[2];
                         $locationTag   = 'Warehouse';
@@ -913,7 +922,9 @@ class TyreController extends Controller
                     'initial_condition'         => $request->initial_condition,         // New|Retreaded|Used Good|Scrap
 
                     'tyre_source_mode'          => $request->tyre_source_mode,
-                    'source_origin_note'        => $request->source_origin_note,
+                    'source_origin_note'        => $request->tyre_source_mode === 'Fitment'
+                                                        ? $request->fitment_source_origin_note
+                                                        : $request->source_origin_note,
                     'purchase_order_reference'  => $request->purchase_order_reference,
                     'invoice_reference'         => $request->invoice_reference,
                     'invoice_file_path'         => $invoiceFilePath,
