@@ -888,6 +888,77 @@
 }
 .vtd-view-btn:hover { text-decoration: underline; color: #032671; }
 
+/* ── Eye icon button — card header (beside position label) ── */
+.vtd-eye-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    color: #032671;
+    background: #e8f0ff;
+    font-size: 12px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background .15s ease, color .15s ease;
+}
+.vtd-eye-btn:hover {
+    background: #032671;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ── Tyre photo grid — modal body ───────────────────────── */
+.vtd-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 4px 0;
+}
+.vtd-photo-item {
+    border: 1px solid #e8ecf4;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f8f9fc;
+}
+.vtd-photo-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+}
+.vtd-photo-err {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f0f3f9;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 22px;
+}
+.vtd-photo-meta {
+    padding: 5px 7px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #fff;
+    border-top: 1px solid #f0f3f9;
+}
+.vtd-photo-date {
+    font-size: 10px;
+    color: #344767;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+.vtd-photo-time {
+    font-size: 9.5px;
+    color: #8898aa;
+    display: flex;
+    align-items: center;
+}
+
 /* ── Center SVG ──────────────────────────────────────── */
 .vtd-center {
     display: flex;
@@ -924,28 +995,20 @@
     filter: brightness(0.85);
 }
 
-/* ── Spare Strip ─────────────────────────────────────── */
-.vtd-spare-strip {
+/* ── Spare Tyre Divider (inside left column, before spare cards) ─── */
+.vtd-spare-divider {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #f8f9fc;
-    border: 1px solid #e8ecf4;
-    border-radius: 6px;
-    padding: 6px 10px;
-    width: 100%;
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #8898aa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 6px 0 4px;
+    border-top: 1px dashed #dce3f0;
+    margin-top: 4px;
 }
-.vtd-spare-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.vtd-spare-label { font-weight: 700; color: #485D6B; flex-shrink: 0; }
-.vtd-spare-serial { color: #032671; font-weight: 600; }
-.vtd-spare-brand  { color: #8898aa; }
-.vtd-spare-empty  { opacity: 0.65; }
 
 .vtd-svg-note {
     font-size: 10px;

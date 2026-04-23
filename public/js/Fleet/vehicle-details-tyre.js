@@ -1,5 +1,5 @@
 /**
- * vehicle-details-tyre.js  v2.0
+ * vehicle-details-tyre.js  v2.1
  * Tyre section interactions for Vehicle Details V2 page.
  *
  * SD-1  : All tyre JS lives here — no inline scripts in blade.
@@ -9,8 +9,9 @@
  * Responsibilities:
  *  - SVG tyre ↔ card hover highlight (bidirectional)
  *  - SVG tyre hover tooltip (serial, condition, km balance)
- *  - Click on SVG tyre OR "View Details" → open tyre detail modal
- *  - Click on "View Images" → open image gallery modal
+ *  - Click on eye icon in card header OR SVG tyre → open tyre photo modal
+ *    Modal body: tyre images with date + time (from VTD_TYRE_IMAGES)
+ *  - Click on "View Images" footer link → open image gallery modal
  *    (images sourced from VTD_TYRE_IMAGES — blade-injected JSON)
  */
 
@@ -171,92 +172,76 @@ function vtdHideSvgTooltip() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   TYRE DETAIL MODAL — build and open (updated v2.0)
+   TYRE PHOTO MODAL — build and open (v2.1)
+   Modal body shows tyre images with date + time.
+   Buttons retained: Manage Tyres + Close.
 ═══════════════════════════════════════════════════════════ */
 function vtdOpenModalFromData(d) {
     /* Normalise boolean — blade outputs "1"/"0" strings */
-    var hasTyre    = String(d['hasTyre'] || d['has-tyre'] || d.hasTyre) === '1';
-    var label      = d.label      || d.pos || '—';
-    var status     = d.status     || 'empty';
-    var statusLbl  = vtdStatusLabels[status] || status;
-    var statusClr  = vtdStatusColors[status] || '#dee2e6';
-    var manageUrl  = d['manageUrl'] || d['manage-url'] || d.manageUrl || '#';
+    var hasTyre   = String(d['hasTyre'] || d['has-tyre'] || d.hasTyre) === '1';
+    var label     = d.label     || d.pos || '—';
+    var status    = d.status    || 'empty';
+    var statusLbl = vtdStatusLabels[status] || status;
+    var statusClr = vtdStatusColors[status] || '#dee2e6';
+    var manageUrl = d['manageUrl'] || d['manage-url'] || d.manageUrl || '#';
+    var pos       = d.pos || '';
+    var condition       = d.condition || '';
 
-    /* Header */
+    /* ── Header ─────────────────────────────────────────── */
     $('#vtdModalHeader').css('border-bottom', '3px solid ' + statusClr);
     $('#vtdModalPosDot').css('background', statusClr);
     $('#vtdTyreDetailModalLabel').text(label);
     $('#vtdModalSubtitle').html(
-        '<span class="vtd-modal-status-chip vtd-chip-' + status + '">' + statusLbl + '</span>'
+        '<span class="vtd-modal-status-chip vtd-chip-' + status + '">' + condition + '</span>'
     );
     $('#vtdModalManageBtn').attr('href', manageUrl);
 
-    /* Body */
+    /* ── Body: tyre images ───────────────────────────────── */
     var bodyHtml = '';
-    if (hasTyre) {
-        var serial         = d.serial         || '—';
-        var brand          = d.brand          || '—';
-        var model          = d.model          || '—';
-        var condition      = d.condition      || '—';
-        var type           = d.type           || '—';
-        var fitted         = d.fitted         || '—';
-        var kmLife         = parseInt(d.kmlife  || d['km-life']  || 0);
-        var kmRun          = parseInt(d.kmrun   || d['km-run']   || 0);
-        var kmBal          = parseInt(d.kmbal   || d['km-bal']   || 0);
-        var remLifePct     = d.remlifepct     !== '' && d.remlifepct !== undefined ? parseInt(d.remlifepct) : null;
-        var warrantyRem    = d.warrantyremaining !== '' && d.warrantyremaining !== undefined ? parseInt(d.warrantyremaining) : null;
-        var hasKm          = kmLife > 0;
-        var kmBalStr       = hasKm ? (kmBal <= 0 ? 'Overdue' : Number(kmBal).toLocaleString() + ' KM') : '—';
-        var kmBarClr       = kmBal <= 0 ? '#ea0027' : (kmBal <= 10000 ? '#d97706' : '#10863f');
-        var pos            = d.pos || '';
-        var imgCount       = parseInt(d.imgcount || 0);
 
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Position</span><span class="vtd-modal-val">' + label + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Serial No.</span><span class="vtd-modal-val vtd-modal-mono">' + serial + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Condition</span><span class="vtd-modal-val">' + condition + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Type</span><span class="vtd-modal-val">' + (type !== '—' ? '<span style="background:#e8f0ff;color:#032671;font-size:10px;font-weight:700;border-radius:3px;padding:1px 6px;">' + type + '</span>' : '—') + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Brand</span><span class="vtd-modal-val">' + brand + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Model</span><span class="vtd-modal-val">' + model + '</span></div>';
-        bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Fitted On</span><span class="vtd-modal-val">' + fitted + '</span></div>';
+    if (!hasTyre) {
+        bodyHtml = '<div class="vtd-modal-empty">' +
+                   '<i class="uil uil-circle vtd-modal-empty-icon"></i>' +
+                   '<div>No tyre assigned to this position.</div>' +
+                   '<div class="vtd-modal-empty-sub">Use Manage Tyres to assign a tyre.</div>' +
+                   '</div>';
+    } else {
+        /* Pull images from blade-injected VTD_TYRE_IMAGES map */
+        var images = (typeof VTD_TYRE_IMAGES !== 'undefined' && VTD_TYRE_IMAGES[pos])
+                     ? VTD_TYRE_IMAGES[pos] : [];
 
-        if (hasKm) {
-            bodyHtml += '<div class="vtd-modal-divider"></div>';
-            /* Remaining Life progress bar */
-            if (remLifePct !== null) {
-                var lifeFill = Math.min(100, Math.max(0, remLifePct));
-                bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Rem. Life</span><span class="vtd-modal-val" style="color:' + kmBarClr + ';font-weight:700;">' + remLifePct + '%</span></div>';
-                bodyHtml += '<div class="vtd-modal-progress-wrap">';
-                bodyHtml +=   '<div class="vtd-modal-progress-track">';
-                bodyHtml +=     '<div class="vtd-modal-progress-fill" style="width:' + lifeFill + '%;background:' + kmBarClr + ';"></div>';
+        if (images.length === 0) {
+            /* No photos uploaded */
+            bodyHtml = '<div class="vtd-modal-empty">' +
+                       '<i class="uil uil-image-slash vtd-modal-empty-icon"></i>' +
+                       '<div>No photos uploaded for this tyre.</div>' +
+                       '<div class="vtd-modal-empty-sub">Upload images via Manage Tyres.</div>' +
+                       '</div>';
+        } else {
+            /* Image grid with date + time beneath each photo */
+            bodyHtml += '<div class="vtd-photo-grid">';
+            for (var i = 0; i < images.length; i++) {
+                var img = images[i];
+                bodyHtml += '<div class="vtd-photo-item">';
+                bodyHtml +=   '<img src="' + img.url + '" ' +
+                                   'alt="' + (img.name || 'Tyre Photo') + '" ' +
+                                   'class="vtd-photo-img" ' +
+                                   'onerror="this.onerror=null;this.parentNode.querySelector(\'.vtd-photo-err\').style.display=\'flex\';" />';
+                bodyHtml +=   '<div class="vtd-photo-err" style="display:none;">' +
+                               '<i class="uil uil-image-slash"></i>' +
+                               '</div>';
+                bodyHtml +=   '<div class="vtd-photo-meta">';
+                if (img.date) {
+                    bodyHtml += '<span class="vtd-photo-date"><i class="uil uil-calendar-alt me-1"></i>' + img.date + '</span>';
+                }
+                if (img.time) {
+                    bodyHtml += '<span class="vtd-photo-time"><i class="uil uil-clock me-1"></i>' + img.time + '</span>';
+                }
                 bodyHtml +=   '</div>';
-                bodyHtml +=   '<div class="vtd-modal-progress-lbl">' + (100 - lifeFill) + '% used</div>';
                 bodyHtml += '</div>';
             }
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">KM Life</span><span class="vtd-modal-val">' + Number(kmLife).toLocaleString() + ' KM</span></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Actual KM Run</span><span class="vtd-modal-val">' + Number(kmRun).toLocaleString() + ' KM</span></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Rem. Run</span><span class="vtd-modal-val" style="color:' + kmBarClr + ';font-weight:700;">' + kmBalStr + '</span></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">KM Balance</span><span class="vtd-modal-val" style="color:' + kmBarClr + ';font-weight:700;">' + kmBalStr + '</span></div>';
-        }
-
-        /* Warranty */
-        if (warrantyRem !== null) {
-            var wClr = warrantyRem === 0 ? '#ea0027' : (warrantyRem <= 3 ? '#d97706' : '#10863f');
-            var wStr = warrantyRem === 0 ? 'Expired' : warrantyRem + ' month(s) remaining';
-            bodyHtml += '<div class="vtd-modal-divider"></div>';
-            bodyHtml += '<div class="vtd-modal-row"><span class="vtd-modal-lbl">Warranty</span><span class="vtd-modal-val" style="color:' + wClr + ';font-weight:700;">' + wStr + '</span></div>';
-        }
-
-        /* Photo count shortcut */
-        if (imgCount > 0) {
-            bodyHtml += '<div class="vtd-modal-divider"></div>';
-            bodyHtml += '<div style="text-align:center;padding:6px 0;">';
-            bodyHtml += '<a href="#" class="vtd-open-gallery" data-pos="' + pos + '" style="font-size:12px;font-weight:700;color:#032671;text-decoration:none;">';
-            bodyHtml += '<i class="uil uil-image me-1"></i>View ' + imgCount + ' Photo' + (imgCount > 1 ? 's' : '') + '</a>';
             bodyHtml += '</div>';
         }
-
-    } else {
-        bodyHtml = '<div class="vtd-modal-empty"><i class="uil uil-circle vtd-modal-empty-icon"></i><div>No tyre assigned to this position.</div><div class="vtd-modal-empty-sub">Use Manage Tyres to assign a tyre.</div></div>';
     }
 
     $('#vtdModalBody').html(bodyHtml);
