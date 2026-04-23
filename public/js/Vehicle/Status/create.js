@@ -1,4 +1,4 @@
-var VEHILE_TYPES = "{{ route('vehiclestatus.index') }}";\n\n
+var VEHILE_TYPES = "{{ route('vehiclestatus.index') }}";
 $(document).ready(function() {
     
     const Toast = Swal.mixin({

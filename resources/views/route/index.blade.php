@@ -25,15 +25,15 @@
                               <a href="{{ route('route.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Route</a>
                               
                               <form action="{{ route('route.index') }}" id="searchform" class="d-inline-block">
-                                  <div class="search-wrap d-inline-block" style="width: 150px;">
+                                  <div class="search-wrap d-inline-block" style="width: 125px;">
                                       <input type="text" name="route" id="search_route" value="{{ old('route', $search_route_name) }}" class="form-control" placeholder="Search by Route" />
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block" style="width: 170px;">
+                                  <div class="search-wrap d-inline-block" style="width: 140px;">
                                       <input type="text" name="source" id="search_source" value="{{ old('source', $search_source) }}" class="form-control" placeholder="Search by Source" />
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block" style="width: 170px;">
+                                  <div class="search-wrap d-inline-block" style="width: 140px;">
                                       <input type="text" name="destination" id="search_destination" value="{{ old('destination', $search_destination) }}" class="form-control" placeholder="Search by Destination" />
                                   </div>
                                   

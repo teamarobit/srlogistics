@@ -72,7 +72,7 @@ body{ background-color: #fff; }
                     </div>
 
                     <div class="addroutelist-bd">
-                        <div class="container-fluid">
+                        <div class="container-fluid p-0">
                             <!-- /////////////////////////////////// -->
 
                             <div class="table-responsive mt-3">
@@ -201,9 +201,7 @@ body{ background-color: #fff; }
                             
                         </div>
                     </div>
-
-
-                </div>
+            </div>
         </div>
     </div>
 </div>

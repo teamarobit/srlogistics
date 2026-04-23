@@ -28,7 +28,7 @@
                                     <input type="text" name="name" id="search_name" value="{{ old('name', $search_name) }}" class="form-control" placeholder="Search by Name">
                                 </div>
                                 <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
-                                      <select name="status" id="search_status" class="form-select select2">
+                                      <select name="status" id="search_status" class="form-select">
                                           <option value="">Filter by Status</option>
                                           <option value="Active" {{ old('status', $search_status) == 'Active' ? 'selected' : '' }}>Active</option>
                                           <option value="Inactive" {{ old('status', $search_status) == 'Inactive' ? 'selected' : '' }}>Inactive</option>

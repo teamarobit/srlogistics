@@ -120,7 +120,12 @@ $(document).ready(function(){
     });
 
     
-    
+    $('.select2.department-dd').select2({
+        placeholder: 'Filter by Department'
+    });
+    $('.select2.designation-dd').select2({
+        placeholder: 'Filter by Designation'
+    });
     
     
     

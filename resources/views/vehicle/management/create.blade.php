@@ -113,7 +113,7 @@
                                             <label>Vehicle Group <span class="text-danger">*</span></label>
                                         </div>
                                       
-                                        <div class="col-12 col-md-8 d-flex flex-wrap">
+                                        <div class="col-12 col-md-8">
                                             <div class="d-flex flex-wrap">
                                             @foreach($vehiclegroup as $group)
                                     
@@ -146,7 +146,7 @@
                                             <label>Vehicle Type <span class="text-danger">*</span></label>
                                         </div>
                                           
-                                        <div class="col-12 col-md-8 d-flex flex-wrap">
+                                        <div class="col-12 col-md-8">
                                             <div class="d-flex flex-wrap">
                                             @foreach($vehicletype as $type)
                                     

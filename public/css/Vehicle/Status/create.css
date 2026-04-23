@@ -9,7 +9,13 @@
     display: none;
 }
 
+.form-check-input.is-invalid{
+    border-color: #bdbdbd;
+}
 
+.form-check-input.is-invalid~.form-check-label{
+    color: #333;
+}
 
 
 

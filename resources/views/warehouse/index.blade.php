@@ -24,7 +24,7 @@
                 {{-- Page Header --}}
                 <div class="container-fluid page-head">
                     <div class="row align-items-center gy-2">
-                        <div class="col-md-6 d-flex flex-wrap align-items-center gap-2">
+                        <div class="col-md-4 d-flex flex-wrap align-items-center gap-2">
                             <h5 class="mb-0 me-2">Warehouse Master</h5>
                             <ul class="nav filter-tabs border-0 gap-1 mb-0" id="whTypeTabs">
                                 <li class="nav-item">
@@ -41,7 +41,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="col-md-6 d-flex flex-wrap align-items-center justify-content-md-end gap-2">
+                        <div class="col-md-8 d-flex flex-wrap align-items-center justify-content-md-end gap-2">
                             <input type="text" class="form-control form-control-sm" id="whSearch" placeholder="Search name / code / city…" style="width:200px;">
                             <select class="form-select form-select-sm" id="whStatusFilter" style="width:120px;">
                                 <option value="">All Status</option>
@@ -51,6 +51,7 @@
                             <a href="{{ route('warehouse.master.create') }}" class="btn btn-primary btn-sm">
                                 <i class="uil uil-plus me-1"></i> Add Warehouse
                             </a>
+                            <button class="btn btn-primary btn-reset">Reset</button>
                         </div>
                     </div>
 

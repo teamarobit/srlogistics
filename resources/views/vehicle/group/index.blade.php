@@ -214,14 +214,14 @@
                     </div>
                     <div class="col-12 col-md-6 d-flex">
                         <div class="form-check d-flex me-2">
-                            <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active" autocompleted="">
-                            <label class="form-check-label" for="exampleRadios1">
+                            <input class="form-check-input" type="radio" name="status" id="activestatus" value="Active" autocompleted="">
+                            <label class="form-check-editactive" for="activestatus">
                                 Active
                             </label>
                         </div>
                         <div class="form-check d-flex">
-                            <input class="form-check-input" type="radio" name="status" id="exampleRadios2" value="Inactive" autocompleted="">
-                            <label class="form-check-label" for="exampleRadios2">
+                            <input class="form-check-input" type="radio" name="status" id="inactivestatus" value="Inactive" autocompleted="">
+                            <label class="form-check-label" for="inactivestatus">
                                 Inactive
                             </label>
                         </div>   

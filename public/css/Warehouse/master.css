@@ -51,3 +51,5 @@ body { background-color: #fff; }
 .wh-stats-strip { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 .wh-stat-pill   { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 4px 14px; font-size: 12px; color: #64748b; font-weight: 500; }
 .wh-stat-pill strong { color: #032671; }
+
+

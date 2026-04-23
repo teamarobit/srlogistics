@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Warehouse/form.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/Warehouse/form.css?v=1.4') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css">
 @endsection
 

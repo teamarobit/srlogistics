@@ -2482,3 +2482,7 @@ hr{
 .loc-stat-row-label { font-size: 10px; color: #6c757d; }
 .loc-stat-row-val   { font-size: 12px; font-weight: 700; color: #1a1a2e; }
 .loc-stat-alert { color: #EA0027; }
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #485D6B !important;
+}

@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Vehicle/Status/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Status/create.css?v=0.03') }}">
 
 
 
