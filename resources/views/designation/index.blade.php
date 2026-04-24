@@ -28,7 +28,7 @@
                                     <input type="text" name="name" id="search_designation_name" value="{{ old('name', $search_name) }}" class="form-control" placeholder="Search by Designation Name">
                                 </div>
                                 <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
-                                    <select class="form-select select2"  name="department" id="search_department_id">
+                                    <select class="form-select select2 department-dd"  name="department" id="search_department_id">
                                         <option value="">Filter by Department</option>
                                         @forelse ($departments as $department)
                                         <option value="{{ $department->id }}"
@@ -155,7 +155,9 @@
     
     var DELETE_DESIGNATION  = "{{route('designation.delete')}}";
     
-   
+   $('.select2.department-dd').select2({
+        placeholder: 'Filter by Department'
+    });
 </script>
 <script type="text/javascript" src="{{ asset('customjs/designation/index.js') }}"></script>
 @endsection

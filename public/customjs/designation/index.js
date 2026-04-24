@@ -81,7 +81,9 @@ $(document).ready(function(){
     });
 
     
-    
+    $('.select2.department-dd').select2({
+        placeholder: 'Filter by Department'
+    });
     
     
     

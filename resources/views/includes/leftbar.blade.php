@@ -105,7 +105,7 @@
                     @endif
                     
                     @if(Route::has('vehicletracking.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking Master</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking</a></p>
                     @endif
                       
                     @if(Route::has('vehicleownership.index')) 
