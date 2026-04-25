@@ -61,6 +61,7 @@ class DatabaseSeeder extends Seeder
                         TestVehicleSeeder::class,
                         WarehouseSeeder::class,
                         FleetstatusSeeder::class,
+                        TyreWarehouseSeeder::class,
                     ]);
     }
 }
