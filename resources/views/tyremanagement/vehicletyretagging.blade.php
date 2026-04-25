@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-12 col-md-6 text-end">
                             <span class="badge bg-light text-dark border me-2">
-                                <i class="uil uil-truck me-1"></i>{{ $vehicle->vehicle_registration_number ?? 'Vehicle #'.$vehicle->id }}
+                                <i class="uil uil-truck me-1"></i>{{ $vehicle->vehicle_registration_number ?? 'Vehicle #'.$vehicle->vehicle_no }}
                             </span>
                             <a href="{{ route('fleetdashboard.getVehicleDetails', $vehicle->id) }}" class="btn btn-sm btn-outline-secondary">
                                 <i class="uil uil-arrow-left me-1"></i>Back
