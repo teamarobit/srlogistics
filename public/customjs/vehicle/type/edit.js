@@ -22,9 +22,9 @@ $(document).ready(function() {
     $(document).on('click', '.add-vs', function () {
     
         counter++;
-    
+        
         let newRow = `
-        <div class="card p-3 mb-3 vehicle-size-row added-vs-sec position-relative">
+        <div class="card p-3 mb-3 vehicle-size-row position-relative">
             <a href="javascript:void(0)"
                class="text-secondary dell-vs position-absolute"
                style="top:10px; right:10px;">
@@ -89,8 +89,7 @@ $(document).ready(function() {
             </div>
         </div>
         `;
-    
-        // append ONLY inside wrapper
+        
         $('.vehicle-size-wrapper').append(newRow);
     });
     
