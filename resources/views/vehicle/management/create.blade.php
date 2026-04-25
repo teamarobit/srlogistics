@@ -285,8 +285,13 @@
 @endsection
 
 @section('js')
+<script>
+    var LISTING = "{{ route('vehiclemanagement.index') }}";
+    var VEHICLETYPE_SIZES = "{{ route('vehicletype.sizes', ':id') }}";
 
-<script type="text/javascript" src="{{asset('js/Vehicle/Management/create.js')}}"></script>
+    var FETCH_VEHICLE_INFO = "{{ route('vehiclemanagement.fetchInfo') }}";
+</script>
+<script type="text/javascript" src="{{ asset('customjs/vehicle/management/create.js') }}"></script>
 
 @endsection
 
