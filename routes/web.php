@@ -400,6 +400,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
         Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
+        // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
+        Route::get('/get-tyre-list', [App\Http\Controllers\TyreManagementController::class, 'getTyreList'])->name('get.tyre.list');
+        // POST: tag a tyre to a specific mapping position
+        Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
     });
     
     /******************************** Vehicle Master **********************************************************/

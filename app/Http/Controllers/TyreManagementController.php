@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
+use App\Models\Tyre;
 use App\Models\Tyreposition;
 use App\Models\Vehicle;
 use App\Models\Vehicletyremapping;
@@ -144,15 +145,141 @@ class TyreManagementController extends Controller
         }
     }
     
-    public function getTyreList(Request $request){
+    /**
+     * AJAX — Return warehouse tyres filtered by condition + type.
+     * Each tyre includes serial number + computed health % for display in dropdown.
+     */
+    public function getTyreList(Request $request)
+    {
         $condition = $request->condition;
-        $type = $request->type;
-        $tyres = [];
-        if(!empty($condition) && !empty($type)){
-            $tyres = Tyre::where('location', 'Warehouse')->where('tyre_type', $type)->where('tyre_condition', $condition)->get();
+        $type      = $request->type;
+        $tyres     = [];
+
+        if (!empty($condition) && !empty($type)) {
+            $rawTyres = Tyre::where('location', 'Warehouse')
+                ->where('tyre_type', $type)
+                ->where('tyre_condition', $condition)
+                ->get(['id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
+                        'fixed_run_km', 'actual_run_km']);
+
+            foreach ($rawTyres as $tyre) {
+                // Compute life remaining %
+                $healthPct = null;
+                $ragStatus = 'grey';
+                if ($tyre->fixed_run_km > 0) {
+                    $healthPct = max(0, round(
+                        (($tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) / $tyre->fixed_run_km) * 100,
+                        1
+                    ));
+                    if ($healthPct >= 50)      $ragStatus = 'green';
+                    elseif ($healthPct >= 20)  $ragStatus = 'amber';
+                    else                       $ragStatus = 'red';
+                }
+
+                $tyres[] = [
+                    'id'                => $tyre->id,
+                    'tyre_serial_number'=> $tyre->tyre_serial_number,
+                    'tyre_brand'        => $tyre->tyre_brand,
+                    'tyre_model'        => $tyre->tyre_model,
+                    'health_pct'        => $healthPct,
+                    'rag_status'        => $ragStatus,
+                    'label'             => ($tyre->tyre_serial_number ?? 'N/A')
+                                          . ($tyre->tyre_brand  ? ' — ' . $tyre->tyre_brand  : '')
+                                          . ($healthPct !== null ? ' [' . $healthPct . '% health]' : ''),
+                ];
+            }
         }
-        
+
         return response()->json(['tyres' => $tyres, 'message' => 'Tyre fetched successfully']);
+    }
+
+    /**
+     * POST — Tag a tyre to a vehicle position.
+     * Updates vehicletyremappings (tyre_id, status, fitment_date, km_at_fitment).
+     * Inserts a fresh row into vehicletyremappinglogs.
+     */
+    public function addTyreToPosition(Request $request, Vehicle $vehicle, Vehicletyremapping $mapping)
+    {
+        $rules = [
+            'tyre_id'      => [
+                'required',
+                'integer',
+                function ($attr, $value, $fail) {
+                    if (!Tyre::where('id', $value)->where('location', 'Warehouse')->exists()) {
+                        $fail('Selected tyre is not available in Warehouse.');
+                    }
+                },
+            ],
+            'fitment_date' => 'required|date',
+            'km_at_fitment'=> 'nullable|numeric|min:0',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Only numeric values are allowed.',
+            'min'      => 'Value must be at least :min.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+                'message' => 'Please fill all required fields.',
+            ], 422);
+        }
+
+        // Verify the mapping belongs to this vehicle
+        if ($mapping->vehicle_id != $vehicle->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mapping does not belong to this vehicle.',
+            ], 403);
+        }
+
+        try {
+            DB::transaction(function () use ($request, $vehicle, $mapping) {
+                $userId      = Auth::id();
+                $fitmentDate = date('Y-m-d', strtotime($request->fitment_date));
+                $kmAtFitment = $request->km_at_fitment ?? null;
+
+                // 1. Update the mapping row
+                $mapping->update([
+                    'tyre_id'       => $request->tyre_id,
+                    'status'        => 'Active',
+                    'fitment_date'  => $fitmentDate,
+                    'km_at_fitment' => $kmAtFitment,
+                    'notes'         => $request->notes ?? null,
+                ]);
+
+                // 2. Insert a new log row (history — never update)
+                Vehicletyremappinglog::create([
+                    'vehicletyremapping_id' => $mapping->id,
+                    'vehicle_id'            => $vehicle->id,
+                    'tyre_id'               => $request->tyre_id,
+                    'tyreposition_id'       => $mapping->tyreposition_id,
+                    'fitment_date'          => $fitmentDate,
+                    'km_at_fitment'         => $kmAtFitment,
+                    'status'                => 'Active',
+                    'notes'                 => $request->notes ?? null,
+                    'created_by'            => $userId,
+                ]);
+
+                // 3. Mark tyre as on Vehicle (move out of Warehouse)
+                Tyre::where('id', $request->tyre_id)->update(['location' => 'Vehicle']);
+            });
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Tyre tagged successfully.',
+                'redirect_url' => route('tyremanage.vehicle.tyre.tagging', $vehicle->id),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
     }
     
     // public function store(Request $request)

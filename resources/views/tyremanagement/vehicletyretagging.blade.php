@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        {{-- ── PASS RAG DATA TO JS ─────────────────────────────────────────── --}}
+        {{-- ── PASS RAG DATA + ROUTE URLS TO JS ──────────────────────────────── --}}
         <script>
             const tyreRagData = {
                 @foreach($vehicle->vehicletyremappings as $m)
@@ -41,8 +41,11 @@
                     @endif
                 @endforeach
             };
-            const sixWheelTruckPath = "{{ asset('arobittyre_management/6-wheel-new.svg') }}";
-            const tenWheelTruckPath  = "{{ asset('arobittyre_management/10-wheel-new.svg') }}";
+            const sixWheelTruckPath   = "{{ asset('arobittyre_management/6-wheel-new.svg') }}";
+            const tenWheelTruckPath   = "{{ asset('arobittyre_management/10-wheel-new.svg') }}";
+            const getTyreListUrl      = "{{ route('tyremanage.get.tyre.list') }}";
+            const addTyreBaseUrl      = "{{ url('tyremanage/vehicle/'.$vehicle->id.'/mapping') }}"; // append /{mappingId}/add-tyre
+            const csrfToken           = "{{ csrf_token() }}";
         </script>
 
         {{-- ── MAIN LAYOUT ─────────────────────────────────────────────────── --}}
@@ -441,7 +444,7 @@
 
 {{-- ── ADD TYRE MODAL ──────────────────────────────────────────────────── --}}
 <div class="modal fade" id="addTyre" tabindex="-1" aria-labelledby="addTyreText" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="addTyreText">
@@ -450,43 +453,82 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addTyreInlineForm">
+        <form id="addTyreInlineForm" autocomplete="off">
             <input type="hidden" id="addTyrePositionCode" name="position_code" />
             <input type="hidden" id="addTyreMappingId"    name="mapping_id" />
-            <div class="form-group mb-3">
-                <label>Tyre Condition <span class="text-danger">*</span></label>
-                <select class="form-select" name="condition" id="tyreConditionSelect">
-                    <option value="">Select Tyre Condition</option>
-                    <option value="New">New</option>
-                    <option value="Re-thread">Rethread</option>
-                    <option value="Used">Used</option>
-                </select>
-            </div>
-            <div class="form-group mb-3">
-                <label>Tyre Type <span class="text-danger">*</span></label>
-                <select class="form-select" name="tyre_type" id="tyreTypeSelect">
-                    <option value="">Select Tyre Type</option>
-                    <option value="Radial">Radial</option>
-                    <option value="Nylon">Nylon</option>
-                </select>
-            </div>
-            <div class="form-group mb-3">
-                <label>Fitment Date <span class="text-danger">*</span></label>
-                <input type="date" class="form-control" name="fitment_date" />
-            </div>
-            <div class="form-group mb-3">
-                <label>KM at Fitment</label>
-                <div class="input-group">
-                    <input type="number" class="form-control" name="km_at_fitment" min="0" />
-                    <span class="input-group-text">KM</span>
+
+            {{-- Row 1: Condition + Type --}}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tyre Condition <span class="text-danger">*</span></label>
+                    <select class="form-select" name="condition" id="tyreConditionSelect">
+                        <option value="">Select Condition</option>
+                        <option value="New">New</option>
+                        <option value="Re-thread">Rethread</option>
+                        <option value="Used">Used</option>
+                        <option value="Retread">Retread</option>
+                        <option value="Used Good">Used Good</option>
+                    </select>
+                    <div class="invalid-feedback" id="err_condition"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tyre Type <span class="text-danger">*</span></label>
+                    <select class="form-select" name="tyre_type" id="tyreTypeSelect">
+                        <option value="">Select Type</option>
+                        <option value="Radial">Radial</option>
+                        <option value="Nylon">Nylon</option>
+                    </select>
+                    <div class="invalid-feedback" id="err_tyre_type"></div>
                 </div>
             </div>
+
+            {{-- Row 2: Tyre dropdown (AJAX-loaded) --}}
+            <div class="mb-3" id="tyreSelectorWrap">
+                <label class="form-label fw-semibold">Select Tyre <span class="text-danger">*</span></label>
+                <div id="tyreDropdownState" class="text-muted small mb-1">
+                    — Select condition &amp; type to load available tyres —
+                </div>
+                <select class="form-select" name="tyre_id" id="tyreIdSelect" disabled>
+                    <option value="">Loading…</option>
+                </select>
+                <div class="invalid-feedback" id="err_tyre_id"></div>
+
+                {{-- Tyre health preview card (shown after selection) --}}
+                <div id="tyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                    <span class="health-label">Health:</span>
+                    <div class="health-bar-track">
+                        <div class="health-bar-fill" id="healthBarFill"></div>
+                    </div>
+                    <span class="health-pct-text" id="healthPctText"></span>
+                    <span class="health-rag-badge ms-2" id="healthRagBadge"></span>
+                </div>
+            </div>
+
+            {{-- Row 3: Fitment Date + KM --}}
+            <div class="row g-3 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Fitment Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" name="fitment_date" id="fitmentDateInput" />
+                    <div class="invalid-feedback" id="err_fitment_date"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">KM at Fitment</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="km_at_fitment" id="kmAtFitmentInput" min="0" placeholder="0" />
+                        <span class="input-group-text">KM</span>
+                    </div>
+                    <div class="invalid-feedback" id="err_km_at_fitment"></div>
+                </div>
+            </div>
+
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="uil uil-times me-1"></i>Cancel
+        </button>
         <button type="button" class="btn btn-primary" id="saveAddTyre">
-            <i class="uil uil-save me-1"></i>Save
+            <i class="uil uil-save me-1"></i>Save &amp; Tag Tyre
         </button>
       </div>
     </div>

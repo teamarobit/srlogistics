@@ -419,6 +419,51 @@
     margin-bottom: 5px;
 }
 
+/* ── MODAL FORM LABEL ────────────────────────────────────────────────────── */
+#addTyre .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* ── TYRE HEALTH PREVIEW (inside modal) ──────────────────────────────────── */
+.tyre-health-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+.health-label {
+    font-weight: 700;
+    color: #495057;
+    white-space: nowrap;
+    font-size: 11px;
+}
+.health-bar-track {
+    flex: 1;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 60px;
+}
+.health-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.health-pct-text {
+    font-weight: 700;
+    color: #212529;
+    min-width: 38px;
+    text-align: right;
+    font-size: 12px;
+}
+
 /* ── GENERAL LABEL OVERRIDE (scoped to page) ─────────────────────────────── */
 .vehicledtl-bd label:not(.form-label) {
     font-size: 11px;
