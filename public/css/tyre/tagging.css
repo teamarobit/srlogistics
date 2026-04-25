@@ -1,15 +1,9 @@
-.card{
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0 0 0 / 10%);
-}
-.left-wrap{
-    position: sticky;
-    top: 75px;
-}
-#container-img svg{
-    width: 200px;
-    height: 354px;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — Tyre Tagging Page  |  tagging.css  v2.0
+   Enhanced card layout with RAG status, SVG sync, attachment log
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── TOPBAR ──────────────────────────────────────────────────────────────── */
 .topbar-bd {
     margin: 0;
     padding: 0;
@@ -22,58 +16,433 @@
 .topbar-bd .item1 h1 {
     margin: 0;
     padding: 11px 0;
-    font-family: Inter;
+    font-family: Inter, sans-serif;
     font-weight: 700;
     font-size: 17px;
     line-height: 23px;
-    letter-spacing: 2%;
+    letter-spacing: 0.02em;
 }
-.ten_wheel_block{
-    display: none;
+
+/* ── SECTION LABEL ───────────────────────────────────────────────────────── */
+.section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6c757d;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 4px;
 }
-.card h6{
-    position: absolute;
-    top: -9px;
-    margin: 0;
-    background: #d8e3fa;
-    padding: 2px;
-    border-radius: 5px;
-}
-.form-group{
-    margin-bottom: 5px;
-}
-.tyre-group{
-    transition: 0.4s ease all;
+
+/* ── SVG PANEL (LEFT) ────────────────────────────────────────────────────── */
+.tyre-svg-panel {
+    position: sticky;
+    top: 75px;
+    padding: 16px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.10);
+    border-radius: 8px;
     background: #fff;
+}
+.svg-panel-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+}
+.svg-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+#container-img svg {
+    width: 190px;
+    height: auto;
+}
+
+/* ── RAG LEGEND ──────────────────────────────────────────────────────────── */
+.rag-legend {
+    font-size: 11px;
+    color: #555;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+.rag-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+.rag-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.rag-dot.green  { background: #28a745; }
+.rag-dot.amber  { background: #ffc107; }
+.rag-dot.red    { background: #dc3545; }
+.rag-dot.grey   { background: #adb5bd; }
+
+/* ── SVG TYRE GROUPS ─────────────────────────────────────────────────────── */
+.tyre-group {
+    transition: 0.3s ease all;
     cursor: pointer;
 }
-.tyre-group:hover path{
+.tyre-group:hover path,
+.tyre-group.hovered path {
     fill: #032671;
+    opacity: 0.85;
 }
-.tyre-group:hover text{
+.tyre-group.rag-green  path { fill: #28a745; }
+.tyre-group.rag-amber  path { fill: #ffc107; }
+.tyre-group.rag-red    path { fill: #dc3545; }
+.tyre-group.rag-grey   path { fill: #adb5bd; }
+.tyre-group.rag-green text,
+.tyre-group.rag-amber text,
+.tyre-group.rag-red text,
+.tyre-group.rag-grey text  { fill: #fff; font-weight: 600; }
+.tyre-group.active-svg path { stroke: #032671; stroke-width: 2; }
+
+/* ── TYRE CARD ───────────────────────────────────────────────────────────── */
+.tyre-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    border-left: 4px solid #dee2e6;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+}
+.tyre-card:hover {
+    box-shadow: 0 4px 16px rgba(3,38,113,0.12);
+}
+.tyre-card.card-highlight {
+    box-shadow: 0 0 0 3px #032671, 0 4px 20px rgba(3,38,113,0.18);
+    border-left-color: #032671;
+}
+
+/* RAG left-border colours */
+.rag-border-green  { border-left-color: #28a745; }
+.rag-border-amber  { border-left-color: #ffc107; }
+.rag-border-red    { border-left-color: #dc3545; }
+.rag-border-grey   { border-left-color: #adb5bd; }
+.rag-border-untagged { border-left-color: #adb5bd; }
+
+/* ── CARD HEADER ─────────────────────────────────────────────────────────── */
+.tyre-card-header {
+    padding: 10px 14px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #eef0f3;
+}
+
+/* ── POSITION BADGE ──────────────────────────────────────────────────────── */
+.position-badge {
+    display: inline-block;
+    background: #032671;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+}
+.position-badge.spare {
+    background: #6c757d;
+}
+
+/* ── RAG BADGE ───────────────────────────────────────────────────────────── */
+.rag-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #f0f0f0;
+    color: #333;
+}
+.rag-badge.rag-green  { background: #d4edda; color: #155724; }
+.rag-badge.rag-amber  { background: #fff3cd; color: #856404; }
+.rag-badge.rag-red    { background: #f8d7da; color: #721c24; }
+.rag-badge.rag-grey,
+.rag-badge.rag-untagged { background: #e9ecef; color: #6c757d; }
+
+/* ── LIFE BAR ────────────────────────────────────────────────────────────── */
+.life-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.life-bar-track {
+    width: 90px;
+    height: 7px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.life-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.rag-bg-green  { background: #28a745; }
+.rag-bg-amber  { background: #ffc107; }
+.rag-bg-red    { background: #dc3545; }
+.rag-bg-grey   { background: #adb5bd; }
+.life-pct-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* ── CARD BODY ───────────────────────────────────────────────────────────── */
+.tyre-card-body {
+    padding: 10px 14px 0;
+}
+
+/* ── INFO SECTION ────────────────────────────────────────────────────────── */
+.info-section {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eef0f3;
+}
+.info-section:last-child {
+    border-bottom: none;
+}
+.info-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── INFO GRID ───────────────────────────────────────────────────────────── */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px 12px;
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+.info-label {
+    font-size: 10px;
+    color: #868e96;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 1px;
+}
+.info-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: #212529;
+    word-break: break-word;
+}
+
+/* ── CONDITION BADGE ─────────────────────────────────────────────────────── */
+.cond-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+}
+.cond-badge.cond-new      { background: #d4edda; color: #155724; }
+.cond-badge.cond-rethread,
+.cond-badge.cond-retread  { background: #cce5ff; color: #004085; }
+.cond-badge.cond-used     { background: #fff3cd; color: #856404; }
+.cond-badge.cond-usedgood { background: #d1ecf1; color: #0c5460; }
+.cond-badge.cond-discard,
+.cond-badge.cond-scrap    { background: #f8d7da; color: #721c24; }
+
+/* ── REMINDER BADGE ──────────────────────────────────────────────────────── */
+.reminder-badge {
+    font-size: 12px;
+    vertical-align: middle;
+    cursor: help;
+}
+
+/* ── ATTACHMENT LOG ──────────────────────────────────────────────────────── */
+.attachment-log {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 130px;
+    overflow-y: auto;
+}
+.attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+}
+.attachment-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.attachment-icon.img-icon { color: #0d6efd; }
+.attachment-icon.doc-icon { color: #fd7e14; }
+.attachment-meta {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+.attachment-name {
+    font-weight: 600;
+    color: #212529;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.attachment-date {
+    color: #868e96;
+    font-size: 10px;
+}
+.btn-attachment-view {
+    color: #032671;
+    text-decoration: none;
+    font-size: 15px;
+    flex-shrink: 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.btn-attachment-view:hover {
+    background: #e9ecef;
     color: #032671;
 }
-label{
+
+/* ── CARD FOOTER ─────────────────────────────────────────────────────────── */
+.tyre-card-footer {
+    padding: 8px 14px;
+    background: #f8f9fb;
+    border-top: 1px solid #eef0f3;
+    display: flex;
+    align-items: center;
+}
+
+/* ── ACTION BUTTONS ──────────────────────────────────────────────────────── */
+.btn-take-action {
+    background: #52D713;
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-take-action:hover {
+    background: #43b80f;
+    color: #fff;
+}
+.btn-replace {
+    background: #fff;
+    color: #032671;
+    border: 1.5px solid #032671;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+.btn-replace:hover {
+    background: #032671;
+    color: #fff;
+}
+.btn-add-tyre {
+    background: #032671;
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+.btn-add-tyre:hover {
+    background: #021e52;
+    color: #fff;
+}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────────── */
+.tyre-card-empty {
+    padding: 22px 14px;
+    text-align: center;
+}
+.empty-icon {
+    font-size: 32px;
+    color: #dee2e6;
+    margin-bottom: 6px;
+    line-height: 1;
+}
+.empty-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 4px;
+}
+.empty-hint {
+    font-size: 11px;
+    color: #868e96;
+    margin-bottom: 10px;
+}
+
+/* ── SPARE CARD ACCENT ───────────────────────────────────────────────────── */
+.spare-card .tyre-card-header {
+    background: #f1f3f5;
+}
+
+/* ── ADD SPARE SLOT BUTTON ───────────────────────────────────────────────── */
+.btn-add-spare-slot {
+    font-size: 12px;
+}
+
+/* ── FORM GROUP (MODAL) ──────────────────────────────────────────────────── */
+.form-group {
+    margin-bottom: 5px;
+}
+
+/* ── GENERAL LABEL OVERRIDE (scoped to page) ─────────────────────────────── */
+.vehicledtl-bd label:not(.form-label) {
     font-size: 11px;
     margin-bottom: 0;
 }
-.card.active{
-    box-shadow: 0 0 10px rgb(3 38 113 / 41%);
-    outline: 5px solid #03267112;
+
+/* ── HIDE LEGACY CLASSES ─────────────────────────────────────────────────── */
+.spare-wrap { display: none; }
+.ten_wheel_block { display: none; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .tyre-svg-panel {
+        position: relative;
+        top: 0;
+        margin-bottom: 16px;
+    }
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .life-bar-track { width: 60px; }
 }
-.spare-wrap{
-    display: none;
-}
-.icon-wrap{
-    position: absolute;
-    right: 0px;
-    top: -7px;
-    background: #fff;
-    padding: 2px 5px;
-    box-shadow: 0 0 10px rgba(0 0 0 / 10%);
-    border-radius: 5px;
-}
-.btn-success{
-    background: #52D713 !important;
-    padding: 10px 15px !important;
+@media (max-width: 480px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

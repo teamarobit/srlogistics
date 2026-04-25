@@ -45,11 +45,72 @@ class TyreManagementController extends Controller
                 return redirect()->back();
             }
         }
-        
-        $vehicle->load('vehicletyremappings');
+
+        // Eager-load all tyre relations needed for the enhanced card layout
+        $vehicle->load([
+            'vehicletyremappings.tyreposition',
+            'vehicletyremappings.tyre.medias',
+            'vehicletyremappings.tyre.maintenanceSchedules',
+        ]);
+
+        // Compute derived metrics per mapping and inject RAG status
+        foreach ($vehicle->vehicletyremappings as $mapping) {
+            $tyre = $mapping->tyre;
+            if (!$tyre) {
+                $mapping->rag_status        = 'untagged';
+                $mapping->life_remaining_pct = null;
+                $mapping->remaining_run_km   = null;
+                $mapping->remaining_life_months = null;
+                $mapping->warranty_remaining_months = null;
+                continue;
+            }
+
+            // Life remaining %
+            $lifeRemainingPct = null;
+            if ($tyre->fixed_run_km > 0) {
+                $lifeRemainingPct = max(0, round((($tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) / $tyre->fixed_run_km) * 100, 1));
+            }
+
+            // RAG status
+            if ($lifeRemainingPct === null) {
+                $ragStatus = 'grey';
+            } elseif ($lifeRemainingPct >= 50) {
+                $ragStatus = 'green';
+            } elseif ($lifeRemainingPct >= 20) {
+                $ragStatus = 'amber';
+            } else {
+                $ragStatus = 'red';
+            }
+
+            // Remaining run KM
+            $remainingRunKm = null;
+            if ($tyre->fixed_run_km !== null && $tyre->actual_run_km !== null) {
+                $remainingRunKm = max(0, $tyre->fixed_run_km - $tyre->actual_run_km);
+            }
+
+            // Remaining life months
+            $remainingLifeMonths = null;
+            if ($tyre->fixed_life_months !== null && $tyre->actual_run_month !== null) {
+                $remainingLifeMonths = max(0, $tyre->fixed_life_months - $tyre->actual_run_month);
+            }
+
+            // Warranty remaining months
+            $warrantyRemainingMonths = null;
+            if ($tyre->tyre_warrenty_end_date) {
+                $warrantyRemainingMonths = max(0, (int) now()->diffInMonths(Carbon::parse($tyre->tyre_warrenty_end_date), false));
+            }
+
+            // Inject computed values directly onto the mapping (not persisted)
+            $mapping->rag_status                = $ragStatus;
+            $mapping->life_remaining_pct        = $lifeRemainingPct;
+            $mapping->remaining_run_km          = $remainingRunKm;
+            $mapping->remaining_life_months     = $remainingLifeMonths;
+            $mapping->warranty_remaining_months = $warrantyRemainingMonths;
+        }
+
         // $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
         $tyrepositions = Tyreposition::where('status', 'Active')->get();
-        
+
         return view('tyremanagement.vehicletyretagging', compact('tyrepositions', 'vehicle'));
     }
 
