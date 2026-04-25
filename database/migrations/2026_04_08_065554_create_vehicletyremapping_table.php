@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vehicletyremappings', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('vehicle_id');
-            $table->bigInteger('tyre_id');
+            $table->bigInteger('tyre_id')->nullable();
             $table->bigInteger('tyreposition_id');
             $table->date('fitment_date')->nullable();
             $table->unsignedBigInteger('km_at_fitment')->nullable();
