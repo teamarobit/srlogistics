@@ -49,7 +49,17 @@
                                 <div class="vehicle-size-wrapper">
                             
                                     @forelse($vehicletype->sizes as $index => $size)
-                                        <div class="card p-3 mb-3 vehicle-size-row">
+                                        <div class="card p-3 mb-3 vehicle-size-row position-relative">
+                                            <input type="hidden" name="vehiclesize_id[]" value="{{ $size->id ?? '' }}">
+
+                                            @if($index > 0)
+                                                <a href="javascript:void(0)"
+                                                   class="text-secondary dell-vs position-absolute"
+                                                   style="top:10px; right:10px;">
+                                                    <i class="uil uil-times-circle"></i>
+                                                </a>
+                                            @endif
+
                                             <div class="row">
                                                 <div class="col-12 col-md-3">
                                                     <label>
@@ -59,16 +69,16 @@
                                                         @endif
                                                     </label>
                                                 </div>
-                            
+
                                                 <div class="col-12 col-md-6">
                                                     <input type="text"
                                                            name="vehiclesize_name[]"
                                                            class="form-control"
                                                            value="{{ $size->name ?? '' }}">
-                            
+
                                                     <small class="error text-danger"
                                                            id="vehiclesize_name_{{ $index }}_error"></small>
-                            
+
                                                     <div class="mt-3">
                                                         <div class="row form-group">
 
@@ -84,7 +94,6 @@
                                                                        id="vehiclesize_length_{{ $index }}_error"></small>
                                                             </div>
 
-                            
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
                                                                     <input type="text"
@@ -97,8 +106,6 @@
                                                                        id="vehiclesize_height_{{ $index }}_error"></small>
                                                             </div>
 
-                                                            
-                            
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
                                                                     <input type="text"
@@ -110,24 +117,15 @@
                                                                 <small class="error text-danger"
                                                                        id="vehiclesize_width_{{ $index }}_error"></small>
                                                             </div>
-                            
-                                                            
-                            
+
                                                         </div>
                                                     </div>
-                                                </div>
-                            
-                                                {{-- Remove button (except first row) --}}
-                                                <div class="col-md-3 dell-vs text-end">
-                                                    @if($index > 0)
-                                                        <i class="uil uil-times-circle"></i>
-                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
                                     @empty
                                         {{-- fallback if no sizes exist --}}
-                                        @include('vehicletypes.partials.vehicle-size-empty')
+                                        {{-- @include('vehicletypes.partials.vehicle-size-empty') --}}
                                     @endforelse
                             
                                 </div>
@@ -203,8 +201,10 @@
 @endsection
 
 @section('js')
-
-<script type="text/javascript" src="{{asset('js/Vehicle/Type/edit.js')}}"></script>
+<script>
+    var VEHILE_TYPES = "{{ route('vehicletype.index') }}";
+</script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/type/edit.js')}}?v={{ uniqid() }}"></script>
 
 @endsection
 

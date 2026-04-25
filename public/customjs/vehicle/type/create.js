@@ -42,7 +42,7 @@ $(document).ready(function() {
         let index = $('.vehicle-size-wrapper .vehicle-size-row').length;
     
         let newRow = `
-        <div class="card p-3 mt-3 vehicle-size-row added-vs-sec" data-index="${index}">
+        <div class="card p-3 mt-3 vehicle-size-row" data-index="${index}">
             <a href="javascript:void(0)"
                class="text-secondary dell-vs position-absolute"
                style="top:10px; right:10px;">
@@ -60,6 +60,14 @@ $(document).ready(function() {
     
                     <div class="mt-3">
                         <div class="row">
+
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
+                                    <label>Length (ft)</label>
+                                </div>
+                                <small class="error text-danger" id="vehiclesize_length_${index}_error"></small>
+                            </div>
     
                             <div class="col-md-4">
                                 <div class="form-floating">
@@ -75,14 +83,6 @@ $(document).ready(function() {
                                     <label>Width (ft)</label>
                                 </div>
                                 <small class="error text-danger" id="vehiclesize_width_${index}_error"></small>
-                            </div>
-    
-                            <div class="col-md-4">
-                                <div class="form-floating">
-                                    <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
-                                    <label>Length (ft)</label>
-                                </div>
-                                <small class="error text-danger" id="vehiclesize_length_${index}_error"></small>
                             </div>
     
                         </div>
