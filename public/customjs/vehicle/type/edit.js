@@ -46,6 +46,17 @@ $(document).ready(function() {
     
                     <div class="mt-3">
                         <div class="row form-group">
+                            <div class="col-12 col-md-4">
+                                <div class="form-floating">
+                                    <input type="text"
+                                           id="length-${counter}"
+                                           class="form-control decimalonly"
+                                           name="vehiclesize_length[]" />
+                                    <label for="length-${counter}">Length (ft)</label>
+                                </div>
+                                <small class="error text-danger"
+                                       id="vehiclesize_length_${counter}_error"></small>
+                            </div>
     
                             <div class="col-12 col-md-4">
                                 <div class="form-floating">
@@ -69,18 +80,6 @@ $(document).ready(function() {
                                 </div>
                                 <small class="error text-danger"
                                        id="vehiclesize_width_${counter}_error"></small>
-                            </div>
-    
-                            <div class="col-12 col-md-4">
-                                <div class="form-floating">
-                                    <input type="text"
-                                           id="length-${counter}"
-                                           class="form-control decimalonly"
-                                           name="vehiclesize_length[]" />
-                                    <label for="length-${counter}">Length (ft)</label>
-                                </div>
-                                <small class="error text-danger"
-                                       id="vehiclesize_length_${counter}_error"></small>
                             </div>
     
                         </div>
