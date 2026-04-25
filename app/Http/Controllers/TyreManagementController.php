@@ -282,6 +282,121 @@ class TyreManagementController extends Controller
         }
     }
     
+    /**
+     * POST — Add a spare tyre to the vehicle.
+     * Inserts a NEW row into vehicletyremappings (status = 'Spare').
+     * Auto-assigns the next free spare position (S1, S2, …).
+     * Never updates an existing mapping row.
+     */
+    public function addSpareTyre(Request $request, Vehicle $vehicle)
+    {
+        $rules = [
+            'tyre_id'      => [
+                'required',
+                'integer',
+                function ($attr, $value, $fail) {
+                    if (!Tyre::where('id', $value)->where('location', 'Warehouse')->exists()) {
+                        $fail('Selected tyre is not available in Warehouse.');
+                    }
+                },
+            ],
+            'fitment_date' => 'required|date',
+            'km_at_fitment'=> 'nullable|numeric|min:0',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Only numeric values are allowed.',
+            'min'      => 'Value must be at least :min.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+                'message' => 'Please fill all required fields.',
+            ], 422);
+        }
+
+        // Fetch all spare positions (codes starting with 'S'), ordered alphabetically
+        $allSparePositions = Tyreposition::where('code', 'like', 'S%')
+            ->where('status', 'Active')
+            ->orderBy('code')
+            ->get();
+
+        if ($allSparePositions->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No spare tyre positions are configured in the system.',
+            ], 422);
+        }
+
+        // Find S-positions already occupied by a spare tyre on this vehicle
+        $occupiedPositionIds = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+            ->whereNotNull('tyre_id')
+            ->whereIn('tyreposition_id', $allSparePositions->pluck('id'))
+            ->pluck('tyreposition_id')
+            ->toArray();
+
+        // Pick the first S-position not yet occupied
+        $availablePosition = $allSparePositions->first(
+            fn($pos) => !in_array($pos->id, $occupiedPositionIds)
+        );
+
+        if (!$availablePosition) {
+            return response()->json([
+                'success' => false,
+                'message' => 'All spare tyre positions are already occupied for this vehicle.',
+            ], 422);
+        }
+
+        try {
+            DB::transaction(function () use ($request, $vehicle, $availablePosition) {
+                $userId      = Auth::id();
+                $fitmentDate = date('Y-m-d', strtotime($request->fitment_date));
+                $kmAtFitment = $request->km_at_fitment ?? null;
+
+                // 1. INSERT new mapping row for the spare
+                $mapping = Vehicletyremapping::create([
+                    'vehicle_id'      => $vehicle->id,
+                    'tyre_id'         => $request->tyre_id,
+                    'tyreposition_id' => $availablePosition->id,
+                    'status'          => 'Spare',
+                    'fitment_date'    => $fitmentDate,
+                    'km_at_fitment'   => $kmAtFitment,
+                    'created_by'      => $userId,
+                ]);
+
+                // 2. INSERT log row (history — never update)
+                Vehicletyremappinglog::create([
+                    'vehicletyremapping_id' => $mapping->id,
+                    'vehicle_id'            => $vehicle->id,
+                    'tyre_id'               => $request->tyre_id,
+                    'tyreposition_id'       => $availablePosition->id,
+                    'fitment_date'          => $fitmentDate,
+                    'km_at_fitment'         => $kmAtFitment,
+                    'status'                => 'Spare',
+                    'created_by'            => $userId,
+                ]);
+
+                // 3. Move tyre out of Warehouse → Vehicle
+                Tyre::where('id', $request->tyre_id)->update(['location' => 'Vehicle']);
+            });
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Spare tyre added successfully.',
+                'redirect_url' => route('tyremanage.vehicle.tyre.tagging', $vehicle->id),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     // public function store(Request $request)
     // {
     //     $rules = [

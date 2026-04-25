@@ -20,6 +20,7 @@ use Database\Seeders\JobrankSeeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\TyrepositionSeeder;
+use Database\Seeders\TyreWarehouseSeeder;
 
 use Database\Seeders\ReligionSeeder;
 

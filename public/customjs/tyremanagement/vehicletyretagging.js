@@ -1,10 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SR Logistics — Tyre Tagging JS  |  vehicletyretagging.js  v3.0
+   SR Logistics — Tyre Tagging JS  |  vehicletyretagging.js  v3.1
    Handles:
      • SVG load → RAG coloring
      • SVG ↔ Card bidirectional sync (click / hover)
      • Add Tyre modal: AJAX tyre dropdown (condition+type filter, health preview)
      • Real POST save → addTyreToPosition endpoint
+     • Add Spare Tyre modal: same AJAX pattern, INSERT new mapping (status=Spare)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const Toast = Swal.mixin({
@@ -319,9 +320,209 @@ $(document).ready(function () {
     });
 
 
-    // ── 10. SPARE SLOT ────────────────────────────────────────────────────────
-    $('.btn-add-spare-slot').on('click', function () {
-        Toast.fire({ icon: 'info', title: 'Spare slot management — coming soon.' });
+    // ── 10. OPEN ADD SPARE MODAL — RESET FORM ────────────────────────────────
+    $(document).on('click', '.btn-add-spare-slot', function () {
+        resetSpareTyreDropdown();
+        $('#spareTyreConditionSelect').val('');
+        $('#spareTyreTypeSelect').val('');
+        $('#spareFitmentDateInput').val('');
+        $('#spareKmAtFitmentInput').val('');
+        clearSpareFormErrors();
     });
+
+    function resetSpareTyreDropdown() {
+        $('#spareTyreIdSelect')
+            .prop('disabled', true)
+            .html('<option value="">— Select condition &amp; type first —</option>');
+        $('#spareTyreDropdownState')
+            .text('— Select condition & type to load available tyres —')
+            .removeClass('text-danger text-success text-warning')
+            .addClass('text-muted');
+        $('#spareTyreHealthPreview').addClass('d-none');
+    }
+
+
+    // ── 11. SPARE AJAX TYRE DROPDOWN — fires when condition + type are both set ─
+    function maybeFetchSpareTyres() {
+        const condition = $('#spareTyreConditionSelect').val();
+        const type      = $('#spareTyreTypeSelect').val();
+
+        if (!condition || !type) {
+            resetSpareTyreDropdown();
+            return;
+        }
+
+        $('#spareTyreIdSelect')
+            .prop('disabled', true)
+            .html('<option value="">Loading…</option>');
+        $('#spareTyreDropdownState')
+            .text('Fetching available tyres from warehouse…')
+            .removeClass('text-danger text-success text-warning text-muted')
+            .addClass('text-muted');
+        $('#spareTyreHealthPreview').addClass('d-none');
+
+        $.ajax({
+            url     : getTyreListUrl,
+            method  : 'GET',
+            data    : { condition: condition, type: type },
+            dataType: 'json',
+            success : function (res) {
+                const tyres = res.tyres || [];
+
+                if (tyres.length === 0) {
+                    $('#spareTyreIdSelect')
+                        .prop('disabled', true)
+                        .html('<option value="">No tyres available in Warehouse</option>');
+                    $('#spareTyreDropdownState')
+                        .text('No warehouse tyres match this condition & type.')
+                        .removeClass('text-muted text-success text-warning')
+                        .addClass('text-danger');
+                    return;
+                }
+
+                let options = '<option value="">— Select Tyre —</option>';
+                tyres.forEach(function (t) {
+                    const healthLabel = t.health_pct !== null
+                        ? ` [${t.health_pct}% health]`
+                        : ' [health N/A]';
+                    const ragEmoji = t.rag_status === 'green'  ? '🟢'
+                                   : t.rag_status === 'amber' ? '🟡'
+                                   : t.rag_status === 'red'   ? '🔴'
+                                   : '⚫';
+                    options += `<option value="${t.id}"
+                                    data-health="${t.health_pct ?? ''}"
+                                    data-rag="${t.rag_status}"
+                                    data-brand="${t.tyre_brand ?? ''}"
+                                    data-model="${t.tyre_model ?? ''}">
+                                    ${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}
+                                </option>`;
+                });
+
+                $('#spareTyreIdSelect')
+                    .prop('disabled', false)
+                    .html(options);
+                $('#spareTyreDropdownState')
+                    .text(`${tyres.length} tyre(s) available in Warehouse.`)
+                    .removeClass('text-muted text-danger text-warning')
+                    .addClass('text-success');
+            },
+            error: function () {
+                $('#spareTyreIdSelect')
+                    .prop('disabled', true)
+                    .html('<option value="">Error loading tyres</option>');
+                $('#spareTyreDropdownState')
+                    .text('Failed to load tyres. Please try again.')
+                    .removeClass('text-muted text-success text-warning')
+                    .addClass('text-danger');
+            }
+        });
+    }
+
+    $('#spareTyreConditionSelect, #spareTyreTypeSelect').on('change', maybeFetchSpareTyres);
+
+
+    // ── 12. SPARE TYRE SELECTED → SHOW HEALTH PREVIEW ────────────────────────
+    $(document).on('change', '#spareTyreIdSelect', function () {
+        const $opt      = $(this).find('option:selected');
+        const healthPct = $opt.data('health');
+        const rag       = $opt.data('rag') || 'grey';
+
+        if (!$(this).val() || healthPct === '') {
+            $('#spareTyreHealthPreview').addClass('d-none');
+            return;
+        }
+
+        const pct = healthPct !== '' && healthPct !== undefined ? parseFloat(healthPct) : null;
+
+        if (pct !== null) {
+            $('#spareHealthBarFill')
+                .css('width', pct + '%')
+                .removeClass('rag-bg-green rag-bg-amber rag-bg-red rag-bg-grey')
+                .addClass('rag-bg-' + rag);
+            $('#spareHealthPctText').text(pct + '%');
+        } else {
+            $('#spareHealthPctText').text('N/A');
+            $('#spareHealthBarFill').css('width', '0%');
+        }
+
+        const ragLabel = rag === 'green' ? '🟢 Good'
+                       : rag === 'amber' ? '🟡 Moderate'
+                       : rag === 'red'   ? '🔴 Critical'
+                       : '⚫ Unknown';
+        $('#spareHealthRagBadge')
+            .text(ragLabel)
+            .removeClass('rag-badge rag-green rag-amber rag-red rag-grey')
+            .addClass('rag-badge rag-' + rag);
+
+        $('#spareTyreHealthPreview').removeClass('d-none');
+    });
+
+
+    // ── 13. SAVE SPARE — POST TO addSpareTyre ────────────────────────────────
+    $('#saveAddSpare').on('click', function () {
+        const $btn      = $(this);
+        const tyreId    = $('#spareTyreIdSelect').val();
+        const fitment   = $('#spareFitmentDateInput').val();
+        const kmFitment = $('#spareKmAtFitmentInput').val();
+
+        clearSpareFormErrors();
+
+        let hasError = false;
+        if (!$('#spareTyreConditionSelect').val()) { showSpareError('spare_err_condition',    'Tyre condition is required.'); hasError = true; }
+        if (!$('#spareTyreTypeSelect').val())      { showSpareError('spare_err_tyre_type',    'Tyre type is required.');      hasError = true; }
+        if (!tyreId)                               { showSpareError('spare_err_tyre_id',      'Please select a tyre.');       hasError = true; }
+        if (!fitment)                              { showSpareError('spare_err_fitment_date', 'Fitment date is required.');   hasError = true; }
+        if (hasError) return;
+
+        $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
+
+        $.ajax({
+            url     : addSpareUrl,
+            method  : 'POST',
+            data    : {
+                _token        : csrfToken,
+                tyre_id       : tyreId,
+                fitment_date  : fitment,
+                km_at_fitment : kmFitment || null,
+            },
+            dataType: 'json',
+            success : function (res) {
+                $('#addSpare').modal('hide');
+                Toast.fire({
+                    icon    : 'success',
+                    title   : res.message || 'Spare tyre added successfully!',
+                    didClose: function () {
+                        window.location.href = res.redirect_url || window.location.href;
+                    }
+                });
+            },
+            error: function (xhr) {
+                $btn.html('<i class="uil uil-save me-1"></i>Save &amp; Add Spare').prop('disabled', false);
+                const res = xhr.responseJSON || {};
+
+                if (xhr.status === 422 && res.errors) {
+                    $.each(res.errors, function (field, messages) {
+                        showSpareError('spare_err_' + field, messages[0]);
+                    });
+                    Toast.fire({ icon: 'warning', title: res.message || 'Validation failed.' });
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message || 'Something went wrong. Please try again.' });
+                }
+            }
+        });
+    });
+
+
+    // ── 14. SPARE HELPERS: show/clear inline errors ──────────────────────────
+    function showSpareError(id, msg) {
+        const $el = $('#' + id);
+        $el.text(msg).show();
+        $el.prev('select, input, .input-group').addClass('is-invalid');
+    }
+
+    function clearSpareFormErrors() {
+        $('#addSpareInlineForm .invalid-feedback').text('').hide();
+        $('#addSpareInlineForm select, #addSpareInlineForm input').removeClass('is-invalid');
+    }
 
 });

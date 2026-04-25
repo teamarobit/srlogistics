@@ -404,6 +404,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/get-tyre-list', [App\Http\Controllers\TyreManagementController::class, 'getTyreList'])->name('get.tyre.list');
         // POST: tag a tyre to a specific mapping position
         Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
+        // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)
+        Route::post('/vehicle/{vehicle}/add-spare', [App\Http\Controllers\TyreManagementController::class, 'addSpareTyre'])->name('vehicle.add.spare');
     });
     
     /******************************** Vehicle Master **********************************************************/

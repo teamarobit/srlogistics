@@ -45,6 +45,7 @@
             const tenWheelTruckPath   = "{{ asset('arobittyre_management/10-wheel-new.svg') }}";
             const getTyreListUrl      = "{{ route('tyremanage.get.tyre.list') }}";
             const addTyreBaseUrl      = "{{ url('tyremanage/vehicle/'.$vehicle->id.'/mapping') }}"; // append /{mappingId}/add-tyre
+            const addSpareUrl         = "{{ route('tyremanage.vehicle.add.spare', $vehicle->id) }}";
             const csrfToken           = "{{ csrf_token() }}";
         </script>
 
@@ -431,9 +432,12 @@
                     @endforeach
 
                     {{-- Add new spare slot button --}}
-                    <a href="javascript:void(0)" class="btn btn-outline-secondary btn-sm btn-add-spare-slot mt-2">
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm btn-add-spare-slot mt-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addSpare">
                         <i class="uil uil-plus-circle me-1"></i>Add Spare Tyre Slot
-                    </a>
+                    </button>
 
                 </div>{{-- /col right --}}
             </div>{{-- /row --}}
@@ -529,6 +533,96 @@
         </button>
         <button type="button" class="btn btn-primary" id="saveAddTyre">
             <i class="uil uil-save me-1"></i>Save &amp; Tag Tyre
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{{-- ── ADD SPARE TYRE MODAL ─────────────────────────────────────────────── --}}
+<div class="modal fade" id="addSpare" tabindex="-1" aria-labelledby="addSpareText" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addSpareText">
+            <i class="uil uil-plus-circle me-1"></i>Add Spare Tyre
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addSpareInlineForm" autocomplete="off">
+
+            {{-- Row 1: Condition + Type --}}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tyre Condition <span class="text-danger">*</span></label>
+                    <select class="form-select" name="condition" id="spareTyreConditionSelect">
+                        <option value="">Select Condition</option>
+                        <option value="New">New</option>
+                        <option value="Re-thread">Rethread</option>
+                        <option value="Used">Used</option>
+                        <option value="Retread">Retread</option>
+                        <option value="Used Good">Used Good</option>
+                    </select>
+                    <div class="invalid-feedback" id="spare_err_condition"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tyre Type <span class="text-danger">*</span></label>
+                    <select class="form-select" name="tyre_type" id="spareTyreTypeSelect">
+                        <option value="">Select Type</option>
+                        <option value="Radial">Radial</option>
+                        <option value="Nylon">Nylon</option>
+                    </select>
+                    <div class="invalid-feedback" id="spare_err_tyre_type"></div>
+                </div>
+            </div>
+
+            {{-- Row 2: Tyre dropdown (AJAX-loaded) --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Select Tyre <span class="text-danger">*</span></label>
+                <div id="spareTyreDropdownState" class="text-muted small mb-1">
+                    — Select condition &amp; type to load available tyres —
+                </div>
+                <select class="form-select" name="tyre_id" id="spareTyreIdSelect" disabled>
+                    <option value="">— Select condition &amp; type first —</option>
+                </select>
+                <div class="invalid-feedback" id="spare_err_tyre_id"></div>
+
+                {{-- Spare tyre health preview --}}
+                <div id="spareTyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                    <span class="health-label">Health:</span>
+                    <div class="health-bar-track">
+                        <div class="health-bar-fill" id="spareHealthBarFill"></div>
+                    </div>
+                    <span class="health-pct-text" id="spareHealthPctText"></span>
+                    <span class="health-rag-badge ms-2" id="spareHealthRagBadge"></span>
+                </div>
+            </div>
+
+            {{-- Row 3: Fitment Date + KM --}}
+            <div class="row g-3 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Fitment Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" name="fitment_date" id="spareFitmentDateInput" />
+                    <div class="invalid-feedback" id="spare_err_fitment_date"></div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">KM at Fitment</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="km_at_fitment" id="spareKmAtFitmentInput" min="0" placeholder="0" />
+                        <span class="input-group-text">KM</span>
+                    </div>
+                    <div class="invalid-feedback" id="spare_err_km_at_fitment"></div>
+                </div>
+            </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="uil uil-times me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="saveAddSpare">
+            <i class="uil uil-save me-1"></i>Save &amp; Add Spare
         </button>
       </div>
     </div>
