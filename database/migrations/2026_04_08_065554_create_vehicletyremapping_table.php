@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('km_at_removal')->nullable();
             $table->enum('status', ['Active', 'Inactive', 'Spare'])->default('Active');
             $table->text('notes')->nullable();
+            $table->bigInteger('created_by');
             $table->timestamps();
             $table->softDeletes();
         });
