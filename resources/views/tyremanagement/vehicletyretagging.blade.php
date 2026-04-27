@@ -279,6 +279,20 @@
                                                 <span class="attach-count-badge">{{ $tyre->medias->count() }}</span>
                                             </button>
                                         @endif
+                                        @if($isTagged)
+                                            <div class="header-action-divider"></div>
+                                            <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}"
+                                               class="btn btn-xs btn-take-action">
+                                                <i class="uil uil-setting me-1"></i>Take Action
+                                            </a>
+                                            {{--
+                                            <button type="button" class="btn btn-xs btn-replace"
+                                                    data-position="{{ $pos }}"
+                                                    data-mapping-id="{{ $mapping->id }}">
+                                                <i class="uil uil-exchange me-1"></i>Replace
+                                            </button>
+                                            --}}
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -455,19 +469,6 @@
 
                             </div>{{-- /tyre-card-body --}}
 
-                            {{-- Card Footer: Action Buttons --}}
-                            <div class="tyre-card-footer">
-                                <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}"
-                                   class="btn btn-sm btn-take-action">
-                                    <i class="uil uil-setting me-1"></i>Take Action
-                                </a>
-                                <button type="button" class="btn btn-sm btn-replace ms-2"
-                                        data-position="{{ $pos }}"
-                                        data-mapping-id="{{ $mapping->id }}">
-                                    <i class="uil uil-exchange me-1"></i>Replace
-                                </button>
-                            </div>
-
                             @else
                             {{-- ── UNTAGGED: EMPTY STATE ───────────────────────── --}}
                             <div class="tyre-card-empty">
@@ -577,6 +578,13 @@
                                                 <span class="attach-count-badge">{{ $tyre->medias->count() }}</span>
                                             </button>
                                         @endif
+                                        @if($isTagged)
+                                            <div class="header-action-divider"></div>
+                                            <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}"
+                                               class="btn btn-xs btn-take-action">
+                                                <i class="uil uil-setting me-1"></i>Take Action
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -599,11 +607,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="tyre-card-footer">
-                                <a href="{{ route('tyremanage.vehicle.tyre.fitment', $vehicle->id) }}" class="btn btn-sm btn-take-action">
-                                    <i class="uil uil-setting me-1"></i>Take Action
-                                </a>
                             </div>
                             @else
                             <div class="tyre-card-empty">
