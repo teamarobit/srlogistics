@@ -1188,14 +1188,22 @@
                                     };
                                     $colorHex = ['good'=>'#10863f','warn'=>'#d97706','critical'=>'#ea0027','empty'=>'#dee2e6'];
                                     $posLabels = [
-                                        'C1' =>'Front Left',       'D1' =>'Front Right',
-                                        'Ci2'=>'Rear L1 Inner',    'Co3'=>'Rear L1 Outer',
-                                        'Di2'=>'Rear R1 Inner',    'Do3'=>'Rear R1 Outer',
-                                        'Ci4'=>'Rear L2 Inner',    'Co5'=>'Rear L2 Outer',
-                                        'Di4'=>'Rear R2 Inner',    'Do5'=>'Rear R2 Outer',
-                                        'C6' =>'Rear L3 Trailing', 'D6' =>'Rear R3 Trailing',
-                                        'S1' =>'Spare / Stepney',
-                                        'S2' =>'Spare 2',
+                                        'C1'   =>'Front Left',        'D1'   =>'Front Right',
+                                        'Ci2'  =>'Rear L1 Inner',     'Co3'  =>'Rear L1 Outer',
+                                        'Di2'  =>'Rear R1 Inner',     'Do3'  =>'Rear R1 Outer',
+                                        'Ci4'  =>'Rear L2 Inner',     'Co5'  =>'Rear L2 Outer',
+                                        'Di4'  =>'Rear R2 Inner',     'Do5'  =>'Rear R2 Outer',
+                                        'C6'   =>'Rear L3 Trailing',  'D6'   =>'Rear R3 Trailing',
+                                        'Ci6'  =>'Rear L3 Inner',     'Co7'  =>'Rear L3 Outer',
+                                        'Di6'  =>'Rear R3 Inner',     'Do7'  =>'Rear R3 Outer',
+                                        'C8'   =>'Rear L4 Trailing',  'D8'   =>'Rear R4 Trailing',
+                                        'Ci8'  =>'Rear L4 Inner',     'Co9'  =>'Rear L4 Outer',
+                                        'Di8'  =>'Rear R4 Inner',     'Do9'  =>'Rear R4 Outer',
+                                        'C10'  =>'Rear L5 Trailing',  'D10'  =>'Rear R5 Trailing',
+                                        'Ci10' =>'Rear L5 Inner',     'Co11' =>'Rear L5 Outer',
+                                        'Di10' =>'Rear R5 Inner',     'Do11' =>'Rear R5 Outer',
+                                        'S1'   =>'Spare / Stepney',
+                                        'S2'   =>'Spare 2',
                                     ];
                                     $totalTyres = $tyreMappings->count();
                                     $goodCount = 0; $warnCount = 0; $criticalCount = 0;
@@ -1205,18 +1213,24 @@
                                         elseif($c==='warn') $warnCount++;
                                         elseif($c==='critical') $criticalCount++;
                                     }
-                                    // Dynamic position codes driven by mounted_tyre_count
-                                    $_tc = (int)($vehicle->mounted_tyre_count ?? 10);
-                                    if ($_tc <= 6) {
-                                        $leftCodes  = ['C1', 'Co3', 'Ci2'];
-                                        $rightCodes = ['D1', 'Di2', 'Do3'];
-                                    } elseif ($_tc <= 10) {
-                                        $leftCodes  = ['C1', 'Co3', 'Ci2', 'Co5', 'Ci4'];
-                                        $rightCodes = ['D1', 'Di2', 'Do3', 'Di4', 'Do5'];
-                                    } else {
-                                        // 12-wheel: includes trailing axle (C6, D6)
-                                        $leftCodes  = ['C1', 'Co3', 'Ci2', 'Co5', 'Ci4', 'C6'];
-                                        $rightCodes = ['D1', 'Di2', 'Do3', 'Di4', 'Do5', 'D6'];
+                                    // Dynamic position codes driven by mounted_tyre_count (supports any axle count)
+                                    $_tc       = (int)($vehicle->mounted_tyre_count ?? 10);
+                                    $_rem      = max(0, $_tc - 2);
+                                    $_rdual    = max(1, (int) floor($_rem / 4));
+                                    $_hasTrail = ($_rem % 4 === 2);
+
+                                    $leftCodes  = ['C1'];
+                                    $rightCodes = ['D1'];
+                                    for ($_k = 1; $_k <= $_rdual; $_k++) {
+                                        $leftCodes[]  = 'Co' . (2 * $_k + 1);
+                                        $leftCodes[]  = 'Ci' . (2 * $_k);
+                                        $rightCodes[] = 'Di' . (2 * $_k);
+                                        $rightCodes[] = 'Do' . (2 * $_k + 1);
+                                    }
+                                    if ($_hasTrail) {
+                                        $_trNum       = 2 * $_rdual + 2;
+                                        $leftCodes[]  = 'C'  . $_trNum;
+                                        $rightCodes[] = 'D'  . $_trNum;
                                     }
 
                                     // Build tyre image data map for JS modal (keyed by position code)
