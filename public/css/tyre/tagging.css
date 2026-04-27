@@ -134,7 +134,7 @@
 
 /* ── CARD HEADER ─────────────────────────────────────────────────────────── */
 .tyre-card-header {
-    padding: 10px 14px;
+    padding: 7px 12px;
     background: #f8f9fb;
     border-bottom: 1px solid #eef0f3;
 }
@@ -200,13 +200,13 @@
 
 /* ── CARD BODY ───────────────────────────────────────────────────────────── */
 .tyre-card-body {
-    padding: 10px 14px 0;
+    padding: 7px 12px 0;
 }
 
 /* ── INFO SECTION ────────────────────────────────────────────────────────── */
 .info-section {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
     border-bottom: 1px dashed #eef0f3;
 }
 .info-section:last-child {
@@ -218,10 +218,31 @@
     color: #032671;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+/* ── PERFORMANCE + LIFECYCLE SIDE-BY-SIDE ROW ────────────────────────────── */
+.info-section-pair {
+    display: flex;
+    gap: 0;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
+    border-bottom: 1px dashed #eef0f3;
+}
+.info-section-pair .info-section {
+    flex: 1;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    min-width: 0;
+}
+.info-section-pair .info-section:first-child {
+    padding-right: 10px;
+    border-right: 1px dashed #eef0f3;
+    margin-right: 10px;
 }
 
 /* ── INFO GRID ───────────────────────────────────────────────────────────── */
@@ -270,6 +291,37 @@
     font-size: 12px;
     vertical-align: middle;
     cursor: help;
+}
+
+/* ── ATTACHMENT ICON BUTTON (card header) ────────────────────────────────── */
+.btn-attach-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #fff;
+    border: 1.5px solid #dee2e6;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 13px;
+    color: #032671;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+    line-height: 1.4;
+}
+.btn-attach-icon:hover {
+    background: #e8edf8;
+    border-color: #032671;
+    color: #032671;
+}
+.attach-count-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: #032671;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0px 5px;
+    line-height: 1.6;
+    display: inline-block;
 }
 
 /* ── ATTACHMENT LOG ──────────────────────────────────────────────────────── */
@@ -329,7 +381,7 @@
 
 /* ── CARD FOOTER ─────────────────────────────────────────────────────────── */
 .tyre-card-footer {
-    padding: 8px 14px;
+    padding: 6px 12px;
     background: #f8f9fb;
     border-top: 1px solid #eef0f3;
     display: flex;
@@ -383,7 +435,7 @@
 
 /* ── EMPTY STATE ─────────────────────────────────────────────────────────── */
 .tyre-card-empty {
-    padding: 22px 14px;
+    padding: 16px 12px;
     text-align: center;
 }
 .empty-icon {

@@ -112,14 +112,25 @@
                                         @else ⚫ Untagged
                                         @endif
                                     </span>
-                                    @if($isTagged && $lifePct !== null)
-                                        <div class="life-bar-wrap ms-auto">
-                                            <div class="life-bar-track">
-                                                <div class="life-bar-fill rag-bg-{{ $rag }}" style="width: {{ $lifePct }}%"></div>
+                                    <div class="ms-auto d-flex align-items-center gap-2">
+                                        @if($isTagged && $lifePct !== null)
+                                            <div class="life-bar-wrap">
+                                                <div class="life-bar-track">
+                                                    <div class="life-bar-fill rag-bg-{{ $rag }}" style="width: {{ $lifePct }}%"></div>
+                                                </div>
+                                                <span class="life-pct-label">{{ $lifePct }}% Life</span>
                                             </div>
-                                            <span class="life-pct-label">{{ $lifePct }}% Life</span>
-                                        </div>
-                                    @endif
+                                        @endif
+                                        @if($isTagged && $tyre && $tyre->medias && $tyre->medias->count())
+                                            <button type="button" class="btn-attach-icon"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#attachModal-{{ $pos }}"
+                                                    title="{{ $tyre->medias->count() }} Attachment(s)">
+                                                <i class="uil uil-paperclip"></i>
+                                                <span class="attach-count-badge">{{ $tyre->medias->count() }}</span>
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -207,51 +218,56 @@
                                     </div>
                                 </div>
 
-                                {{-- Section 3: Performance (KM) --}}
-                                <div class="info-section">
-                                    <div class="info-section-title">
-                                        <i class="uil uil-tachometer-fast"></i> Performance (KM)
-                                    </div>
-                                    <div class="info-grid">
-                                        <div class="info-item">
-                                            <span class="info-label">Fixed Run</span>
-                                            <span class="info-value">{{ $tyre->fixed_run_km ? number_format($tyre->fixed_run_km).' KM' : '—' }}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Actual Run</span>
-                                            <span class="info-value">{{ $tyre->actual_run_km ? number_format($tyre->actual_run_km).' KM' : '—' }}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Remaining Run</span>
-                                            <span class="info-value @if(($mapping->remaining_run_km ?? PHP_INT_MAX) < 5000) text-danger fw-semibold @endif">
-                                                {{ $mapping->remaining_run_km !== null ? number_format($mapping->remaining_run_km).' KM' : '—' }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                {{-- Sections 3 & 4: Performance (KM) + Lifecycle (Months) — side by side --}}
+                                <div class="info-section-pair">
 
-                                {{-- Section 4: Lifecycle (Time) --}}
-                                <div class="info-section">
-                                    <div class="info-section-title">
-                                        <i class="uil uil-calendar-alt"></i> Lifecycle (Months)
+                                    {{-- Section 3: Performance (KM) --}}
+                                    <div class="info-section">
+                                        <div class="info-section-title">
+                                            <i class="uil uil-tachometer-fast"></i> Performance (KM)
+                                        </div>
+                                        <div class="info-grid">
+                                            <div class="info-item">
+                                                <span class="info-label">Fixed Run</span>
+                                                <span class="info-value">{{ $tyre->fixed_run_km ? number_format($tyre->fixed_run_km).' KM' : '—' }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Actual Run</span>
+                                                <span class="info-value">{{ $tyre->actual_run_km ? number_format($tyre->actual_run_km).' KM' : '—' }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Remaining Run</span>
+                                                <span class="info-value @if(($mapping->remaining_run_km ?? PHP_INT_MAX) < 5000) text-danger fw-semibold @endif">
+                                                    {{ $mapping->remaining_run_km !== null ? number_format($mapping->remaining_run_km).' KM' : '—' }}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="info-grid">
-                                        <div class="info-item">
-                                            <span class="info-label">Fixed Life</span>
-                                            <span class="info-value">{{ $tyre->fixed_life_months ? $tyre->fixed_life_months.' Mo' : '—' }}</span>
+
+                                    {{-- Section 4: Lifecycle (Months) --}}
+                                    <div class="info-section">
+                                        <div class="info-section-title">
+                                            <i class="uil uil-calendar-alt"></i> Lifecycle (Months)
                                         </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Actual Run</span>
-                                            <span class="info-value">{{ $tyre->actual_run_month ? $tyre->actual_run_month.' Mo' : '—' }}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Remaining Life</span>
-                                            <span class="info-value @if(($mapping->remaining_life_months ?? 99) <= 2) text-danger fw-semibold @endif">
-                                                {{ $mapping->remaining_life_months !== null ? $mapping->remaining_life_months.' Mo' : '—' }}
-                                            </span>
+                                        <div class="info-grid">
+                                            <div class="info-item">
+                                                <span class="info-label">Fixed Life</span>
+                                                <span class="info-value">{{ $tyre->fixed_life_months ? $tyre->fixed_life_months.' Mo' : '—' }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Actual Run</span>
+                                                <span class="info-value">{{ $tyre->actual_run_month ? $tyre->actual_run_month.' Mo' : '—' }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Remaining Life</span>
+                                                <span class="info-value @if(($mapping->remaining_life_months ?? 99) <= 2) text-danger fw-semibold @endif">
+                                                    {{ $mapping->remaining_life_months !== null ? $mapping->remaining_life_months.' Mo' : '—' }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+
+                                </div>{{-- /info-section-pair --}}
 
                                 {{-- Section 5: Maintenance --}}
                                 <div class="info-section">
@@ -288,34 +304,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Section 6: Attachments --}}
-                                @if($tyre->medias && $tyre->medias->count())
-                                <div class="info-section">
-                                    <div class="info-section-title">
-                                        <i class="uil uil-paperclip"></i> Attachments
-                                        <span class="badge bg-secondary ms-1" style="font-size:10px;">{{ $tyre->medias->count() }}</span>
-                                    </div>
-                                    <div class="attachment-log">
-                                        @foreach($tyre->medias as $media)
-                                        <div class="attachment-item">
-                                            @if($media->type === 'Image')
-                                                <i class="uil uil-image attachment-icon img-icon"></i>
-                                            @else
-                                                <i class="uil uil-file-alt attachment-icon doc-icon"></i>
-                                            @endif
-                                            <div class="attachment-meta">
-                                                <span class="attachment-name">{{ $media->file_name ?? 'Attachment' }}</span>
-                                                <span class="attachment-date">{{ $media->created_at ? \Carbon\Carbon::parse($media->created_at)->format('d M Y, h:i A') : '' }}</span>
-                                            </div>
-                                            <a href="{{ asset('medias/'.$media->file_path) }}" target="_blank" class="btn-attachment-view">
-                                                <i class="uil uil-eye"></i>
-                                            </a>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-
                             </div>{{-- /tyre-card-body --}}
 
                             {{-- Card Footer: Action Buttons --}}
@@ -349,6 +337,46 @@
                             @endif
 
                         </div>{{-- /tyre-card --}}
+
+                        {{-- ── ATTACHMENT MODAL for position {{ $pos }} ─── --}}
+                        @if($isTagged && $tyre && $tyre->medias && $tyre->medias->count())
+                        <div class="modal fade" id="attachModal-{{ $pos }}" tabindex="-1" aria-labelledby="attachModalLabel-{{ $pos }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+                                <div class="modal-content">
+                                    <div class="modal-header py-2 px-3">
+                                        <h6 class="modal-title fw-bold mb-0" id="attachModalLabel-{{ $pos }}">
+                                            <i class="uil uil-paperclip me-1 text-primary"></i>
+                                            Attachments
+                                            <span class="badge bg-secondary ms-1" style="font-size:10px;">{{ $tyre->medias->count() }}</span>
+                                            <span class="text-muted fw-normal ms-1" style="font-size:11px;">— Position {{ $pos }}</span>
+                                        </h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-2">
+                                        <div class="attachment-log" style="max-height:320px; overflow-y:auto;">
+                                            @foreach($tyre->medias as $media)
+                                            <div class="attachment-item">
+                                                @if($media->type === 'Image')
+                                                    <i class="uil uil-image attachment-icon img-icon"></i>
+                                                @else
+                                                    <i class="uil uil-file-alt attachment-icon doc-icon"></i>
+                                                @endif
+                                                <div class="attachment-meta">
+                                                    <span class="attachment-name">{{ $media->file_name ?? 'Attachment' }}</span>
+                                                    <span class="attachment-date">{{ $media->created_at ? \Carbon\Carbon::parse($media->created_at)->format('d M Y, h:i A') : '' }}</span>
+                                                </div>
+                                                <a href="{{ asset('medias/'.$media->file_path) }}" target="_blank" class="btn-attachment-view" title="View">
+                                                    <i class="uil uil-eye"></i>
+                                                </a>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                     @empty
                         <div class="alert alert-info">No tyre positions configured for this vehicle.</div>
                     @endforelse
@@ -382,14 +410,25 @@
                                         @else ⚫ Untagged
                                         @endif
                                     </span>
-                                    @if($isTagged && $lifePct !== null)
-                                        <div class="life-bar-wrap ms-auto">
-                                            <div class="life-bar-track">
-                                                <div class="life-bar-fill rag-bg-{{ $rag }}" style="width: {{ $lifePct }}%"></div>
+                                    <div class="ms-auto d-flex align-items-center gap-2">
+                                        @if($isTagged && $lifePct !== null)
+                                            <div class="life-bar-wrap">
+                                                <div class="life-bar-track">
+                                                    <div class="life-bar-fill rag-bg-{{ $rag }}" style="width: {{ $lifePct }}%"></div>
+                                                </div>
+                                                <span class="life-pct-label">{{ $lifePct }}% Life</span>
                                             </div>
-                                            <span class="life-pct-label">{{ $lifePct }}% Life</span>
-                                        </div>
-                                    @endif
+                                        @endif
+                                        @if($isTagged && $tyre && $tyre->medias && $tyre->medias->count())
+                                            <button type="button" class="btn-attach-icon"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#attachModal-{{ $pos }}"
+                                                    title="{{ $tyre->medias->count() }} Attachment(s)">
+                                                <i class="uil uil-paperclip"></i>
+                                                <span class="attach-count-badge">{{ $tyre->medias->count() }}</span>
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
