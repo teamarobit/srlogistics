@@ -112,7 +112,17 @@ class TyreManagementController extends Controller
         // $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
         $tyrepositions = Tyreposition::where('status', 'Active')->get();
 
-        return view('tyremanagement.vehicletyretagging', compact('tyrepositions', 'vehicle'));
+        // Fetch last recorded odometer reading for this vehicle (used by JS KM validation)
+        $lastMappingWithKm = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+            ->whereNotNull('km_at_fitment')
+            ->whereNotNull('fitment_date')
+            ->orderBy('km_at_fitment', 'desc')
+            ->first(['km_at_fitment', 'fitment_date']);
+
+        $lastKnownKm   = $lastMappingWithKm ? (int) $lastMappingWithKm->km_at_fitment : null;
+        $lastKnownDate = $lastMappingWithKm ? $lastMappingWithKm->fitment_date          : null;
+
+        return view('tyremanagement.vehicletyretagging', compact('tyrepositions', 'vehicle', 'lastKnownKm', 'lastKnownDate'));
     }
 
     public function tyreFitment(Vehicle $vehicle)
@@ -194,14 +204,34 @@ class TyreManagementController extends Controller
     }
 
     /**
-     * POST — Tag a tyre to a vehicle position.
+     * POST — Allocate a tyre to a vehicle position.
+     * Supports two sources:
+     *   SR Warehouse  — pick an existing warehouse tyre (tyre_id required)
+     *   Direct Fitment — brand + serial entered manually; a new Tyre record is created
+     *
      * Updates vehicletyremappings (tyre_id, status, fitment_date, km_at_fitment).
      * Inserts a fresh row into vehicletyremappinglogs.
+     * Accepts up to 3 optional photo attachments (photo_serial, photo_fitment, photo_odometer).
+     * Validates KM reading against last recorded odometer reading for the vehicle.
      */
     public function addTyreToPosition(Request $request, Vehicle $vehicle, Vehicletyremapping $mapping)
     {
+        $source = $request->tyre_source;
+
+        // ── Validation rules ──────────────────────────────────────────────────
         $rules = [
-            'tyre_id'      => [
+            'tyre_source'    => 'required|in:SR Warehouse,Direct Fitment',
+            'tyre_condition' => 'required|in:New,Used,Re-thread',
+            'tyre_type'      => 'required|in:Radial,Nylon',
+            'fitment_date'   => 'required|date',
+            'km_at_fitment'  => 'nullable|numeric|min:0',
+            'photo_serial'   => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo_fitment'  => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo_odometer' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ];
+
+        if ($source === 'SR Warehouse') {
+            $rules['tyre_id'] = [
                 'required',
                 'integer',
                 function ($attr, $value, $fail) {
@@ -209,15 +239,19 @@ class TyreManagementController extends Controller
                         $fail('Selected tyre is not available in Warehouse.');
                     }
                 },
-            ],
-            'fitment_date' => 'required|date',
-            'km_at_fitment'=> 'nullable|numeric|min:0',
-        ];
+            ];
+        } else {
+            $rules['tyre_brand']         = 'required|string|max:100';
+            $rules['tyre_serial_number'] = 'required|string|max:100';
+        }
 
         $validator = Validator::make($request->all(), $rules, [
             'required' => 'This field is required.',
             'numeric'  => 'Only numeric values are allowed.',
             'min'      => 'Value must be at least :min.',
+            'in'       => 'Invalid selection.',
+            'mimes'    => 'Only JPG, PNG, or WEBP images are allowed.',
+            'max'      => 'File size must not exceed 5 MB.',
         ]);
 
         if ($validator->fails()) {
@@ -228,7 +262,7 @@ class TyreManagementController extends Controller
             ], 422);
         }
 
-        // Verify the mapping belongs to this vehicle
+        // ── Verify mapping belongs to this vehicle ────────────────────────────
         if ($mapping->vehicle_id != $vehicle->id) {
             return response()->json([
                 'success' => false,
@@ -236,41 +270,123 @@ class TyreManagementController extends Controller
             ], 403);
         }
 
+        // ── KM Odometer validation ────────────────────────────────────────────
+        // Rule: if fitment_date >= last recorded odometer date,
+        //       the entered KM must be >= the last recorded KM.
+        if ($request->km_at_fitment !== null && $request->km_at_fitment !== '') {
+            $lastRef = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+                ->whereNotNull('km_at_fitment')
+                ->whereNotNull('fitment_date')
+                ->orderBy('km_at_fitment', 'desc')
+                ->first(['km_at_fitment', 'fitment_date']);
+
+            if ($lastRef) {
+                $fitmentDate = Carbon::parse($request->fitment_date);
+                $lastDate    = Carbon::parse($lastRef->fitment_date);
+                $lastKm      = (int) $lastRef->km_at_fitment;
+                $enteredKm   = (int) $request->km_at_fitment;
+
+                if ($fitmentDate->gte($lastDate) && $enteredKm < $lastKm) {
+                    return response()->json([
+                        'success' => false,
+                        'errors'  => [
+                            'km_at_fitment' => [
+                                "KM reading cannot be lower than {$lastKm} KM (last recorded on "
+                                . $lastDate->format('d M Y') . ').'
+                            ],
+                        ],
+                        'message' => 'Invalid KM reading.',
+                    ], 422);
+                }
+            }
+        }
+
+        // ── Transaction ───────────────────────────────────────────────────────
         try {
-            DB::transaction(function () use ($request, $vehicle, $mapping) {
+            DB::transaction(function () use ($request, $vehicle, $mapping, $source) {
                 $userId      = Auth::id();
                 $fitmentDate = date('Y-m-d', strtotime($request->fitment_date));
                 $kmAtFitment = $request->km_at_fitment ?? null;
 
-                // 1. Update the mapping row
+                // 1. Resolve / create the Tyre record
+                if ($source === 'SR Warehouse') {
+                    $tyreId = (int) $request->tyre_id;
+                    $tyreForMedia = Tyre::find($tyreId);
+                    // Move tyre out of Warehouse
+                    Tyre::where('id', $tyreId)->update(['location' => 'Vehicle']);
+                } else {
+                    // Direct Fitment — create a minimal Tyre record (no vendor/warehouse)
+                    $tyreForMedia = Tyre::create([
+                        'contact_id'         => null,
+                        'location'           => 'Vehicle',
+                        'tyre_condition'     => $request->tyre_condition,
+                        'tyre_type'          => $request->tyre_type,
+                        'tyre_brand'         => $request->tyre_brand,
+                        'tyre_model'         => $request->tyre_brand,   // model = brand as placeholder
+                        'tyre_serial_number' => $request->tyre_serial_number,
+                        'created_by'         => $userId,
+                    ]);
+                    $tyreId = $tyreForMedia->id;
+                }
+
+                // 2. Attach photo files to the tyre record (common for both sources)
+                $photoSlots = [
+                    'photo_serial'   => 'Serial Number Photo',
+                    'photo_fitment'  => 'Fitment Photo',
+                    'photo_odometer' => 'Odometer Photo',
+                ];
+                $mediaData = [];
+                foreach ($photoSlots as $inputName => $label) {
+                    if ($request->hasFile($inputName)) {
+                        $file     = $request->file($inputName);
+                        $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                        $file->move(public_path('medias' . DIRECTORY_SEPARATOR . 'tyre' . DIRECTORY_SEPARATOR), $fileName);
+                        $mediaData[] = [
+                            'type'       => 'Image',
+                            'file_name'  => '[' . $label . '] ' . $file->getClientOriginalName(),
+                            'file_path'  => 'tyre/' . $fileName,
+                            'file_type'  => $file->getClientMimeType(),
+                            'file_size'  => $file->getSize(),
+                            'created_by' => $userId,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+                if (!empty($mediaData) && $tyreForMedia) {
+                    $tyreForMedia->medias()->createMany($mediaData);
+                }
+
+                // 3. Update the mapping row
+                $notes = $source === 'Direct Fitment'
+                    ? 'Direct Fitment | Brand: ' . $request->tyre_brand . ' | Serial: ' . $request->tyre_serial_number
+                    : null;
+
                 $mapping->update([
-                    'tyre_id'       => $request->tyre_id,
+                    'tyre_id'       => $tyreId,
                     'status'        => 'Active',
                     'fitment_date'  => $fitmentDate,
                     'km_at_fitment' => $kmAtFitment,
-                    'notes'         => $request->notes ?? null,
+                    'notes'         => $notes,
                 ]);
 
-                // 2. Insert a new log row (history — never update)
+                // 4. Insert history log row (never update — insert only)
                 Vehicletyremappinglog::create([
                     'vehicletyremapping_id' => $mapping->id,
                     'vehicle_id'            => $vehicle->id,
-                    'tyre_id'               => $request->tyre_id,
+                    'tyre_id'               => $tyreId,
                     'tyreposition_id'       => $mapping->tyreposition_id,
                     'fitment_date'          => $fitmentDate,
                     'km_at_fitment'         => $kmAtFitment,
                     'status'                => 'Active',
-                    'notes'                 => $request->notes ?? null,
+                    'notes'                 => $source,
                     'created_by'            => $userId,
                 ]);
-
-                // 3. Mark tyre as on Vehicle (move out of Warehouse)
-                Tyre::where('id', $request->tyre_id)->update(['location' => 'Vehicle']);
             });
 
             return response()->json([
                 'success'      => true,
-                'message'      => 'Tyre tagged successfully.',
+                'message'      => 'Tyre allocated successfully.',
                 'redirect_url' => route('tyremanage.vehicle.tyre.tagging', $vehicle->id),
             ]);
 

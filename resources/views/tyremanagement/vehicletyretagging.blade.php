@@ -47,6 +47,8 @@
             const addTyreBaseUrl      = "{{ url('tyremanage/vehicle/'.$vehicle->id.'/mapping') }}"; // append /{mappingId}/add-tyre
             const addSpareUrl         = "{{ route('tyremanage.vehicle.add.spare', $vehicle->id) }}";
             const csrfToken           = "{{ csrf_token() }}";
+            const lastKnownKm         = {{ $lastKnownKm ?? 'null' }};
+            const lastKnownDate       = "{{ $lastKnownDate ?? '' }}";
         </script>
 
         {{-- ── MAIN LAYOUT ─────────────────────────────────────────────────── --}}
@@ -341,7 +343,7 @@
                                         data-mapping-id="{{ $mapping->id }}"
                                         data-bs-toggle="modal"
                                         data-bs-target="#addTyre">
-                                    <i class="uil uil-plus-circle me-1"></i>Add Tyre
+                                    <i class="uil uil-plus-circle me-1"></i>Allocate Tyre
                                 </button>
                             </div>
                             @endif
@@ -446,34 +448,48 @@
     </div>{{-- /vehicledtl-bd --}}
 </div>{{-- /layout-wrapper --}}
 
-{{-- ── ADD TYRE MODAL ──────────────────────────────────────────────────── --}}
+{{-- ── ALLOCATE TYRE MODAL ──────────────────────────────────────────────── --}}
 <div class="modal fade" id="addTyre" tabindex="-1" aria-labelledby="addTyreText" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="addTyreText">
-            <i class="uil uil-plus-circle me-1"></i>Add Tyre —&nbsp;<span id="modalPositionLabel"></span>
+            <i class="uil uil-tag-alt me-1"></i>Allocate Tyre —&nbsp;<span id="modalPositionLabel"></span>
         </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addTyreInlineForm" autocomplete="off">
+        <form id="addTyreInlineForm" autocomplete="off" enctype="multipart/form-data">
             <input type="hidden" id="addTyrePositionCode" name="position_code" />
             <input type="hidden" id="addTyreMappingId"    name="mapping_id" />
 
-            {{-- Row 1: Condition + Type --}}
+            {{-- ── FIELD 1: Tyre Source ──────────────────────────────────── --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tyre Source <span class="text-danger">*</span></label>
+                <div class="d-flex gap-2 flex-wrap" id="tyreSourceBtns">
+                    <input type="radio" class="btn-check" name="tyre_source" id="srcWarehouse" value="SR Warehouse" checked>
+                    <label class="btn btn-outline-primary btn-sm px-3" for="srcWarehouse">
+                        <i class="uil uil-archive me-1"></i>SR Warehouse
+                    </label>
+                    <input type="radio" class="btn-check" name="tyre_source" id="srcDirect" value="Direct Fitment">
+                    <label class="btn btn-outline-secondary btn-sm px-3" for="srcDirect">
+                        <i class="uil uil-truck me-1"></i>Direct Fitment
+                    </label>
+                </div>
+                <div class="invalid-feedback d-block" id="err_tyre_source"></div>
+            </div>
+
+            {{-- ── FIELDS 2 & 3: Condition + Type ───────────────────────── --}}
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Tyre Condition <span class="text-danger">*</span></label>
-                    <select class="form-select" name="condition" id="tyreConditionSelect">
+                    <select class="form-select" name="tyre_condition" id="tyreConditionSelect">
                         <option value="">Select Condition</option>
                         <option value="New">New</option>
-                        <option value="Re-thread">Rethread</option>
                         <option value="Used">Used</option>
-                        <option value="Retread">Retread</option>
-                        <option value="Used Good">Used Good</option>
+                        <option value="Re-thread">Re-thread</option>
                     </select>
-                    <div class="invalid-feedback" id="err_condition"></div>
+                    <div class="invalid-feedback" id="err_tyre_condition"></div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Tyre Type <span class="text-danger">*</span></label>
@@ -486,30 +502,61 @@
                 </div>
             </div>
 
-            {{-- Row 2: Tyre dropdown (AJAX-loaded) --}}
-            <div class="mb-3" id="tyreSelectorWrap">
-                <label class="form-label fw-semibold">Select Tyre <span class="text-danger">*</span></label>
-                <div id="tyreDropdownState" class="text-muted small mb-1">
-                    — Select condition &amp; type to load available tyres —
-                </div>
-                <select class="form-select" name="tyre_id" id="tyreIdSelect" disabled>
-                    <option value="">Loading…</option>
-                </select>
-                <div class="invalid-feedback" id="err_tyre_id"></div>
-
-                {{-- Tyre health preview card (shown after selection) --}}
-                <div id="tyreHealthPreview" class="tyre-health-preview d-none mt-2">
-                    <span class="health-label">Health:</span>
-                    <div class="health-bar-track">
-                        <div class="health-bar-fill" id="healthBarFill"></div>
+            {{-- ── SR WAREHOUSE SECTION ──────────────────────────────────── --}}
+            <div id="srcWarehouseSection">
+                {{-- AJAX Tyre Dropdown --}}
+                <div class="mb-2" id="tyreSelectorWrap">
+                    <label class="form-label fw-semibold">Select Tyre from Warehouse <span class="text-danger">*</span></label>
+                    <div id="tyreDropdownState" class="text-muted small mb-1">
+                        — Select condition &amp; type to load available tyres —
                     </div>
-                    <span class="health-pct-text" id="healthPctText"></span>
-                    <span class="health-rag-badge ms-2" id="healthRagBadge"></span>
+                    <select class="form-select" name="tyre_id" id="tyreIdSelect" disabled>
+                        <option value="">— Select condition &amp; type first —</option>
+                    </select>
+                    <div class="invalid-feedback" id="err_tyre_id"></div>
+
+                    {{-- Health preview --}}
+                    <div id="tyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                        <span class="health-label">Health:</span>
+                        <div class="health-bar-track">
+                            <div class="health-bar-fill" id="healthBarFill"></div>
+                        </div>
+                        <span class="health-pct-text" id="healthPctText"></span>
+                        <span class="health-rag-badge ms-2" id="healthRagBadge"></span>
+                    </div>
+                </div>
+
+                {{-- Auto-filled Brand + Serial (readonly) --}}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Brand <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="wh_tyreBrand" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Serial Number <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="wh_tyreSerial" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
                 </div>
             </div>
 
-            {{-- Row 3: Fitment Date + KM --}}
-            <div class="row g-3 mb-2">
+            {{-- ── DIRECT FITMENT SECTION (hidden by default) ───────────── --}}
+            <div id="srcDirectSection" class="d-none">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tyre Brand <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tyre_brand" id="directTyreBrand" placeholder="e.g. Apollo, MRF, Bridgestone" maxlength="100" />
+                        <div class="invalid-feedback" id="err_tyre_brand"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tyre Serial Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tyre_serial_number" id="directTyreSerial" placeholder="e.g. SN-12345" maxlength="100" />
+                        <div class="invalid-feedback" id="err_tyre_serial_number"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── FIELDS 6 & 7: Fitment Date + KM at Fitment ──────────── --}}
+            <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Fitment Date <span class="text-danger">*</span></label>
                     <input type="date" class="form-control" name="fitment_date" id="fitmentDateInput" />
@@ -522,6 +569,53 @@
                         <span class="input-group-text">KM</span>
                     </div>
                     <div class="invalid-feedback" id="err_km_at_fitment"></div>
+                    {{-- Odometer reference hint (populated by JS when lastKnownKm exists) --}}
+                    <div id="kmOdoHint" class="d-none mt-1">
+                        <small class="text-muted">
+                            <i class="uil uil-info-circle me-1"></i>Last recorded:
+                            <strong id="kmHintKm"></strong> KM on <strong id="kmHintDate"></strong>
+                        </small>
+                    </div>
+                    <div id="kmOdoWarning" class="d-none mt-1">
+                        <small class="text-danger fw-semibold">
+                            <i class="uil uil-exclamation-triangle me-1"></i>
+                            <span id="kmOdoWarningText"></span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── FIELD 8: Attachments ─────────────────────────────────── --}}
+            <div class="mb-1">
+                <label class="form-label fw-semibold">
+                    <i class="uil uil-paperclip me-1"></i>Attachments
+                    <span class="text-muted fw-normal small ms-1">(JPG / PNG / WEBP, max 5 MB each)</span>
+                </label>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Tyre Serial Number Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_serial" id="photoSerial" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="err_photo_serial"></div>
+                        <div id="previewSerial" class="mt-1 d-none">
+                            <img class="at-thumb" alt="Serial preview" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Tyre on Truck Fitment Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_fitment" id="photoFitment" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="err_photo_fitment"></div>
+                        <div id="previewFitment" class="mt-1 d-none">
+                            <img class="at-thumb" alt="Fitment preview" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Odometer Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_odometer" id="photoOdometer" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="err_photo_odometer"></div>
+                        <div id="previewOdometer" class="mt-1 d-none">
+                            <img class="at-thumb" alt="Odometer preview" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -532,7 +626,7 @@
             <i class="uil uil-times me-1"></i>Cancel
         </button>
         <button type="button" class="btn btn-primary" id="saveAddTyre">
-            <i class="uil uil-save me-1"></i>Save &amp; Tag Tyre
+            <i class="uil uil-tag-alt me-1"></i>Save &amp; Allocate Tyre
         </button>
       </div>
     </div>

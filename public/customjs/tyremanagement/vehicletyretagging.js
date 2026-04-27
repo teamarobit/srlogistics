@@ -1,10 +1,15 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SR Logistics — Tyre Tagging JS  |  vehicletyretagging.js  v3.1
+   SR Logistics — Tyre Tagging JS  |  vehicletyretagging.js  v4.0
    Handles:
      • SVG load → RAG coloring
      • SVG ↔ Card bidirectional sync (click / hover)
-     • Add Tyre modal: AJAX tyre dropdown (condition+type filter, health preview)
-     • Real POST save → addTyreToPosition endpoint
+     • Allocate Tyre modal (renamed from Add Tyre):
+         – Source toggle: SR Warehouse ↔ Direct Fitment
+         – SR Warehouse: AJAX tyre dropdown (condition+type filter, health preview)
+         – Direct Fitment: manual Brand + Serial Number entry
+         – Auto-fill readonly brand/serial from warehouse selection
+         – Odometer KM validation (fitment_date + lastKnownKm/lastKnownDate)
+         – 3 optional photo attachments (FormData AJAX)
      • Add Spare Tyre modal: same AJAX pattern, INSERT new mapping (status=Spare)
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -88,24 +93,74 @@ $(document).ready(function () {
     });
 
 
-    // ── 4. OPEN ADD TYRE MODAL — RESET + PRE-FILL ────────────────────────────
+    // ── 4. OPEN ALLOCATE TYRE MODAL — RESET + PRE-FILL ──────────────────────
     $(document).on('click', '.btn-add-tyre', function () {
         const pos       = $(this).data('position') || '';
         const mappingId = $(this).data('mapping-id') || '';
 
-        // Reset modal state
+        // Reset all fields
         $('#modalPositionLabel').text(pos);
         $('#addTyrePositionCode').val(pos);
         $('#addTyreMappingId').val(mappingId);
+
+        // Source: reset to SR Warehouse
+        $('#srcWarehouse').prop('checked', true);
+        showWarehouseSection();
+
+        // Condition + Type
         $('#tyreConditionSelect').val('');
         $('#tyreTypeSelect').val('');
         resetTyreDropdown();
+
+        // Auto-fill readonly fields
+        $('#wh_tyreBrand').val('');
+        $('#wh_tyreSerial').val('');
+
+        // Direct Fitment fields
+        $('#directTyreBrand').val('');
+        $('#directTyreSerial').val('');
+
+        // Fitment Date + KM
         $('#fitmentDateInput').val('');
         $('#kmAtFitmentInput').val('');
+        $('#kmOdoHint').addClass('d-none');
+        $('#kmOdoWarning').addClass('d-none');
+
+        // Show the odometer hint if lastKnownKm is available
+        if (lastKnownKm && lastKnownDate) {
+            const formatted = new Date(lastKnownDate).toLocaleDateString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+            $('#kmHintKm').text(lastKnownKm.toLocaleString('en-IN'));
+            $('#kmHintDate').text(formatted);
+            $('#kmOdoHint').removeClass('d-none');
+        }
+
+        // Photos
+        $('#photoSerial, #photoFitment, #photoOdometer').val('');
+        $('#previewSerial, #previewFitment, #previewOdometer').addClass('d-none').find('img').attr('src', '');
+
         clearFormErrors();
     });
 
-    // Reset tyre dropdown to blank/disabled state
+    // Show/hide warehouse vs direct fitment sections
+    function showWarehouseSection() {
+        $('#srcWarehouseSection').removeClass('d-none');
+        $('#srcDirectSection').addClass('d-none');
+        // Brand/serial in warehouse section are read-only auto-fill — no name attr needed
+        $('#directTyreBrand').removeAttr('required');
+        $('#directTyreSerial').removeAttr('required');
+    }
+
+    function showDirectSection() {
+        $('#srcWarehouseSection').addClass('d-none');
+        $('#srcDirectSection').removeClass('d-none');
+        resetTyreDropdown();
+        $('#wh_tyreBrand').val('');
+        $('#wh_tyreSerial').val('');
+    }
+
+    // Reset warehouse AJAX dropdown to blank/disabled state
     function resetTyreDropdown() {
         $('#tyreIdSelect')
             .prop('disabled', true)
@@ -115,11 +170,27 @@ $(document).ready(function () {
             .removeClass('text-danger text-success text-warning')
             .addClass('text-muted');
         $('#tyreHealthPreview').addClass('d-none');
+        $('#wh_tyreBrand').val('');
+        $('#wh_tyreSerial').val('');
     }
 
 
-    // ── 5. AJAX TYRE DROPDOWN — fires when BOTH condition + type are set ──────
+    // ── 5. SOURCE TOGGLE ─────────────────────────────────────────────────────
+    $(document).on('change', 'input[name="tyre_source"]', function () {
+        clearFormErrors();
+        if ($(this).val() === 'SR Warehouse') {
+            showWarehouseSection();
+        } else {
+            showDirectSection();
+        }
+    });
+
+
+    // ── 6. AJAX TYRE DROPDOWN — fires when BOTH condition + type are set ──────
     function maybeFetchTyres() {
+        // Only fetch when SR Warehouse is active
+        if ($('#srcWarehouse').is(':checked') === false) return;
+
         const condition = $('#tyreConditionSelect').val();
         const type      = $('#tyreTypeSelect').val();
 
@@ -137,6 +208,8 @@ $(document).ready(function () {
             .removeClass('text-danger text-success text-warning text-muted')
             .addClass('text-muted');
         $('#tyreHealthPreview').addClass('d-none');
+        $('#wh_tyreBrand').val('');
+        $('#wh_tyreSerial').val('');
 
         $.ajax({
             url     : getTyreListUrl,
@@ -157,7 +230,6 @@ $(document).ready(function () {
                     return;
                 }
 
-                // Build options with health badge in label
                 let options = '<option value="">— Select Tyre —</option>';
                 tyres.forEach(function (t) {
                     const healthLabel = t.health_pct !== null
@@ -171,7 +243,7 @@ $(document).ready(function () {
                                     data-health="${t.health_pct ?? ''}"
                                     data-rag="${t.rag_status}"
                                     data-brand="${t.tyre_brand ?? ''}"
-                                    data-model="${t.tyre_model ?? ''}">
+                                    data-serial="${t.tyre_serial_number ?? ''}">
                                     ${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}
                                 </option>`;
                 });
@@ -199,11 +271,17 @@ $(document).ready(function () {
     $('#tyreConditionSelect, #tyreTypeSelect').on('change', maybeFetchTyres);
 
 
-    // ── 6. TYRE SELECTED → SHOW HEALTH PREVIEW ───────────────────────────────
+    // ── 7. TYRE SELECTED → HEALTH PREVIEW + AUTO-FILL BRAND/SERIAL ───────────
     $(document).on('change', '#tyreIdSelect', function () {
-        const $opt     = $(this).find('option:selected');
+        const $opt      = $(this).find('option:selected');
         const healthPct = $opt.data('health');
-        const rag      = $opt.data('rag') || 'grey';
+        const rag       = $opt.data('rag') || 'grey';
+        const brand     = $opt.data('brand') || '';
+        const serial    = $opt.data('serial') || '';
+
+        // Auto-fill readonly fields
+        $('#wh_tyreBrand').val(brand);
+        $('#wh_tyreSerial').val(serial);
 
         if (!$(this).val() || healthPct === '') {
             $('#tyreHealthPreview').addClass('d-none');
@@ -236,22 +314,91 @@ $(document).ready(function () {
     });
 
 
-    // ── 7. SAVE — POST TO addTyreToPosition ──────────────────────────────────
+    // ── 8. ODOMETER VALIDATION (client-side) ─────────────────────────────────
+    // Rule a: if fitmentDate >= lastKnownDate → km must be >= lastKnownKm
+    // Rule b: if fitmentDate < lastKnownDate  → any km allowed
+    function validateOdometer() {
+        if (!lastKnownKm || !lastKnownDate) return true;
+
+        const fitDate = $('#fitmentDateInput').val();
+        const kmVal   = $('#kmAtFitmentInput').val();
+
+        if (!fitDate || kmVal === '') {
+            $('#kmOdoWarning').addClass('d-none');
+            return true;
+        }
+
+        const fDate    = new Date(fitDate);
+        const lDate    = new Date(lastKnownDate);
+        const enteredKm = parseFloat(kmVal);
+
+        if (fDate >= lDate && enteredKm < lastKnownKm) {
+            const formatted = lDate.toLocaleDateString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+            $('#kmOdoWarningText').text(
+                'KM must be ≥ ' + lastKnownKm.toLocaleString('en-IN')
+                + ' (last recorded on ' + formatted + ').'
+            );
+            $('#kmOdoWarning').removeClass('d-none');
+            return false;
+        }
+
+        $('#kmOdoWarning').addClass('d-none');
+        return true;
+    }
+
+    $('#fitmentDateInput, #kmAtFitmentInput').on('change input', validateOdometer);
+
+
+    // ── 9. PHOTO THUMBNAIL PREVIEW ────────────────────────────────────────────
+    function setupPhotoPreview(inputId, previewId) {
+        $(document).on('change', '#' + inputId, function () {
+            const file = this.files[0];
+            if (!file) { $('#' + previewId).addClass('d-none'); return; }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $('#' + previewId).find('img').attr('src', e.target.result);
+                $('#' + previewId).removeClass('d-none');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    setupPhotoPreview('photoSerial',   'previewSerial');
+    setupPhotoPreview('photoFitment',  'previewFitment');
+    setupPhotoPreview('photoOdometer', 'previewOdometer');
+
+
+    // ── 10. SAVE — POST VIA FormData (supports file uploads) ──────────────────
     $('#saveAddTyre').on('click', function () {
-        const $btn       = $(this);
-        const mappingId  = $('#addTyreMappingId').val();
-        const tyreId     = $('#tyreIdSelect').val();
-        const fitment    = $('#fitmentDateInput').val();
-        const kmFitment  = $('#kmAtFitmentInput').val();
+        const $btn      = $(this);
+        const source    = $('input[name="tyre_source"]:checked').val();
+        const condition = $('#tyreConditionSelect').val();
+        const type      = $('#tyreTypeSelect').val();
+        const fitment   = $('#fitmentDateInput').val();
+        const km        = $('#kmAtFitmentInput').val();
+        const mappingId = $('#addTyreMappingId').val();
 
         clearFormErrors();
 
-        // Basic client-side guard
+        // Client-side validation
         let hasError = false;
-        if (!$('#tyreConditionSelect').val()) { showError('err_condition',  'Tyre condition is required.'); hasError = true; }
-        if (!$('#tyreTypeSelect').val())      { showError('err_tyre_type',  'Tyre type is required.');      hasError = true; }
-        if (!tyreId)                          { showError('err_tyre_id',    'Please select a tyre.');        hasError = true; }
-        if (!fitment)                         { showError('err_fitment_date','Fitment date is required.');   hasError = true; }
+        if (!source)    { showError('err_tyre_source',    'Tyre source is required.');    hasError = true; }
+        if (!condition) { showError('err_tyre_condition', 'Tyre condition is required.'); hasError = true; }
+        if (!type)      { showError('err_tyre_type',      'Tyre type is required.');      hasError = true; }
+
+        if (source === 'SR Warehouse') {
+            if (!$('#tyreIdSelect').val()) { showError('err_tyre_id', 'Please select a tyre.'); hasError = true; }
+        } else {
+            if (!$('#directTyreBrand').val().trim())  { showError('err_tyre_brand',         'Tyre brand is required.');         hasError = true; }
+            if (!$('#directTyreSerial').val().trim()) { showError('err_tyre_serial_number', 'Tyre serial number is required.'); hasError = true; }
+        }
+
+        if (!fitment) { showError('err_fitment_date', 'Fitment date is required.'); hasError = true; }
+
+        // Odometer check before submit
+        if (!validateOdometer()) { showError('err_km_at_fitment', $('#kmOdoWarningText').text()); hasError = true; }
+
         if (hasError) return;
 
         if (!mappingId) {
@@ -259,34 +406,55 @@ $(document).ready(function () {
             return;
         }
 
+        // Build FormData (needed for file uploads)
+        const fd = new FormData();
+        fd.append('_token',        csrfToken);
+        fd.append('tyre_source',   source);
+        fd.append('tyre_condition', condition);
+        fd.append('tyre_type',     type);
+        fd.append('fitment_date',  fitment);
+        if (km) fd.append('km_at_fitment', km);
+
+        if (source === 'SR Warehouse') {
+            fd.append('tyre_id', $('#tyreIdSelect').val());
+        } else {
+            fd.append('tyre_brand',         $('#directTyreBrand').val().trim());
+            fd.append('tyre_serial_number', $('#directTyreSerial').val().trim());
+        }
+
+        // Attach photos
+        const photoFields = { photo_serial: '#photoSerial', photo_fitment: '#photoFitment', photo_odometer: '#photoOdometer' };
+        $.each(photoFields, function (fieldName, selector) {
+            const input = $(selector)[0];
+            if (input && input.files && input.files[0]) {
+                fd.append(fieldName, input.files[0]);
+            }
+        });
+
         $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
 
         $.ajax({
-            url     : `${addTyreBaseUrl}/${mappingId}/add-tyre`,
-            method  : 'POST',
-            data    : {
-                _token       : csrfToken,
-                tyre_id      : tyreId,
-                fitment_date : fitment,
-                km_at_fitment: kmFitment || null,
-            },
-            dataType: 'json',
-            success : function (res) {
+            url         : `${addTyreBaseUrl}/${mappingId}/add-tyre`,
+            method      : 'POST',
+            data        : fd,
+            contentType : false,
+            processData : false,
+            dataType    : 'json',
+            success     : function (res) {
                 $('#addTyre').modal('hide');
                 Toast.fire({
                     icon   : 'success',
-                    title  : res.message || 'Tyre tagged successfully!',
+                    title  : res.message || 'Tyre allocated successfully!',
                     didClose: function () {
                         window.location.href = res.redirect_url || window.location.href;
                     }
                 });
             },
             error: function (xhr) {
-                $btn.html('<i class="uil uil-save me-1"></i>Save &amp; Tag Tyre').prop('disabled', false);
+                $btn.html('<i class="uil uil-tag-alt me-1"></i>Save &amp; Allocate Tyre').prop('disabled', false);
                 const res = xhr.responseJSON || {};
 
                 if (xhr.status === 422 && res.errors) {
-                    // Show server-side validation errors inline
                     $.each(res.errors, function (field, messages) {
                         showError('err_' + field, messages[0]);
                     });
@@ -299,28 +467,28 @@ $(document).ready(function () {
     });
 
 
-    // ── 8. HELPER: show/clear inline errors ──────────────────────────────────
+    // ── 11. HELPER: show/clear inline errors (Allocate Tyre modal) ───────────
     function showError(id, msg) {
         const $el = $('#' + id);
         $el.text(msg).show();
-        // Also mark corresponding input as invalid
         $el.prev('select, input, .input-group').addClass('is-invalid');
     }
 
     function clearFormErrors() {
-        $('.invalid-feedback').text('').hide();
+        $('#addTyreInlineForm .invalid-feedback').text('').hide();
         $('#addTyreInlineForm select, #addTyreInlineForm input').removeClass('is-invalid');
+        $('#kmOdoWarning').addClass('d-none');
     }
 
 
-    // ── 9. REPLACE BUTTON (stub — future sprint) ──────────────────────────────
+    // ── 12. REPLACE BUTTON (stub — future sprint) ─────────────────────────────
     $(document).on('click', '.btn-replace', function () {
         const pos = $(this).data('position');
         Toast.fire({ icon: 'info', title: 'Replace workflow for ' + pos + ' — coming soon.' });
     });
 
 
-    // ── 10. OPEN ADD SPARE MODAL — RESET FORM ────────────────────────────────
+    // ── 13. OPEN ADD SPARE MODAL — RESET FORM ────────────────────────────────
     $(document).on('click', '.btn-add-spare-slot', function () {
         resetSpareTyreDropdown();
         $('#spareTyreConditionSelect').val('');
@@ -342,7 +510,7 @@ $(document).ready(function () {
     }
 
 
-    // ── 11. SPARE AJAX TYRE DROPDOWN — fires when condition + type are both set ─
+    // ── 14. SPARE AJAX TYRE DROPDOWN ─────────────────────────────────────────
     function maybeFetchSpareTyres() {
         const condition = $('#spareTyreConditionSelect').val();
         const type      = $('#spareTyreTypeSelect').val();
@@ -421,7 +589,7 @@ $(document).ready(function () {
     $('#spareTyreConditionSelect, #spareTyreTypeSelect').on('change', maybeFetchSpareTyres);
 
 
-    // ── 12. SPARE TYRE SELECTED → SHOW HEALTH PREVIEW ────────────────────────
+    // ── 15. SPARE TYRE SELECTED → HEALTH PREVIEW ─────────────────────────────
     $(document).on('change', '#spareTyreIdSelect', function () {
         const $opt      = $(this).find('option:selected');
         const healthPct = $opt.data('health');
@@ -458,7 +626,7 @@ $(document).ready(function () {
     });
 
 
-    // ── 13. SAVE SPARE — POST TO addSpareTyre ────────────────────────────────
+    // ── 16. SAVE SPARE — POST TO addSpareTyre ────────────────────────────────
     $('#saveAddSpare').on('click', function () {
         const $btn      = $(this);
         const tyreId    = $('#spareTyreIdSelect').val();
@@ -513,7 +681,7 @@ $(document).ready(function () {
     });
 
 
-    // ── 14. SPARE HELPERS: show/clear inline errors ──────────────────────────
+    // ── 17. SPARE HELPERS: show/clear inline errors ──────────────────────────
     function showSpareError(id, msg) {
         const $el = $('#' + id);
         $el.text(msg).show();
