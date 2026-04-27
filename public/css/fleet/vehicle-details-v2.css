@@ -1300,6 +1300,41 @@
     text-align: center;
 }
 
+/* ═══════════════════════════════════════════════════
+   COMPACT CARD SPACING — accordion body density
+   Reduces visual padding in Insurance, Fasttag, GPS,
+   Battery, EMI and all other vehicleinfo accordion cards
+════════════════════════════════════════════════════ */
+
+/* Remove Bootstrap's default 1rem accordion-body pad */
+.vehicleinfo-sec .accordion-body {
+    padding: 0 !important;
+}
+
+/* Tighten table cell padding (was 13px 16px) */
+.vehicleinfo-sec .table-responsive02 .table tbody td {
+    padding: 8px 12px !important;
+}
+
+/* Tighten Important Dates table cell padding (was 10px 14px) */
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .table td {
+    padding: 7px 12px !important;
+}
+
+/* Reduce label margin under <p> tags (was 5px) */
+.vehicleinfo-sec .table-responsive02 .table tbody td > p {
+    margin-bottom: 3px !important;
+}
+
+/* Tighten accordion header row itself */
+.vehicleinfo-sec .accordion-header.vehicleinfor_head {
+    padding: 0 !important;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .vehicleinfo_toprow {
+    padding: 6px 12px !important;
+    margin: 0 !important;
+}
+
 /* =====================================================
    EMI BOOK TAB — compact density overrides
    Scoped to #emi_book so nothing else is affected
