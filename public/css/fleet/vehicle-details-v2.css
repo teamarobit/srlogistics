@@ -1300,3 +1300,223 @@
     text-align: center;
 }
 
+/* =====================================================
+   EMI BOOK TAB — compact density overrides
+   Scoped to #emi_book so nothing else is affected
+   ===================================================== */
+
+#emi_book .totalrevenue.mt-3 {
+    margin-top: 8px !important;
+}
+#emi_book .totalrevenue .item-row {
+    padding: 10px 14px;
+}
+#emi_book .totalrevenue .item-row .itemcol p {
+    font-size: 12px;
+    padding-bottom: 2px;
+}
+#emi_book .totalrevenue .item-row .itemcol .number {
+    font-size: 18px;
+    line-height: 1.2;
+}
+#emi_book .nav.nav-pills.mt-3 {
+    margin-top: 8px !important;
+    margin-bottom: 0;
+}
+#emi_book .nav-pills .nav-link {
+    padding: 5px 16px;
+    font-size: 13px;
+    border-radius: 5px;
+}
+/* Loan summary table (Financer / EMI Amount / dates) */
+#emi_book .table.table-bordered td {
+    padding: 7px 10px;
+    font-size: 12.5px;
+}
+#emi_book .table.table-bordered td p {
+    margin-bottom: 2px;
+    font-size: 11px;
+}
+/* EMI records table */
+#emi_book .table.custom-driver-table th,
+#emi_book .table.custom-driver-table td {
+    padding: 6px 10px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+/* Remove extra margin on inner-card inside EMI tab */
+#emi_book .inner-card.p-0.mt-3 {
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+}
+/* Action buttons row */
+#emi_book .itemtop > div:last-child {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+/* Tighten tab-content padding */
+#emi_book .vehiclestable.pt-0 {
+    padding-top: 0 !important;
+}
+#emi_book .itemtop.mb-0.pb-0,
+#emi_book .itemtop.pb-0 {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* =====================================================
+   BATTERY VISUAL LAYOUT (bat-*)
+   Vehicle Details V1 redesign — Battery section
+   ===================================================== */
+
+/* Three-column layout: left cards | truck SVG | right cards */
+.bat-visual-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 200px;
+}
+
+/* Side columns (left & right) — flex grow, hold battery cards */
+.bat-col-side {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Center column — fixed width, sticky so SVG stays visible as cards scroll */
+.bat-col-center {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+}
+
+/* Truck SVG wrapper */
+.bat-truck-wrap {
+    text-align: center;
+    width: 100%;
+}
+.bat-truck-svg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+/* Legend below SVG */
+.bat-truck-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.bat-legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Individual battery card */
+.bat-card {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+/* Card header: label + edit/delete */
+.bat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f1f5fd;
+    border-bottom: 1px solid #e2e8f0;
+}
+.bat-card-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+}
+.bat-card-label-blue {
+    color: #2563eb;
+}
+.bat-card-actions {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+}
+.bat-card-actions a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color .15s;
+}
+.bat-card-actions a:hover { color: #032671; }
+
+/* 2-column grid of data fields inside card */
+.bat-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 4px 0;
+}
+.bat-field {
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f5fd;
+}
+.bat-field:last-child,
+.bat-field:nth-last-child(2):nth-child(odd) {
+    border-bottom: none;
+}
+.bat-field p {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin: 0 0 2px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+.bat-field span {
+    font-size: 12px;
+    color: #334155;
+    font-weight: 500;
+    display: block;
+    word-break: break-word;
+}
+
+/* Responsive: stack columns on tablet */
+@media (max-width: 992px) {
+    .bat-visual-layout {
+        flex-direction: column;
+    }
+    .bat-col-center {
+        width: 100%;
+        position: static;
+        order: -1;
+    }
+    .bat-col-side {
+        width: 100%;
+    }
+    .bat-truck-svg {
+        max-width: 260px;
+    }
+}
+
