@@ -28,6 +28,10 @@ class TyrepositionSeeder extends Seeder
             ['code' => 'Di4', 'description' => 'Driver Inside 4', 'status' => 'Active', 'created_at' => now(), 'updated_at' => now()],
             ['code' => 'Do5', 'description' => 'Driver Outside 5', 'status' => 'Active', 'created_at' => now(), 'updated_at' => now()],
 
+            // 12-wheel — trailing single axle (one tyre per side, no inner/outer)
+            ['code' => 'C6',  'description' => 'Conductor 6', 'status' => 'Active', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'D6',  'description' => 'Driver 6',    'status' => 'Active', 'created_at' => now(), 'updated_at' => now()],
+
             // Stepney
             ['code' => 'S1',  'description' => 'Stepney 1', 'status' => 'Active', 'created_at' => now(), 'updated_at' => now()],
         ];
