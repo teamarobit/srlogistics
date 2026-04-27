@@ -27,20 +27,10 @@ const Toast = Swal.mixin({
 
 $(document).ready(function () {
 
-    // ── 1. LOAD & RAG-COLOR SVG ──────────────────────────────────────────────
-    const svgMap   = { 6: sixWheelTruckPath, 10: tenWheelTruckPath };
-    const tyreCount = parseInt($('#type').val(), 10) || 6;
-    const svgPath  = svgMap[tyreCount] || svgMap[6];
-
-    if (svgPath) {
-        $.get(svgPath, function (svgData) {
-            $('#container-img').html(svgData);
-            applyRagColors();
-            showMountedCards(tyreCount);
-        }, 'text').fail(function () {
-            $('#container-img').html('<p class="text-muted text-center small mt-3">SVG not available</p>');
-        });
-    }
+    // ── 1. RAG-COLOR SVG (inline SVG — no fetch needed) ─────────────────────
+    const tyreCount = parseInt($('#type').val(), 10) || 10;
+    applyRagColors();
+    showMountedCards(tyreCount);
 
     function applyRagColors() {
         if (typeof tyreRagData === 'undefined') return;

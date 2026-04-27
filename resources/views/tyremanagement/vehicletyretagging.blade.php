@@ -63,10 +63,159 @@
                             <span id="svgPanelTitle">Truck Tyre Layout</span>
                         </div>
 
-                        {{-- Hidden input the JS reads to pick SVG --}}
+                        {{-- Hidden input the JS reads to show/hide mounted cards --}}
                         <input hidden id="type" value="{{ $vehicle->mounted_tyre_count }}" />
 
-                        <div id="container-img" class="svg-container"></div>
+                        {{-- ── INLINE TRUCK SVG (matches vehicle-details-v2 design) ── --}}
+                        <div id="container-img" class="svg-container">
+                            <svg id="taggingTruckSvg" viewBox="0 0 220 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px;margin:0 auto;display:block;">
+
+                                {{-- ▲ Direction --}}
+                                <text x="110" y="48" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700" letter-spacing="1">▲ FRONT</text>
+
+                                {{-- Truck outer body shadow/frame --}}
+                                <rect x="57" y="70" width="106" height="354" rx="16" fill="#e2e8f0" stroke="none"/>
+
+                                {{-- Truck main body --}}
+                                <rect x="59" y="72" width="102" height="350" rx="14" fill="#f0f3f9" stroke="#c8d4e8" stroke-width="1.5"/>
+
+                                {{-- Cab section background --}}
+                                <rect x="59" y="72" width="102" height="108" rx="14" fill="#dce7ff" stroke="#b0c4f0" stroke-width="1.5"/>
+
+                                {{-- Windshield --}}
+                                <rect x="71" y="80" width="78" height="34" rx="6" fill="#b8d0f5" opacity="0.85"/>
+                                {{-- Windshield glare --}}
+                                <line x1="77" y1="83" x2="77" y2="111" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                                <line x1="83" y1="81" x2="83" y2="113" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.25"/>
+
+                                {{-- Hood / front bonnet --}}
+                                <rect x="71" y="116" width="78" height="14" rx="3" fill="#c8d8f0" stroke="#b0c4e8" stroke-width="1"/>
+
+                                {{-- Side mirrors --}}
+                                <rect x="45" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                <rect x="161" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                {{-- Mirror stems --}}
+                                <line x1="59" y1="88" x2="65" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+                                <line x1="155" y1="88" x2="161" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+
+                                {{-- Cab label --}}
+                                <text x="110" y="160" text-anchor="middle" font-size="7" fill="#7b93c4" font-weight="600" letter-spacing="1.5">CAB</text>
+                                {{-- Cab/cargo separator --}}
+                                <line x1="64" y1="180" x2="156" y2="180" stroke="#c8d4e8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+                                {{-- Cargo body --}}
+                                <rect x="63" y="182" width="94" height="236" rx="4" fill="#f5f7fb" stroke="#dce3f0" stroke-width="1"/>
+                                {{-- Cargo panel lines --}}
+                                <line x1="63" y1="228" x2="157" y2="228" stroke="#e0e8f4" stroke-width="1"/>
+                                <line x1="63" y1="310" x2="157" y2="310" stroke="#e0e8f4" stroke-width="1"/>
+                                <line x1="63" y1="392" x2="157" y2="392" stroke="#e0e8f4" stroke-width="1"/>
+                                {{-- Cargo label --}}
+                                <text x="110" y="266" text-anchor="middle" font-size="7" fill="#b0bcce" letter-spacing="2">CARGO</text>
+
+                                {{-- ─── AXLE RODS ─── --}}
+                                {{-- Front axle rod --}}
+                                <rect x="30" y="124" width="160" height="4" rx="2" fill="#c0ccde"/>
+                                <circle cx="42" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="178" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                {{-- Rear axle 1 rod --}}
+                                <rect x="16" y="280" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                <circle cx="29" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="50" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="170" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="191" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                {{-- Rear axle 2 rod --}}
+                                <rect x="16" y="370" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                <circle cx="29" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="50" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="170" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                <circle cx="191" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                {{-- Axle labels --}}
+                                <text x="110" y="119" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">FRONT AXLE</text>
+                                <text x="110" y="276" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 1</text>
+                                <text x="110" y="366" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 2</text>
+
+                                {{-- SPARE label --}}
+                                <text x="110" y="226" text-anchor="middle" font-size="5.5" fill="#adb5bd" letter-spacing="0.5">SPARE</text>
+
+                                {{-- ── TYRE POSITIONS (each wrapped in .tyre-group for JS RAG + hover) ── --}}
+
+                                {{-- C1 — Front Left Steer --}}
+                                <g class="tyre-group" data-code="C1">
+                                    <rect x="30" y="109" width="24" height="34" rx="5" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="42" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">C1</text>
+                                </g>
+
+                                {{-- D1 — Front Right Steer --}}
+                                <g class="tyre-group" data-code="D1">
+                                    <rect x="166" y="109" width="24" height="34" rx="5" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="178" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">D1</text>
+                                </g>
+
+                                {{-- Co3 — Rear Axle 1, Left Outer --}}
+                                <g class="tyre-group" data-code="Co3">
+                                    <rect x="20" y="267" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="29" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co3</text>
+                                </g>
+
+                                {{-- Ci2 — Rear Axle 1, Left Inner --}}
+                                <g class="tyre-group" data-code="Ci2">
+                                    <rect x="41" y="267" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="50" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci2</text>
+                                </g>
+
+                                {{-- Di2 — Rear Axle 1, Right Inner --}}
+                                <g class="tyre-group" data-code="Di2">
+                                    <rect x="160" y="267" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="169" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di2</text>
+                                </g>
+
+                                {{-- Do3 — Rear Axle 1, Right Outer --}}
+                                <g class="tyre-group" data-code="Do3">
+                                    <rect x="181" y="267" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="190" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do3</text>
+                                </g>
+
+                                {{-- Co5 — Rear Axle 2, Left Outer --}}
+                                <g class="tyre-group" data-code="Co5">
+                                    <rect x="20" y="357" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="29" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co5</text>
+                                </g>
+
+                                {{-- Ci4 — Rear Axle 2, Left Inner --}}
+                                <g class="tyre-group" data-code="Ci4">
+                                    <rect x="41" y="357" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="50" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci4</text>
+                                </g>
+
+                                {{-- Di4 — Rear Axle 2, Right Inner --}}
+                                <g class="tyre-group" data-code="Di4">
+                                    <rect x="160" y="357" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="169" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di4</text>
+                                </g>
+
+                                {{-- Do5 — Rear Axle 2, Right Outer --}}
+                                <g class="tyre-group" data-code="Do5">
+                                    <rect x="181" y="357" width="19" height="30" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="190" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do5</text>
+                                </g>
+
+                                {{-- S1 — Spare 1 --}}
+                                <g class="tyre-group" data-code="S1">
+                                    <rect x="87" y="230" width="21" height="26" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="97" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S1</text>
+                                </g>
+
+                                {{-- S2 — Spare 2 --}}
+                                <g class="tyre-group" data-code="S2">
+                                    <rect x="112" y="230" width="21" height="26" rx="4" fill="#adb5bd" stroke="#fff" stroke-width="1.5"/>
+                                    <text x="122" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S2</text>
+                                </g>
+
+                            </svg>
+                        </div>
 
                         {{-- RAG legend --}}
                         <div class="rag-legend mt-3">

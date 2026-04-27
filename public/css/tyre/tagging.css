@@ -93,19 +93,29 @@
     cursor: pointer;
 }
 .tyre-group:hover path,
-.tyre-group.hovered path {
+.tyre-group:hover rect,
+.tyre-group.hovered path,
+.tyre-group.hovered rect {
     fill: #032671;
     opacity: 0.85;
 }
-.tyre-group.rag-green  path { fill: #28a745; }
-.tyre-group.rag-amber  path { fill: #ffc107; }
-.tyre-group.rag-red    path { fill: #dc3545; }
-.tyre-group.rag-grey   path { fill: #adb5bd; }
+.tyre-group.rag-green  path,
+.tyre-group.rag-green  rect { fill: #28a745; }
+.tyre-group.rag-amber  path,
+.tyre-group.rag-amber  rect { fill: #ffc107; }
+.tyre-group.rag-red    path,
+.tyre-group.rag-red    rect { fill: #dc3545; }
+.tyre-group.rag-grey   path,
+.tyre-group.rag-grey   rect { fill: #adb5bd; }
+.tyre-group.rag-untagged path,
+.tyre-group.rag-untagged rect { fill: #adb5bd; }
 .tyre-group.rag-green text,
 .tyre-group.rag-amber text,
 .tyre-group.rag-red text,
-.tyre-group.rag-grey text  { fill: #fff; font-weight: 600; }
-.tyre-group.active-svg path { stroke: #032671; stroke-width: 2; }
+.tyre-group.rag-grey text,
+.tyre-group.rag-untagged text { fill: #fff; font-weight: 600; }
+.tyre-group.active-svg path,
+.tyre-group.active-svg rect { stroke: #032671; stroke-width: 2; }
 
 /* ── TYRE CARD ───────────────────────────────────────────────────────────── */
 .tyre-card {
