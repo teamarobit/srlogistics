@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=3.8') }}">
+<link rel="stylesheet" href="{{ asset('css/Fleet/vehicle-details-v2.css?v=4.3') }}">
 
 @endsection
 
@@ -89,14 +89,9 @@
                     <span class="v2-id-status {{ strtolower($vehicle->status ?? 'active') === 'active' ? 'active' : 'inactive' }}">
                         {{ $vehicle->status ?? 'Active' }}
                     </span>
-                    {{-- V1 status badges integrated into header --}}
-                    @if($rcOk)
-                    <span class="v2-id-badge-rc"><i class="uil uil-shield-check"></i> RC Verified</span>
-                    @endif
-                    <span class="v2-id-badge-fleet"><i class="uil uil-truck"></i> Fleet: On Trip</span>
                 </div>
                 <div class="v2-id-sub">
-                    {{ $vehicle->vehicletype->name ?? 'HCV' }} &middot; Truck
+                    {{ $vehicle->vehicletype->name ?? 'Vehicle' }}
                     @if($vehicle->group) &middot; {{ $vehicle->group->name }} @endif
                 </div>
             </div>
@@ -131,6 +126,11 @@
                 <button class="btn btn-sm" onclick="$('[data-bs-target=\'#vahanModal\']').click()" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
                     <i class="uil uil-refresh me-1"></i>Refresh Vahan
                 </button>
+                <a href="{{ route('vehiclemanagement.edit', $vehicle->id) }}"
+                   class="btn btn-sm"
+                   style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                    <i class="uil uil-cog me-1"></i>Manage
+                </a>
                 <a href="{{ route('fleetdashboard.getVehicleDetailsV2', $vehicle->id) }}"
                    class="btn btn-sm"
                    style="background:#032671;color:#fff;border:1px solid #032671;font-size:11px;font-weight:600;">
@@ -1014,7 +1014,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1083,7 +1085,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1426,7 +1430,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1494,7 +1500,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -6305,7 +6313,7 @@
      Populated via vehicle-details-tyre.js
 ═══════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="vtdTyreDetailModal" tabindex="-1" aria-labelledby="vtdTyreDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
         <div class="modal-content vtd-modal-content">
             <div class="modal-header vtd-modal-header" id="vtdModalHeader">
                 <div class="d-flex align-items-center gap-2">
@@ -6317,7 +6325,7 @@
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body vtd-modal-body" id="vtdModalBody">
+            <div class="modal-body vtd-modal-body vtd-modal-body-scroll" id="vtdModalBody">
                 {{-- Populated by JS --}}
             </div>
             <div class="modal-footer vtd-modal-footer">
@@ -6340,7 +6348,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=2.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.4') }}"></script>
 
 <script>
 
