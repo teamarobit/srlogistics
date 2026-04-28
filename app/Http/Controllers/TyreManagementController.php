@@ -339,14 +339,16 @@ class TyreManagementController extends Controller
                 foreach ($photoSlots as $inputName => $label) {
                     if ($request->hasFile($inputName)) {
                         $file     = $request->file($inputName);
+                        $file_type = $file->getClientMimeType();
+                        $file_size = $file->getSize();
                         $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
                         $file->move(public_path('medias' . DIRECTORY_SEPARATOR . 'tyre' . DIRECTORY_SEPARATOR), $fileName);
                         $mediaData[] = [
                             'type'       => 'Image',
                             'file_name'  => '[' . $label . '] ' . $file->getClientOriginalName(),
                             'file_path'  => 'tyre/' . $fileName,
-                            'file_type'  => $file->getClientMimeType(),
-                            'file_size'  => $file->getSize(),
+                            'file_type'  => $file_type,
+                            'file_size'  => $file_size,
                             'created_by' => $userId,
                             'created_at' => now(),
                             'updated_at' => now(),
