@@ -131,6 +131,96 @@ class TyreManagementController extends Controller
         return view('tyremanagement.tyre-fitment', compact('vehicle'));
     }
 
+    public function vehicleTyreTaggingV2(Vehicle $vehicle)
+    {
+        // Same initialisation logic as vehicleTyreTagging — creates mappings if none exist
+        $mounted_tyrepositions = Tyreposition::where('status', 'Active')->take($vehicle->mounted_tyre_count)->get();
+        if (!$vehicle->vehicletyremappings()->count()) {
+            if ($mounted_tyrepositions->count()) {
+                foreach ($mounted_tyrepositions as $mounted_tyreposition) {
+                    $data = [
+                        'vehicle_id'        => $vehicle->id,
+                        'tyre_id'           => null,
+                        'tyreposition_id'   => $mounted_tyreposition->id,
+                        'status'            => 'Inactive',
+                        'created_by'        => Auth::id(),
+                        'created_at'        => now(),
+                    ];
+                    $vehicletyremapping = Vehicletyremapping::create($data);
+                    $data['vehicletyremapping_id'] = $vehicletyremapping->id;
+                    Vehicletyremappinglog::create($data);
+                }
+            } else {
+                return redirect()->back();
+            }
+        }
+
+        // Eager-load relations
+        $vehicle->load([
+            'vehicletyremappings.tyreposition',
+            'vehicletyremappings.tyre.medias',
+            'vehicletyremappings.tyre.maintenanceSchedules',
+        ]);
+
+        // Compute derived metrics (identical to v1)
+        foreach ($vehicle->vehicletyremappings as $mapping) {
+            $tyre = $mapping->tyre;
+            if (!$tyre) {
+                $mapping->rag_status                = 'untagged';
+                $mapping->life_remaining_pct        = null;
+                $mapping->remaining_run_km          = null;
+                $mapping->remaining_life_months     = null;
+                $mapping->warranty_remaining_months = null;
+                continue;
+            }
+
+            $lifeRemainingPct = null;
+            if ($tyre->fixed_run_km > 0) {
+                $lifeRemainingPct = max(0, round((($tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) / $tyre->fixed_run_km) * 100, 1));
+            }
+
+            if ($lifeRemainingPct === null) {
+                $ragStatus = 'grey';
+            } elseif ($lifeRemainingPct >= 50) {
+                $ragStatus = 'green';
+            } elseif ($lifeRemainingPct >= 20) {
+                $ragStatus = 'amber';
+            } else {
+                $ragStatus = 'red';
+            }
+
+            $remainingRunKm      = $tyre->fixed_run_km > 0 ? max(0, $tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) : null;
+            $remainingLifeMonths = null;
+            if ($tyre->fixed_life_months > 0 && $mapping->fitment_date) {
+                $monthsRun = (int) Carbon::parse($mapping->fitment_date)->diffInMonths(now());
+                $remainingLifeMonths = max(0, $tyre->fixed_life_months - $monthsRun);
+            }
+            $warrantyRemainingMonths = null;
+            if ($tyre->tyre_warrenty_end_date) {
+                $warrantyRemainingMonths = max(0, (int) now()->diffInMonths(Carbon::parse($tyre->tyre_warrenty_end_date), false));
+            }
+
+            $mapping->rag_status                = $ragStatus;
+            $mapping->life_remaining_pct        = $lifeRemainingPct;
+            $mapping->remaining_run_km          = $remainingRunKm;
+            $mapping->remaining_life_months     = $remainingLifeMonths;
+            $mapping->warranty_remaining_months = $warrantyRemainingMonths;
+        }
+
+        $tyrepositions = Tyreposition::where('status', 'Active')->get();
+
+        $lastMappingWithKm = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+            ->whereNotNull('km_at_fitment')
+            ->whereNotNull('fitment_date')
+            ->orderBy('km_at_fitment', 'desc')
+            ->first(['km_at_fitment', 'fitment_date']);
+
+        $lastKnownKm   = $lastMappingWithKm ? (int) $lastMappingWithKm->km_at_fitment : null;
+        $lastKnownDate = $lastMappingWithKm ? $lastMappingWithKm->fitment_date          : null;
+
+        return view('tyremanagement.vehicletyretagging-v2', compact('tyrepositions', 'vehicle', 'lastKnownKm', 'lastKnownDate'));
+    }
+
     public function tagTyreToVehicle(Request $request, Vehicle $vehicle){
         $rules = [];
         

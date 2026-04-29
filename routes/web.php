@@ -398,6 +398,7 @@ Route::group(['middleware' => ['auth']], function() {
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
+        Route::get('/vehicle/{vehicle}/tyre/tagging-v2', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTaggingV2'])->name('vehicle.tyre.tagging.v2');
         Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
         // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
