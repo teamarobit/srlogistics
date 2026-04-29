@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=3.6') }}">
+<link rel="stylesheet" href="{{ asset('css/Fleet/vehicle-details-v2.css?v=4.3') }}">
 @endsection
 
 @section('content')
@@ -1342,7 +1342,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1411,7 +1413,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1499,7 +1503,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1567,7 +1573,9 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}">
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -6796,7 +6804,7 @@
      View Details on a card or clicks a tyre on the SVG.
 ═══════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="vtdTyreDetailModal" tabindex="-1" aria-labelledby="vtdTyreDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
         <div class="modal-content vtd-modal-content">
             <div class="modal-header vtd-modal-header" id="vtdModalHeader">
                 <div class="d-flex align-items-center gap-2">
@@ -6808,7 +6816,7 @@
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body vtd-modal-body" id="vtdModalBody">
+            <div class="modal-body vtd-modal-body vtd-modal-body-scroll" id="vtdModalBody">
                 {{-- Populated by JS --}}
             </div>
             <div class="modal-footer vtd-modal-footer">
@@ -6833,7 +6841,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=2.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.4') }}"></script>
 
 <script>
 

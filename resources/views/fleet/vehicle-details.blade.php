@@ -1,98 +1,342 @@
 @extends('layouts.app')
 
 @section('css')
-    
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=0.02') }}">
-<link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=0.02') }}">
-    
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/Fleet/vehicle-details-v2.css?v=4.3') }}">
+
 @endsection
 
 @section('content')
 
     
-    
+
 <div class="layout-wrapper">
-    
+
     @include('includes.header')
-    
-    <!--bottom header-->
-    <div class="vehicledtl-bd srlog-bdwrapper">
-        <div class="topbar-bd">
-            <div class="item1">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <h1>Vehicle Details</h1>
-                        </div>
-                        <div class="col-12 col-md-6 text-end">
-                            <button class="btn btn-theme mt-1"><i class="uil uil-refresh me-1"></i>Refresh Vahan Details</button>
-                        </div>
-                    </div>
-                    
+
+    @php
+        /* ── Compliance health calculations ── */
+        $rcOk      = ($vehicle->basicinfo->registration_status ?? '') === 'Active';
+
+        $insExpiry = $vehicle->basicinfo->insurance_expiry ?? null;
+        $insExp    = $insExpiry ? \Carbon\Carbon::parse($insExpiry) : null;
+        $insDays   = $insExp ? (int) now()->diffInDays($insExp, false) : null;
+        $insHealth = !$insExp ? 'grey'
+                   : ($insDays < 0   ? 'red'
+                   : ($insDays <= 30  ? 'red'
+                   : ($insDays <= 90  ? 'amber' : 'green')));
+
+        $permitExpiry = $vehicle->basicinfo->permit_expiry ?? null;
+        $permitExp    = $permitExpiry ? \Carbon\Carbon::parse($permitExpiry) : null;
+        $permitDays   = $permitExp ? (int) now()->diffInDays($permitExp, false) : null;
+        $permitHealth = !$permitExp ? 'grey'
+                      : ($permitDays < 0   ? 'red'
+                      : ($permitDays <= 30  ? 'red'
+                      : ($permitDays <= 90  ? 'amber' : 'green')));
+
+        $fitnessExpiry = $vehicle->basicinfo->fitness_expiry ?? null;
+        $fitnessExp    = $fitnessExpiry ? \Carbon\Carbon::parse($fitnessExpiry) : null;
+        $fitnessDays   = $fitnessExp ? (int) now()->diffInDays($fitnessExp, false) : null;
+        $fitnessHealth = !$fitnessExp ? 'grey'
+                       : ($fitnessDays < 0   ? 'red'
+                       : ($fitnessDays <= 30  ? 'red'
+                       : ($fitnessDays <= 90  ? 'amber' : 'green')));
+
+        $puccExpiry = $vehicle->basicinfo->pucc_expiry ?? null;
+        $puccExp    = $puccExpiry ? \Carbon\Carbon::parse($puccExpiry) : null;
+        $puccDays   = $puccExp ? (int) now()->diffInDays($puccExp, false) : null;
+        $puccHealth = !$puccExp ? 'grey' : ($puccDays < 0 ? 'red' : ($puccDays <= 30 ? 'red' : ($puccDays <= 90 ? 'amber' : 'green')));
+
+        $taxExpiry = $vehicle->basicinfo->tax_expiry ?? null;
+        $taxExp    = $taxExpiry ? \Carbon\Carbon::parse($taxExpiry) : null;
+        $taxDays   = $taxExp ? (int) now()->diffInDays($taxExp, false) : null;
+        $taxHealth = !$taxExp ? 'grey' : ($taxDays < 0 ? 'red' : ($taxDays <= 30 ? 'red' : ($taxDays <= 90 ? 'amber' : 'green')));
+
+        /* Worst compliance health wins the column border */
+        $complianceScores = array_map(fn($h) => match($h) { 'red'=>3, 'amber'=>2, 'green'=>1, default=>0 },
+            [$rcOk ? 'green' : 'red', $insHealth, $permitHealth, $fitnessHealth, $puccHealth, $taxHealth]);
+        $colCompliance = match(max($complianceScores)) { 3=>'red', 2=>'amber', 1=>'green', default=>'grey' };
+
+        /* ── Finance ── */
+        $chassisEmi = is_object($chassisLoan) && isset($chassisLoan->emi_amount) ? $chassisLoan->emi_amount : 0;
+        $bodyEmi    = is_object($bodyLoan)    && isset($bodyLoan->emi_amount)    ? $bodyLoan->emi_amount    : 0;
+        $colFinance = $totalEmi > 0 ? 'green' : 'grey';
+    @endphp
+
+    <div class="srlog-bdwrapper" style="background:#f0f3fa;">
+
+    {{-- ═══ V2 INTELLIGENCE HEADER ═══ --}}
+    <div class="v2-header-zone">
+
+        {{-- ── IDENTITY BAR ── --}}
+        <div class="v2-id-bar">
+
+            {{-- Vehicle icon with RC status dot --}}
+            <div class="v2-id-icon-wrap">
+                <img src="{{ asset('images/icons/car-icon04.png') }}" alt="">
+                <span class="v2-id-rc-dot {{ $rcOk ? 'ok' : 'bad' }}"
+                      title="{{ $rcOk ? 'RC Active' : 'RC Inactive' }}"></span>
+            </div>
+
+            {{-- Vehicle number + type --}}
+            <div>
+                <div class="v2-id-vno">
+                    {{ $vehicle->vehicle_no ?? '—' }}
+                    <span class="v2-id-status {{ strtolower($vehicle->status ?? 'active') === 'active' ? 'active' : 'inactive' }}">
+                        {{ $vehicle->status ?? 'Active' }}
+                    </span>
+                </div>
+                <div class="v2-id-sub">
+                    {{ $vehicle->vehicletype->name ?? 'Vehicle' }}
+                    @if($vehicle->group) &middot; {{ $vehicle->group->name }} @endif
                 </div>
             </div>
 
-            <div class="item2">
-                <div class="container-fluid">
-                    <div class="row align-items-center">
-                        <div class="col-lg-6">
-                            <div class="ltblock">
-                                <div class="icon_car {{ $vehicle->basicinfo->registration_status == 'Active' ? 'reg-active' : 'reg-inactive' }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ $vehicle->basicinfo->registration_status == 'Active' ? 'Registration Active' : 'Registration Inactive' }}">
-                                    <img src="{{ asset('images/icons/car-icon04.png') }}" />
-                                </div>
+            <div class="v2-id-sep"></div>
 
-                                <div class="text">
-                                    <div class="topsec">
-                                        <p>{{ $vehicle->vehicle_no ?? '-' }}</p>
-                                        <span class="addbtn">Add TAG <i class="uil uil-plus"></i></span>
-                                    </div>
-
-                                    <span class="cartype">Truck</span>
-                                    <span class="cartype">
-                                        Driver: {{ $vehicle->driverAllocation?->contact?->contact_name ?? 'Not Assigned' }} 
-                                        <a data-id="{{ $vehicle->id }}" class="edit-driver-btn" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#notAssigned02"><i class="uil uil-pen"></i></a>
-                                    </span>
-                                </div>
-
-                                <div class="liveloc_sec">
-                                    <span>Live Location</span>
-                                    <p>Delhi</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="rtblock">
-                                <div class="item-btn c_green">
-                                    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>
-                                    <div class="text">
-                                        <p>RC Verified</p>
-                                    </div>
-                                </div>
-
-                                <div class="item-btn c_blue">
-                                    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>
-                                    <div class="text">
-                                        <span>Trip Fleet Status</span>
-                                        <p>Maintenance</p>
-                                    </div>
-                                </div>
-
-                                <div class="item-btn c_green">
-                                    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>
-                                    <div class="text">
-                                        <span>Fleet Status</span>
-                                        <p>On Trip</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            {{-- Driver --}}
+            <div>
+                <div class="v2-id-field-label">Driver</div>
+                <div class="v2-id-field-value">
+                    {{ $vehicle->driverAllocation->contact->contact_name ?? 'Unassigned' }}
+                    <a class="v2-id-edit-link" href="javascript:void(0)"
+                       data-id="{{ $vehicle->id }}" data-bs-toggle="modal" data-bs-target="#notAssigned02">
+                        <i class="uil uil-pen"></i>
+                    </a>
                 </div>
+                <div class="v2-id-field-sub">{{ $vehicle->driverAllocation->contact->phone ?? '—' }}</div>
+            </div>
+
+            <div class="v2-id-sep"></div>
+
+            {{-- Live location --}}
+            <div>
+                <div class="v2-id-field-label">Live Location</div>
+                <div class="v2-id-field-value">Delhi</div>
+                <div class="v2-id-field-sub">Last updated: just now</div>
+            </div>
+
+            {{-- Actions flush right --}}
+            <div class="v2-id-actions">
+                <span class="v2-id-tag-btn">Add TAG <i class="uil uil-plus"></i></span>
+                <button class="btn btn-sm" onclick="$('[data-bs-target=\'#vahanModal\']').click()" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                    <i class="uil uil-refresh me-1"></i>Refresh Vahan
+                </button>
+                <a href="{{ route('vehiclemanagement.edit', $vehicle->id) }}"
+                   class="btn btn-sm"
+                   style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                    <i class="uil uil-cog me-1"></i>Manage
+                </a>
+                <a href="{{ route('fleetdashboard.getVehicleDetailsV2', $vehicle->id) }}"
+                   class="btn btn-sm"
+                   style="background:#032671;color:#fff;border:1px solid #032671;font-size:11px;font-weight:600;">
+                    View V2 →
+                </a>
             </div>
         </div>
+
+        {{-- ── INTELLIGENCE GRID ── --}}
+        <div class="v2-intel-grid">
+
+            {{-- COLUMN 1 — COMPLIANCE --}}
+            <div class="v2-intel-col health-{{ $colCompliance }}">
+                <div class="v2-intel-col-title">
+                    <i class="uil uil-shield"></i> Compliance &amp; Insurance
+                </div>
+
+                {{-- RC --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">RC / Registration</span>
+                    <span class="v2-intel-val {{ $rcOk ? 'ok' : 'danger' }}">
+                        {{ $rcOk ? '✓ Verified' : '✗ Inactive' }}
+                    </span>
+                </div>
+
+                {{-- Insurance --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Insurance</span>
+                    @if($insExp)
+                        <span class="v2-intel-val {{ $insHealth === 'red' ? 'danger' : ($insHealth === 'amber' ? 'warn' : 'ok') }}">
+                            {{ $insExp->format('d M Y') }}
+                            <span class="v2-intel-val-sub">
+                                @if($insDays < 0) Expired {{ abs($insDays) }}d ago
+                                @else {{ $insDays }}d left @endif
+                            </span>
+                        </span>
+                    @else
+                        <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                    @endif
+                </div>
+
+                {{-- Permit --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Permit</span>
+                    @if($permitExp)
+                        <span class="v2-intel-val {{ $permitHealth === 'red' ? 'danger' : ($permitHealth === 'amber' ? 'warn' : 'ok') }}">
+                            {{ $permitExp->format('d M Y') }}
+                            <span class="v2-intel-val-sub">
+                                @if($permitDays < 0) Expired @else {{ $permitDays }}d left @endif
+                            </span>
+                        </span>
+                    @else
+                        <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                    @endif
+                </div>
+
+                {{-- Fitness --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Fitness</span>
+                    @if($fitnessExp)
+                        <span class="v2-intel-val {{ $fitnessHealth === 'red' ? 'danger' : ($fitnessHealth === 'amber' ? 'warn' : 'ok') }}">
+                            {{ $fitnessExp->format('d M Y') }}
+                            <span class="v2-intel-val-sub">
+                                @if($fitnessDays < 0) Expired @else {{ $fitnessDays }}d left @endif
+                            </span>
+                        </span>
+                    @else
+                        <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                    @endif
+                </div>
+
+                {{-- PUC --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">PUC</span>
+                    @if($puccExp)
+                        <span class="v2-intel-val {{ $puccHealth === 'red' ? 'danger' : ($puccHealth === 'amber' ? 'warn' : 'ok') }}">
+                            {{ $puccExp->format('d M Y') }}
+                            <span class="v2-intel-val-sub">
+                                @if($puccDays < 0) Expired @else {{ $puccDays }}d left @endif
+                            </span>
+                        </span>
+                    @else
+                        <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                    @endif
+                </div>
+
+                {{-- Road Tax --}}
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Road Tax</span>
+                    @if($taxExp)
+                        <span class="v2-intel-val {{ $taxHealth === 'red' ? 'danger' : ($taxHealth === 'amber' ? 'warn' : 'ok') }}">
+                            {{ $taxExp->format('d M Y') }}
+                            <span class="v2-intel-val-sub">
+                                @if($taxDays < 0) Expired @else {{ $taxDays }}d left @endif
+                            </span>
+                        </span>
+                    @else
+                        <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                    @endif
+                </div>
+
+                <hr class="v2-intel-divider">
+                <a href="javascript:void(0)"
+                   class="v2-intel-action"
+                   data-bs-toggle="modal" data-bs-target="#newClaimModal">
+                    <i class="uil uil-file-plus-alt"></i> Raise Insurance Claim
+                </a>
+            </div>
+
+            {{-- COLUMN 2 — OPERATIONS --}}
+            <div class="v2-intel-col health-green">
+                <div class="v2-intel-col-title">
+                    <i class="uil uil-truck"></i> Operations
+                </div>
+
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Trip Status</span>
+                    <span class="v2-intel-val ok">On Trip</span>
+                </div>
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Fleet Status</span>
+                    <span class="v2-intel-val warn">Maintenance</span>
+                </div>
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Tyres Mounted</span>
+                    <span class="v2-intel-val">{{ $vehicle->mounted_tyre_count ?? '—' }}</span>
+                </div>
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Documents</span>
+                    <span class="v2-intel-val {{ ($expired_doc_count ?? 0) > 0 ? 'danger' : (($expiring_doc_count ?? 0) > 0 ? 'warn' : 'ok') }}">
+                        {{ $total_doc_count ?? 0 }} total
+                        <span class="v2-intel-val-sub">
+                            @if(($expired_doc_count ?? 0) > 0)
+                                {{ $expired_doc_count }} expired
+                            @elseif(($expiring_doc_count ?? 0) > 0)
+                                {{ $expiring_doc_count }} expiring soon
+                            @else
+                                All valid
+                            @endif
+                        </span>
+                    </span>
+                </div>
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Ownership</span>
+                    <span class="v2-intel-val">{{ $vehicle->ownership_type ?? '—' }}</span>
+                </div>
+
+                <hr class="v2-intel-divider">
+                <a href="javascript:void(0)" class="v2-intel-action">
+                    <i class="uil uil-map-marker"></i> Track Live
+                </a>
+            </div>
+
+            {{-- COLUMN 3 — FINANCE --}}
+            <div class="v2-intel-col health-{{ $colFinance }}">
+                <div class="v2-intel-col-title">
+                    <i class="uil uil-bill"></i> Finance
+                </div>
+
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Total Monthly EMI</span>
+                    <span class="v2-intel-val" style="font-size:15px;">
+                        @if($totalEmi > 0) ₹{{ number_format($totalEmi) }}
+                        @else <span style="color:#9098b1;">—</span>
+                        @endif
+                    </span>
+                </div>
+
+                @if($chassisEmi > 0)
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Chassis EMI</span>
+                    <span class="v2-intel-val">₹{{ number_format($chassisEmi) }}</span>
+                </div>
+                @endif
+
+                @if($bodyEmi > 0)
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Body EMI</span>
+                    <span class="v2-intel-val">₹{{ number_format($bodyEmi) }}</span>
+                </div>
+                @endif
+
+                @if(is_object($chassisLoan) && isset($chassisLoan->financeprovider_id))
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Financer</span>
+                    <span class="v2-intel-val">{{ optional($chassisLoan->financeprovider)->name ?? '—' }}</span>
+                </div>
+                @endif
+
+                <div class="v2-intel-row">
+                    <span class="v2-intel-lbl">Ownership Type</span>
+                    <span class="v2-intel-val">{{ $vehicle->ownership_type ?? '—' }}</span>
+                </div>
+
+                <hr class="v2-intel-divider">
+                <a href="javascript:void(0)" class="v2-intel-action"
+                   onclick="var btn=document.querySelector('[data-bs-target=\'#emi_book\']'); if(btn) btn.click();">
+                    <i class="uil uil-book-open"></i> View EMI Book
+                </a>
+            </div>
+
+        </div>{{-- end intel-grid --}}
+    </div>{{-- end header-zone --}}
+
+    {{-- vehicledtl-bd wraps the inner accordion/tab content section --}}
+    <div class="vehicledtl-bd">
 
         <div class="vehicleinfo-wrap align-items-center">
         <div class="vehicleinfo-sec">
@@ -218,8 +462,6 @@
                                                     <p>Body Dimensions (Centimeter)</p>
                                                     <span class="text-secondary d-block">H 1000 - W 800 - L 1200</span>
                                                 </td>
-                                            </tr>
-                                            <tr>
                                                 <td>
                                                     <p>Chassis Number</p>
                                                     <span class="text-secondary d-block">{{ $vehicle->basicinfo->chassis_no ?? '' }}</span>
@@ -235,232 +477,6 @@
                             </div>
                         </div>
                         
-                        <!--////-->
-                        
-                        <div class="important_df">
-                            
-                            <div class="accordion-header item_1datfin" id="important_dates">
-                                
-                                <div class="row align-items-center">
-                                    <div class="col-lg-11">
-                                        <div class="d-flex align-items-center">
-                                            <div class="sec_title">Important Dates & Finance</div>
-                                            
-                                            <div class="vahan_01dtlhead">
-                                                <div class="item01">Vahan Details:<p>{{ $vehicle->vehicle_no ?? '-' }}</p></div>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-lg-1">
-                                        <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#important_bd"
-                                        aria-expanded="true" aria-controls="important_bd"></button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="important_bd" class="accordion-collapse collapse show mb-4" aria-labelledby="important_dates" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <table class="table">
-                                       <tbody>
-                                           
-                                        <tr>
-                                            
-                                            <td>
-                                                <p>Owner Name</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->owner_name ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Address</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->owner_address ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Status</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->registration_status ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Registration Date</p>
-                                                <span class="text-secondary d-block"> 
-                                                {{ !empty($vehicle->basicinfo->registration_date) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->registration_date)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Fitness Certificate Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->fitness_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->fitness_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    
-                                        <tr>
-                                            <td>
-                                                <p>Insurance Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->insurance_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->insurance_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Tax Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->tax_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->tax_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <p>Permit Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->permit_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->permit_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>PUCC Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->pucc_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->pucc_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>National Permit Expiry</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->national_permit_expiry) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->national_permit_expiry)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    
-                                        <tr>
-                                            <td>
-                                                <p>Permit Type</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->permit_type ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>PUCC Number</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->pucc_no ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Permit Number</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->permit_no ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Insurer</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->insurer ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Insurance Number</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->insurance_no ?? '' }}</span>
-                                            </td>
-                                            
-                                        </tr>
-                                    
-                                        <tr>
-                                            
-                                    
-                                            
-                                    
-                                            <td>
-                                                <p>Chassis Number</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->chassis_no ?? '' }}</span>
-                                            </td>
-                                        </tr>
-                                    
-                                        <tr>
-                                            <td>
-                                                <p>Engine Number</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->engine_no ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Manufacturer</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->manufacturer ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Model</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->model ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Norms Type</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->norms_type ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Gross Vehicle Weight</p>
-                                                <span class="text-secondary d-block">18500</span>
-                                            </td>
-                                        </tr>
-                                    
-                                        <tr>
-                                            <td>
-                                                <p>Unladen Weight</p>
-                                                <span class="text-secondary d-block">8850</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Vehicle Category</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->vehicle_category ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Wheelbase</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->wheelbase ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>Commercial FASTag</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->commercial_fastag ?? '' }}</span>
-                                            </td>
-                                    
-                                            <td>
-                                                <p>FASTag ID</p>
-                                                <span class="text-secondary d-block">{{ $vehicle->basicinfo->fastagId ?? '' }}</span>
-                                            </td>
-                                        </tr>
-                                            
-                                        <tr>
-                                            <td>
-                                                <p>TID</p>
-                                                <span class="text-secondary d-block">E200341201360400001A47AA8</span>
-                                            </td>
-                                            
-                                            <td>
-                                                <p>FASTag Issue Date</p>
-                                                <span class="text-secondary d-block">
-                                                    {{ !empty($vehicle->basicinfo->fastag_issue_date) 
-                                                    ? \Carbon\Carbon::parse($vehicle->basicinfo->fastag_issue_date)->format('d/m/Y') 
-                                                    : '' }}
-                                                </span>
-                                            </td>
-                                            
-                                        </tr>
-                                    </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="accordion-item mt-3">
@@ -633,13 +649,11 @@
                                                 <td>
                                                     <p>Insurance Expiry Date</p>
                                                     <span class="text-secondary d-block">
-                                                        {{ !empty($vehicle->basicinfo->insurance_expiry) 
-                                                            ? \Carbon\Carbon::parse($vehicle->basicinfo->insurance_expiry)->format('d/m/Y') 
+                                                        {{ !empty($vehicle->basicinfo->insurance_expiry)
+                                                            ? \Carbon\Carbon::parse($vehicle->basicinfo->insurance_expiry)->format('d/m/Y')
                                                             : '' }}
                                                     </span>
                                                 </td>
-                                            </tr>
-                                            <tr>
                                                 <td>
                                                     <p>Insurance IDV Value</p>
                                                     <span class="text-secondary d-block">N/A</span>
@@ -840,6 +854,7 @@
                             <div class="row vehicleinfo_toprow align-items-center">
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Tyre Details</span>
+                                    <span class="badge ms-2" style="background:#10863f;font-size:9px;letter-spacing:.5px;padding:3px 8px;border-radius:4px;color:#fff;font-weight:700;">✦ UPDATED</span>
                                     <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="badge badge-primary ms-2">
                                         <i class="uil uil-plus me-1"></i>Manage Tyres
                                     </a>
@@ -853,25 +868,681 @@
                         </div>
 
                         <div id="tyre_bd" class="accordion-collapse collapse show" aria-labelledby="tyre_det" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                @forelse($vehicle->vehicletyremappings()->with(['tyre', 'tyreposition'])->orderBy('status')->get() as $mapping)
-                                <div class="inner-card mb-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="fw-semibold" style="font-size:12px; color:#032671;">
-                                            <i class="uil uil-circle me-1"></i>
-                                            Wheel Position: <strong>{{ $mapping->tyreposition->description ?? $mapping->tyreposition->code ?? '-' }}</strong>
-                                            @if($mapping->status === 'Spare')
-                                                <span class="badge badge-warning ms-1">Stepney</span>
-                                            @elseif($mapping->status === 'Inactive')
-                                                <span class="badge badge-danger ms-1">Removed</span>
-                                            @else
-                                                <span class="badge badge-success ms-1">Fitted</span>
-                                            @endif
-                                        </span>
-                                        <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="text-primary" style="font-size:12px;">
-                                            <i class="uil uil-pen me-1"></i>Edit
-                                        </a>
+                            <div class="accordion-body p-0">
+                                @php
+                                    $tyreMappings = $vehicle->vehicletyremappings()->with(['tyre.tyrePhotos', 'tyreposition'])->get();
+                                    $byCode = $tyreMappings->keyBy(fn($m) => $m->tyreposition->code ?? '__unknown__');
+                                    $getTyreColor = function($m) {
+                                        if (!$m || !$m->tyre) return 'empty';
+                                        $cond = strtolower($m->tyre->tyre_condition ?? '');
+                                        $kmLife = (int)($m->tyre->fixed_run_km ?? 0);
+                                        $kmRun  = (int)($m->tyre->actual_run_km ?? 0);
+                                        $kmBal  = $kmLife > 0 ? ($kmLife - $kmRun) : null;
+                                        if (in_array($cond, ['replace','worn','bad','dead','scrap'])) return 'critical';
+                                        if ($kmBal !== null && $kmBal <= 0) return 'critical';
+                                        if ($kmBal !== null && $kmBal <= 10000) return 'warn';
+                                        if (in_array($cond, ['used','old','moderate','average'])) return 'warn';
+                                        return 'good';
+                                    };
+                                    $colorHex = ['good'=>'#10863f','warn'=>'#d97706','critical'=>'#ea0027','empty'=>'#dee2e6'];
+                                    $posLabels = [
+                                        'C1'=>'Front Left','D1'=>'Front Right',
+                                        'Ci2'=>'Rear L1 Inner','Co3'=>'Rear L1 Outer',
+                                        'Di2'=>'Rear R1 Inner','Do3'=>'Rear R1 Outer',
+                                        'Ci4'=>'Rear L2 Inner','Co5'=>'Rear L2 Outer',
+                                        'Di4'=>'Rear R2 Inner','Do5'=>'Rear R2 Outer',
+                                        'S1'=>'Spare / Stepney',
+                                        'S2'=>'Spare 2',
+                                    ];
+                                    $totalTyres = $tyreMappings->count();
+                                    $goodCount = 0; $warnCount = 0; $criticalCount = 0;
+                                    foreach($tyreMappings as $_m) {
+                                        $c = $getTyreColor($_m);
+                                        if($c==='good') $goodCount++;
+                                        elseif($c==='warn') $warnCount++;
+                                        elseif($c==='critical') $criticalCount++;
+                                    }
+                                    $leftCodes  = ['C1','Co3','Ci2','Co5','Ci4'];
+                                    $rightCodes = ['D1','Di2','Do3','Di4','Do5'];
+
+                                    // Build tyre image data map for JS modal (keyed by position code)
+                                    // Uses tyrePhotos: type='Image' AND mediadocument_id IS NULL
+                                    $tyreImagesMap = [];
+                                    foreach($tyreMappings as $_tm) {
+                                        if($_tm->tyre && $_tm->tyre->tyrePhotos && $_tm->tyre->tyrePhotos->count() > 0) {
+                                            $_posCode = $_tm->tyreposition->code ?? '__unknown__';
+                                            $tyreImagesMap[$_posCode] = $_tm->tyre->tyrePhotos->map(fn($img) => [
+                                                'url'  => asset('medias/' . ltrim($img->file_path, '/')),
+                                                'name' => $img->file_name,
+                                                'date' => $img->created_at ? \Carbon\Carbon::parse($img->created_at)->format('d M Y') : '—',
+                                                'time' => $img->created_at ? \Carbon\Carbon::parse($img->created_at)->format('h:i A') : '',
+                                            ])->values()->toArray();
+                                        }
+                                    }
+
+                                    // Warranty remaining helper (returns months remaining or null)
+                                    $getWarrantyRemaining = function($tyre) {
+                                        if(!$tyre) return null;
+                                        $wm = (int)($tyre->tyre_warranty_months ?? 0);
+                                        if($wm <= 0) return null;
+                                        $issueDate = $tyre->tyre_issue_date ?? $tyre->tyre_purchase_date;
+                                        if(!$issueDate) return null;
+                                        $wEnd = \Carbon\Carbon::parse($issueDate)->addMonths($wm);
+                                        return max(0, (int)\Carbon\Carbon::today()->diffInMonths($wEnd, false));
+                                    };
+                                @endphp
+
+                                @if($totalTyres === 0)
+                                {{-- Empty State --}}
+                                <div class="vtd-empty">
+                                    <i class="uil uil-circle vtd-empty-icon"></i>
+                                    <div class="vtd-empty-text">No tyres are mapped to this vehicle yet.</div>
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="btn btn-outline-primary btn-sm mt-2">
+                                        <i class="uil uil-plus me-1"></i>Manage Tyres
+                                    </a>
+                                </div>
+                                @else
+
+                                {{-- NEW LAYOUT MARKER — visible tag for identifying this redesigned block --}}
+                                <div style="background:#e8f5e9;border-left:4px solid #10863f;padding:6px 14px;font-size:11px;font-weight:700;color:#10863f;letter-spacing:.4px;display:flex;align-items:center;gap:8px;">
+                                    <i class="uil uil-check-circle"></i> ✦ NEW TYRE LAYOUT — Redesigned with truck diagram, card highlights &amp; modal view
+                                </div>
+
+                                {{-- Summary Strip --}}
+                                <div class="vtd-summary-strip">
+                                    <div class="vtd-sum-item">
+                                        <span class="vtd-sum-val">{{ $totalTyres }}</span>
+                                        <span class="vtd-sum-lbl">Total</span>
                                     </div>
+                                    <div class="vtd-sum-item vtd-sum-good">
+                                        <span class="vtd-sum-dot" style="background:#10863f;"></span>
+                                        <span class="vtd-sum-val">{{ $goodCount }}</span>
+                                        <span class="vtd-sum-lbl">Good</span>
+                                    </div>
+                                    <div class="vtd-sum-item vtd-sum-warn">
+                                        <span class="vtd-sum-dot" style="background:#d97706;"></span>
+                                        <span class="vtd-sum-val">{{ $warnCount }}</span>
+                                        <span class="vtd-sum-lbl">Attention</span>
+                                    </div>
+                                    <div class="vtd-sum-item vtd-sum-crit">
+                                        <span class="vtd-sum-dot" style="background:#ea0027;"></span>
+                                        <span class="vtd-sum-val">{{ $criticalCount }}</span>
+                                        <span class="vtd-sum-lbl">Critical</span>
+                                    </div>
+                                    <div class="vtd-legend ms-auto">
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#10863f;"></span>Good</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#d97706;"></span>Attention</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#ea0027;"></span>Critical</span>
+                                        <span class="vtd-leg-item"><span class="vtd-leg-dot" style="background:#dee2e6;border:1px solid #c0c8d8;"></span>Not Assigned</span>
+                                    </div>
+                                </div>
+
+                                {{-- 3-Column Layout --}}
+                                <div class="vtd-layout">
+
+                                    {{-- LEFT CARDS --}}
+                                    <div class="vtd-side vtd-side-left">
+                                        <div class="vtd-side-title"><i class="uil uil-arrow-left me-1"></i>Left Side Tyres</div>
+                                        @foreach($leftCodes as $code)
+                                        @php
+                                            $m        = $byCode[$code] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels[$code] ?? $code;
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->tyrePhotos ? $m->tyre->tyrePhotos->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
+                                        @endphp
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                @if($m && $m->tyre)
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'New':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
+                                                <a href="#" class="vtd-eye-btn vtd-open-modal" data-pos="{{ $code }}" title="View Photos"><i class="uil uil-eye"></i></a>
+                                                @endif
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                            </div>
+                                            @if($imgCount > 0)
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery" data-pos="{{ $code }}"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                            </div>
+                                            @endif
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                        @endforeach
+
+                                        {{-- ── SPARE TYRE CARD S1 at bottom of left column ── --}}
+                                        <div class="vtd-spare-divider"><i class="uil uil-tire me-1"></i>Spare Tyre</div>
+                                        @foreach(['S1'] as $sCode)
+                                        @php
+                                            $m        = $byCode[$sCode] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels[$sCode] ?? $sCode;
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->tyrePhotos ? $m->tyre->tyrePhotos->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
+                                        @endphp
+                                        <div class="vtd-tyre-card" data-pos="{{ $sCode }}"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                @if($m && $m->tyre)
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'New':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
+                                                <a href="#" class="vtd-eye-btn vtd-open-modal" data-pos="{{ $sCode }}" title="View Photos"><i class="uil uil-eye"></i></a>
+                                                @endif
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                            </div>
+                                            @if($imgCount > 0)
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery" data-pos="{{ $sCode }}"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                            </div>
+                                            @endif
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                    {{-- CENTER TRUCK SVG --}}
+                                    <div class="vtd-center">
+                                        <div class="vtd-svg-wrap">
+                                            <svg id="vtdTruckSvg" viewBox="0 0 220 430" xmlns="http://www.w3.org/2000/svg" class="vtd-truck-svg">
+                                                {{-- ▲ Direction --}}
+                                                <text x="110" y="48" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700" letter-spacing="1">▲ FRONT</text>
+
+                                                {{-- Truck outer body shadow/frame --}}
+                                                <rect x="57" y="70" width="106" height="354" rx="16" fill="#e2e8f0" stroke="none"/>
+
+                                                {{-- Truck main body --}}
+                                                <rect x="59" y="72" width="102" height="350" rx="14" fill="#f0f3f9" stroke="#c8d4e8" stroke-width="1.5"/>
+
+                                                {{-- Cab section background --}}
+                                                <rect x="59" y="72" width="102" height="108" rx="14" fill="#dce7ff" stroke="#b0c4f0" stroke-width="1.5"/>
+
+                                                {{-- Windshield --}}
+                                                <rect x="71" y="80" width="78" height="34" rx="6" fill="#b8d0f5" opacity="0.85"/>
+                                                {{-- Windshield glare --}}
+                                                <line x1="77" y1="83" x2="77" y2="111" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                                                <line x1="83" y1="81" x2="83" y2="113" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.25"/>
+
+                                                {{-- Hood / front bonnet --}}
+                                                <rect x="71" y="116" width="78" height="14" rx="3" fill="#c8d8f0" stroke="#b0c4e8" stroke-width="1"/>
+
+                                                {{-- Side mirrors --}}
+                                                <rect x="45" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                                <rect x="161" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
+                                                {{-- Mirror stems --}}
+                                                <line x1="59" y1="88" x2="65" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+                                                <line x1="155" y1="88" x2="161" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
+
+                                                {{-- Cab label --}}
+                                                <text x="110" y="160" text-anchor="middle" font-size="7" fill="#7b93c4" font-weight="600" letter-spacing="1.5">CAB</text>
+                                                {{-- Cab/cargo separator --}}
+                                                <line x1="64" y1="180" x2="156" y2="180" stroke="#c8d4e8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+                                                {{-- Cargo body --}}
+                                                <rect x="63" y="182" width="94" height="236" rx="4" fill="#f5f7fb" stroke="#dce3f0" stroke-width="1"/>
+                                                {{-- Cargo panel lines --}}
+                                                <line x1="63" y1="228" x2="157" y2="228" stroke="#e0e8f4" stroke-width="1"/>
+                                                <line x1="63" y1="310" x2="157" y2="310" stroke="#e0e8f4" stroke-width="1"/>
+                                                <line x1="63" y1="392" x2="157" y2="392" stroke="#e0e8f4" stroke-width="1"/>
+                                                {{-- Cargo label --}}
+                                                <text x="110" y="266" text-anchor="middle" font-size="7" fill="#b0bcce" letter-spacing="2">CARGO</text>
+
+                                                {{-- ─── AXLE RODS ─── --}}
+                                                {{-- Front axle rod --}}
+                                                <rect x="30" y="124" width="160" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Front hub centres --}}
+                                                <circle cx="42" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="178" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                                {{-- Rear axle 1 rod --}}
+                                                <rect x="16" y="280" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Rear 1 hub centres (outer & inner each side) --}}
+                                                <circle cx="29" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="50" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="170" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="191" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                                {{-- Rear axle 2 rod --}}
+                                                <rect x="16" y="370" width="188" height="4" rx="2" fill="#c0ccde"/>
+                                                {{-- Rear 2 hub centres --}}
+                                                <circle cx="29" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="50" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="170" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+                                                <circle cx="191" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
+
+                                                {{-- Axle labels --}}
+                                                <text x="110" y="119" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">FRONT AXLE</text>
+                                                <text x="110" y="276" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 1</text>
+                                                <text x="110" y="366" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 2</text>
+
+                                                {{-- C1 — Front Left --}}
+                                                @php $c=$getTyreColor($byCode['C1']??null); $tm=$byCode['C1']??null; @endphp
+                                                <rect id="svg-C1" class="vtd-svg-tyre" data-pos="C1"
+                                                    data-label="{{ $posLabels['C1'] ?? 'C1' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="30" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="42" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">C1</text>
+
+                                                {{-- D1 — Front Right --}}
+                                                @php $c=$getTyreColor($byCode['D1']??null); $tm=$byCode['D1']??null; @endphp
+                                                <rect id="svg-D1" class="vtd-svg-tyre" data-pos="D1"
+                                                    data-label="{{ $posLabels['D1'] ?? 'D1' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="166" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="178" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">D1</text>
+
+                                                {{-- Co3 — Rear Axle 1, Left Outer --}}
+                                                @php $c=$getTyreColor($byCode['Co3']??null); $tm=$byCode['Co3']??null; @endphp
+                                                <rect id="svg-Co3" class="vtd-svg-tyre" data-pos="Co3"
+                                                    data-label="{{ $posLabels['Co3'] ?? 'Co3' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="20" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="29" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co3</text>
+
+                                                {{-- Ci2 — Rear Axle 1, Left Inner --}}
+                                                @php $c=$getTyreColor($byCode['Ci2']??null); $tm=$byCode['Ci2']??null; @endphp
+                                                <rect id="svg-Ci2" class="vtd-svg-tyre" data-pos="Ci2"
+                                                    data-label="{{ $posLabels['Ci2'] ?? 'Ci2' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="41" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="50" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci2</text>
+
+                                                {{-- Di2 — Rear Axle 1, Right Inner --}}
+                                                @php $c=$getTyreColor($byCode['Di2']??null); $tm=$byCode['Di2']??null; @endphp
+                                                <rect id="svg-Di2" class="vtd-svg-tyre" data-pos="Di2"
+                                                    data-label="{{ $posLabels['Di2'] ?? 'Di2' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="160" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="169" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di2</text>
+
+                                                {{-- Do3 — Rear Axle 1, Right Outer --}}
+                                                @php $c=$getTyreColor($byCode['Do3']??null); $tm=$byCode['Do3']??null; @endphp
+                                                <rect id="svg-Do3" class="vtd-svg-tyre" data-pos="Do3"
+                                                    data-label="{{ $posLabels['Do3'] ?? 'Do3' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="181" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="190" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do3</text>
+
+                                                {{-- Co5 — Rear Axle 2, Left Outer --}}
+                                                @php $c=$getTyreColor($byCode['Co5']??null); $tm=$byCode['Co5']??null; @endphp
+                                                <rect id="svg-Co5" class="vtd-svg-tyre" data-pos="Co5"
+                                                    data-label="{{ $posLabels['Co5'] ?? 'Co5' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="20" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="29" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co5</text>
+
+                                                {{-- Ci4 — Rear Axle 2, Left Inner --}}
+                                                @php $c=$getTyreColor($byCode['Ci4']??null); $tm=$byCode['Ci4']??null; @endphp
+                                                <rect id="svg-Ci4" class="vtd-svg-tyre" data-pos="Ci4"
+                                                    data-label="{{ $posLabels['Ci4'] ?? 'Ci4' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="41" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="50" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci4</text>
+
+                                                {{-- Di4 — Rear Axle 2, Right Inner --}}
+                                                @php $c=$getTyreColor($byCode['Di4']??null); $tm=$byCode['Di4']??null; @endphp
+                                                <rect id="svg-Di4" class="vtd-svg-tyre" data-pos="Di4"
+                                                    data-label="{{ $posLabels['Di4'] ?? 'Di4' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="160" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="169" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di4</text>
+
+                                                {{-- Do5 — Rear Axle 2, Right Outer --}}
+                                                @php $c=$getTyreColor($byCode['Do5']??null); $tm=$byCode['Do5']??null; @endphp
+                                                <rect id="svg-Do5" class="vtd-svg-tyre" data-pos="Do5"
+                                                    data-label="{{ $posLabels['Do5'] ?? 'Do5' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="181" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="190" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do5</text>
+
+                                                {{-- S1 + S2 — Spare Tyres (vertically centred in truck body: y mid≈247) --}}
+                                                <text x="110" y="226" text-anchor="middle" font-size="5.5" fill="#adb5bd" letter-spacing="0.5">SPARE</text>
+
+                                                @php $c=$getTyreColor($byCode['S1']??null); $tm=$byCode['S1']??null; @endphp
+                                                <rect id="svg-S1" class="vtd-svg-tyre" data-pos="S1"
+                                                    data-label="{{ $posLabels['S1'] ?? 'Spare / Stepney' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="87" y="230" width="21" height="26" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="97" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S1</text>
+
+                                                @php $c=$getTyreColor($byCode['S2']??null); $tm=$byCode['S2']??null; @endphp
+                                                <rect id="svg-S2" class="vtd-svg-tyre" data-pos="S2"
+                                                    data-label="{{ $posLabels['S2'] ?? 'Spare 2' }}"
+                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
+                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
+                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
+                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
+                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
+                                                    data-status="{{ $c }}"
+                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
+                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
+                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
+                                                    x="112" y="230" width="21" height="26" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
+                                                <text x="122" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S2</text>
+                                            </svg>
+
+                                            <div class="vtd-svg-note">Hover on tyre or card to highlight</div>
+                                        </div>
+                                    </div>
+
+                                    {{-- RIGHT CARDS --}}
+                                    <div class="vtd-side vtd-side-right">
+                                        <div class="vtd-side-title">Right Side Tyres <i class="uil uil-arrow-right ms-1"></i></div>
+                                        @foreach($rightCodes as $code)
+                                        @php
+                                            $m        = $byCode[$code] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels[$code] ?? $code;
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->tyrePhotos ? $m->tyre->tyrePhotos->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
+                                        @endphp
+                                        <div class="vtd-tyre-card" data-pos="{{ $code }}"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                @if($m && $m->tyre)
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'New':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
+                                                <a href="#" class="vtd-eye-btn vtd-open-modal" data-pos="{{ $code }}" title="View Photos"><i class="uil uil-eye"></i></a>
+                                                @endif
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                            </div>
+                                            @if($imgCount > 0)
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery" data-pos="{{ $code }}"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                            </div>
+                                            @endif
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                        @endforeach
+
+                                        {{-- ── SPARE TYRE CARD S2 at bottom of right column ── --}}
+                                        @php
+                                            $m        = $byCode['S2'] ?? null;
+                                            $color    = $getTyreColor($m);
+                                            $hex      = $colorHex[$color];
+                                            $lbl      = $posLabels['S2'] ?? 'Spare 2';
+                                            $kmLife   = $m ? (int)($m->tyre->fixed_run_km  ?? 0) : 0;
+                                            $kmRun    = $m ? (int)($m->tyre->actual_run_km ?? 0) : 0;
+                                            $kmBal    = ($m && $kmLife > 0) ? ($kmLife - $kmRun) : null;
+                                            $remLifePct = ($m && $kmLife > 0) ? max(0, min(100, round(($kmBal / $kmLife) * 100))) : null;
+                                            $remWarranty = $m ? $getWarrantyRemaining($m->tyre) : null;
+                                            $tyreType    = $m?->tyre?->tyre_type ?? null;
+                                            $imgCount    = ($m && $m->tyre) ? ($m->tyre->tyrePhotos ? $m->tyre->tyrePhotos->count() : 0) : 0;
+                                            $kmBalColor  = ($kmBal !== null) ? ($kmBal<=0 ? '#ea0027' : ($kmBal<=10000 ? '#d97706' : '#10863f')) : '#8898aa';
+                                        @endphp
+                                        <div class="vtd-spare-divider"><i class="uil uil-tire me-1"></i>Spare Tyre</div>
+                                        <div class="vtd-tyre-card" data-pos="S2"
+                                            data-label="{{ $lbl }}"
+                                            data-has-tyre="{{ $m && $m->tyre ? '1' : '0' }}"
+                                            data-serial="{{ $m?->tyre?->tyre_serial_number ?? '' }}"
+                                            data-brand="{{ $m?->tyre?->tyre_brand ?? '' }}"
+                                            data-model="{{ $m?->tyre?->tyre_model ?? '' }}"
+                                            data-condition="{{ $m?->tyre?->tyre_condition ?? '' }}"
+                                            data-type="{{ $tyreType ?? '' }}"
+                                            data-status="{{ $color }}"
+                                            data-fitted="{{ $m && $m->fitment_date ? \Carbon\Carbon::parse($m->fitment_date)->format('d M Y') : '' }}"
+                                            data-kmlife="{{ $kmLife ?: '' }}"
+                                            data-kmrun="{{ $kmRun ?: '' }}"
+                                            data-kmbal="{{ $kmBal ?? '' }}"
+                                            data-remlifepct="{{ $remLifePct ?? '' }}"
+                                            data-warrantyremaining="{{ $remWarranty ?? '' }}"
+                                            data-imgcount="{{ $imgCount }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            <div class="vtd-card-head">
+                                                <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
+                                                <span class="vtd-pos-label">{{ $lbl }}</span>
+                                                @if($m && $m->tyre)
+                                                <span class="vtd-status-chip vtd-chip-{{ $color }}">{{ $color==='good'?'New':($color==='warn'?'Attn':($color==='critical'?'Critical':'—')) }}</span>
+                                                <a href="#" class="vtd-eye-btn vtd-open-modal" data-pos="S2" title="View Photos"><i class="uil uil-eye"></i></a>
+                                                @endif
+                                            </div>
+                                            @if($m && $m->tyre)
+                                            <div class="vtd-card-body">
+                                                <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                    <span class="vtd-fv vtd-life-wrap">
+                                                        @if($remLifePct !== null)
+                                                        <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
+                                                        <span style="color:{{ $kmBalColor }};font-weight:700;">{{ $remLifePct }}%</span>
+                                                        @else<span class="vtd-na">—</span>@endif
+                                                    </span>
+                                                </div>
+                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                            </div>
+                                            @if($imgCount > 0)
+                                            <div class="vtd-card-foot">
+                                                <a href="#" class="vtd-view-btn vtd-open-gallery" data-pos="S2"><i class="uil uil-image me-1"></i>{{ $imgCount }} Photo{{ $imgCount>1?'s':'' }}</a>
+                                            </div>
+                                            @endif
+                                            @else
+                                            <div class="vtd-card-empty-body"><i class="uil uil-circle"></i> <span>No tyre assigned</span></div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                </div>{{-- /vtd-layout --}}
+
+                                @endif {{-- /if($totalTyres === 0) --}}
+
+                                @if(false) {{-- Dead code block removed --}}
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -987,158 +1658,201 @@
                                         </table>
                                     </div>
                                 </div>
-                                @empty
-                                <div class="alert alert-warning text-center p-2" role="alert">
-                                    No tyres are mapped to this vehicle yet.
-                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="alert-link ms-1">Manage Tyres →</a>
-                                </div>
-                                @endforelse
+                                @endif {{-- /Dead code block --}}
                             </div>
                         </div>
-
-                    </div>
                     
                     <div class="accordion-item mt-3">
                         
                         <div class="accordion-header vehicleinfor_head" id="bat_det">
-                            
+
                             <div class="row vehicleinfo_toprow align-items-center">
-                             
+
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Battery Details</span>
-                                    <a href="javascript:void(0)" class="badge badge-primary" data-bs-toggle="modal" data-bs-target="#addBattery"><i class="uil uil-plus me-1"></i>Add Battery Details</a>
+                                    <div class="ms-auto d-flex align-items-center gap-2">
+                                        <a href="{{ route('inventory.battery-dashboard') }}" class="alert-link small fw-semibold">Manage Battery →</a>
+                                        <a href="javascript:void(0)" class="badge badge-primary" data-bs-toggle="modal" data-bs-target="#addBattery"><i class="uil uil-plus me-1"></i>Add Battery Details</a>
+                                    </div>
                                 </div>
-                                
+
                                 <div class="col-12 col-md-1">
                                     <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#bat_bd"
                                         aria-expanded="true" aria-controls="bat_bd">
                                     </button>
                                 </div>
                             </div>
-                            
+
                         </div>
 
                         <div id="bat_bd" class="accordion-collapse collapse show" aria-labelledby="bat_det" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                
-                                @forelse($vehicle->batteries as $battery)
-                                <div class="inner-card">
-                                    <div class="icon-wrap">
-                                        <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="editBattery"><i class="uil uil-pen"></i></a>
-                                        <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="deleteBattery text-danger ms-1"><i class="uil uil-trash-alt"></i></a>
-                                    </div>
-                                    <div class="table-responsive table-responsive02">
-                                        <table class="table table-bordered">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <p>Battery Model Name</p>
-                                                        <span class="text-secondary d-block">{{ $battery->battery_model_name ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Battery Capacity</p>
-                                                        <span class="text-secondary d-block">{{ $battery->battery_capacity ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Battery Brand</p>
-                                                        <span class="text-secondary d-block">{{ $battery->battery_brand ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Battery Price</p>
-                                                        <span class="text-secondary d-block">{{ $battery->battery_price ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Battery Serial Number</p>
-                                                        <span class="text-secondary d-block">{{ $battery->battery_serial_number ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Purchase Date</p>
-                                                        <span class="text-secondary d-block">{{ $battery->purchase_date ? \Carbon\Carbon::parse($battery->purchase_date)->format('d/m/Y') : '-' }} </span>
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <p>Issue Date</p>
-                                                        <span class="text-secondary d-block">{{ $battery->issue_date ? \Carbon\Carbon::parse($battery->issue_date)->format('d/m/Y') : '-' }} </span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Warranty (Months)</p>
-                                                        <span class="text-secondary d-block">{{ $battery->warranty_months ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Remaining Warranty (Months)</p>
-                                                        <span class="text-secondary d-block">
-                                                            @if($battery->issue_date && $battery->warranty_months)
-                                                                @php
-                                                                    $issueDate = \Carbon\Carbon::parse($battery->issue_date);
-                                                                    $today = \Carbon\Carbon::today();
-                                                    
-                                                                    $warrantyEnd = $issueDate->copy()->addMonths((int)$battery->warranty_months);
-                                                    
-                                                                    $remainingWarranty = $today->greaterThan($warrantyEnd)
-                                                                        ? 0
-                                                                        : (int) $today->diffInMonths($warrantyEnd);
-                                                                @endphp
-                                                    
-                                                                @if($remainingWarranty == 0)
-                                                                    <span class="text-danger fw-bold">Expired</span>
-                                                                @elseif($remainingWarranty <= 3)
-                                                                    <span class="text-warning fw-bold">{{ $remainingWarranty }} month(s) left</span>
-                                                                @else
-                                                                    <span class="text-success">{{ $remainingWarranty }} month(s)</span>
-                                                                @endif
-                                                    
-                                                            @else
-                                                                -
-                                                            @endif
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Fixed Life (Months)</p>
-                                                        <span class="text-secondary d-block">{{ $battery->fixed_life_months ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Remaining Life (Months)</p>
-                                                        <span class="text-secondary d-block">
-                                                            @if($battery->issue_date && $battery->fixed_life_months)
-                                                                @php
-                                                                    $issueDate = \Carbon\Carbon::parse($battery->issue_date);
-                                                                    $today = \Carbon\Carbon::today();
-                                                    
-                                                                    $lifeEnd = $issueDate->copy()->addMonths((int)$battery->fixed_life_months);
-                                                    
-                                                                    $remainingLife = $today->greaterThan($lifeEnd)
-                                                                        ? 0
-                                                                        : (int) $today->diffInMonths($lifeEnd);
-                                                                @endphp
-                                                    
-                                                                @if($remainingLife == 0)
-                                                                    <span class="text-danger fw-bold">Expired</span>
-                                                                @elseif($remainingLife <= 3)
-                                                                    <span class="text-warning fw-bold">{{ $remainingLife }} month(s) left</span>
-                                                                @else
-                                                                    <span class="text-success">{{ $remainingLife }} month(s)</span>
-                                                                @endif
-                                                    
-                                                            @else
-                                                                -
-                                                            @endif
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                @empty
+                            <div class="accordion-body p-3">
+
+                                @php
+                                    $batteryCollection = $vehicle->batteries ?? collect();
+                                    $leftBatteries  = $batteryCollection->values()->filter(fn($b, $k) => $k % 2 === 0);
+                                    $rightBatteries = $batteryCollection->values()->filter(fn($b, $k) => $k % 2 !== 0);
+                                @endphp
+
+                                @if($batteryCollection->isEmpty())
                                 <div class="alert alert-warning text-center p-2" role="alert">
-                                    Please Add Battery Details, No Data is Added yet. 
+                                    Please Add Battery Details, No Data is Added yet.
                                 </div>
-                                @endforelse
-                                
-                                
-                                
+                                @else
+                                <div class="bat-visual-layout">
+
+                                    {{-- LEFT COLUMN: even-indexed batteries --}}
+                                    <div class="bat-col-side bat-col-left">
+                                        @foreach($leftBatteries as $battery)
+                                        @php
+                                            $batIdx = $batteryCollection->search(fn($b) => $b->id === $battery->id) + 1;
+                                            // Warranty calc
+                                            $batWarrantyRemaining = null;
+                                            if ($battery->issue_date && $battery->warranty_months) {
+                                                $batIssue = \Carbon\Carbon::parse($battery->issue_date);
+                                                $batWarrantyEnd = $batIssue->copy()->addMonths((int)$battery->warranty_months);
+                                                $batWarrantyRemaining = \Carbon\Carbon::today()->greaterThan($batWarrantyEnd)
+                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batWarrantyEnd);
+                                            }
+                                            // Life calc
+                                            $batLifeRemaining = null;
+                                            if ($battery->issue_date && $battery->fixed_life_months) {
+                                                $batIssue2 = \Carbon\Carbon::parse($battery->issue_date);
+                                                $batLifeEnd = $batIssue2->copy()->addMonths((int)$battery->fixed_life_months);
+                                                $batLifeRemaining = \Carbon\Carbon::today()->greaterThan($batLifeEnd)
+                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batLifeEnd);
+                                            }
+                                        @endphp
+                                        <div class="bat-card">
+                                            <div class="bat-card-header">
+                                                <span class="bat-card-label"><i class="uil uil-bolt-alt me-1"></i>Battery #{{ $batIdx }}</span>
+                                                <div class="bat-card-actions">
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="editBattery" title="Edit"><i class="uil uil-pen"></i></a>
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="deleteBattery text-danger" title="Delete"><i class="uil uil-trash-alt"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="bat-card-grid">
+                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Brand</p><span>{{ $battery->battery_brand ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Price</p><span>{{ $battery->battery_price ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Serial No.</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Purchase Date</p><span>{{ $battery->purchase_date ? \Carbon\Carbon::parse($battery->purchase_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Issue Date</p><span>{{ $battery->issue_date ? \Carbon\Carbon::parse($battery->issue_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty Left</p>
+                                                    <span>@if($batWarrantyRemaining === null)-@elseif($batWarrantyRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batWarrantyRemaining <= 3)<span class="text-warning fw-bold">{{ $batWarrantyRemaining }} mo left</span>@else<span class="text-success">{{ $batWarrantyRemaining }} mo</span>@endif</span>
+                                                </div>
+                                                <div class="bat-field"><p>Fixed Life</p><span>{{ $battery->fixed_life_months ? $battery->fixed_life_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Life Left</p>
+                                                    <span>@if($batLifeRemaining === null)-@elseif($batLifeRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batLifeRemaining <= 3)<span class="text-warning fw-bold">{{ $batLifeRemaining }} mo left</span>@else<span class="text-success">{{ $batLifeRemaining }} mo</span>@endif</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                    {{-- CENTER: Truck SVG --}}
+                                    <div class="bat-col-center">
+                                        <div class="bat-truck-wrap">
+                                            <svg viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg" class="bat-truck-svg" aria-label="Truck battery position diagram">
+                                                <!-- Cargo body -->
+                                                <rect x="8" y="35" width="180" height="100" rx="5" fill="#e8edf5" stroke="#b0bdd4" stroke-width="2"/>
+                                                <!-- Cargo ribs -->
+                                                <line x1="48" y1="35" x2="48" y2="135" stroke="#c8d3e8" stroke-width="1"/>
+                                                <line x1="88" y1="35" x2="88" y2="135" stroke="#c8d3e8" stroke-width="1"/>
+                                                <line x1="128" y1="35" x2="128" y2="135" stroke="#c8d3e8" stroke-width="1"/>
+                                                <line x1="168" y1="35" x2="168" y2="135" stroke="#c8d3e8" stroke-width="1"/>
+                                                <!-- Cab -->
+                                                <rect x="188" y="52" width="100" height="83" rx="7" fill="#d1daf0" stroke="#b0bdd4" stroke-width="2"/>
+                                                <!-- Windshield -->
+                                                <path d="M192 57 L283 57 L283 95 L192 95 Z" rx="3" fill="#bfdbfe" opacity="0.75" stroke="#93c5fd" stroke-width="1"/>
+                                                <!-- Cab door line -->
+                                                <line x1="230" y1="95" x2="230" y2="134" stroke="#b0bdd4" stroke-width="1.5" stroke-dasharray="3,3"/>
+                                                <!-- Hood/engine area -->
+                                                <rect x="188" y="100" width="100" height="35" rx="0" fill="#c4cfe8" stroke="#b0bdd4" stroke-width="1"/>
+                                                <!-- Exhaust stack -->
+                                                <rect x="275" y="30" width="8" height="25" rx="3" fill="#94a3b8" stroke="#64748b" stroke-width="1"/>
+                                                <ellipse cx="279" cy="28" rx="6" ry="3" fill="#64748b"/>
+                                                <!-- Battery B1 indicator -->
+                                                <rect x="196" y="106" width="32" height="20" rx="4" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+                                                <text x="212" y="120" font-size="9" fill="white" text-anchor="middle" font-weight="700" font-family="sans-serif">B1</text>
+                                                <!-- Battery B2 indicator -->
+                                                <rect x="234" y="106" width="32" height="20" rx="4" fill="#3b82f6" stroke="#2563eb" stroke-width="1.5"/>
+                                                <text x="250" y="120" font-size="9" fill="white" text-anchor="middle" font-weight="700" font-family="sans-serif">B2</text>
+                                                <!-- Front wheels -->
+                                                <circle cx="240" cy="150" r="16" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+                                                <circle cx="240" cy="150" r="7" fill="#94a3b8"/>
+                                                <!-- Rear wheels (dual) -->
+                                                <circle cx="64" cy="150" r="16" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+                                                <circle cx="64" cy="150" r="7" fill="#94a3b8"/>
+                                                <circle cx="100" cy="150" r="16" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+                                                <circle cx="100" cy="150" r="7" fill="#94a3b8"/>
+                                                <!-- Mudguard -->
+                                                <path d="M220 134 Q240 134 260 134" stroke="#b0bdd4" stroke-width="2" fill="none"/>
+                                                <path d="M40 134 Q64 134 88 134 Q100 134 120 134" stroke="#b0bdd4" stroke-width="2" fill="none"/>
+                                                <!-- Ground line -->
+                                                <line x1="5" y1="167" x2="295" y2="167" stroke="#e2e8f0" stroke-width="2"/>
+                                            </svg>
+                                            <div class="bat-truck-legend">
+                                                <span class="bat-legend-dot" style="background:#22c55e;"></span><span>B1 — Battery #1</span>
+                                                <span class="bat-legend-dot ms-2" style="background:#3b82f6;"></span><span>B2 — Battery #2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- RIGHT COLUMN: odd-indexed batteries --}}
+                                    <div class="bat-col-side bat-col-right">
+                                        @foreach($rightBatteries as $battery)
+                                        @php
+                                            $batIdx = $batteryCollection->search(fn($b) => $b->id === $battery->id) + 1;
+                                            $batWarrantyRemaining = null;
+                                            if ($battery->issue_date && $battery->warranty_months) {
+                                                $batIssue = \Carbon\Carbon::parse($battery->issue_date);
+                                                $batWarrantyEnd = $batIssue->copy()->addMonths((int)$battery->warranty_months);
+                                                $batWarrantyRemaining = \Carbon\Carbon::today()->greaterThan($batWarrantyEnd)
+                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batWarrantyEnd);
+                                            }
+                                            $batLifeRemaining = null;
+                                            if ($battery->issue_date && $battery->fixed_life_months) {
+                                                $batIssue2 = \Carbon\Carbon::parse($battery->issue_date);
+                                                $batLifeEnd = $batIssue2->copy()->addMonths((int)$battery->fixed_life_months);
+                                                $batLifeRemaining = \Carbon\Carbon::today()->greaterThan($batLifeEnd)
+                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batLifeEnd);
+                                            }
+                                        @endphp
+                                        <div class="bat-card bat-card-right">
+                                            <div class="bat-card-header">
+                                                <span class="bat-card-label bat-card-label-blue"><i class="uil uil-bolt-alt me-1"></i>Battery #{{ $batIdx }}</span>
+                                                <div class="bat-card-actions">
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="editBattery" title="Edit"><i class="uil uil-pen"></i></a>
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="deleteBattery text-danger" title="Delete"><i class="uil uil-trash-alt"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="bat-card-grid">
+                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Brand</p><span>{{ $battery->battery_brand ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Price</p><span>{{ $battery->battery_price ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Serial No.</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Purchase Date</p><span>{{ $battery->purchase_date ? \Carbon\Carbon::parse($battery->purchase_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Issue Date</p><span>{{ $battery->issue_date ? \Carbon\Carbon::parse($battery->issue_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty Left</p>
+                                                    <span>@if($batWarrantyRemaining === null)-@elseif($batWarrantyRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batWarrantyRemaining <= 3)<span class="text-warning fw-bold">{{ $batWarrantyRemaining }} mo left</span>@else<span class="text-success">{{ $batWarrantyRemaining }} mo</span>@endif</span>
+                                                </div>
+                                                <div class="bat-field"><p>Fixed Life</p><span>{{ $battery->fixed_life_months ? $battery->fixed_life_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Life Left</p>
+                                                    <span>@if($batLifeRemaining === null)-@elseif($batLifeRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batLifeRemaining <= 3)<span class="text-warning fw-bold">{{ $batLifeRemaining }} mo left</span>@else<span class="text-success">{{ $batLifeRemaining }} mo</span>@endif</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+                                </div>
+                                @endif
+
                             </div>
                         </div>
                         
@@ -2075,7 +2789,6 @@
                                 <div class="itemtop mb-0 pb-0">
                                     <div class="inner-card p-0 mt-3 mb-0">
                                         <div class="table-responsive table-responsive02">
-                                            <div class="table-responsive table-responsive02">
                                                 <table class="table table-bordered mb-0">
                                                     <tbody>
                                                         @if($chassisLoan)
@@ -2141,9 +2854,8 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        </div>
                                     </div>
-                                    
+
                                     <div>
                                     <a
                                         href="javascript:void(0)"
@@ -2239,7 +2951,6 @@
                             <div class="itemtop pb-0">
                                 <div class="inner-card p-0 mt-3 mb-0">
                                     <div class="table-responsive table-responsive02">
-                                        <div class="table-responsive table-responsive02">
                                             <table class="table table-bordered mb-0">
                                                 <tbody>
                                                     @if($bodyLoan)
@@ -2304,10 +3015,9 @@
                                                     @endif
                                                 </tbody>
                                             </table>
-                                        </div>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                 <a
                                     href="javascript:void(0)"
@@ -5562,39 +6272,108 @@
     </div>
 </div>
 
+</div>{{-- end srlog-bdwrapper --}}
+
+{{-- ═══════════════════════════════════════════════════════
+     TYRE IMAGE GALLERY MODAL — vtd-gallery-modal
+     Populated via vehicle-details-tyre.js
+═══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="vtdGalleryModal" tabindex="-1" aria-labelledby="vtdGalleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered vtd-gallery-dialog">
+        <div class="modal-content vtd-gallery-content">
+            <div class="modal-header vtd-gallery-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="uil uil-image vtd-gallery-icon"></i>
+                    <div>
+                        <div class="vtd-gallery-title" id="vtdGalleryModalLabel">Tyre Photos</div>
+                        <div class="vtd-gallery-subtitle" id="vtdGallerySubtitle"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vtd-gallery-body" id="vtdGalleryBody">
+                {{-- Populated by JS --}}
+            </div>
+            <div class="modal-footer vtd-gallery-footer">
+                <button type="button" class="btn btn-sm vtd-gallery-nav" id="vtdGalleryPrev" disabled>
+                    <i class="uil uil-angle-left"></i> Prev
+                </button>
+                <span class="vtd-gallery-counter" id="vtdGalleryCounter">1 / 1</span>
+                <button type="button" class="btn btn-sm vtd-gallery-nav" id="vtdGalleryNext" disabled>
+                    Next <i class="uil uil-angle-right"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     TYRE DETAIL MODAL — vtd-detail-modal
+     Populated via vehicle-details-tyre.js
+═══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="vtdTyreDetailModal" tabindex="-1" aria-labelledby="vtdTyreDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+        <div class="modal-content vtd-modal-content">
+            <div class="modal-header vtd-modal-header" id="vtdModalHeader">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="vtd-modal-pos-dot" id="vtdModalPosDot"></span>
+                    <div>
+                        <div class="vtd-modal-title" id="vtdTyreDetailModalLabel">Tyre Details</div>
+                        <div class="vtd-modal-subtitle" id="vtdModalSubtitle"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vtd-modal-body vtd-modal-body-scroll" id="vtdModalBody">
+                {{-- Populated by JS --}}
+            </div>
+            <div class="modal-footer vtd-modal-footer">
+                <a href="#" class="btn btn-sm vtd-modal-manage-btn" id="vtdModalManageBtn" target="_blank">
+                    <i class="uil uil-cog me-1"></i>Manage Tyres
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- SVG Hover Tooltip --}}
+<div id="vtdSvgTooltip" class="vtd-svg-tooltip" style="display:none;"></div>
+
 @endsection
 
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<!-- <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/html-related-scripts.js?v=1.0') }}"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.4') }}"></script>
 
 <script>
 
-    var DRIVER_DATA = "{{ route('fleetdashboard.getDriverData', ':id') }}"; 
-    
+    var DRIVER_DATA = "{{ route('fleetdashboard.getDriverData', ':id') }}";
+
     var EDIT_GPS = "{{ route('fleetdashboard.editGpsDetail', ':id') }}";
     var EDIT_FASTTAG = "{{ route('fleetdashboard.editFasttagDetail', ':id') }}";
-    
+
     var EDIT_TYRE = "{{ route('fleetdashboard.editTyreDetail', ':id') }}";
     var DELETE_TYRE = "{{ route('fleetdashboard.deleteTyre') }}";
-    
+
+    /* Tyre image gallery data — keyed by position code (e.g. 'C1', 'D1') */
+    var VTD_TYRE_IMAGES = @json($tyreImagesMap ?? []);
+
     var EDIT_BATTERY = "{{ route('fleetdashboard.editBatteryDetail', ':id') }}";
     var DELETE_BATTERY = "{{ route('fleetdashboard.deleteBattery') }}";
-    
+
     var EDIT_DIGITAL_LOCK = "{{ route('fleetdashboard.editDigiLockDetail', ':id') }}";
     var DELETE_DIGITAL_LOCK = "{{ route('fleetdashboard.deleteDigiLock') }}";
-    
-    
+
+
     var EDIT_FINANCE = "{{ route('vehicleemi.edit', ':id') }}";
     var VIEW_FINANCE_NOTES = "{{ route('vehicleemi.finance.note.show', ':id') }}";
 
-    /* ── Pre-fill vehicle in New Claim modal ── */
+    /* —— Pre-fill vehicle in New Claim modal —— */
     function prefillClaimVehicle(vehicleNo) {
         if (!vehicleNo) return;
         $('#claimVehicleSelect option').each(function () {
@@ -5605,7 +6384,7 @@
         });
     }
 
-    /* ── New Claim modal: settlement mode toggle ── */
+    /* —— New Claim modal: settlement mode toggle —— */
     function vdToggleSettlementMode(mode) {
         if (mode === 'cashless') {
             $('#vdCashlessExcessField').show();
@@ -5620,7 +6399,7 @@
         }
     }
 
-    /* ── Workshop type filter (called by radio onchange) ── */
+    /* —— Workshop type filter (called by radio onchange) —— */
     function vdFilterWorkshopvd(type) {
         $('#vdWorkshopSelect').val('').trigger('change');
         $('#vdScContactWrap, #vdScPhoneWrap, #vdScCityWrap').hide();
@@ -5636,7 +6415,7 @@
         }
     }
 
-    /* ── Reset modal on open ── */
+    /* —— Reset modal on open —— */
     $('#newClaimModal').on('show.bs.modal', function () {
         $('input[name="vdSettlementMode"][value="reimbursement"]').prop('checked', true);
         $('input[name="vdWorkshopType"][value="Own"]').prop('checked', true);
@@ -5645,7 +6424,7 @@
         vdFilterWorkshopvd('Own');
     });
 
-    /* ── Workshop auto-fill contact info ── */
+    /* —— Workshop auto-fill contact info —— */
     $('#vdWorkshopSelect').on('change', function () {
         var sel = $(this).find(':selected');
         if ($(this).val()) {

@@ -30,6 +30,8 @@ use App\Models\Vehiclefasttags;
 use App\Models\Vehiclefasttaglog;
 // use App\Models\Vehicletyre;
 // use App\Models\Vehicletyrelog;
+use App\Models\Vehicletyremapping;
+use App\Models\Vehicletyremappinglog;
 use App\Models\Vehiclebattery;
 use App\Models\Vehiclebatterylog;
 use App\Models\Vehicledigitallock;
@@ -891,6 +893,79 @@ class FleetDashboardController extends Controller
     }
     
     
+    // Tyre Mapping Logs (AJAX) ------------------------------------------------
+    /**
+     * GET /fleet-dashboard/tyre/{tyre}/mapping-logs
+     * Returns ALL vehicletyremappinglogs for the given tyre (full tyre history
+     * across every vehicle it has been fitted to).
+     * Each log includes vehicle_no so the timeline can show which vehicle.
+     * Used by the eye-icon timeline modal on vehicle details pages.
+     */
+    public function getTyreMappingLogs(\App\Models\Tyre $tyre)
+    {
+        $logs = Vehicletyremappinglog::with(['medias', 'vehicle', 'tyreposition'])
+            ->where('tyre_id', $tyre->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($log) {
+                $attachments = $log->medias->map(function ($media) {
+                    $url = $media->file_path
+                        ? (Str::startsWith($media->file_path, ['http://', 'https://'])
+                            ? $media->file_path
+                            : asset('medias/' . ltrim($media->file_path, '/')))
+                        : null;
+                    return [
+                        'url'  => $url,
+                        'name' => $media->file_name ?? $media->original_name ?? 'Attachment',
+                        'date' => $media->created_at ? $media->created_at->format('d M Y') : null,
+                        'time' => $media->created_at ? $media->created_at->format('h:i A') : null,
+                        'type' => $media->type ?? 'Image',
+                    ];
+                })->values()->toArray();
+
+                return [
+                    'id'                    => $log->id,
+                    'vehicle_no'            => $log->vehicle?->vehicle_no ?? '—',
+                    'tyre_position_code'    => $log->tyreposition?->code ?? '—',
+                    'tyre_position_desc'    => $log->tyreposition?->description ?? null,
+                    'created_at_formatted'  => $log->created_at ? $log->created_at->format('d M Y, h:i A') : '—',
+                    'fitment_date'          => $log->fitment_date
+                        ? Carbon::parse($log->fitment_date)->format('d M Y') : null,
+                    'km_at_fitment'         => $log->km_at_fitment,
+                    'removal_date'          => $log->removal_date
+                        ? Carbon::parse($log->removal_date)->format('d M Y') : null,
+                    'km_at_removal'         => $log->km_at_removal,
+                    'notes'                 => $log->notes,
+                    'attachments'           => $attachments,
+                ];
+            });
+
+        // Tyre-level photos (stored on the Tyre model itself, not on log entries)
+        $tyrePhotos = $tyre->tyrePhotos->map(function ($media) {
+            $url = $media->file_path
+                ? (Str::startsWith($media->file_path, ['http://', 'https://'])
+                    ? $media->file_path
+                    : asset('medias/' . ltrim($media->file_path, '/')))
+                : null;
+            return [
+                'url'  => $url,
+                'name' => $media->file_name ?? $media->original_name ?? 'Photo',
+                'date' => $media->created_at ? $media->created_at->format('d M Y') : null,
+                'time' => $media->created_at ? $media->created_at->format('h:i A') : null,
+                'type' => $media->type ?? 'Image',
+            ];
+        })->values()->toArray();
+
+        return response()->json([
+            'success'      => true,
+            'tyre_serial'  => $tyre->tyre_serial_number ?? '—',
+            'tyre_brand'   => $tyre->tyre_brand ?? '—',
+            'tyre_model'   => $tyre->tyre_model ?? '—',
+            'logs'         => $logs,
+            'tyre_photos'  => $tyrePhotos,
+        ]);
+    }
+
     // Tyre --------------------------------------------------------------------
     public function manageTyreDetails(Vehicle $vehicle){
         $tyrepositions = Tyreposition::where('status', 'Active')->get();

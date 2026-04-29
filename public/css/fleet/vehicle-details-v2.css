@@ -1300,3 +1300,545 @@
     text-align: center;
 }
 
+/* ═══════════════════════════════════════════════════
+   COMPACT CARD SPACING — accordion body density
+   Reduces visual padding in Insurance, Fasttag, GPS,
+   Battery, EMI and all other vehicleinfo accordion cards
+════════════════════════════════════════════════════ */
+
+/* Remove Bootstrap's default 1rem accordion-body pad */
+.vehicleinfo-sec .accordion-body {
+    padding: 0 !important;
+}
+
+/* Tighten table cell padding (was 13px 16px) */
+.vehicleinfo-sec .table-responsive02 .table tbody td {
+    padding: 8px 12px !important;
+}
+
+/* Tighten Important Dates table cell padding (was 10px 14px) */
+.vehicleinfo-wrap .vehicleinfo-sec .important_df .table td {
+    padding: 7px 12px !important;
+}
+
+/* Reduce label margin under <p> tags (was 5px) */
+.vehicleinfo-sec .table-responsive02 .table tbody td > p {
+    margin-bottom: 3px !important;
+}
+
+/* Tighten accordion header row itself */
+.vehicleinfo-sec .accordion-header.vehicleinfor_head {
+    padding: 0 !important;
+}
+.vehicleinfo-wrap .vehicleinfo-sec .vehicleinfo_toprow {
+    padding: 6px 12px !important;
+    margin: 0 !important;
+}
+
+/* =====================================================
+   EMI BOOK TAB — compact density overrides
+   Scoped to #emi_book so nothing else is affected
+   ===================================================== */
+
+#emi_book .totalrevenue.mt-3 {
+    margin-top: 8px !important;
+}
+#emi_book .totalrevenue .item-row {
+    padding: 10px 14px;
+}
+#emi_book .totalrevenue .item-row .itemcol p {
+    font-size: 12px;
+    padding-bottom: 2px;
+}
+#emi_book .totalrevenue .item-row .itemcol .number {
+    font-size: 18px;
+    line-height: 1.2;
+}
+#emi_book .nav.nav-pills.mt-3 {
+    margin-top: 8px !important;
+    margin-bottom: 0;
+}
+#emi_book .nav-pills .nav-link {
+    padding: 5px 16px;
+    font-size: 13px;
+    border-radius: 5px;
+}
+/* Loan summary table (Financer / EMI Amount / dates) */
+#emi_book .table.table-bordered td {
+    padding: 7px 10px;
+    font-size: 12.5px;
+}
+#emi_book .table.table-bordered td p {
+    margin-bottom: 2px;
+    font-size: 11px;
+}
+/* EMI records table */
+#emi_book .table.custom-driver-table th,
+#emi_book .table.custom-driver-table td {
+    padding: 6px 10px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+/* Remove extra margin on inner-card inside EMI tab */
+#emi_book .inner-card.p-0.mt-3 {
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+}
+/* Action buttons row */
+#emi_book .itemtop > div:last-child {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+/* Tighten tab-content padding */
+#emi_book .vehiclestable.pt-0 {
+    padding-top: 0 !important;
+}
+#emi_book .itemtop.mb-0.pb-0,
+#emi_book .itemtop.pb-0 {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* =====================================================
+   BATTERY VISUAL LAYOUT (bat-*)
+   Vehicle Details V1 redesign — Battery section
+   ===================================================== */
+
+/* Three-column layout: left cards | truck SVG | right cards */
+.bat-visual-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 200px;
+}
+
+/* Side columns (left & right) — flex grow, hold battery cards */
+.bat-col-side {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Center column — fixed width, sticky so SVG stays visible as cards scroll */
+.bat-col-center {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+}
+
+/* Truck SVG wrapper */
+.bat-truck-wrap {
+    text-align: center;
+    width: 100%;
+}
+.bat-truck-svg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+/* Legend below SVG */
+.bat-truck-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.bat-legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Individual battery card */
+.bat-card {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+/* Card header: label + edit/delete */
+.bat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f1f5fd;
+    border-bottom: 1px solid #e2e8f0;
+}
+.bat-card-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+}
+.bat-card-label-blue {
+    color: #2563eb;
+}
+.bat-card-actions {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+}
+.bat-card-actions a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color .15s;
+}
+.bat-card-actions a:hover { color: #032671; }
+
+/* 2-column grid of data fields inside card */
+.bat-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 4px 0;
+}
+.bat-field {
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f5fd;
+}
+.bat-field:last-child,
+.bat-field:nth-last-child(2):nth-child(odd) {
+    border-bottom: none;
+}
+.bat-field p {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin: 0 0 2px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+.bat-field span {
+    font-size: 12px;
+    color: #334155;
+    font-weight: 500;
+    display: block;
+    word-break: break-word;
+}
+
+/* Responsive: stack columns on tablet */
+@media (max-width: 992px) {
+    .bat-visual-layout {
+        flex-direction: column;
+    }
+    .bat-col-center {
+        width: 100%;
+        position: static;
+        order: -1;
+    }
+    .bat-col-side {
+        width: 100%;
+    }
+    .bat-truck-svg {
+        max-width: 260px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYRE HISTORY TIMELINE MODAL  (v3.9 — vtd-timeline-*)
+═══════════════════════════════════════════════════════════ */
+
+/* Modal body scrollable */
+.vtd-modal-body-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* Vehicle number badge in modal header */
+.vtd-modal-vehicle-no-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    white-space: nowrap;
+}
+
+/* Loading spinner area */
+.vtd-timeline-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 24px;
+    color: #8898aa;
+    font-size: 13px;
+    gap: 10px;
+}
+.vtd-timeline-loading .spinner-border {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-width: 2px;
+    color: #032671;
+}
+
+/* Vehicle number inline in datetime row */
+.vtd-tl-vehicle-no {
+    display: inline-block;
+    background: #edf0f7;
+    color: #032671;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+}
+
+/* Tyre position badge */
+.vtd-tl-position-badge {
+    display: inline-block;
+    background: #f0f4ff;
+    color: #4b6cb7;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+    cursor: default;
+}
+
+/* Attachment toggle icon button */
+.vtd-tl-attach-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 12px;
+    vertical-align: middle;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    line-height: 1;
+}
+.vtd-tl-attach-toggle:hover,
+.vtd-tl-attach-toggle.active {
+    background: #032671;
+    border-color: #032671;
+    color: #fff;
+}
+
+/* Timeline container */
+.vtd-timeline {
+    padding: 16px 20px 8px;
+    position: relative;
+}
+
+/* Vertical line running through timeline */
+.vtd-timeline::before {
+    content: '';
+    position: absolute;
+    left: 36px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #d0daf0, #edf0f7);
+}
+
+/* Single timeline entry */
+.vtd-tl-entry {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+    position: relative;
+}
+.vtd-tl-entry:last-child { margin-bottom: 4px; }
+
+/* Timeline dot */
+.vtd-tl-dot {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #032671;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #032671;
+    z-index: 1;
+    margin-top: 2px;
+}
+.vtd-tl-dot.dot-active   { border-color: #10863f; color: #10863f; }
+.vtd-tl-dot.dot-inactive { border-color: #8898aa; color: #8898aa; }
+.vtd-tl-dot.dot-spare    { border-color: #d97706; color: #d97706; }
+.vtd-tl-dot.dot-neutral  { border-color: #a0aec0; color: #a0aec0; }
+
+/* Timeline card body */
+.vtd-tl-body {
+    flex: 1;
+    background: #f8faff;
+    border: 1px solid #e4eaf6;
+    border-radius: 8px;
+    padding: 10px 13px;
+    min-width: 0;
+}
+
+/* Timestamp row */
+.vtd-tl-datetime {
+    font-size: 10px;
+    color: #8898aa;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.vtd-tl-datetime i { font-size: 12px; }
+
+/* Status chip inside card */
+.vtd-tl-status-chip {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+}
+.vtd-tl-status-active   { background: #d4edda; color: #10863f; }
+.vtd-tl-status-inactive { background: #e9ecef; color: #6c757d; }
+.vtd-tl-status-spare    { background: #fff3cd; color: #d97706; }
+
+/* Fields within timeline card */
+.vtd-tl-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    font-size: 12px;
+    color: #495057;
+    margin-bottom: 6px;
+}
+.vtd-tl-field-label {
+    color: #8898aa;
+    font-size: 11px;
+}
+.vtd-tl-field-val {
+    font-weight: 600;
+    color: #032671;
+}
+
+/* Notes */
+.vtd-tl-notes {
+    font-size: 11px;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #dde4f0;
+    line-height: 1.4;
+}
+
+/* By line */
+.vtd-tl-by {
+    font-size: 10px;
+    color: #adb5bd;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Attachments grid */
+.vtd-tl-attachments {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #e4eaf6;
+}
+.vtd-tl-attach-label {
+    font-size: 10px;
+    color: #8898aa;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.vtd-tl-attach-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.vtd-tl-attach-item {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #d0daf0;
+    background: #edf0f7;
+    cursor: pointer;
+}
+.vtd-tl-attach-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.vtd-tl-attach-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8898aa;
+    font-size: 20px;
+}
+.vtd-tl-attach-name {
+    font-size: 10px;
+    color: #6c757d;
+    text-align: center;
+    word-break: break-all;
+    margin-top: 2px;
+    max-width: 56px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Empty / error states */
+.vtd-timeline-empty,
+.vtd-timeline-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    color: #8898aa;
+    font-size: 13px;
+    text-align: center;
+    gap: 8px;
+}
+.vtd-timeline-empty i,
+.vtd-timeline-error i { font-size: 36px; opacity: 0.4; }
+.vtd-timeline-error { color: #ea0027; }
+.vtd-timeline-error i { opacity: 0.5; }
+
+
