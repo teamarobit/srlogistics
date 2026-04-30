@@ -52,7 +52,7 @@
                                         <tr>
                                             <th style="min-width: 120px;">Name</th>
                                             <th style="min-width: 220px;">Description</th>
-                                            <th style="width: 180px;">Vehicle Size</th>
+                                            <th style="width: 220px;">Vehicle Size</th>
                                             <th>Status</th>
                                             <th>Created By</th>
                                             <th class="text-end">Action</th>
