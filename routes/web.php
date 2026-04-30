@@ -696,7 +696,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/master/workshops',            [App\Http\Controllers\WorkshopController::class, 'masterWorkshops'])->name('master.workshops');
         Route::post('/master/workshops',           [App\Http\Controllers\WorkshopController::class, 'masterWorkshopStore'])->name('master.workshops.store');
         Route::put('/master/workshops/{id}',       [App\Http\Controllers\WorkshopController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
-        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
+        Route::post('/master/workshops/{id}/change-status',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopChangeStatus'])->name('master.workshops.changestatus');
         // Legacy redirects so any bookmarked URLs don't hard-404
         Route::redirect('/master/service-centers', '/workshop/master/workshops', 301);
         Route::redirect('/master/external-sc',     '/workshop/master/workshops', 301);

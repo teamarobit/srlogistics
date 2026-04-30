@@ -326,7 +326,7 @@ class WorkshopController extends Controller
         }
     }
 
-    public function masterWorkshopDestroy(int $id)
+    public function masterWorkshopChangeStatus(int $id)
     {
         // SD-8: use find() + manual 404 — never findOrFail() in AJAX methods
         $ws = Workshop::find($id);
@@ -336,13 +336,15 @@ class WorkshopController extends Controller
 
         try {
             \DB::transaction(function () use ($ws) {
-                $ws->delete(); // soft delete
+                $ws->update([
+                    'status' => $ws->status == 'Active' ? 'Inactive' : 'Active'
+                ]);
             });
 
-            return response()->json(['success' => true, 'message' => $ws->name . ' removed from workshop master.'], 200);
+            return response()->json(['success' => true, 'message' => $ws->name . ' status has been changed successfully..'], 200);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to remove workshop.'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to change the status of workshop.'], 500);
         }
     }
 

@@ -308,7 +308,9 @@ $(function () {
             text:               '"' + name + '"',
             icon:               'warning',
             showCancelButton:   true,
-            confirmButtonColor: current === 'Active' ? '#ea0027' : '#10863f',
+            // confirmButtonColor: current === 'Active' ? '#ea0027' : '#10863f',
+            confirmButtonColor:'#1F75A8',
+            reverseButtons: true,
             confirmButtonText:  action
         }).then(function (r) {
             if (!r.isConfirmed) { return; }
@@ -319,7 +321,7 @@ $(function () {
             $.ajax({
                 url:     url,
                 method:  'POST',
-                data:    { _method: 'DELETE', _token: $('meta[name="csrf-token"]').attr('content') },
+                data:    { _token: $('meta[name="csrf-token"]').attr('content') },
                 headers: { 'Accept': 'application/json' },
                 success: function (res) {
                     Toast.fire({ icon: 'success', title: res.message });

@@ -64,7 +64,7 @@
 
                 <div class="table-responsive mt-3">
                     <table class="table table-hover invoice-table mb-0" id="wsTable"
-                           data-destroy-url="{{ route('ws.master.workshops.destroy', ['id' => '__ID__']) }}">
+                           data-destroy-url="{{ route('ws.master.workshops.changestatus', ['id' => '__ID__']) }}">
                         <thead>
                             <tr>
                                 <th>Code</th>
