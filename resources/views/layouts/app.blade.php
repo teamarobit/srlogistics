@@ -28,7 +28,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
 
     <!--custom style-->
-    <link href="{{ asset('css/style.css?v=0.02') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?v=0.03') }}" rel="stylesheet">
     <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
 
     <!--select2-->

@@ -14,7 +14,7 @@
 
                 <div class="container-fluid page-head">
                     <div class="row align-items-center gy-2">
-                        <div class="col-md-6 d-flex flex-wrap align-items-center gap-2">
+                        <div class="col-md-4 d-flex flex-wrap align-items-center gap-2">
                             <h5 class="mb-0 me-2">Workshops</h5>
                             {{-- Ownership tab-filter --}}
                             <ul class="nav filter-tabs border-0 gap-1" id="ownershipTabs">
@@ -38,9 +38,9 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="col-md-6 d-flex flex-wrap align-items-center justify-content-md-end gap-2">
+                        <div class="col-md-8 d-flex flex-wrap align-items-center justify-content-md-end gap-2">
                             <input type="text" class="form-control form-control-sm" id="wsSearch" placeholder="Search name / city / code…" style="width:200px;">
-                            <select class="form-select form-select-sm" id="wsTypeFilter" style="width:150px;">
+                            <select class="form-select form-select-sm" id="wsTypeFilter" style="width:100px;">
                                 <option value="">All Types</option>
                                 <option>Workshop</option>
                                 <option>Mobile Unit</option>
@@ -55,8 +55,11 @@
                                 <option>Active</option>
                                 <option>Inactive</option>
                             </select>
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addWsModal">
-                                <i class="uil uil-plus me-1"></i> Add Workshop
+                            <button class="btn btn-theme btn-sm" data-bs-toggle="modal" data-bs-target="#addWsModal">
+                                <i class="uil uil-plus me-1"></i>Workshop
+                            </button>
+                            <button class="btn btn-primary reset-btn">
+                                Reset
                             </button>
                         </div>
                     </div>
@@ -205,7 +208,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title fw-semibold"><i class="uil uil-store-alt me-2"></i>Add Workshop</h6>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"><i class="uil uil-times"></i></button>
             </div>
             <div class="modal-body">
                 {{-- SD-1: all JS in external file. data-* passes config to workshops.js --}}
@@ -286,7 +289,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Pincode</label>
-                            <input type="text" class="form-control" name="pincode" placeholder="500001" maxlength="10">
+                            <input type="text" class="form-control" name="pincode" placeholder="e.g. 500001" maxlength="10">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact Person</label>
@@ -316,8 +319,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-theme btn-sm" id="btnSaveWs" form="addWsForm">
-                    <i class="uil uil-save me-1"></i> Save Workshop
+                <button type="submit" class="btn btn-primary btn-sm" id="btnSaveWs" form="addWsForm">
+                     Save Workshop
                 </button>
             </div>
         </div>
