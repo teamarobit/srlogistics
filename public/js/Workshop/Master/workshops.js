@@ -244,6 +244,8 @@ $(function () {
         $('#editWsTechs').val(b.data('techs')   || 0);
         $('#editWsNotes').val(b.data('notes')   || '');
         $('#editWsStatus').val(b.data('status'));
+        $('#editWsAddress').val(b.data('address'));
+        $('#editWsPincode').val(b.data('pincode'));
 
         var stateId  = b.data('state-id') || '';
         var cityName = b.data('city')     || '';

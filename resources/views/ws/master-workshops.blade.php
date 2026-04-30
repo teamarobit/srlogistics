@@ -387,6 +387,15 @@
                             </select>
                         </div>
 
+                        <div class="col-8">
+                            <label class="form-label fw-semibold">Address</label>
+                            <input type="text" class="form-control" name="address" id="editWsAddress" placeholder="Full address">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Pincode</label>
+                            <input type="text" class="form-control" name="pincode" id="editWsPincode" placeholder="500001" maxlength="10">
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact</label>
                             <input type="text" class="form-control" name="manager_name" id="editWsManager">
