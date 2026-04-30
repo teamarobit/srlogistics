@@ -16,11 +16,35 @@ class Vehicletyremappinglog extends Model
         return $this->belongsTo(Vehicletyremapping::class);
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function tyreposition()
+    {
+        return $this->belongsTo(Tyreposition::class);
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
-    
-    
+
+    /**
+     * Polymorphic media attachments for this log entry.
+     * Images uploaded at the time of tyre fitment / removal.
+     */
+    public function medias()
+    {
+        return $this->morphMany(Media::class, 'mediable');
+    }
+
+    public function images()
+    {
+        return $this->morphMany(Media::class, 'mediable')->where('type', 'Image');
+    }
+
+
+
 }

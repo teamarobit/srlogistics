@@ -31,3 +31,4 @@ Thumbs.db
 /public/.htaccess
 *.skill
 *.md
+*.bak

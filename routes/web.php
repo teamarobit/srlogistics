@@ -400,6 +400,12 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
         Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
+        // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
+        Route::get('/get-tyre-list', [App\Http\Controllers\TyreManagementController::class, 'getTyreList'])->name('get.tyre.list');
+        // POST: tag a tyre to a specific mapping position
+        Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
+        // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)
+        Route::post('/vehicle/{vehicle}/add-spare', [App\Http\Controllers\TyreManagementController::class, 'addSpareTyre'])->name('vehicle.add.spare');
     });
     
     /******************************** Vehicle Master **********************************************************/
@@ -556,6 +562,9 @@ Route::group(['middleware' => ['auth']], function() {
         
         
         // vehicle-Tyre-detail
+        // AJAX: full tyre history logs by tyre_id (eye-icon timeline modal)
+        Route::get('/tyre/{tyre}/mapping-logs', [App\Http\Controllers\FleetDashboardController::class, 'getTyreMappingLogs'])->name('getTyreMappingLogs');
+
         Route::get('/vehicle/{vehicle}/tyre-details/create', [App\Http\Controllers\FleetDashboardController::class, 'manageTyreDetails'])->name('createTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/save', [App\Http\Controllers\FleetDashboardController::class, 'storeTyreDetails'])->name('saveTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/update', [App\Http\Controllers\FleetDashboardController::class, 'updateTyreDetails'])->name('updateTyreDetails');

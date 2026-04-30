@@ -164,8 +164,10 @@
 @endsection
 
 @section('js')
-
-<script type="text/javascript" src="{{asset('js/Vehicle/Type/create.js')}}"></script>
+<script>
+    var VEHILE_TYPES = "{{ route('vehicletype.index') }}";
+</script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/type/create.js')}}"></script>
 
 @endsection
 

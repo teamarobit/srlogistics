@@ -81,6 +81,8 @@ font-size: 12.68px; line-height: 100%;letter-spacing: 0%; color:#fff;}
 .vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td p {margin:0; padding:0;  font-family: Inter;font-weight: 400;color: #747D92;font-size: 12px;line-height: 29px;letter-spacing: 0%;}
 .vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span { margin:0; padding:0 0 7px 0; font-family: Inter;font-weight: 500;color: #000 !important;font-size: 12px;line-height: 18px;letter-spacing: 0%;}
 
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive { min-height: 75px;}
+
 .vehicleinfo-wrap .vehicleinfo-sec .important_df { margin:10px 0 0 0; padding:0;  background: #EFEAF5;border-radius: 15px;}
 
 

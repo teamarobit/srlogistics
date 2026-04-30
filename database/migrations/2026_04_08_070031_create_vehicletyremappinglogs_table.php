@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('vehicletyremapping_id');
             $table->bigInteger('vehicle_id');
-            $table->bigInteger('tyre_id');
+            $table->bigInteger('tyre_id')->nullable();
             $table->bigInteger('tyreposition_id');
             $table->date('fitment_date')->nullable();
             $table->unsignedBigInteger('km_at_fitment')->nullable();
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('km_at_removal')->nullable();
             $table->enum('status', ['Active', 'Inactive', 'Spare'])->default('Active');
             $table->text('notes')->nullable();
+            $table->bigInteger('created_by');
             $table->timestamps();
             $table->softDeletes();
         });
