@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string      $ownership          Own | External
  * @property string      $workshop_type      Workshop | Mobile Unit | Hybrid | Brand ASC | Third Party | Warranty | Multi-Brand
  * @property string|null $brand
- * @property string|null $city
- * @property string|null $state
+ * @property int|null    $state_id           FK → states.id
+ * @property int|null    $city_id            FK → cities.id (resolved/created by controller)
  * @property string|null $address
  * @property string|null $pincode
  * @property string|null $manager_name
@@ -58,6 +58,16 @@ class Workshop extends Model
     }
 
     // ── Relationships ────────────────────────────────────────────────────────
+
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
 
     public function insuranceclaims()
     {

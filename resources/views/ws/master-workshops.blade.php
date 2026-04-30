@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Workshop/Master/workshops.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/Workshop/Master/workshops.css?v=1.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -81,12 +81,16 @@
                         </thead>
                         <tbody>
                             @forelse($workshops as $ws)
+                            @php
+                                $cityName  = $ws->city?->name  ?? '';
+                                $stateName = $ws->state?->name ?? '';
+                            @endphp
                             <tr
                                 data-ownership="{{ strtolower($ws->ownership) }}"
                                 data-type="{{ strtolower($ws->workshop_type) }}"
                                 data-status="{{ strtolower($ws->status) }}"
                                 data-name="{{ strtolower($ws->name) }}"
-                                data-city="{{ strtolower($ws->city ?? '') }}"
+                                data-city="{{ strtolower($cityName) }}"
                                 data-code="{{ strtolower($ws->workshop_code) }}"
                             >
                                 <td><span class="fw-bold" style="color:#032671;font-size:12px;">{{ $ws->workshop_code }}</span></td>
@@ -116,8 +120,8 @@
                                 </td>
                                 <td class="text-muted" style="font-size:12px;">{{ $ws->brand ?? '—' }}</td>
                                 <td style="font-size:12px;">
-                                    {{ $ws->city ?? '' }}{{ $ws->city && $ws->state ? ', ' : '' }}{{ $ws->state ?? '' }}
-                                    @if(!$ws->city && !$ws->state) <span class="text-muted">—</span> @endif
+                                    {{ $cityName }}{{ $cityName && $stateName ? ', ' : '' }}{{ $stateName }}
+                                    @if(!$cityName && !$stateName) <span class="text-muted">—</span> @endif
                                 </td>
                                 <td style="font-size:12px;">
                                     {{ $ws->manager_name ?? '' }}<br>
@@ -144,8 +148,8 @@
                                                     data-ownership="{{ $ws->ownership }}"
                                                     data-type="{{ $ws->workshop_type }}"
                                                     data-brand="{{ $ws->brand }}"
-                                                    data-city="{{ $ws->city }}"
-                                                    data-state="{{ $ws->state }}"
+                                                    data-state-id="{{ $ws->state_id }}"
+                                                    data-city="{{ $cityName }}"
                                                     data-address="{{ $ws->address }}"
                                                     data-pincode="{{ $ws->pincode }}"
                                                     data-manager="{{ $ws->manager_name }}"
@@ -204,9 +208,10 @@
                 <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="addWsForm" method="POST" action="{{ route('ws.master.workshops.store') }}">
+                {{-- SD-1: all JS in external file. data-* passes config to workshops.js --}}
+                <form id="addWsForm" method="POST" action="{{ route('ws.master.workshops.store') }}"
+                      data-cities-url="{{ route('ws.master.workshops.cities') }}">
                     @csrf
-                    {{-- SD-1: submit button is placed inside the form below (modal-footer) via form="addWsForm" --}}
                     <div class="row g-3">
 
                         {{-- Ownership toggle --}}
@@ -256,14 +261,25 @@
                             <input type="text" class="form-control" name="brand" placeholder="e.g. Tata Motors, Leyland">
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">City</label>
-                            <input type="text" class="form-control" name="city" placeholder="e.g. Hyderabad">
-                        </div>
+                        {{-- State — Select2, India states (country_id=101) --}}
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">State</label>
-                            <input type="text" class="form-control" name="state" placeholder="e.g. Telangana">
+                            <select class="form-select" name="state_id" id="addWsState">
+                                <option value="">— Select State —</option>
+                                @foreach($states as $state)
+                                    <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
+                        {{-- City — Select2 tags:true, AJAX-loaded per state --}}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">City</label>
+                            <select class="form-select" name="city" id="addWsCity">
+                                <option value="">— Select State first —</option>
+                            </select>
+                        </div>
+
                         <div class="col-8">
                             <label class="form-label fw-semibold">Address</label>
                             <input type="text" class="form-control" name="address" placeholder="Full address">
@@ -319,7 +335,8 @@
             <div class="modal-body">
                 {{-- data-update-url: named route with __ID__ placeholder replaced by JS --}}
                 <form id="editWsForm"
-                      data-update-url="{{ route('ws.master.workshops.update', ['id' => '__ID__']) }}">
+                      data-update-url="{{ route('ws.master.workshops.update', ['id' => '__ID__']) }}"
+                      data-cities-url="{{ route('ws.master.workshops.cities') }}">
                     @csrf
                     @method('PUT')
                     <input type="hidden" id="editWsId">
@@ -350,14 +367,26 @@
                             <label class="form-label fw-semibold">Brand</label>
                             <input type="text" class="form-control" name="brand" id="editWsBrand">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">City</label>
-                            <input type="text" class="form-control" name="city" id="editWsCity">
-                        </div>
+
+                        {{-- State — Select2, India states (country_id=101) --}}
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">State</label>
-                            <input type="text" class="form-control" name="state" id="editWsState">
+                            <select class="form-select" name="state_id" id="editWsState">
+                                <option value="">— Select State —</option>
+                                @foreach($states as $state)
+                                    <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
+                        {{-- City — Select2 tags:true, AJAX-loaded per state --}}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">City</label>
+                            <select class="form-select" name="city" id="editWsCity">
+                                <option value="">— Select State first —</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact</label>
                             <input type="text" class="form-control" name="manager_name" id="editWsManager">
@@ -397,5 +426,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.1') }}"></script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.2') }}"></script>
 @endsection
