@@ -59,14 +59,14 @@
                                       <div class="col-12 col-md-8">
                                           <div class="d-flex">
                                               <div class="form-check d-flex me-2 if-owned">
-                                                  <input class="form-check-input" type="radio" name="ownership_type" id="exampleRadios1" value="Own" @checked($record->ownership_type == 'Own')>
-                                                  <label class="form-check-label" for="exampleRadios1">
+                                                  <input class="form-check-input" type="radio" name="ownership_type" id="type1" value="Own" @checked($record->ownership_type == 'Own')>
+                                                  <label class="form-check-label" for="type1">
                                                       Own
                                                   </label>
                                               </div>
                                               <div class="form-check d-flex if-rental">
-                                                  <input class="form-check-input" type="radio" name="ownership_type" id="exampleRadios2" value="Rental" @checked($record->ownership_type == 'Rental')>
-                                                  <label class="form-check-label" for="exampleRadios2">
+                                                  <input class="form-check-input" type="radio" name="ownership_type" id="type2" value="Rental" @checked($record->ownership_type == 'Rental')>
+                                                  <label class="form-check-label" for="type2">
                                                       Rental
                                                   </label>
                                               </div>  
@@ -169,7 +169,7 @@
                                                         @checked($record->vehicletype_id == $type->id)
                                                     >
                                     
-                                                    <label class="form-check-label ms-1" for="{{ $radioId }}">
+                                                    <label class="form-check-label me-3" for="{{ $radioId }}">
                                                         {{ $type->name }}
                                                     </label>
                                                 </div>
