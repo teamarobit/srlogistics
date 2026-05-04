@@ -47,3 +47,53 @@
 
 /*----*/
 
+/* ── Tyre Dashboard: 9-Card Layout Override (v1.1) ─────────────────────────
+   The base .itemcol is 16% (works for ~6 cards in a row).
+   For 9 cards we target 5 per row → Row 1: 5 cards, Row 2: 4 cards (centred).
+   Using a specific class .tyre-itemcol keeps this override scoped to this page
+   and does not affect the Fleet dashboard or any other page.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Row container gap for wrapping rows */
+.tyre-cards-row {
+    gap: 12px 0;
+}
+
+/* Each card: ~19% width = 5 cards per row with 9px side padding accounted for */
+.dashboard-bd .itemvehicles-bd .tyre-itemcol {
+    width: 19%;
+    margin-bottom: 10px;
+}
+
+/* Truncate long labels gracefully — keeps card height consistent */
+.dashboard-bd .itemvehicles-bd .tyre-itemcol .top p:last-child {
+    font-size: 11.5px;
+    line-height: 16px;
+    min-height: 32px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Tablet (≤1200px): 3 cards per row */
+@media (max-width: 1200px) {
+    .dashboard-bd .itemvehicles-bd .tyre-itemcol {
+        width: 31%;
+    }
+}
+
+/* Mobile (≤768px): 2 cards per row */
+@media (max-width: 768px) {
+    .dashboard-bd .itemvehicles-bd .tyre-itemcol {
+        width: 47%;
+    }
+}
+
+/* Small mobile (≤480px): 1 card per row */
+@media (max-width: 480px) {
+    .dashboard-bd .itemvehicles-bd .tyre-itemcol {
+        width: 100%;
+    }
+}
+

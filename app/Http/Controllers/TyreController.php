@@ -16,6 +16,7 @@ use App\Models\Mediadocument;
 use App\Models\Tyre;
 use App\Models\TyreMaintenanceSchedule;
 use App\Models\Tyrelog;
+use App\Models\Vehicletyremapping;
 
 use Auth;
 
@@ -31,21 +32,77 @@ class TyreController extends Controller
     
     public function dashboard(){
         $tyres_query = Tyre::query();
+
+        // ── Counter 1: All Tyres ─────────────────────────────────────────────
         $all_count = (clone $tyres_query)->count();
-        $warehouse_count = (clone $tyres_query)->where('location', 'Warehouse')->count();
-        $service_center_count = (clone $tyres_query)->where('location', 'Service Center')->count();
-        $vehicle_count = (clone $tyres_query)->where('location', 'Vehicle')->count();
-        $discarded_count = (clone $tyres_query)->where('tyre_condition', 'Discard')->count();
-        
-        $all_tyres = Tyre::latest()->paginate(10, ['*'], 'all_tyre_page');
-        $warehouse_tyres = Tyre::where('location', 'Warehouse')->latest()->paginate(10, ['*'], 'warehouse_tyre_page');
+
+        // ── Counter 2: SR Garage — Ready to Use (Warehouse, non-scrapped) ───
+        $garage_ready_count = (clone $tyres_query)
+            ->where('location', 'Warehouse')
+            ->whereNotIn('tyre_condition', ['Discard', 'Scrap'])
+            ->count();
+
+        // ── Counter 3: Warranty Claim Tyres ─────────────────────────────────
+        // Tyres that are scrapped/discarded but still within warranty period
+        $warranty_claim_count = (clone $tyres_query)
+            ->whereIn('tyre_condition', ['Discard', 'Scrap'])
+            ->whereNotNull('tyre_warrenty_end_date')
+            ->whereDate('tyre_warrenty_end_date', '>=', now())
+            ->count();
+
+        // ── Counter 4: Re-Threading Tyres ───────────────────────────────────
+        $rethreading_count = (clone $tyres_query)
+            ->where('tyre_condition', 'Re-thread')
+            ->count();
+
+        // ── Counter 5: Scrap Tyres ───────────────────────────────────────────
+        $scrap_count = (clone $tyres_query)
+            ->whereIn('tyre_condition', ['Discard', 'Scrap'])
+            ->count();
+
+        // ── Counter 6: Allocate Tyres (mounted on vehicles) ─────────────────
+        $allocated_count = (clone $tyres_query)
+            ->where('location', 'Vehicle')
+            ->count();
+
+        // ── Counter 7: Direct Fitment Tyres ─────────────────────────────────
+        $direct_fitment_count = (clone $tyres_query)
+            ->where('tyre_source_mode', 'Fitment')
+            ->count();
+
+        // ── Counter 8: Yet to Decide Tyres (Service Center — pending decision)
+        $yet_to_decide_count = (clone $tyres_query)
+            ->where('location', 'Service Center')
+            ->count();
+
+        // ── Counter 9: Extra Tyres On Vehicle (spare tyres on vehicles) ──────
+        $extra_on_vehicle_count = Vehicletyremapping::where('status', 'Spare')->count();
+
+        // ── Tyre lists for tab panels ────────────────────────────────────────
+        $all_tyres            = Tyre::latest()->paginate(10, ['*'], 'all_tyre_page');
+        $warehouse_tyres      = Tyre::where('location', 'Warehouse')->latest()->paginate(10, ['*'], 'warehouse_tyre_page');
         $service_center_tyres = Tyre::where('location', 'Service Center')->latest()->paginate(10, ['*'], 'service_center_tyre_page');
-        $vehicle_tyres = Tyre::where('location', 'Vehicle')->latest()->paginate(10, ['*'], 'vehicle_tyre_page');
-        $discarded_tyres = Tyre::where('tyre_condition', 'Discard')->latest()->paginate(10, ['*'], 'discarded_tyre_page');
-        
+        $vehicle_tyres        = Tyre::where('location', 'Vehicle')->latest()->paginate(10, ['*'], 'vehicle_tyre_page');
+        $discarded_tyres      = Tyre::whereIn('tyre_condition', ['Discard', 'Scrap'])->latest()->paginate(10, ['*'], 'discarded_tyre_page');
+
         $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
-        
-        return view('tyre.dashboard', compact('all_count', 'warehouse_count', 'service_center_count', 'vehicle_count', 'discarded_count', 'all_tyres', 'warehouse_tyres', 'service_center_tyres', 'vehicle_tyres', 'discarded_tyres'));
+
+        return view('tyre.dashboard', compact(
+            'all_count',
+            'garage_ready_count',
+            'warranty_claim_count',
+            'rethreading_count',
+            'scrap_count',
+            'allocated_count',
+            'direct_fitment_count',
+            'yet_to_decide_count',
+            'extra_on_vehicle_count',
+            'all_tyres',
+            'warehouse_tyres',
+            'service_center_tyres',
+            'vehicle_tyres',
+            'discarded_tyres'
+        ));
     }
     
     public function index(Request $request): View

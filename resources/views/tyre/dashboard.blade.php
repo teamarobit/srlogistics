@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=1.1') }}">
 @endsection
 
 @section('content')
@@ -51,121 +51,143 @@
             <div class="container-fluid">
                 
                 <div class="itemv-box">
-                    <div class="itemrow justify-content-around">
-                        
-                        <div class="itemcol">
+                    <div class="itemrow justify-content-around tyre-cards-row">
+
+                        {{-- Card 1: All Tyres --}}
+                        <div class="itemcol tyre-itemcol">
                             <div class="itembd">
                                 <div class="top">
                                     <p class="number">{{ $all_count }}</p>
                                     <p>All Tyres</p>
                                 </div>
-                        
                                 <div class="bottom">
                                     <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 100%</div>
-                        
-                                    <div class="item3">
-                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
-                                    </div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
                                 </div>
-                        
-                                <div class="item-icon">
-                                    <span>
-                                        <img src="{{ asset('images/images01.png') }}" />
-                                    </span>
-                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
                             </div>
                         </div>
-                        <div class="itemcol">
+
+                        {{-- Card 2: SR Garage — Ready to Use --}}
+                        <div class="itemcol tyre-itemcol">
                             <div class="itembd">
                                 <div class="top">
-                                    <p class="number">{{ $warehouse_count }}</p>
-                                    <p>Warehouse </p>
+                                    <p class="number">{{ $garage_ready_count }}</p>
+                                    <p>SR Garage - Ready to use</p>
                                 </div>
-                        
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($warehouse_count * 100 / $all_count) : 0 }}%</div>
-                        
-                                    <div class="item3">
-                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
-                                    </div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($garage_ready_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
                                 </div>
-                        
-                                <div class="item-icon">
-                                    <span>
-                                        <img src="{{ asset('images/images01.png') }}" />
-                                    </span>
-                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
                             </div>
                         </div>
-                        <div class="itemcol">
+
+                        {{-- Card 3: Warranty Claim Tyres --}}
+                        <div class="itemcol tyre-itemcol">
                             <div class="itembd">
                                 <div class="top">
-                                    <p class="number">{{ $service_center_count }}</p>
-                                    <p>Service Center</p>
+                                    <p class="number">{{ $warranty_claim_count }}</p>
+                                    <p>Warranty Claim Tyres</p>
                                 </div>
-                        
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($service_center_count * 100 / $all_count) : 0 }}%</div>
-                        
-                                    <!--<div class="item2">Inactive Vehicles</div>-->
-                        
-                                    <div class="item3">
-                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
-                                    </div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($warranty_claim_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
                                 </div>
-                        
-                                <div class="item-icon">
-                                    <span>
-                                        <img src="{{ asset('images/images01.png') }}" />
-                                    </span>
-                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
                             </div>
                         </div>
-                        <div class="itemcol">
+
+                        {{-- Card 4: Re-Threading Tyres --}}
+                        <div class="itemcol tyre-itemcol">
                             <div class="itembd">
                                 <div class="top">
-                                    <p class="number">{{ $vehicle_count }}</p>
-                                    <p>Allocated Vehicle</p>
+                                    <p class="number">{{ $rethreading_count }}</p>
+                                    <p>Re-Threading Tyres</p>
                                 </div>
-                        
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($vehicle_count * 100 / $all_count) : 0 }}%</div>
-                        
-                                    <!--<div class="item2">Without Driver</div>-->
-                        
-                                    <div class="item3">
-                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
-                                    </div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($rethreading_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
                                 </div>
-                        
-                                <div class="item-icon">
-                                    <span>
-                                        <img src="{{ asset('images/images01.png') }}" />
-                                    </span>
-                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
                             </div>
                         </div>
-                        <div class="itemcol">
+
+                        {{-- Card 5: Scrap Tyres --}}
+                        <div class="itemcol tyre-itemcol">
                             <div class="itembd">
                                 <div class="top">
-                                    <p class="number">{{ $discarded_count }}</p>
-                                    <p>Discarded</p>
+                                    <p class="number">{{ $scrap_count }}</p>
+                                    <p>Scrap Tyres</p>
                                 </div>
-                        
                                 <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($discarded_count * 100 / $all_count) : 0 }}%</div>
-                                    <div class="item3">
-                                        <img src="{{ asset('images/icons/tyre-default.png') }}" />
-                                    </div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($scrap_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
                                 </div>
-                        
-                                <div class="item-icon">
-                                    <span>
-                                        <img src="{{ asset('images/images01.png') }}" />
-                                    </span>
-                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
                             </div>
                         </div>
+
+                        {{-- Card 6: Allocate Tyres --}}
+                        <div class="itemcol tyre-itemcol">
+                            <div class="itembd">
+                                <div class="top">
+                                    <p class="number">{{ $allocated_count }}</p>
+                                    <p>Allocate Tyres</p>
+                                </div>
+                                <div class="bottom">
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($allocated_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
+                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
+                            </div>
+                        </div>
+
+                        {{-- Card 7: Direct Fitment Tyres --}}
+                        <div class="itemcol tyre-itemcol">
+                            <div class="itembd">
+                                <div class="top">
+                                    <p class="number">{{ $direct_fitment_count }}</p>
+                                    <p>Direct Fitment Tyres</p>
+                                </div>
+                                <div class="bottom">
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($direct_fitment_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
+                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
+                            </div>
+                        </div>
+
+                        {{-- Card 8: Yet to Decide Tyres --}}
+                        <div class="itemcol tyre-itemcol">
+                            <div class="itembd">
+                                <div class="top">
+                                    <p class="number">{{ $yet_to_decide_count }}</p>
+                                    <p>Yet to Decide Tyres</p>
+                                </div>
+                                <div class="bottom">
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($yet_to_decide_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
+                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
+                            </div>
+                        </div>
+
+                        {{-- Card 9: Extra Tyres On Vehicle --}}
+                        <div class="itemcol tyre-itemcol">
+                            <div class="itembd">
+                                <div class="top">
+                                    <p class="number">{{ $extra_on_vehicle_count }}</p>
+                                    <p>Extra Tyres On Vehicle</p>
+                                </div>
+                                <div class="bottom">
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $all_count > 0 ? round($extra_on_vehicle_count * 100 / $all_count) : 0 }}%</div>
+                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
+                                </div>
+                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 
