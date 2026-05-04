@@ -131,11 +131,11 @@
                    style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
                     <i class="uil uil-cog me-1"></i>Manage
                 </a>
-                <a href="{{ route('fleetdashboard.getVehicleDetailsV2', $vehicle->id) }}"
+                {{-- <a href="{{ route('fleetdashboard.getVehicleDetailsV2', $vehicle->id) }}"
                    class="btn btn-sm"
                    style="background:#032671;color:#fff;border:1px solid #032671;font-size:11px;font-weight:600;">
                     View V2 →
-                </a>
+                </a> --}}
             </div>
         </div>
 
@@ -855,7 +855,7 @@
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Tyre Details</span>
                                     <span class="badge ms-2" style="background:#10863f;font-size:9px;letter-spacing:.5px;padding:3px 8px;border-radius:4px;color:#fff;font-weight:700;">✦ UPDATED</span>
-                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="badge badge-primary ms-2">
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}" class="badge badge-primary ms-2">
                                         <i class="uil uil-plus me-1"></i>Manage Tyres
                                     </a>
                                 </div>
@@ -937,7 +937,7 @@
                                 <div class="vtd-empty">
                                     <i class="uil uil-circle vtd-empty-icon"></i>
                                     <div class="vtd-empty-text">No tyres are mapped to this vehicle yet.</div>
-                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}" class="btn btn-outline-primary btn-sm mt-2">
+                                    <a href="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}" class="btn btn-outline-primary btn-sm mt-2">
                                         <i class="uil uil-plus me-1"></i>Manage Tyres
                                     </a>
                                 </div>
@@ -1014,7 +1014,7 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
                                             data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
@@ -1085,7 +1085,7 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
                                             data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
@@ -1430,7 +1430,7 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
                                             data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
@@ -1500,7 +1500,7 @@
                                             data-remlifepct="{{ $remLifePct ?? '' }}"
                                             data-warrantyremaining="{{ $remWarranty ?? '' }}"
                                             data-imgcount="{{ $imgCount }}"
-                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging', $vehicle->id) }}"
+                                            data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
                                             data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
                                             <div class="vtd-card-head">
