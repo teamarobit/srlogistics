@@ -97,3 +97,209 @@
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYRE DASHBOARD v2.0 — New-tab styles
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tab nav: wraps gracefully for 8 pills ───────────────────────────── */
+.tyre-tab-nav {
+    flex-wrap: wrap;
+    gap: 4px 0;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 6px;
+}
+.tyre-tab-nav .nav-link {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+}
+.tyre-tab-nav .nav-link.active {
+    background-color: #032671 !important;
+    color: #fff !important;
+}
+.tyre-tab-nav .nav-link:not(.active):hover {
+    background: #e8eef7;
+    color: #032671;
+}
+
+/* ── Serial number link ──────────────────────────────────────────────── */
+.text-primary-custom {
+    color: #032671 !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+.text-primary-custom:hover {
+    text-decoration: underline;
+    color: #0547c3 !important;
+}
+
+/* ── RAG / Life badges ───────────────────────────────────────────────── */
+.rag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+}
+.rag-badge.rag-green  { background: #198754; }
+.rag-badge.rag-yellow { background: #ffc107; color: #212529; }
+.rag-badge.rag-red    { background: #dc3545; }
+
+/* ── Tyre status badges ──────────────────────────────────────────────── */
+.tyre-badge-ready    { background: #198754 !important; color: #fff !important; }
+.tyre-badge-warranty { background: #fd7e14 !important; color: #fff !important; }
+.tyre-badge-rethread { background: #0dcaf0 !important; color: #212529 !important; }
+.tyre-badge-scrap    { background: #dc3545 !important; color: #fff !important; }
+.tyre-badge-allocated{ background: #0d6efd !important; color: #fff !important; }
+.tyre-badge-fitment  { background: #6f42c1 !important; color: #fff !important; }
+.tyre-badge-ytd      { background: #6c757d !important; color: #fff !important; }
+.tyre-badge-closed   { background: #198754 !important; color: #fff !important; }
+
+/* Location badges (vehicle / garage) */
+.tyre-badge-allocated { background: #0d6efd !important; color: #fff !important; }
+
+/* ── Overdue / closure alert badge ──────────────────────────────────── */
+.closure-alert {
+    animation: blink-danger 1.2s step-start infinite;
+}
+@keyframes blink-danger {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
+
+/* ── Closed / scrap income rows ─────────────────────────────────────── */
+.row-closed td {
+    opacity: 0.55;
+}
+.row-closed td:first-child {
+    border-left: 3px solid #198754 !important;
+}
+
+/* ── Image view button ───────────────────────────────────────────────── */
+.btn-img-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #c0c7d0;
+    border-radius: 6px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-img-view:hover {
+    background: #032671;
+    color: #fff;
+    border-color: #032671;
+}
+
+/* ── Sortable column headers ─────────────────────────────────────────── */
+.tyre-sortable-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    position: relative;
+}
+.tyre-sortable-table thead th.sortable:hover {
+    background-color: #d4ddf0;
+}
+.tyre-sortable-table thead th .sort-icon {
+    display: inline-block;
+    font-size: 11px;
+    color: #8a9ab5;
+    margin-left: 3px;
+    vertical-align: middle;
+}
+.tyre-sortable-table thead th.sort-active {
+    background-color: #d0daf5;
+}
+.tyre-sortable-table thead th.sort-active .sort-icon {
+    color: #032671;
+    font-weight: 700;
+}
+
+/* ── Maintenance type / status badges ────────────────────────────────── */
+.badge-maint-type   { background: #e9ecef; color: #495057; font-size: 10px; }
+.badge-maint-done   { background: #d1e7dd; color: #0f5132; }
+.badge-maint-overdue{ background: #f8d7da; color: #842029; }
+.badge-maint-pending{ background: #fff3cd; color: #664d03; }
+.badge-maint-sched  { background: #cff4fc; color: #055160; }
+
+/* ── Tracking-group chip ─────────────────────────────────────────────── */
+.tracking-chip {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #eef1f7;
+    color: #495057;
+    border: 1px solid #d1d8e6;
+    margin-top: 3px;
+}
+
+/* ── Vehicle + tracking stacked cell ────────────────────────────────── */
+.vehicle-cell-line {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    color: #1F2B44;
+}
+.vehicle-cell-track {
+    display: block;
+    font-size: 10px;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+/* ── Table: compact row height for wide tables ───────────────────────── */
+.sr_dashboard0_table .custom-driver-table thead th {
+    white-space: nowrap;
+}
+.sr_dashboard0_table .custom-driver-table tbody td {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* ── Tyre position badge ─────────────────────────────────────────────── */
+.position-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #e8eef7;
+    color: #032671;
+    border: 1px solid #c5d4ee;
+    font-weight: 600;
+}
+
+/* ── Scrap / Rethread income UTR indicator ───────────────────────────── */
+.utr-filled   { color: #198754; font-weight: 600; }
+.utr-pending  { color: #dc3545; font-style: italic; }
+
+/* ── Filter row: grid layout so lone fields in last row align LEFT ───────
+   The fleet dashboard uses justify-content:space-around which centres a
+   lone item that wraps to a new row (e.g. 5 fields → 4+1).
+   Switching the tyre tab panes to CSS Grid (4 equal columns) keeps the
+   same per-row visual width while naturally left-aligning any orphan.
+─────────────────────────────────────────────────────────────────────────── */
+.tab-pane .filtersearch-bd.flex-wrap {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 8px;
+    align-items: end;
+    justify-content: unset;   /* cancel fleet's space-around */
+}
+
+/* Grid items: let the column width drive size, not the fixed 24% */
+.tab-pane .filtersearch-bd.flex-wrap .vehicletype {
+    width: auto !important;
+    margin-left: 0 !important;
+    padding-left: 0;
+}
+

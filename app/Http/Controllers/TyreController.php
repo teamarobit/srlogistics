@@ -30,78 +30,169 @@ class TyreController extends Controller
 {
     use Useractivity;
     
-    public function dashboard(){
-        $tyres_query = Tyre::query();
+    public function dashboard(Request $request){
 
-        // ── Counter 1: All Tyres ─────────────────────────────────────────────
-        $all_count = (clone $tyres_query)->count();
+        // ── Shared eager-load closure ────────────────────────────────────────
+        $with = ['tyrevendor', 'rethreadingVendor', 'scrapVendor',
+                 'lastFittedVehicle.basicinfo', 'activeVehicleMapping.tyreposition',
+                 'activeVehicleMapping.tyre', 'maintenanceSchedules'];
 
-        // ── Counter 2: SR Garage — Ready to Use (Warehouse, non-scrapped) ───
-        $garage_ready_count = (clone $tyres_query)
-            ->where('location', 'Warehouse')
-            ->whereNotIn('tyre_condition', ['Discard', 'Scrap'])
-            ->count();
+        // ── Summary Counters ─────────────────────────────────────────────────
+        $q = Tyre::query();
 
-        // ── Counter 3: Warranty Claim Tyres ─────────────────────────────────
-        // Tyres that are scrapped/discarded but still within warranty period
-        $warranty_claim_count = (clone $tyres_query)
-            ->whereIn('tyre_condition', ['Discard', 'Scrap'])
-            ->whereNotNull('tyre_warrenty_end_date')
-            ->whereDate('tyre_warrenty_end_date', '>=', now())
-            ->count();
-
-        // ── Counter 4: Re-Threading Tyres ───────────────────────────────────
-        $rethreading_count = (clone $tyres_query)
-            ->where('tyre_condition', 'Re-thread')
-            ->count();
-
-        // ── Counter 5: Scrap Tyres ───────────────────────────────────────────
-        $scrap_count = (clone $tyres_query)
-            ->whereIn('tyre_condition', ['Discard', 'Scrap'])
-            ->count();
-
-        // ── Counter 6: Allocate Tyres (mounted on vehicles) ─────────────────
-        $allocated_count = (clone $tyres_query)
-            ->where('location', 'Vehicle')
-            ->count();
-
-        // ── Counter 7: Direct Fitment Tyres ─────────────────────────────────
-        $direct_fitment_count = (clone $tyres_query)
-            ->where('tyre_source_mode', 'Fitment')
-            ->count();
-
-        // ── Counter 8: Yet to Decide Tyres (Service Center — pending decision)
-        $yet_to_decide_count = (clone $tyres_query)
-            ->where('location', 'Service Center')
-            ->count();
-
-        // ── Counter 9: Extra Tyres On Vehicle (spare tyres on vehicles) ──────
+        $all_count            = (clone $q)->count();
+        $garage_ready_count   = (clone $q)->where('location', 'Warehouse')
+                                          ->whereNotIn('tyre_condition', ['Discard', 'Scrap'])->count();
+        $warranty_claim_count = (clone $q)->where('tyre_status', 'Warranty Claim')->count();
+        $rethreading_count    = (clone $q)->where('tyre_status', 'Re-threading')->count();
+        $scrap_count          = (clone $q)->where('tyre_status', 'Scrap')->count();
+        $allocated_count      = (clone $q)->where('location', 'Vehicle')->count();
+        $direct_fitment_count = (clone $q)->where('tyre_source_mode', 'Fitment')->count();
+        $yet_to_decide_count  = (clone $q)->where('tyre_status', 'Yet to Decide')->count();
         $extra_on_vehicle_count = Vehicletyremapping::where('status', 'Spare')->count();
 
-        // ── Tyre lists for tab panels ────────────────────────────────────────
-        $all_tyres            = Tyre::latest()->paginate(10, ['*'], 'all_tyre_page');
-        $warehouse_tyres      = Tyre::where('location', 'Warehouse')->latest()->paginate(10, ['*'], 'warehouse_tyre_page');
-        $service_center_tyres = Tyre::where('location', 'Service Center')->latest()->paginate(10, ['*'], 'service_center_tyre_page');
-        $vehicle_tyres        = Tyre::where('location', 'Vehicle')->latest()->paginate(10, ['*'], 'vehicle_tyre_page');
-        $discarded_tyres      = Tyre::whereIn('tyre_condition', ['Discard', 'Scrap'])->latest()->paginate(10, ['*'], 'discarded_tyre_page');
+        // ── Helper: build base query for a tab with optional request filters ─
+        $sort      = $request->input('sort', 'created_at');
+        $direction = $request->input('direction', 'desc');
+        $allowedSorts = [
+            'tyre_serial_number','tyre_type','tyre_condition','tyre_brand',
+            'tyre_model','tyre_price','created_at','tyre_warrenty_end_date',
+            'fixed_run_km','actual_run_km','tyre_status','warranty_claim_date',
+            'rethreading_sent_date','scrap_sent_date','installation_date',
+        ];
+        if (! in_array($sort, $allowedSorts)) { $sort = 'created_at'; }
+        $direction = ($direction === 'asc') ? 'asc' : 'desc';
 
-        $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre list retrieved.');
+        // ── TAB 1: All Tyres ────────────────────────────────────────────────
+        $q1 = Tyre::with($with)->orderBy($sort, $direction);
+        if ($request->filled('f_serial'))     { $q1->where('tyre_serial_number', 'like', '%'.$request->f_serial.'%'); }
+        if ($request->filled('f_location'))   { $q1->where('location', $request->f_location); }
+        if ($request->filled('f_status'))     { $q1->where('tyre_status', $request->f_status); }
+        if ($request->filled('f_vehicle'))    { $q1->where('allocated_vehicle_id', $request->f_vehicle); }
+        if ($request->filled('f_type'))       { $q1->where('tyre_type', $request->f_type); }
+        if ($request->filled('f_condition'))  { $q1->where('tyre_condition', $request->f_condition); }
+        if ($request->filled('f_brand'))      { $q1->where('tyre_brand', $request->f_brand); }
+        if ($request->filled('f_vendor'))     { $q1->where('contact_id', $request->f_vendor); }
+        if ($request->filled('f_maintenance_type'))   { $q1->whereHas('maintenanceSchedules', fn($mq) => $mq->where('maintenance_item', $request->f_maintenance_type)); }
+        if ($request->filled('f_maintenance_status')) { $q1->whereHas('maintenanceSchedules', fn($mq) => $mq->where('status', $request->f_maintenance_status)); }
+        $all_tyres = $q1->paginate(15, ['*'], 'tab1_page');
+
+        // ── TAB 2: Ready to Use ─────────────────────────────────────────────
+        $q2 = Tyre::with($with)->where('location', 'Warehouse')
+                  ->whereNotIn('tyre_condition', ['Discard', 'Scrap'])
+                  ->orderBy($sort, $direction);
+        if ($request->filled('f2_serial'))    { $q2->where('tyre_serial_number', 'like', '%'.$request->f2_serial.'%'); }
+        if ($request->filled('f2_type'))      { $q2->where('tyre_type', $request->f2_type); }
+        if ($request->filled('f2_condition')) { $q2->where('tyre_condition', $request->f2_condition); }
+        if ($request->filled('f2_brand'))     { $q2->where('tyre_brand', $request->f2_brand); }
+        if ($request->filled('f2_vendor'))    { $q2->where('contact_id', $request->f2_vendor); }
+        if ($request->filled('f2_warranty'))  {
+            if ($request->f2_warranty === 'In Warranty') {
+                $q2->whereNotNull('tyre_warrenty_end_date')->where('tyre_warrenty_end_date', '>=', now()->toDateString());
+            } else {
+                $q2->where(fn($sq) => $sq->whereNull('tyre_warrenty_end_date')->orWhere('tyre_warrenty_end_date', '<', now()->toDateString()));
+            }
+        }
+        $ready_tyres = $q2->paginate(15, ['*'], 'tab2_page');
+
+        // ── TAB 3: Warranty Claim ───────────────────────────────────────────
+        $q3 = Tyre::with($with)->where('tyre_status', 'Warranty Claim')->orderBy($sort, $direction);
+        if ($request->filled('f3_serial'))    { $q3->where('tyre_serial_number', 'like', '%'.$request->f3_serial.'%'); }
+        if ($request->filled('f3_type'))      { $q3->where('tyre_type', $request->f3_type); }
+        if ($request->filled('f3_location'))  { $q3->where('warranty_location', $request->f3_location); }
+        if ($request->filled('f3_brand'))     { $q3->where('tyre_brand', $request->f3_brand); }
+        if ($request->filled('f3_vendor'))    { $q3->where('contact_id', $request->f3_vendor); }
+        if ($request->filled('f3_reason'))    { $q3->where('warranty_claim_reason', 'like', '%'.$request->f3_reason.'%'); }
+        if ($request->filled('f3_utr')) {
+            if ($request->f3_utr === 'Filled') {
+                $q3->whereNotNull('warranty_utr')->where('warranty_utr', '!=', '');
+            } else {
+                $q3->where(fn($sq) => $sq->whereNull('warranty_utr')->orWhere('warranty_utr', ''));
+            }
+        }
+        $warranty_tyres = $q3->paginate(15, ['*'], 'tab3_page');
+
+        // ── TAB 4: Re-threading ─────────────────────────────────────────────
+        $q4 = Tyre::with($with)->where('tyre_status', 'Re-threading')->orderBy($sort, $direction);
+        if ($request->filled('f4_serial'))    { $q4->where('tyre_serial_number', 'like', '%'.$request->f4_serial.'%'); }
+        if ($request->filled('f4_type'))      { $q4->where('tyre_type', $request->f4_type); }
+        if ($request->filled('f4_location'))  { $q4->where('rethreading_location', $request->f4_location); }
+        if ($request->filled('f4_brand'))     { $q4->where('tyre_brand', $request->f4_brand); }
+        if ($request->filled('f4_vendor'))    { $q4->where('rethreading_vendor_id', $request->f4_vendor); }
+        $rethreading_tyres = $q4->paginate(15, ['*'], 'tab4_page');
+
+        // ── TAB 5: Scrap ────────────────────────────────────────────────────
+        $q5 = Tyre::with($with)->where('tyre_status', 'Scrap')->orderBy($sort, $direction);
+        if ($request->filled('f5_serial'))    { $q5->where('tyre_serial_number', 'like', '%'.$request->f5_serial.'%'); }
+        if ($request->filled('f5_type'))      { $q5->where('tyre_type', $request->f5_type); }
+        if ($request->filled('f5_location'))  { $q5->where('scrap_location', $request->f5_location); }
+        if ($request->filled('f5_vehicle'))   { $q5->where('last_fitted_vehicle_id', $request->f5_vehicle); }
+        if ($request->filled('f5_reason'))    { $q5->where('scrap_reason', 'like', '%'.$request->f5_reason.'%'); }
+        if ($request->filled('f5_brand'))     { $q5->where('tyre_brand', $request->f5_brand); }
+        if ($request->filled('f5_vendor'))    { $q5->where('scrap_vendor_id', $request->f5_vendor); }
+        if ($request->filled('f5_income')) {
+            if ($request->f5_income === 'Yes') {
+                $q5->whereNotNull('scrap_utr')->where('scrap_utr', '!=', '');
+            } else {
+                $q5->where(fn($sq) => $sq->whereNull('scrap_utr')->orWhere('scrap_utr', ''));
+            }
+        }
+        $scrap_tyres = $q5->paginate(15, ['*'], 'tab5_page');
+
+        // ── TAB 6: Allocate Tyres (on vehicles) ─────────────────────────────
+        $q6 = Tyre::with($with)->where('location', 'Vehicle')->orderBy($sort, $direction);
+        if ($request->filled('f6_serial'))    { $q6->where('tyre_serial_number', 'like', '%'.$request->f6_serial.'%'); }
+        if ($request->filled('f6_type'))      { $q6->where('tyre_type', $request->f6_type); }
+        if ($request->filled('f6_condition')) { $q6->where('tyre_condition', $request->f6_condition); }
+        if ($request->filled('f6_brand'))     { $q6->where('tyre_brand', $request->f6_brand); }
+        if ($request->filled('f6_vendor'))    { $q6->where('contact_id', $request->f6_vendor); }
+        if ($request->filled('f6_vehicle'))   { $q6->where('allocated_vehicle_id', $request->f6_vehicle); }
+        if ($request->filled('f6_warranty')) {
+            if ($request->f6_warranty === 'Active') {
+                $q6->whereNotNull('tyre_warrenty_end_date')->where('tyre_warrenty_end_date', '>=', now()->toDateString());
+            } else {
+                $q6->where(fn($sq) => $sq->whereNull('tyre_warrenty_end_date')->orWhere('tyre_warrenty_end_date', '<', now()->toDateString()));
+            }
+        }
+        $allocated_tyres = $q6->paginate(15, ['*'], 'tab6_page');
+
+        // ── TAB 7: Direct Fitment ───────────────────────────────────────────
+        $q7 = Tyre::with($with)->where('tyre_source_mode', 'Fitment')->orderBy($sort, $direction);
+        if ($request->filled('f7_serial'))    { $q7->where('tyre_serial_number', 'like', '%'.$request->f7_serial.'%'); }
+        if ($request->filled('f7_type'))      { $q7->where('tyre_type', $request->f7_type); }
+        if ($request->filled('f7_condition')) { $q7->where('tyre_condition', $request->f7_condition); }
+        if ($request->filled('f7_brand'))     { $q7->where('tyre_brand', $request->f7_brand); }
+        if ($request->filled('f7_vendor'))    { $q7->where('contact_id', $request->f7_vendor); }
+        $direct_fitment_tyres = $q7->paginate(15, ['*'], 'tab7_page');
+
+        // ── TAB 8: Yet To Decide ────────────────────────────────────────────
+        $q8 = Tyre::with($with)->where('tyre_status', 'Yet to Decide')->orderBy($sort, $direction);
+        if ($request->filled('f8_serial'))    { $q8->where('tyre_serial_number', 'like', '%'.$request->f8_serial.'%'); }
+        if ($request->filled('f8_type'))      { $q8->where('tyre_type', $request->f8_type); }
+        if ($request->filled('f8_condition')) { $q8->where('tyre_condition', $request->f8_condition); }
+        if ($request->filled('f8_location'))  { $q8->where('location', $request->f8_location); }
+        if ($request->filled('f8_vehicle'))   { $q8->where('last_fitted_vehicle_id', $request->f8_vehicle); }
+        if ($request->filled('f8_damage'))    { $q8->where('damage_reason', 'like', '%'.$request->f8_damage.'%'); }
+        if ($request->filled('f8_brand'))     { $q8->where('tyre_brand', $request->f8_brand); }
+        if ($request->filled('f8_vendor'))    { $q8->where('contact_id', $request->f8_vendor); }
+        $yet_to_decide_tyres = $q8->paginate(15, ['*'], 'tab8_page');
+
+        // ── Dropdown data for filters ────────────────────────────────────────
+        $tyrevendors = Contact::where('cotype_id', 6)->where('status', 'Active')
+                              ->orderBy('contact_name')->get(['id', 'contact_name']);
+        $tyreBrands  = Tyre::select('tyre_brand')->distinct()->whereNotNull('tyre_brand')
+                           ->orderBy('tyre_brand')->pluck('tyre_brand');
+
+        $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre dashboard retrieved.');
 
         return view('tyre.dashboard', compact(
-            'all_count',
-            'garage_ready_count',
-            'warranty_claim_count',
-            'rethreading_count',
-            'scrap_count',
-            'allocated_count',
-            'direct_fitment_count',
-            'yet_to_decide_count',
-            'extra_on_vehicle_count',
-            'all_tyres',
-            'warehouse_tyres',
-            'service_center_tyres',
-            'vehicle_tyres',
-            'discarded_tyres'
+            'all_count', 'garage_ready_count', 'warranty_claim_count',
+            'rethreading_count', 'scrap_count', 'allocated_count',
+            'direct_fitment_count', 'yet_to_decide_count', 'extra_on_vehicle_count',
+            'all_tyres', 'ready_tyres', 'warranty_tyres', 'rethreading_tyres',
+            'scrap_tyres', 'allocated_tyres', 'direct_fitment_tyres', 'yet_to_decide_tyres',
+            'tyrevendors', 'tyreBrands',
+            'sort', 'direction'
         ));
     }
     
@@ -537,6 +628,30 @@ class TyreController extends Controller
         }
     }
     
+    /**
+     * Change tyre_status (used by Yet To Decide tab — Move To dropdown).
+     */
+    public function changeStatus(Request $request, Tyre $tyre)
+    {
+        $request->validate([
+            'tyre_status' => 'required|in:Warranty Claim,Re-threading,Scrap',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $tyre) {
+                $tyre->update([
+                    'tyre_status' => $request->tyre_status,
+                    'updated_by'  => Auth::id(),
+                ]);
+                $this->storeUseractivity(66, 4, Auth::id(), $tyre->id, 'Tyre status changed to ' . $request->tyre_status . '.');
+            });
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Tyre moved to ' . $request->tyre_status . ' successfully.']);
+    }
+
     public function markAsDiscard(Request $request, Tyre $tyre){
         if($tyre->tyre_condition == 'Discard'){
             return response()->json(['message' => 'Tyre has already been discarded.'], 422);

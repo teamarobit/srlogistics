@@ -60,6 +60,32 @@ class Tyre extends Model
         return $this->hasMany(TyreMaintenanceSchedule::class, 'tyre_id');
     }
 
+    /** Active vehicle mapping (the current position this tyre is fitted to) */
+    public function activeVehicleMapping()
+    {
+        return $this->hasOne(Vehicletyremapping::class, 'tyre_id')
+                    ->where('status', 'Active')
+                    ->latest();
+    }
+
+    /** Re-threading vendor (contact) */
+    public function rethreadingVendor()
+    {
+        return $this->belongsTo(Contact::class, 'rethreading_vendor_id');
+    }
+
+    /** Scrap vendor (contact) */
+    public function scrapVendor()
+    {
+        return $this->belongsTo(Contact::class, 'scrap_vendor_id');
+    }
+
+    /** Last fitted vehicle */
+    public function lastFittedVehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'last_fitted_vehicle_id');
+    }
+
     // public function updatedBy()
     // {
     //     return $this->belongsTo(User::class, 'updated_by');

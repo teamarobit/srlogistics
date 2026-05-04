@@ -393,6 +393,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/{tyre}/maintenance/store', [App\Http\Controllers\TyreController::class, 'storeMaintenance'])->name('maintenance.store');
         Route::post('/{tyre}/maintenance/{schedule}/update', [App\Http\Controllers\TyreController::class, 'updateMaintenance'])->name('maintenance.update');
         Route::post('/{tyre}/maintenance/{schedule}/delete', [App\Http\Controllers\TyreController::class, 'destroyMaintenance'])->name('maintenance.destroy');
+        Route::post('/{tyre}/change-status', [App\Http\Controllers\TyreController::class, 'changeStatus'])->name('changeStatus');
 
     });
     
