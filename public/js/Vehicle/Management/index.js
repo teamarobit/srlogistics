@@ -21,6 +21,10 @@ $(document).ready(function(){
     $('#search_vehicle_number, #search_vehicle_type').on('change blur', function () { 
         $('#searchform').submit();
     });
+
+    $('#search_vehicle_number').select2({
+        placeholder: "Filter by Vehicle Number"
+    });
     
     
     

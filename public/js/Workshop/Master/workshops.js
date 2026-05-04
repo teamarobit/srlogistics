@@ -1,9 +1,10 @@
 /* ==========================================================================
-   Workshop Master — workshops.js  v1.1
+   Workshop Master — workshops.js  v1.2
    SD-1: All JS in external file only (no inline logic in blade)
    SD-3: $.ajax() for all form submissions
    SD-4: Validation errors as <span class="text-danger small d-block mt-1">
    SD-7: Toast mixin at top; Toast.fire() for all notifications
+   v1.2: State/City Select2 dropdowns with AJAX city cascade (SCR-WS-M-001)
    ========================================================================== */
 
 $(function () {
@@ -31,11 +32,118 @@ $(function () {
         $.each(errors, function (field, messages) {
             var $input = $(scope || 'body').find('[name="' + field + '"]').first();
             if ($input.length) {
+                var $after = $input.hasClass('select2-hidden-accessible')
+                    ? $input.next('.select2-container')
+                    : $input;
                 $('<span class="text-danger small d-block mt-1 field-error">' + messages[0] + '</span>')
-                    .insertAfter($input);
+                    .insertAfter($after);
             }
         });
     }
+
+    /* ── Select2: State dropdowns (both modals) ──────────────────────────── */
+    $('#addWsState').select2({
+        dropdownParent: $('#addWsModal'),
+        placeholder:    '— Select State —',
+        width:          '100%',
+        allowClear:     true,
+    });
+
+    $('#editWsState').select2({
+        dropdownParent: $('#editWsModal'),
+        placeholder:    '— Select State —',
+        width:          '100%',
+        allowClear:     true,
+    });
+
+    /* ── Select2: City dropdowns (tags:true — both modals) ──────────────── */
+    $('#addWsCity').select2({
+        dropdownParent: $('#addWsModal'),
+        placeholder:    '— Select State first —',
+        tags:           true,
+        width:          '100%',
+        allowClear:     true,
+        createTag: function (params) {
+            var term = $.trim(params.term);
+            if (!term) { return null; }
+            return { id: term, text: term, newTag: true };
+        },
+        insertTag: function (data, tag) { data.unshift(tag); },
+    });
+
+    $('#editWsCity').select2({
+        dropdownParent: $('#editWsModal'),
+        placeholder:    '— Select State first —',
+        tags:           true,
+        width:          '100%',
+        allowClear:     true,
+        createTag: function (params) {
+            var term = $.trim(params.term);
+            if (!term) { return null; }
+            return { id: term, text: term, newTag: true };
+        },
+        insertTag: function (data, tag) { data.unshift(tag); },
+    });
+
+    /* ── City AJAX loader ────────────────────────────────────────────────── */
+    /**
+     * Load cities for a given stateId into $citySelect.
+     * preselectName (optional): city name to pre-select after load (edit modal).
+     */
+    function loadCities(citiesUrl, stateId, $citySelect, preselectName) {
+        $citySelect.empty().trigger('change');
+
+        if (!stateId) { return; }
+
+        $.getJSON(citiesUrl, { state_id: stateId }, function (cities) {
+            $.each(cities, function (i, c) {
+                $citySelect.append(new Option(c.name, c.name, false, false));
+            });
+
+            if (preselectName) {
+                // Add option if not in list (tags mode — city might be custom)
+                if (!$citySelect.find('option[value="' + preselectName + '"]').length) {
+                    $citySelect.append(new Option(preselectName, preselectName, false, false));
+                }
+                $citySelect.val(preselectName);
+            }
+
+            $citySelect.trigger('change');
+        });
+    }
+
+    /* ── Add modal: state change → reload cities ─────────────────────────── */
+    $('#addWsState').on('change', function () {
+        var stateId   = $(this).val();
+        var citiesUrl = $('#addWsForm').data('cities-url');
+        loadCities(citiesUrl, stateId, $('#addWsCity'), null);
+    });
+
+    /* pendingEditCity: city name to pre-select after state-change AJAX loads cities */
+    var pendingEditCity = null;
+
+    /* ── Edit modal: state change → reload cities ────────────────────────── */
+    $('#editWsState').on('change', function () {
+        var stateId   = $(this).val();
+        var citiesUrl = $('#editWsForm').data('cities-url');
+        var preselect = pendingEditCity;
+        pendingEditCity = null; // consume immediately
+        loadCities(citiesUrl, stateId, $('#editWsCity'), preselect);
+    });
+
+    /* ── Reset Add modal on close ────────────────────────────────────────── */
+    $('#addWsModal').on('hidden.bs.modal', function () {
+        $('#addWsForm')[0].reset();
+        $('#addWsState').val(null).trigger('change');
+        $('#addWsCity').empty().trigger('change');
+        clearValidationErrors('#addWsModal');
+        $('.ws-external-only').hide();
+        $('.opt-external').hide();
+        $('.ws-own-only').show();
+        $('.opt-own').show();
+        $('#addWsType').val('');
+        $('#btnSaveWs').prop('disabled', false).html('<i class="uil uil-save me-1"></i> Save Workshop');
+    });
 
     /* ── Ownership tab filter ────────────────────────────────────────────── */
     $('#ownershipTabs .nav-link').on('click', function (e) {
@@ -127,20 +235,30 @@ $(function () {
         $('#editWsCode').val(b.data('code'));
         $('#editWsName').val(b.data('name'));
         $('#editWsOwnership').val(b.data('ownership'));
-
-        /* hidden field carries ownership for validation */
         $('#editWsOwnershipHidden').val(b.data('ownership'));
-
         $('#editWsType').val(b.data('type'));
         $('#editWsBrand').val(b.data('brand') || '');
-        $('#editWsCity').val(b.data('city')   || '');
-        $('#editWsState').val(b.data('state') || '');
         $('#editWsManager').val(b.data('manager') || '');
         $('#editWsPhone').val(b.data('phone')   || '');
         $('#editWsEmail').val(b.data('email')   || '');
         $('#editWsTechs').val(b.data('techs')   || 0);
         $('#editWsNotes').val(b.data('notes')   || '');
         $('#editWsStatus').val(b.data('status'));
+        $('#editWsAddress').val(b.data('address'));
+        $('#editWsPincode').val(b.data('pincode'));
+
+        var stateId  = b.data('state-id') || '';
+        var cityName = b.data('city')     || '';
+
+        if (stateId) {
+            // Store city name — state 'change' handler will consume it after AJAX
+            pendingEditCity = cityName || null;
+            $('#editWsState').val(stateId).trigger('change');
+        } else {
+            pendingEditCity = null;
+            $('#editWsState').val(null).trigger('change');
+            $('#editWsCity').empty().trigger('change');
+        }
     });
 
     /* ── SD-3: Update form submission ────────────────────────────────────── */
@@ -148,7 +266,7 @@ $(function () {
         clearValidationErrors('#editWsModal');
 
         var id      = $('#editWsId').val();
-        var baseUrl = $('#editWsForm').data('update-url');                 /* named route via data-* */
+        var baseUrl = $('#editWsForm').data('update-url');
         var url     = baseUrl.replace('__ID__', id);
 
         var $btn = $(this);
@@ -156,7 +274,7 @@ $(function () {
 
         $.ajax({
             url:     url,
-            method:  'POST',                                              /* @method('PUT') in form handles spoofing */
+            method:  'POST',
             data:    $('#editWsForm').serialize(),
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), 'Accept': 'application/json' },
             success: function (res) {
@@ -190,7 +308,9 @@ $(function () {
             text:               '"' + name + '"',
             icon:               'warning',
             showCancelButton:   true,
-            confirmButtonColor: current === 'Active' ? '#ea0027' : '#10863f',
+            // confirmButtonColor: current === 'Active' ? '#ea0027' : '#10863f',
+            confirmButtonColor:'#1F75A8',
+            reverseButtons: true,
             confirmButtonText:  action
         }).then(function (r) {
             if (!r.isConfirmed) { return; }
@@ -201,7 +321,7 @@ $(function () {
             $.ajax({
                 url:     url,
                 method:  'POST',
-                data:    { _method: 'DELETE', _token: $('meta[name="csrf-token"]').attr('content') },
+                data:    { _token: $('meta[name="csrf-token"]').attr('content') },
                 headers: { 'Accept': 'application/json' },
                 success: function (res) {
                     Toast.fire({ icon: 'success', title: res.message });

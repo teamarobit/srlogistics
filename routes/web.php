@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+
 /* ── DEV: patch IP logos — remove after use ──────────────────────── */
 Route::get('/dev/patch-ip-logos', function () {
     $logos = ['INS-001'=>'logo_new_india.svg','INS-002'=>'logo_united_india.svg','INS-003'=>'logo_icici_lombard.svg','INS-004'=>'logo_bajaj_allianz.svg','INS-005'=>'logo_hdfc_ergo.svg'];
@@ -692,10 +693,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/maintenance/insurance/vehicle/{vehicleId}/note', [App\Http\Controllers\WorkshopController::class, 'insuranceAddNote'])->name('maintenance.insurance.add-note');
 
         // Master Data — Workshops (unified Own + External; BA CIAA approved April 2026)
+        Route::get('/master/workshops/cities',     [App\Http\Controllers\WorkshopController::class, 'masterWorkshopCities'])->name('master.workshops.cities');
         Route::get('/master/workshops',            [App\Http\Controllers\WorkshopController::class, 'masterWorkshops'])->name('master.workshops');
         Route::post('/master/workshops',           [App\Http\Controllers\WorkshopController::class, 'masterWorkshopStore'])->name('master.workshops.store');
         Route::put('/master/workshops/{id}',       [App\Http\Controllers\WorkshopController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
-        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
+        Route::post('/master/workshops/{id}/change-status',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopChangeStatus'])->name('master.workshops.changestatus');
         // Legacy redirects so any bookmarked URLs don't hard-404
         Route::redirect('/master/service-centers', '/workshop/master/workshops', 301);
         Route::redirect('/master/external-sc',     '/workshop/master/workshops', 301);

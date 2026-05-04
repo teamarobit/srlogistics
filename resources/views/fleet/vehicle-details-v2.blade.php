@@ -1188,13 +1188,22 @@
                                     };
                                     $colorHex = ['good'=>'#10863f','warn'=>'#d97706','critical'=>'#ea0027','empty'=>'#dee2e6'];
                                     $posLabels = [
-                                        'C1'=>'Front Left','D1'=>'Front Right',
-                                        'Ci2'=>'Rear L1 Inner','Co3'=>'Rear L1 Outer',
-                                        'Di2'=>'Rear R1 Inner','Do3'=>'Rear R1 Outer',
-                                        'Ci4'=>'Rear L2 Inner','Co5'=>'Rear L2 Outer',
-                                        'Di4'=>'Rear R2 Inner','Do5'=>'Rear R2 Outer',
-                                        'S1'=>'Spare / Stepney',
-                                        'S2'=>'Spare 2',
+                                        'C1'   =>'Front Left',        'D1'   =>'Front Right',
+                                        'Ci2'  =>'Rear L1 Inner',     'Co3'  =>'Rear L1 Outer',
+                                        'Di2'  =>'Rear R1 Inner',     'Do3'  =>'Rear R1 Outer',
+                                        'Ci4'  =>'Rear L2 Inner',     'Co5'  =>'Rear L2 Outer',
+                                        'Di4'  =>'Rear R2 Inner',     'Do5'  =>'Rear R2 Outer',
+                                        'C6'   =>'Rear L3 Trailing',  'D6'   =>'Rear R3 Trailing',
+                                        'Ci6'  =>'Rear L3 Inner',     'Co7'  =>'Rear L3 Outer',
+                                        'Di6'  =>'Rear R3 Inner',     'Do7'  =>'Rear R3 Outer',
+                                        'C8'   =>'Rear L4 Trailing',  'D8'   =>'Rear R4 Trailing',
+                                        'Ci8'  =>'Rear L4 Inner',     'Co9'  =>'Rear L4 Outer',
+                                        'Di8'  =>'Rear R4 Inner',     'Do9'  =>'Rear R4 Outer',
+                                        'C10'  =>'Rear L5 Trailing',  'D10'  =>'Rear R5 Trailing',
+                                        'Ci10' =>'Rear L5 Inner',     'Co11' =>'Rear L5 Outer',
+                                        'Di10' =>'Rear R5 Inner',     'Do11' =>'Rear R5 Outer',
+                                        'S1'   =>'Spare / Stepney',
+                                        'S2'   =>'Spare 2',
                                     ];
                                     $totalTyres = $tyreMappings->count();
                                     $goodCount = 0; $warnCount = 0; $criticalCount = 0;
@@ -1204,8 +1213,25 @@
                                         elseif($c==='warn') $warnCount++;
                                         elseif($c==='critical') $criticalCount++;
                                     }
-                                    $leftCodes  = ['C1','Co3','Ci2','Co5','Ci4'];
-                                    $rightCodes = ['D1','Di2','Do3','Di4','Do5'];
+                                    // Dynamic position codes driven by mounted_tyre_count (supports any axle count)
+                                    $_tc       = (int)($vehicle->mounted_tyre_count ?? 10);
+                                    $_rem      = max(0, $_tc - 2);
+                                    $_rdual    = max(1, (int) floor($_rem / 4));
+                                    $_hasTrail = ($_rem % 4 === 2);
+
+                                    $leftCodes  = ['C1'];
+                                    $rightCodes = ['D1'];
+                                    for ($_k = 1; $_k <= $_rdual; $_k++) {
+                                        $leftCodes[]  = 'Co' . (2 * $_k + 1);
+                                        $leftCodes[]  = 'Ci' . (2 * $_k);
+                                        $rightCodes[] = 'Di' . (2 * $_k);
+                                        $rightCodes[] = 'Do' . (2 * $_k + 1);
+                                    }
+                                    if ($_hasTrail) {
+                                        $_trNum       = 2 * $_rdual + 2;
+                                        $leftCodes[]  = 'C'  . $_trNum;
+                                        $rightCodes[] = 'D'  . $_trNum;
+                                    }
 
                                     // Build tyre image data map for JS modal (keyed by position code)
                                     // Uses tyrePhotos: type='Image' AND mediadocument_id IS NULL
@@ -1426,273 +1452,18 @@
                                         @endforeach
                                     </div>
 
-                                    {{-- CENTER TRUCK SVG --}}
+                                    {{-- CENTER TRUCK SVG — dynamic via svg.truck partial --}}
                                     <div class="vtd-center">
                                         <div class="vtd-svg-wrap">
-                                            <svg id="vtdTruckSvg" viewBox="0 0 220 430" xmlns="http://www.w3.org/2000/svg" class="vtd-truck-svg">
-                                                {{-- ▲ Direction --}}
-                                                <text x="110" y="48" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="700" letter-spacing="1">▲ FRONT</text>
-
-                                                {{-- Truck outer body shadow/frame --}}
-                                                <rect x="57" y="70" width="106" height="354" rx="16" fill="#e2e8f0" stroke="none"/>
-
-                                                {{-- Truck main body --}}
-                                                <rect x="59" y="72" width="102" height="350" rx="14" fill="#f0f3f9" stroke="#c8d4e8" stroke-width="1.5"/>
-
-                                                {{-- Cab section background --}}
-                                                <rect x="59" y="72" width="102" height="108" rx="14" fill="#dce7ff" stroke="#b0c4f0" stroke-width="1.5"/>
-
-                                                {{-- Windshield --}}
-                                                <rect x="71" y="80" width="78" height="34" rx="6" fill="#b8d0f5" opacity="0.85"/>
-                                                {{-- Windshield glare --}}
-                                                <line x1="77" y1="83" x2="77" y2="111" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-                                                <line x1="83" y1="81" x2="83" y2="113" stroke="#fff" stroke-width="0.7" stroke-linecap="round" opacity="0.25"/>
-
-                                                {{-- Hood / front bonnet --}}
-                                                <rect x="71" y="116" width="78" height="14" rx="3" fill="#c8d8f0" stroke="#b0c4e8" stroke-width="1"/>
-
-                                                {{-- Side mirrors --}}
-                                                <rect x="45" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
-                                                <rect x="161" y="84" width="14" height="9" rx="2.5" fill="#b0c4e8" stroke="#9ab0d8" stroke-width="1"/>
-                                                {{-- Mirror stems --}}
-                                                <line x1="59" y1="88" x2="65" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
-                                                <line x1="155" y1="88" x2="161" y2="88" stroke="#a0b4d0" stroke-width="1.5"/>
-
-                                                {{-- Cab label --}}
-                                                <text x="110" y="160" text-anchor="middle" font-size="7" fill="#7b93c4" font-weight="600" letter-spacing="1.5">CAB</text>
-                                                {{-- Cab/cargo separator --}}
-                                                <line x1="64" y1="180" x2="156" y2="180" stroke="#c8d4e8" stroke-width="1.5" stroke-dasharray="3,2"/>
-
-                                                {{-- Cargo body --}}
-                                                <rect x="63" y="182" width="94" height="236" rx="4" fill="#f5f7fb" stroke="#dce3f0" stroke-width="1"/>
-                                                {{-- Cargo panel lines --}}
-                                                <line x1="63" y1="228" x2="157" y2="228" stroke="#e0e8f4" stroke-width="1"/>
-                                                <line x1="63" y1="310" x2="157" y2="310" stroke="#e0e8f4" stroke-width="1"/>
-                                                <line x1="63" y1="392" x2="157" y2="392" stroke="#e0e8f4" stroke-width="1"/>
-                                                {{-- Cargo label --}}
-                                                <text x="110" y="266" text-anchor="middle" font-size="7" fill="#b0bcce" letter-spacing="2">CARGO</text>
-
-                                                {{-- ─── AXLE RODS ─── --}}
-                                                {{-- Front axle rod --}}
-                                                <rect x="30" y="124" width="160" height="4" rx="2" fill="#c0ccde"/>
-                                                {{-- Front hub centres --}}
-                                                <circle cx="42" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="178" cy="126" r="4" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-
-                                                {{-- Rear axle 1 rod --}}
-                                                <rect x="16" y="280" width="188" height="4" rx="2" fill="#c0ccde"/>
-                                                {{-- Rear 1 hub centres (outer & inner each side) --}}
-                                                <circle cx="29" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="50" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="170" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="191" cy="282" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-
-                                                {{-- Rear axle 2 rod --}}
-                                                <rect x="16" y="370" width="188" height="4" rx="2" fill="#c0ccde"/>
-                                                {{-- Rear 2 hub centres --}}
-                                                <circle cx="29" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="50" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="170" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-                                                <circle cx="191" cy="372" r="3.5" fill="#9ab0cc" stroke="#8098b8" stroke-width="1"/>
-
-                                                {{-- Axle labels --}}
-                                                <text x="110" y="119" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">FRONT AXLE</text>
-                                                <text x="110" y="276" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 1</text>
-                                                <text x="110" y="366" text-anchor="middle" font-size="6.5" fill="#adb5bd" letter-spacing="0.5">REAR AXLE 2</text>
-
-                                                {{-- C1 — Front Left --}}
-                                                @php $c=$getTyreColor($byCode['C1']??null); $tm=$byCode['C1']??null; @endphp
-                                                <rect id="svg-C1" class="vtd-svg-tyre" data-pos="C1"
-                                                    data-label="{{ $posLabels['C1'] ?? 'C1' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="30" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="42" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">C1</text>
-
-                                                {{-- D1 — Front Right --}}
-                                                @php $c=$getTyreColor($byCode['D1']??null); $tm=$byCode['D1']??null; @endphp
-                                                <rect id="svg-D1" class="vtd-svg-tyre" data-pos="D1"
-                                                    data-label="{{ $posLabels['D1'] ?? 'D1' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="166" y="109" width="24" height="34" rx="5" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="178" y="131" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">D1</text>
-
-                                                {{-- Co3 — Rear Axle 1, Left Outer --}}
-                                                @php $c=$getTyreColor($byCode['Co3']??null); $tm=$byCode['Co3']??null; @endphp
-                                                <rect id="svg-Co3" class="vtd-svg-tyre" data-pos="Co3"
-                                                    data-label="{{ $posLabels['Co3'] ?? 'Co3' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="20" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="29" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co3</text>
-
-                                                {{-- Ci2 — Rear Axle 1, Left Inner --}}
-                                                @php $c=$getTyreColor($byCode['Ci2']??null); $tm=$byCode['Ci2']??null; @endphp
-                                                <rect id="svg-Ci2" class="vtd-svg-tyre" data-pos="Ci2"
-                                                    data-label="{{ $posLabels['Ci2'] ?? 'Ci2' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="41" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="50" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci2</text>
-
-                                                {{-- Di2 — Rear Axle 1, Right Inner --}}
-                                                @php $c=$getTyreColor($byCode['Di2']??null); $tm=$byCode['Di2']??null; @endphp
-                                                <rect id="svg-Di2" class="vtd-svg-tyre" data-pos="Di2"
-                                                    data-label="{{ $posLabels['Di2'] ?? 'Di2' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="160" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="169" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di2</text>
-
-                                                {{-- Do3 — Rear Axle 1, Right Outer --}}
-                                                @php $c=$getTyreColor($byCode['Do3']??null); $tm=$byCode['Do3']??null; @endphp
-                                                <rect id="svg-Do3" class="vtd-svg-tyre" data-pos="Do3"
-                                                    data-label="{{ $posLabels['Do3'] ?? 'Do3' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="181" y="267" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="190" y="286" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do3</text>
-
-                                                {{-- Co5 — Rear Axle 2, Left Outer --}}
-                                                @php $c=$getTyreColor($byCode['Co5']??null); $tm=$byCode['Co5']??null; @endphp
-                                                <rect id="svg-Co5" class="vtd-svg-tyre" data-pos="Co5"
-                                                    data-label="{{ $posLabels['Co5'] ?? 'Co5' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="20" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="29" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Co5</text>
-
-                                                {{-- Ci4 — Rear Axle 2, Left Inner --}}
-                                                @php $c=$getTyreColor($byCode['Ci4']??null); $tm=$byCode['Ci4']??null; @endphp
-                                                <rect id="svg-Ci4" class="vtd-svg-tyre" data-pos="Ci4"
-                                                    data-label="{{ $posLabels['Ci4'] ?? 'Ci4' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="41" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="50" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Ci4</text>
-
-                                                {{-- Di4 — Rear Axle 2, Right Inner --}}
-                                                @php $c=$getTyreColor($byCode['Di4']??null); $tm=$byCode['Di4']??null; @endphp
-                                                <rect id="svg-Di4" class="vtd-svg-tyre" data-pos="Di4"
-                                                    data-label="{{ $posLabels['Di4'] ?? 'Di4' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="160" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="169" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Di4</text>
-
-                                                {{-- Do5 — Rear Axle 2, Right Outer --}}
-                                                @php $c=$getTyreColor($byCode['Do5']??null); $tm=$byCode['Do5']??null; @endphp
-                                                <rect id="svg-Do5" class="vtd-svg-tyre" data-pos="Do5"
-                                                    data-label="{{ $posLabels['Do5'] ?? 'Do5' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="181" y="357" width="19" height="30" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="190" y="376" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Do5</text>
-
-                                                {{-- S1 + S2 — Spare Tyres (vertically centred in truck body: y mid≈247) --}}
-                                                <text x="110" y="226" text-anchor="middle" font-size="5.5" fill="#adb5bd" letter-spacing="0.5">SPARE</text>
-
-                                                @php $c=$getTyreColor($byCode['S1']??null); $tm=$byCode['S1']??null; @endphp
-                                                <rect id="svg-S1" class="vtd-svg-tyre" data-pos="S1"
-                                                    data-label="{{ $posLabels['S1'] ?? 'Spare / Stepney' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="87" y="230" width="21" height="26" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="97" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S1</text>
-
-                                                @php $c=$getTyreColor($byCode['S2']??null); $tm=$byCode['S2']??null; @endphp
-                                                <rect id="svg-S2" class="vtd-svg-tyre" data-pos="S2"
-                                                    data-label="{{ $posLabels['S2'] ?? 'Spare 2' }}"
-                                                    data-has-tyre="{{ $tm && $tm->tyre ? '1' : '0' }}"
-                                                    data-serial="{{ $tm?->tyre?->tyre_serial_number ?? '' }}"
-                                                    data-brand="{{ $tm?->tyre?->tyre_brand ?? '' }}"
-                                                    data-model="{{ $tm?->tyre?->tyre_model ?? '' }}"
-                                                    data-condition="{{ $tm?->tyre?->tyre_condition ?? '' }}"
-                                                    data-status="{{ $c }}"
-                                                    data-fitted="{{ $tm && $tm->fitment_date ? \Carbon\Carbon::parse($tm->fitment_date)->format('d M Y') : '' }}"
-                                                    data-kmlife="{{ $tm?->tyre?->fixed_run_km ?? '' }}"
-                                                    data-kmrun="{{ $tm?->tyre?->actual_run_km ?? '' }}"
-                                                    x="112" y="230" width="21" height="26" rx="4" fill="{{ $colorHex[$c] }}" stroke="#fff" stroke-width="1.5"/>
-                                                <text x="122" y="246" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">S2</text>
-                                            </svg>
+                                            @include('svg.truck', [
+                                                'mountedTyreCount' => $vehicle->mounted_tyre_count,
+                                                'mode'             => 'details',
+                                                'svgId'            => 'vtdTruckSvg',
+                                                'byCode'           => $byCode,
+                                                'getTyreColor'     => $getTyreColor,
+                                                'colorHex'         => $colorHex,
+                                                'posLabels'        => $posLabels,
+                                            ])
 
                                             <div class="vtd-svg-note">Hover on tyre or card to highlight</div>
                                         </div>
@@ -7329,4 +7100,4 @@
 
 </script>
 
-@endsection 
+@endsection

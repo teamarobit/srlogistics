@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Vehicle/Management/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Vehicle/Management/index.css?v=0.1') }}">
 
 @endsection
 
@@ -28,10 +28,10 @@
                               <form action="{{ route('vehiclemanagement.index') }}" id="searchform" class="d-inline-block">
                                   
                                 <div class="search-wrap d-inline-block ms-2" style="width: 220px;">
-                                  <select name="number" id="search_vehicle_number" class="form-select ">
+                                  <select name="number" id="search_vehicle_number" class="form-select select2">
                                       <option value="">Filter by Registration Number</option>
-                                      <option>458RQ87</option>
-                                      <option>9964P792W</option>
+                                      <option>27AAACT2727Q1ZW1</option>
+                                      <option>TS09QAB7CC</option>
                                   </select>
                                 </div>
 

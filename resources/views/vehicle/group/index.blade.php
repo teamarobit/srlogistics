@@ -21,7 +21,7 @@
                        <div class="container-fluid page-head">
                           <div class="row align-items-end">
                               <div class="col-12">
-                                  <h5 class="d-inline-block mb-0">Vehicle Group</h5>
+                                  <h5 class="d-inline-block mb-0">Vehicle Group Tracking</h5>
                                   <a href="javascript:void(0)" class="btn btn-theme mb-0 ms-2" data-bs-toggle="modal" data-bs-target="#addGroup"><i class="uil uil-plus me-1"></i>Vehicle Group</a>
                                   <form action="{{ route('vehiclegroup.index') }}" method="GET" id="searchform" class="d-inline-block">
                                       <div class="search-wrap d-inline-block ms-2" style="width: 180px;">

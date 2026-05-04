@@ -58,7 +58,7 @@ body{ background-color: #fff; }
                                       
                                       <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
                                         <select name="status" id="search_status" class="form-select">
-                                            <option value="">Select Status</option>
+                                            <option value="">Filter by Status</option>
                                             <option value="Active" {{ $search_status == 'Active' ? 'selected' : '' }}>Active</option>
                                             <option value="Inactive" {{ $search_status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>
