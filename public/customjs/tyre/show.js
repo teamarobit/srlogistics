@@ -1,3 +1,10 @@
+// ── Read config injected by blade via data-* (SD-1 compliant) ──────────────
+var _cfg       = document.getElementById('tyreShowConfig') || {};
+var PDF_LOGO   = (_cfg.dataset && _cfg.dataset.pdfLogo)   || '';
+var OTHER_LOGO = (_cfg.dataset && _cfg.dataset.otherLogo) || '';
+var CSRF_TOKEN = (_cfg.dataset && _cfg.dataset.csrf)       || ($('meta[name="csrf-token"]').attr('content') || '');
+
+// ── Toast mixin (SD-7) ───────────────────────────────────────────────────────
 const Toast = Swal.mixin({
       toast: true,
       position: 'top',
@@ -552,6 +559,49 @@ $(document).ready(function() {
         });
         
         return false;
+    });
+
+    // ── Yet To Decide: Change Status dropdown (Accordion 7) ─────────────────
+    $(document).on('change', '.ytd-change-status', function () {
+        var $sel     = $(this);
+        var newStatus = $sel.val();
+        var url       = $sel.data('url');
+
+        if (!newStatus) return;
+
+        Swal.fire({
+            title: 'Move Tyre?',
+            html: 'Move this tyre to <strong>' + newStatus + '</strong>?<br><small class="text-muted">This will update the tyre status.</small>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Move',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#032671',
+            reverseButtons: true
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        _token: CSRF_TOKEN,
+                        tyre_status: newStatus
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        Toast.fire({ icon: 'success', title: res.message || 'Status updated.' });
+                        setTimeout(function () { location.reload(); }, 1200);
+                    },
+                    error: function (xhr) {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong.';
+                        Toast.fire({ icon: 'error', title: msg });
+                        $sel.val(''); // reset dropdown
+                    }
+                });
+            } else {
+                $sel.val(''); // reset dropdown on cancel
+            }
+        });
     });
 
     const savedNav = localStorage.getItem(storageKey);

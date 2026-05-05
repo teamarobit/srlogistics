@@ -363,6 +363,16 @@ class TyreController extends Controller
         $today = Carbon::today();
         $tenDaysLater = Carbon::today()->addDays(10);
 
+        // Eager-load all relations needed by the 7-accordion details page
+        $tyre->load([
+            'tyrevendor',
+            'rethreadingVendor',
+            'scrapVendor',
+            'lastFittedVehicle.basicinfo',
+            'allocatedVehicle.basicinfo',
+            'activeVehicleMapping.tyreposition',
+        ]);
+
         $comments = $tyre->comments()->latest()->get();
         $attachmenttypes = Attachmenttype::get();
         $mediaDocumentIds = $tyre->documents()->pluck('mediadocument_id')->toArray();
@@ -376,12 +386,37 @@ class TyreController extends Controller
             ->orderBy('next_due_date')
             ->get();
 
+        // Compute remaining warranty months for Accordion 1
+        $remainingWarrantyMonths = null;
+        if ($tyre->tyre_warrenty_end_date) {
+            $endDate = Carbon::parse($tyre->tyre_warrenty_end_date);
+            $remainingWarrantyMonths = $today->diffInMonths($endDate, false);
+            // negative means expired
+        }
+
+        // RAG status for Accordion 1
+        $tyreLifeInfo = getTyreLifeInfo($tyre->id);
+        $lifePercent  = $tyreLifeInfo['life_percent'] ?? 0;
+        // Strip '%' if present
+        $lifePercentNum = is_string($lifePercent) ? (float) str_replace('%', '', $lifePercent) : (float) $lifePercent;
+        if ($lifePercentNum >= 50) {
+            $ragStatus = 'Green';
+            $ragClass  = 'badge-success';
+        } elseif ($lifePercentNum >= 20) {
+            $ragStatus = 'Amber';
+            $ragClass  = 'badge-warning';
+        } else {
+            $ragStatus = 'Red';
+            $ragClass  = 'badge-danger';
+        }
+
         $this->storeUseractivity(66, 5, Auth::id(), $tyre->id, 'Tyre details retrieved');
 
         return view('tyre.show', compact(
             'tyre', 'comments', 'attachmenttypes',
             'mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
-            'maintenanceSchedules'
+            'maintenanceSchedules', 'tyreLifeInfo',
+            'remainingWarrantyMonths', 'ragStatus', 'ragClass'
         ));
     }
 

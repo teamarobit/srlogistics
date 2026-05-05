@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('css')
-    
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/Tyre/show.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.3') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/show.css?v=2.7') }}">
 
 @endsection
     
@@ -18,245 +19,811 @@
     @php
         $tyreLifeInfo = getTyreLifeInfo($tyre->id);
     @endphp
-    <!--bottom header-->
-    <div class="vehicledtl-bd srlog-bdwrapper">
-        <div class="topbar-bd">
-            <div class="item1">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <h1>Tyre Details</h1>
-                        </div>
-                        <div class="col-12 col-md-6 text-end">
-                            <a href="{{ route('tyre.edit', $tyre->id) }}" class="btn btn-theme mt-1"><i class="uil uil-pen me-1"></i>Edit Tyre</a>
-                        </div>
-                    </div>
-                    
+    {{-- ══ PAGE WRAPPER — v2 background ══ --}}
+    <div class="srlog-bdwrapper v2-page">
+
+        {{-- ═══════════════════════════════════════════════════════════════
+             V2 INTELLIGENCE HEADER
+        ═══════════════════════════════════════════════════════════════ --}}
+        @php
+            /* ── Tyre health border colour ── */
+            $lifeNum    = (float) str_replace('%', '', $tyreLifeInfo['life_percent'] ?? '0');
+            $colHealth  = $lifeNum >= 50 ? 'green' : ($lifeNum >= 20 ? 'amber' : 'red');
+
+            /* ── Allocation border colour ── */
+            $colAlloc   = ($tyre->location === 'Vehicle') ? 'green' : 'grey';
+
+            /* ── Warranty border colour ── */
+            $colWarranty = 'grey';
+            if ($remainingWarrantyMonths !== null) {
+                $colWarranty = $remainingWarrantyMonths > 3 ? 'green'
+                             : ($remainingWarrantyMonths > 0 ? 'amber' : 'red');
+            }
+
+            /* ── Status badge ── */
+            $statusBadgeClass = match($tyre->tyre_status ?? '') {
+                'Active', 'Ready to Use' => 'active',
+                'Scrap', 'Yet to Decide' => 'inactive',
+                default => 'active',
+            };
+        @endphp
+
+        <div class="v2-header-zone">
+
+            {{-- ── IDENTITY BAR ── --}}
+            <div class="v2-id-bar">
+
+                {{-- Tyre icon --}}
+                <div class="v2-id-icon-wrap">
+                    <img src="{{ asset('images/icons/tyre-default.png') }}" alt="Tyre">
                 </div>
-            </div>
 
-            <div class="item2">
-                <div class="container-fluid">
-                    <div class="row align-items-center">
-                        <div class="col-lg-6">
-                            <div class="ltblock">
-                                <div class="icon_car {{ $tyreLifeInfo['life_border_class'] }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Registration Active">
-                                    <img src="{{ asset('images/icons/tyre-default.png') }}" height="25" />
-                                </div>
-
-                                <div class="text">
-                                    <div class="topsec">
-                                        <p>{{ $tyre->tyre_serial_number }}</p>
-                                        <!--<span class="addbtn">Add TAG <i class="uil uil-plus"></i></span>-->
-                                    </div>
-
-                                    <span class="cartype">{{ $tyre->tyre_type }}</span>
-                                    <span class="cartype">
-                                        Condition: {{ $tyre->tyre_condition }}
-                                        <!--<a class="edit-driver-btn" href="{{ route('tyre.edit', $tyre->id) }}"><i class="uil uil-pen"></i></a>-->
-                                    </span>
-                                </div>
-
-                                <!--<div class="liveloc_sec">-->
-                                <!--    <span>Live Location</span>-->
-                                <!--    <p>Delhi</p>-->
-                                <!--</div>-->
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="rtblock">
-                                <!--<div class="item-btn c_green">-->
-                                <!--    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>-->
-                                <!--    <div class="text">-->
-                                <!--        <p>RC Verified</p>-->
-                                <!--    </div>-->
-                                <!--</div>-->
-
-                                <!--<div class="item-btn c_blue">-->
-                                <!--    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>-->
-                                <!--    <div class="text">-->
-                                <!--        <span>Trip Fleet Status</span>-->
-                                <!--        <p>Maintenance</p>-->
-                                <!--    </div>-->
-                                <!--</div>-->
-
-                                <div class="item-btn c_green">
-                                    <span class="icon"><i class="uil uil-shield-check text-primary"></i></span>
-                                    <div class="text">
-                                        <span>Location</span>
-                                        <p>{{ $tyre->location }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {{-- Tyre serial number + type --}}
+                <div>
+                    <div class="v2-id-vno">
+                        {{ $tyre->tyre_serial_number ?? '—' }}
+                        <span class="v2-id-status {{ $statusBadgeClass }}">
+                            {{ $tyre->tyre_status ?? 'Active' }}
+                        </span>
+                    </div>
+                    <div class="v2-id-sub">
+                        {{ $tyre->tyre_type ?? 'Tyre' }}
+                        @if($tyre->tyre_condition) · Condition: {{ $tyre->tyre_condition }} @endif
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <div class="v2-id-sep"></div>
+
+                {{-- Brand / Model --}}
+                <div>
+                    <div class="v2-id-field-label">Brand / Model</div>
+                    <div class="v2-id-field-value">
+                        {{ $tyre->tyre_brand ?? '—' }}
+                        @if($tyre->tyre_model) / {{ $tyre->tyre_model }} @endif
+                    </div>
+                    <div class="v2-id-field-sub">{{ $tyre->tyrevendor?->contact_name ?? 'No vendor' }}</div>
+                </div>
+
+                <div class="v2-id-sep"></div>
+
+                {{-- Location --}}
+                <div>
+                    <div class="v2-id-field-label">Location</div>
+                    <div class="v2-id-field-value">{{ $tyre->location ?? '—' }}</div>
+                    <div class="v2-id-field-sub">
+                        @if($tyre->location === 'Vehicle' && $tyre->allocatedVehicle?->basicinfo?->vehicle_number)
+                            {{ $tyre->allocatedVehicle->basicinfo->vehicle_number }}
+                        @else
+                            Not fitted
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Actions flush right --}}
+                <div class="v2-id-actions">
+                    <a href="{{ route('tyre.edit', $tyre->id) }}"
+                       class="btn btn-sm"
+                       style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                        <i class="uil uil-pen me-1"></i>Edit Tyre
+                    </a>
+                </div>
+
+            </div>{{-- /.v2-id-bar --}}
+
+            {{-- ── INTELLIGENCE GRID ── --}}
+            <div class="v2-intel-grid">
+
+                {{-- COLUMN 1 — TYRE HEALTH --}}
+                <div class="v2-intel-col health-{{ $colHealth }}">
+                    <div class="v2-intel-col-title">
+                        <i class="uil uil-analytics"></i> Tyre Health
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">RAG Status</span>
+                        <span class="v2-intel-val {{ $colHealth === 'green' ? 'ok' : ($colHealth === 'amber' ? 'warn' : 'danger') }}">
+                            {{ $ragStatus }}
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Life Remaining</span>
+                        <span class="v2-intel-val {{ $colHealth === 'green' ? 'ok' : ($colHealth === 'amber' ? 'warn' : 'danger') }}">
+                            {{ $tyreLifeInfo['life_percent'] ?? '—' }}
+                            <span class="v2-intel-val-sub">{{ $tyreLifeInfo['life_text'] ?? '' }}</span>
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Fixed Run KM</span>
+                        <span class="v2-intel-val">{{ $tyre->fixed_run_km ? number_format($tyre->fixed_run_km) : '—' }}</span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Actual Run KM</span>
+                        <span class="v2-intel-val">{{ $tyre->actual_run_km !== null ? number_format($tyre->actual_run_km) : '—' }}</span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Remaining KM</span>
+                        <span class="v2-intel-val">
+                            @if($tyre->fixed_run_km && $tyre->actual_run_km !== null)
+                                {{ number_format($tyre->fixed_run_km - $tyre->actual_run_km) }}
+                            @else —
+                            @endif
+                        </span>
+                    </div>
+                </div>
+
+                {{-- COLUMN 2 — ALLOCATION STATUS --}}
+                <div class="v2-intel-col health-{{ $colAlloc }}">
+                    <div class="v2-intel-col-title">
+                        <i class="uil uil-truck"></i> Allocation Status
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Location</span>
+                        <span class="v2-intel-val {{ $tyre->location === 'Vehicle' ? 'ok' : '' }}">
+                            {{ $tyre->location ?? '—' }}
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Vehicle Number</span>
+                        <span class="v2-intel-val">{{ $tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? '—' }}</span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Tyre Position</span>
+                        <span class="v2-intel-val">{{ $tyre->activeVehicleMapping?->tyreposition?->code ?? '—' }}</span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Fitment Date</span>
+                        <span class="v2-intel-val">
+                            {{ $tyre->installation_date ? \Carbon\Carbon::parse($tyre->installation_date)->format('d M Y') : '—' }}
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Source</span>
+                        <span class="v2-intel-val">
+                            @if($tyre->tyre_source_mode === 'Fitment') Direct Fitment
+                            @elseif($tyre->tyre_source_mode) SR Garage
+                            @else —
+                            @endif
+                        </span>
+                    </div>
+                </div>
+
+                {{-- COLUMN 3 — WARRANTY & REMINDERS --}}
+                <div class="v2-intel-col health-{{ $colWarranty }}">
+                    <div class="v2-intel-col-title">
+                        <i class="uil uil-shield-check"></i> Warranty &amp; Reminders
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Warranty Period</span>
+                        <span class="v2-intel-val">
+                            {{ $tyre->tyre_warranty_months ? $tyre->tyre_warranty_months . ' months' : '—' }}
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Remaining Warranty</span>
+                        @if($remainingWarrantyMonths !== null)
+                            <span class="v2-intel-val {{ $remainingWarrantyMonths > 0 ? 'ok' : 'danger' }}">
+                                {{ $remainingWarrantyMonths > 0 ? round($remainingWarrantyMonths, 1) . ' months' : 'Expired' }}
+                            </span>
+                        @else
+                            <span class="v2-intel-val" style="color:#9098b1;">—</span>
+                        @endif
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Alignment Reminder</span>
+                        <span class="v2-intel-val {{ $tyre->set_reminder_for_alignment === 'Yes' ? 'ok' : '' }}">
+                            {{ $tyre->set_reminder_for_alignment === 'Yes' ? 'ON' : 'OFF' }}
+                            @if($tyre->alignment_interval_km)
+                                <span class="v2-intel-val-sub">Every {{ number_format($tyre->alignment_interval_km) }} KM</span>
+                            @endif
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Rotation Reminder</span>
+                        <span class="v2-intel-val {{ $tyre->set_reminder_for_rotation === 'Yes' ? 'ok' : '' }}">
+                            {{ $tyre->set_reminder_for_rotation === 'Yes' ? 'ON' : 'OFF' }}
+                            @if($tyre->rotation_interval_km)
+                                <span class="v2-intel-val-sub">Every {{ number_format($tyre->rotation_interval_km) }} KM</span>
+                            @endif
+                        </span>
+                    </div>
+
+                    <div class="v2-intel-row">
+                        <span class="v2-intel-lbl">Purchase Date</span>
+                        <span class="v2-intel-val">
+                            {{ $tyre->tyre_purchase_date ? \Carbon\Carbon::parse($tyre->tyre_purchase_date)->format('d M Y') : '—' }}
+                        </span>
+                    </div>
+                </div>
+
+            </div>{{-- /.v2-intel-grid --}}
+
+        </div>{{-- /.v2-header-zone --}}
 
         <div class="vehicleinfo-wrap align-items-center">
             <div class="vehicleinfo-sec">
                 <div class="container-fluid">
-                    
-                    <div class="accordion" id="accordionExample">
+
+                    {{-- ═══════════════════════════════════════════════════════
+                         7 STATUS ACCORDIONS
+                    ═══════════════════════════════════════════════════════ --}}
+                    <div class="accordion tyre-detail-accordion" id="tyreDetailAccordion">
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 1 — BASIC DETAILS
+                        ══════════════════════════════════════════ --}}
                         <div class="accordion-item">
-                            
-                            <div class="accordion-header vehicleinfor_head" id="vinfo_table">
-                                
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_1">
                                 <div class="row vehicleinfo_toprow align-items-center">
-                                 
                                     <div class="col-12 col-md-11 d-flex align-items-center">
-                                        <span class="titletext">Tyre Basic Information</span>
+                                        <span class="titletext">Basic Details</span>
                                     </div>
-                                    
                                     <div class="col-12 col-md-1">
-                                        <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#vinfo_bd"
-                                            aria-expanded="true" aria-controls="vinfo_bd">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_1"
+                                            aria-expanded="false" aria-controls="acc_body_1">
                                         </button>
                                     </div>
                                 </div>
-                                
                             </div>
-    
-                            <div id="vinfo_bd" class="accordion-collapse collapse show" aria-labelledby="vinfo_table" data-bs-parent="#accordionExample">
+
+                            <div id="acc_body_1" class="accordion-collapse collapse show"
+                                 aria-labelledby="acc_head_1">
                                 <div class="accordion-body">
                                     <div class="table-responsive table-responsive02">
-                                        <table class="table">
+                                        <table class="table tyre-info-table">
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <p>Serial Number</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_serial_number }}</span>
-                                                    </td>
-                                                    <!--<td>-->
-                                                    <!--    <p>Tyre Condition</p>-->
-                                                    <!--    <span class="text-secondary d-block">{{ $tyre->tyre_condition }}</span>-->
-                                                    <!--</td>-->
-                                                    <td>
-                                                        <p>Brand</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_brand }}</span>
+                                                        <p>Tyre Serial Number</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_serial_number ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Vendor</p>
+                                                        <p>Vehicle Number</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Position</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->activeVehicleMapping?->tyreposition?->code ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Fitment Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->installation_date ? \Carbon\Carbon::parse($tyre->installation_date)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Type</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_type ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Condition</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_condition ?? '-' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p>Tyre Brand</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_brand ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Model</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_model ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Vendor</p>
                                                         <span class="text-secondary d-block">{{ $tyre->tyrevendor?->contact_name ?? '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Model</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_model }}</span>
-                                                    </td>
-                                                    <!--<td>-->
-                                                    <!--    <p>Type</p>-->
-                                                    <!--    <span class="text-secondary d-block">{{ $tyre->tyre_type }}</span>-->
-                                                    <!--</td>-->
-                                                    <td>
-                                                        <p>Price</p>
-                                                        <span class="text-secondary d-block">₹{{ number_format($tyre->tyre_price, 2) }}</span>
+                                                        <p>Tyre Source</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($tyre->tyre_source_mode === 'Fitment') Direct Fitment
+                                                            @elseif($tyre->tyre_source_mode) SR Garage
+                                                            @else -
+                                                            @endif
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Purchase Date</p>
-                                                        <span class="text-secondary d-block">{{ date('d/m/Y', strtotime($tyre->tyre_purchase_date)) }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <p>Issue Date</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->tyre_issue_date ? date('d/m/Y', strtotime($tyre->tyre_issue_date)) : '-' }}</span>
+                                                        <p>Tyre Price</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_price ? '₹' . number_format($tyre->tyre_price, 2) : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Warrenty Expriry Date</p>
-                                                        <span class="text-secondary d-block">{{ date('d/m/Y', strtotime('+' . $tyre->tyre_warranty_months .' months ' . $tyre->issue_date)) }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Fixed Run KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->fixed_run_km ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Fixed Run Month</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->fixed_life_months ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Actual Run KM</p> 
-                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_km ?? '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Actual Run Month</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_month ?? '-' }}</span>
+                                                        <p>Tyre Purchase Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_purchase_date ? \Carbon\Carbon::parse($tyre->tyre_purchase_date)->format('d/m/Y') : '-' }}</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <p>Alignment Interval KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->alignment_interval_km ?? '-' }}</span>
+                                                        <p>Warranty Period</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->tyre_warranty_months ? $tyre->tyre_warranty_months . ' months' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Set Reminder For Alignment Interval KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->set_reminder_for_alignment }}</span>
+                                                        <p>Remaining Warranty (months)</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($remainingWarrantyMonths !== null)
+                                                                @if($remainingWarrantyMonths > 0)
+                                                                    <span class="badge badge-success">{{ round($remainingWarrantyMonths, 1) }} months</span>
+                                                                @else
+                                                                    <span class="badge badge-danger">Expired</span>
+                                                                @endif
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Rotation Interval KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->rotation_interval_km ?? '-' }}</span>
+                                                        <p>Tyre RAG Status</p>
+                                                        <span class="text-secondary d-block">
+                                                            <span class="badge {{ $ragClass }}">{{ $ragStatus }}</span>
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <p>Set Reminder For Rotation</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->set_reminder_for_rotation }}</span>
+                                                        <p>Tyre Life Remaining %</p>
+                                                        <span class="text-secondary d-block">{{ $tyreLifeInfo['life_percent'] ?? '-' }} ({{ $tyreLifeInfo['life_text'] ?? '-' }})</span>
                                                     </td>
                                                     <td>
-                                                        <p>Last Alignment KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->last_alignment_km ?? '-' }}</span>
+                                                        <p>Tyre Fixed Run KM</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->fixed_run_km ? number_format($tyre->fixed_run_km) : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Last Rotation KM</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->last_rotation_km ?? '-' }}</span>
+                                                        <p>Tyre Actual Run KM</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_km ? number_format($tyre->actual_run_km) : '-' }}</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <p>Tyre Remaining Run KM</p>
                                                         <span class="text-secondary d-block">
-                                                            @if($tyre->fixed_run_km && $tyre->actual_run_km)
-                                                                {{ ($tyre->fixed_run_km - $tyre->actual_run_km) }}
+                                                            @if($tyre->fixed_run_km && $tyre->actual_run_km !== null)
+                                                                {{ number_format($tyre->fixed_run_km - $tyre->actual_run_km) }}
                                                             @else
                                                                 -
                                                             @endif
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <p>Tyre Remaining Life (Month)</p>
+                                                        <p>Tyre Fixed Life (months)</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->fixed_life_months ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Actual Run (months)</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->actual_run_month ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Remaining Life (months)</p>
                                                         <span class="text-secondary d-block">
-                                                            @if($tyre->fixed_life_months && $tyre->actual_run_month)
-                                                                {{ ($tyre->fixed_life_months - $tyre->actual_run_month) }}
+                                                            @if($tyre->fixed_life_months && $tyre->actual_run_month !== null)
+                                                                {{ $tyre->fixed_life_months - $tyre->actual_run_month }}
                                                             @else
                                                                 -
                                                             @endif
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <p>Discard Note</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->discard_note ?? '-' }}</span>
+                                                        <p>Wheel Alignment Interval KM
+                                                            @if($tyre->set_reminder_for_alignment === 'Yes')
+                                                                <span class="tyre-reminder-badge"><i class="uil uil-bell"></i> Reminder ON</span>
+                                                            @endif
+                                                        </p>
+                                                        <span class="text-secondary d-block">{{ $tyre->alignment_interval_km ? number_format($tyre->alignment_interval_km) : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>Discard Date</p>
-                                                        <span class="text-secondary d-block">{{ $tyre->discard_date ? date('d/m/Y', strtotime($tyre->discard_date)) : '-' }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p>Tyre Life (%)</p>
-                                                        <span class="text-secondary d-block">
-                                                            {{ $tyreLifeInfo['life_percent'] }} ({{ $tyreLifeInfo['life_text'] }})
-                                                        </span>
+                                                        <p>Tyre Rotation Interval KM
+                                                            @if($tyre->set_reminder_for_rotation === 'Yes')
+                                                                <span class="tyre-reminder-badge"><i class="uil uil-bell"></i> Reminder ON</span>
+                                                            @endif
+                                                        </p>
+                                                        <span class="text-secondary d-block">{{ $tyre->rotation_interval_km ? number_format($tyre->rotation_interval_km) : '-' }}</span>
                                                     </td>
                                                 </tr>
-                                                
+                                                <tr>
+                                                    <td>
+                                                        <p>Last Wheel Alignment KM</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->last_alignment_km ? number_format($tyre->last_alignment_km) : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Last Tyre Rotation KM</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->last_rotation_km ? number_format($tyre->last_rotation_km) : '-' }}</span>
+                                                    </td>
+                                                    <td colspan="4"></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
-                        
+                        {{-- /ACCORDION 1 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 2 — READY TO USE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_2">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Ready To Use</span>
+                                        @if($tyre->tyre_status === 'Ready to Use')
+                                            <span class="badge badge-success ms-2">Active</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_2"
+                                            aria-expanded="false" aria-controls="acc_body_2">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_2" class="accordion-collapse collapse" aria-labelledby="acc_head_2">
+                                <div class="accordion-body">
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Ready to Use Since</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->ready_to_use_since ? \Carbon\Carbon::parse($tyre->ready_to_use_since)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td colspan="5"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 2 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 3 — WARRANTY CLAIM TYRE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_3">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Warranty Claim Tyre</span>
+                                        @if($tyre->tyre_status === 'Warranty Claim')
+                                            <span class="badge badge-warning ms-2">Active</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_3"
+                                            aria-expanded="false" aria-controls="acc_body_3">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_3" class="accordion-collapse collapse" aria-labelledby="acc_head_3">
+                                <div class="accordion-body">
+                                    @php
+                                        $warrantyOverdue = $tyre->warranty_expected_closure_date
+                                            && \Carbon\Carbon::parse($tyre->warranty_expected_closure_date)->isPast();
+                                    @endphp
+                                    @if($warrantyOverdue)
+                                        <div class="alert alert-danger tyre-overdue-alert py-2 mb-3">
+                                            <i class="uil uil-exclamation-triangle me-1"></i>
+                                            <strong>Overdue!</strong> Expected closure date has passed
+                                            ({{ \Carbon\Carbon::parse($tyre->warranty_expected_closure_date)->format('d/m/Y') }}).
+                                        </div>
+                                    @endif
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Tyre Location</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_location ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Warranty Claim Raised Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_claim_date ? \Carbon\Carbon::parse($tyre->warranty_claim_date)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Expected Closure Date</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($tyre->warranty_expected_closure_date)
+                                                                {{ \Carbon\Carbon::parse($tyre->warranty_expected_closure_date)->format('d/m/Y') }}
+                                                                @if($warrantyOverdue)
+                                                                    <span class="badge badge-danger ms-1">Overdue</span>
+                                                                @endif
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Warranty Claim Number</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_claim_number ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Warranty Claim Reason</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_claim_reason ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Warranty Claim Amount</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_claim_amount ? '₹' . number_format($tyre->warranty_claim_amount, 2) : '-' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p>Refund Payment UTR Number</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->warranty_utr ?? '-' }}</span>
+                                                    </td>
+                                                    <td colspan="5"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 3 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 4 — THREADING TYRE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_4">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Threading Tyre</span>
+                                        @if($tyre->tyre_status === 'Re-threading')
+                                            <span class="badge badge-info ms-2">Active</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_4"
+                                            aria-expanded="false" aria-controls="acc_body_4">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_4" class="accordion-collapse collapse" aria-labelledby="acc_head_4">
+                                <div class="accordion-body">
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Tyre Location</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->rethreading_location ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Re-threading Vendor</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->rethreadingVendor?->contact_name ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Sent for Re-threading Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->rethreading_sent_date ? \Carbon\Carbon::parse($tyre->rethreading_sent_date)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Expected Closure Date</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($tyre->rethreading_expected_date)
+                                                                {{ \Carbon\Carbon::parse($tyre->rethreading_expected_date)->format('d/m/Y') }}
+                                                                @if(\Carbon\Carbon::parse($tyre->rethreading_expected_date)->isPast())
+                                                                    <span class="badge badge-danger ms-1">Overdue</span>
+                                                                @endif
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Re-threading Cost</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->rethreading_cost ? '₹' . number_format($tyre->rethreading_cost, 2) : '-' }}</span>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 4 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 5 — SCRAP TYRE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_5">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Scrap Tyre</span>
+                                        @if($tyre->tyre_status === 'Scrap')
+                                            <span class="badge badge-danger ms-2">Active</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_5"
+                                            aria-expanded="false" aria-controls="acc_body_5">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_5" class="accordion-collapse collapse" aria-labelledby="acc_head_5">
+                                <div class="accordion-body">
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Tyre Location</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrap_location ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Last Fitted Vehicle</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->lastFittedVehicle?->basicinfo?->vehicle_number ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Scrap Sent Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrap_sent_date ? \Carbon\Carbon::parse($tyre->scrap_sent_date)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Scrap Reason</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrap_reason ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Scrap Vendor</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrapVendor?->contact_name ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Scrap Income</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrap_income ? '₹' . number_format($tyre->scrap_income, 2) : '-' }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <p>Income Received UTR</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->scrap_utr ?? '-' }}</span>
+                                                    </td>
+                                                    <td colspan="5"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 5 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 6 — ALLOCATE TYRE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_6">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Allocate Tyre</span>
+                                        @if($tyre->location === 'Vehicle')
+                                            <span class="badge badge-success ms-2">On Vehicle</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_6"
+                                            aria-expanded="false" aria-controls="acc_body_6">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_6" class="accordion-collapse collapse" aria-labelledby="acc_head_6">
+                                <div class="accordion-body">
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Vehicle Number</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Position</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->activeVehicleMapping?->tyreposition?->code ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Fitment Date</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->installation_date ? \Carbon\Carbon::parse($tyre->installation_date)->format('d/m/Y') : '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Source</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($tyre->tyre_source_mode === 'Fitment') Direct Fitment
+                                                            @elseif($tyre->tyre_source_mode) SR Garage
+                                                            @else -
+                                                            @endif
+                                                        </span>
+                                                    </td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 6 --}}
+
+                        {{-- ══════════════════════════════════════════
+                             ACCORDION 7 — YET TO DECIDE
+                        ══════════════════════════════════════════ --}}
+                        <div class="accordion-item mt-2">
+                            <div class="accordion-header vehicleinfor_head" id="acc_head_7">
+                                <div class="row vehicleinfo_toprow align-items-center">
+                                    <div class="col-12 col-md-11 d-flex align-items-center">
+                                        <span class="titletext">Yet To Decide</span>
+                                        @if($tyre->tyre_status === 'Yet to Decide')
+                                            <span class="badge badge-secondary ms-2">Pending Decision</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-12 col-md-1">
+                                        <button class="accordion-button filter-options collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#acc_body_7"
+                                            aria-expanded="false" aria-controls="acc_body_7">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="acc_body_7" class="accordion-collapse collapse" aria-labelledby="acc_head_7">
+                                <div class="accordion-body">
+                                    <div class="table-responsive table-responsive02">
+                                        <table class="table tyre-info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <p>Tyre Location</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->location ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Tyre Damage Reason</p>
+                                                        <span class="text-secondary d-block">{{ $tyre->damage_reason ?? '-' }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <p>Change Status</p>
+                                                        <span class="text-secondary d-block">
+                                                            @if($tyre->tyre_status === 'Yet to Decide')
+                                                                <select class="form-select form-select-sm ytd-change-status"
+                                                                    style="max-width:200px;"
+                                                                    data-tyre-id="{{ $tyre->id }}"
+                                                                    data-url="{{ route('tyre.changeStatus', $tyre->id) }}">
+                                                                    <option value="">-- Move To --</option>
+                                                                    <option value="Warranty Claim">Warranty Claim</option>
+                                                                    <option value="Re-threading">Re-threading (Threading)</option>
+                                                                    <option value="Scrap">Scrap</option>
+                                                                </select>
+                                                            @else
+                                                                <span class="text-muted">N/A — Tyre is not in Yet to Decide status</span>
+                                                            @endif
+                                                        </span>
+                                                    </td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- /ACCORDION 7 --}}
+
                     </div>
-                    
+                    {{-- /tyre-detail-accordion --}}
+
                 </div>
             </div>
     
@@ -812,10 +1379,10 @@
             </div>
             <!--/////-->
         </div>
-        
-    </div>
-   
-</div>
+
+    </div>{{-- /.srlog-bdwrapper.v2-page --}}
+
+</div>{{-- /.layout-wrapper --}}
     
     
 <!-- ═══════════════════════════════════════════════════════════════════════
@@ -1238,12 +1805,14 @@
 
 
 @section('js')
-<script>
-    const PDF_LOGO = "{{ asset('images/pdf_file.png') }}";
-    const OTHER_LOGO = "{{ asset('images/other_file.svg') }}";
-</script>
+{{-- Pass PHP config to external JS via data-* on body (SD-1 compliant) --}}
+<div id="tyreShowConfig"
+     data-pdf-logo="{{ asset('images/pdf_file.png') }}"
+     data-other-logo="{{ asset('images/other_file.svg') }}"
+     data-csrf="{{ csrf_token() }}"
+     style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/tyre/show.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/show.js?v=2.1') }}"></script>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════

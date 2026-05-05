@@ -86,6 +86,12 @@ class Tyre extends Model
         return $this->belongsTo(Vehicle::class, 'last_fitted_vehicle_id');
     }
 
+    /** Currently allocated vehicle (for Accordion 1 & 6 on details page) */
+    public function allocatedVehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'allocated_vehicle_id');
+    }
+
     // public function updatedBy()
     // {
     //     return $this->belongsTo(User::class, 'updated_by');
