@@ -697,7 +697,7 @@ text-align: left; }
 ══════════════════════════════════════════════════════════════ */
 
 /* Accordion info-table: match vehicle-details reference
-   td padding 8px 12px  |  row separator border-bottom only  */
+   td padding 8px 12px  |  bottom + right cell borders (last-child no right) */
 .srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tr {
     border: 0;
 }
@@ -705,8 +705,12 @@ text-align: left; }
     padding: 8px 12px !important;
     border-top: 0 !important;
     border-left: 0 !important;
+    border-right: 1px solid #e8ecf5 !important;
+    border-bottom: 1px solid #e8ecf5 !important;
+}
+/* No right border on the last cell in each row */
+.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tbody tr td:last-child {
     border-right: 0 !important;
-    border-bottom: 1px solid #c8cdd8 !important;
 }
 /* Label text */
 .srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tbody tr td p {
