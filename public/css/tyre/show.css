@@ -701,18 +701,20 @@ text-align: left; }
 .srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tr {
     border: 0;
 }
-.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table td {
+.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tbody tr td {
     padding: 8px 12px !important;
-    border: 0 !important;
-    border-bottom: 1px solid #E8ECF5 !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #c8cdd8 !important;
 }
 /* Label text */
-.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table td p {
+.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tbody tr td p {
     margin: 0;
     padding: 0;
 }
 /* Value text */
-.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table td span {
+.srlog-bdwrapper.v2-page .vehicleinfo-sec .tyre-info-table tbody tr td span {
     margin: 0;
     padding: 0;
     display: block;
@@ -720,6 +722,12 @@ text-align: left; }
 /* Bottom margin on every table wrapper inside accordion bodies */
 .srlog-bdwrapper.v2-page .vehicleinfo-sec .table-responsive02 {
     margin-bottom: 16px;
+}
+
+/* Remove global min-height: 150px (from style.css) for compact accordion tables
+   Only applied to the 6 non-Basic-Details accordions (.mt-2) to preserve Basic Details layout */
+.tyre-detail-accordion .accordion-item.mt-2 .table-responsive {
+    min-height: 0 !important;
 }
 
 /* ══════════════════════════════════════════════════════════
