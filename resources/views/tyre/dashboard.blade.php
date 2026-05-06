@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.3') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.4') }}">
 @endsection
 
 @section('content')
@@ -32,41 +32,65 @@
         {{-- ── Summary Cards ── --}}
         <div class="itemvehicles-bd">
             <div class="container-fluid">
-                <div class="itemv-box">
-                    <div class="itemrow justify-content-around tyre-cards-row">
+                {{-- ── Tyre Counters v3.0: Two-row layout ── --}}
+                <div class="tyre-counters-wrap">
 
-                        @php
-                            $cards = [
-                                ['count' => $all_count,            'label' => 'All Tyres',             'pct' => 100],
-                                ['count' => $garage_ready_count,   'label' => 'SR Garage - Ready to use', 'pct' => $all_count > 0 ? round($garage_ready_count * 100 / $all_count) : 0],
-                                ['count' => $warranty_claim_count, 'label' => 'Warranty Claim Tyres',  'pct' => $all_count > 0 ? round($warranty_claim_count * 100 / $all_count) : 0],
-                                ['count' => $rethreading_count,    'label' => 'Re-Threading Tyres',    'pct' => $all_count > 0 ? round($rethreading_count * 100 / $all_count) : 0],
-                                ['count' => $scrap_count,          'label' => 'Scrap Tyres',           'pct' => $all_count > 0 ? round($scrap_count * 100 / $all_count) : 0],
-                                ['count' => $allocated_count,      'label' => 'Allocate Tyres',        'pct' => $all_count > 0 ? round($allocated_count * 100 / $all_count) : 0],
-                                ['count' => $direct_fitment_count, 'label' => 'Direct Fitment Tyres', 'pct' => $all_count > 0 ? round($direct_fitment_count * 100 / $all_count) : 0],
-                                ['count' => $yet_to_decide_count,  'label' => 'Yet to Decide Tyres',  'pct' => $all_count > 0 ? round($yet_to_decide_count * 100 / $all_count) : 0],
-                                ['count' => $extra_on_vehicle_count,'label'=> 'Extra Tyres On Vehicle','pct' => $all_count > 0 ? round($extra_on_vehicle_count * 100 / $all_count) : 0],
-                            ];
-                        @endphp
+                    @php
+                        $pct = fn($n) => $all_count > 0 ? round($n * 100 / $all_count) : 0;
 
-                        @foreach($cards as $card)
-                        <div class="itemcol tyre-itemcol">
-                            <div class="itembd">
-                                <div class="top">
-                                    <p class="number">{{ $card['count'] }}</p>
-                                    <p>{{ $card['label'] }}</p>
-                                </div>
-                                <div class="bottom">
-                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> {{ $card['pct'] }}%</div>
-                                    <div class="item3"><img src="{{ asset('images/icons/tyre-default.png') }}" /></div>
-                                </div>
-                                <div class="item-icon"><span><img src="{{ asset('images/images01.png') }}" /></span></div>
+                        $row1 = [
+                            ['count' => $all_count,              'label' => 'All Tyres',              'pct' => 100,             'color' => 'tc-blue'],
+                            ['count' => $allocated_count,        'label' => 'Allocate Tyres',         'pct' => $pct($allocated_count),        'color' => 'tc-indigo'],
+                            ['count' => $direct_fitment_count,   'label' => 'Direct Fitment',         'pct' => $pct($direct_fitment_count),   'color' => 'tc-purple'],
+                            ['count' => $yet_to_decide_count,    'label' => 'Yet To Decide Tyres',    'pct' => $pct($yet_to_decide_count),    'color' => 'tc-amber'],
+                            ['count' => $extra_on_vehicle_count, 'label' => 'Extra Tyres on Vehicle', 'pct' => $pct($extra_on_vehicle_count), 'color' => 'tc-teal'],
+                        ];
+
+                        $row2 = [
+                            ['count' => $garage_ready_count,   'label' => 'Ready to Use',         'pct' => $pct($garage_ready_count),   'color' => 'tc-green'],
+                            ['count' => $warranty_claim_count, 'label' => 'Warranty Claim Tyres', 'pct' => $pct($warranty_claim_count), 'color' => 'tc-orange'],
+                            ['count' => $rethreading_count,    'label' => 'Re-Threading Tyres',   'pct' => $pct($rethreading_count),    'color' => 'tc-cyan'],
+                            ['count' => $scrap_count,          'label' => 'Scrap Tyres',          'pct' => $pct($scrap_count),          'color' => 'tc-red'],
+                        ];
+                    @endphp
+
+                    {{-- Row 1: 5 primary fleet counters --}}
+                    <div class="tyre-counters-row">
+                        @foreach($row1 as $card)
+                        <div class="tyre-counter-card {{ $card['color'] }}">
+                            <div class="tc-body">
+                                <div class="tc-count">{{ $card['count'] }}</div>
+                                <div class="tc-label">{{ $card['label'] }}</div>
+                            </div>
+                            <div class="tc-footer">
+                                <span class="tc-pct"><i class="uil uil-arrow-up-right"></i> {{ $card['pct'] }}%</span>
                             </div>
                         </div>
                         @endforeach
-
                     </div>
-                </div>
+
+                    {{-- Row 2: SR Garage counters with section label --}}
+                    <div class="tyre-counters-section">
+                        <div class="tc-section-header">
+                            <span class="tc-section-badge"><i class="uil uil-building"></i> SR Garage</span>
+                            <div class="tc-section-line"></div>
+                        </div>
+                        <div class="tyre-counters-row tyre-counters-row--garage">
+                            @foreach($row2 as $card)
+                            <div class="tyre-counter-card {{ $card['color'] }}">
+                                <div class="tc-body">
+                                    <div class="tc-count">{{ $card['count'] }}</div>
+                                    <div class="tc-label">{{ $card['label'] }}</div>
+                                </div>
+                                <div class="tc-footer">
+                                    <span class="tc-pct"><i class="uil uil-arrow-up-right"></i> {{ $card['pct'] }}%</span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                </div>{{-- /tyre-counters-wrap --}}
 
                 {{-- ── 8-Tab Navigation ── --}}
                 <div class="right-side-wrap mt-0">
