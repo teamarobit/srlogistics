@@ -15,6 +15,7 @@ use App\Models\Media;
 use App\Models\Mediadocument;
 use App\Models\Tyre;
 use App\Models\TyreMaintenanceSchedule;
+use App\Models\TyreRepair;
 use App\Models\Tyrelog;
 use App\Models\Vehicletyremapping;
 
@@ -382,8 +383,29 @@ class TyreController extends Controller
         $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
 
         $maintenanceSchedules = $tyre->maintenanceSchedules()
-            ->orderByRaw("FIELD(status,'Overdue','Pending','Scheduled','Done')")
+            ->with(['vehicle.basicinfo', 'vehicle.driverAllocation.contact'])
+            ->orderByRaw("FIELD(status,'Missed','Overdue','Pending','Upcoming','Scheduled','Completed','Done')")
             ->orderBy('next_due_date')
+            ->get();
+
+        // Full vehicle allocation history for the Allocated Vehicle tab
+        $vehicleAllocations = Vehicletyremapping::where('tyre_id', $tyre->id)
+            ->with([
+                'vehicle.basicinfo',
+                'vehicle.driverAllocation.contact',
+                'tyreposition',
+            ])
+            ->orderBy('fitment_date', 'desc')
+            ->get();
+
+        // Repair records for the Repair sub-tab
+        $tyreRepairs = TyreRepair::where('tyre_id', $tyre->id)
+            ->with([
+                'vehicle.basicinfo',
+                'vehicle.driverAllocation.contact',
+                'vendor',
+            ])
+            ->orderBy('repair_date', 'desc')
             ->get();
 
         // Compute remaining warranty months for Accordion 1
@@ -416,7 +438,8 @@ class TyreController extends Controller
             'tyre', 'comments', 'attachmenttypes',
             'mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
             'maintenanceSchedules', 'tyreLifeInfo',
-            'remainingWarrantyMonths', 'ragStatus', 'ragClass'
+            'remainingWarrantyMonths', 'ragStatus', 'ragClass',
+            'vehicleAllocations', 'tyreRepairs'
         ));
     }
 
@@ -425,11 +448,16 @@ class TyreController extends Controller
     public function storeMaintenance(Request $request, Tyre $tyre)
     {
         $request->validate([
-            'maintenance_item' => 'required|string|max:255',
+            'maintenance_item' => 'nullable|string|max:255',
+            'maintenance_type' => 'nullable|string|in:Alignment,Rotation',
+            'vehicle_id'       => 'nullable|integer',
             'last_done_date'   => 'nullable|date',
             'next_due_date'    => 'nullable|date',
             'odometer_km'      => 'nullable|integer|min:0',
-            'status'           => 'required|in:Scheduled,Pending,Done,Overdue',
+            'scheduled_km'     => 'nullable|integer|min:0',
+            'actual_km'        => 'nullable|integer|min:0',
+            'cost'             => 'nullable|numeric|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue,Completed,Missed,Upcoming',
             'notes'            => 'nullable|string|max:1000',
         ]);
 
@@ -437,9 +465,14 @@ class TyreController extends Controller
             DB::transaction(function () use ($request, $tyre) {
                 $tyre->maintenanceSchedules()->create([
                     'maintenance_item' => $request->maintenance_item,
+                    'maintenance_type' => $request->maintenance_type,
+                    'vehicle_id'       => $request->vehicle_id,
                     'last_done_date'   => $request->last_done_date,
                     'next_due_date'    => $request->next_due_date,
                     'odometer_km'      => $request->odometer_km,
+                    'scheduled_km'     => $request->scheduled_km,
+                    'actual_km'        => $request->actual_km,
+                    'cost'             => $request->cost,
                     'status'           => $request->status,
                     'notes'            => $request->notes,
                     'created_by'       => Auth::id(),
@@ -447,7 +480,7 @@ class TyreController extends Controller
                 ]);
             });
 
-            return response()->json(['message' => 'Maintenance schedule added successfully.']);
+            return response()->json(['message' => 'Maintenance schedule added successfully.'], 200);
 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
@@ -457,26 +490,36 @@ class TyreController extends Controller
     public function updateMaintenance(Request $request, Tyre $tyre, TyreMaintenanceSchedule $schedule)
     {
         $request->validate([
-            'maintenance_item' => 'required|string|max:255',
+            'maintenance_item' => 'nullable|string|max:255',
+            'maintenance_type' => 'nullable|string|in:Alignment,Rotation',
+            'vehicle_id'       => 'nullable|integer',
             'last_done_date'   => 'nullable|date',
             'next_due_date'    => 'nullable|date',
             'odometer_km'      => 'nullable|integer|min:0',
-            'status'           => 'required|in:Scheduled,Pending,Done,Overdue',
+            'scheduled_km'     => 'nullable|integer|min:0',
+            'actual_km'        => 'nullable|integer|min:0',
+            'cost'             => 'nullable|numeric|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue,Completed,Missed,Upcoming',
             'notes'            => 'nullable|string|max:1000',
         ]);
 
         try {
             $schedule->update([
                 'maintenance_item' => $request->maintenance_item,
+                'maintenance_type' => $request->maintenance_type,
+                'vehicle_id'       => $request->vehicle_id,
                 'last_done_date'   => $request->last_done_date,
                 'next_due_date'    => $request->next_due_date,
                 'odometer_km'      => $request->odometer_km,
+                'scheduled_km'     => $request->scheduled_km,
+                'actual_km'        => $request->actual_km,
+                'cost'             => $request->cost,
                 'status'           => $request->status,
                 'notes'            => $request->notes,
                 'updated_by'       => Auth::id(),
             ]);
 
-            return response()->json(['message' => 'Maintenance schedule updated successfully.']);
+            return response()->json(['message' => 'Maintenance schedule updated successfully.'], 200);
 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
@@ -493,8 +536,95 @@ class TyreController extends Controller
         }
     }
     
+    // ── Repair CRUD ───────────────────────────────────────────────────────────
+
+    public function storeRepair(Request $request, Tyre $tyre)
+    {
+        $request->validate([
+            'vehicle_id'       => 'nullable|integer',
+            'tyreposition_id'  => 'nullable|integer',
+            'repair_category'  => 'required|in:Major,Minor',
+            'repair_type'      => 'required|in:Re-thread,Tyre Puncture,Tube Replace,Valve Change,Other',
+            'cost'             => 'nullable|numeric|min:0',
+            'vendor_id'        => 'nullable|integer',
+            'repair_date'      => 'nullable|date',
+            'repair_km'        => 'nullable|integer|min:0',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $tyre) {
+                TyreRepair::create([
+                    'tyre_id'          => $tyre->id,
+                    'vehicle_id'       => $request->vehicle_id,
+                    'tyreposition_id'  => $request->tyreposition_id,
+                    'repair_category'  => $request->repair_category,
+                    'repair_type'      => $request->repair_type,
+                    'cost'             => $request->cost,
+                    'vendor_id'        => $request->vendor_id,
+                    'repair_date'      => $request->repair_date,
+                    'repair_km'        => $request->repair_km,
+                    'notes'            => $request->notes,
+                    'organisation_id'  => Auth::user()->organisation_id ?? 1,
+                    'created_by'       => Auth::id(),
+                    'updated_by'       => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['message' => 'Repair record added successfully.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateRepair(Request $request, Tyre $tyre, TyreRepair $repair)
+    {
+        $request->validate([
+            'vehicle_id'       => 'nullable|integer',
+            'tyreposition_id'  => 'nullable|integer',
+            'repair_category'  => 'required|in:Major,Minor',
+            'repair_type'      => 'required|in:Re-thread,Tyre Puncture,Tube Replace,Valve Change,Other',
+            'cost'             => 'nullable|numeric|min:0',
+            'vendor_id'        => 'nullable|integer',
+            'repair_date'      => 'nullable|date',
+            'repair_km'        => 'nullable|integer|min:0',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $repair->update([
+                'vehicle_id'       => $request->vehicle_id,
+                'tyreposition_id'  => $request->tyreposition_id,
+                'repair_category'  => $request->repair_category,
+                'repair_type'      => $request->repair_type,
+                'cost'             => $request->cost,
+                'vendor_id'        => $request->vendor_id,
+                'repair_date'      => $request->repair_date,
+                'repair_km'        => $request->repair_km,
+                'notes'            => $request->notes,
+                'updated_by'       => Auth::id(),
+            ]);
+
+            return response()->json(['message' => 'Repair record updated successfully.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyRepair(Tyre $tyre, TyreRepair $repair)
+    {
+        try {
+            $repair->delete();
+            return response()->json(['message' => 'Repair record deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function edit(Tyre $tyre)
-    {   
+    {
         $tyrevendors = Contact::where('cotype_id', 6)->where('status','Active')->get();
         
         $this->storeUseractivity(66, 5, Auth::id(), $tyre->id, 'Tyre details retrieved.');

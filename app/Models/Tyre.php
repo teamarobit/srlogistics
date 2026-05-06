@@ -60,6 +60,20 @@ class Tyre extends Model
         return $this->hasMany(TyreMaintenanceSchedule::class, 'tyre_id');
     }
 
+    /** Full history of vehicle allocations for this tyre */
+    public function vehicletyremappingHistory()
+    {
+        return $this->hasMany(Vehicletyremapping::class, 'tyre_id')
+                    ->with(['vehicle.basicinfo', 'vehicle.driverAllocation.contact', 'tyreposition'])
+                    ->orderBy('fitment_date', 'desc');
+    }
+
+    /** All repair records for this tyre */
+    public function tyreRepairs()
+    {
+        return $this->hasMany(TyreRepair::class, 'tyre_id');
+    }
+
     /** Active vehicle mapping (the current position this tyre is fitted to) */
     public function activeVehicleMapping()
     {

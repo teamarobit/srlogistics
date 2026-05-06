@@ -864,17 +864,18 @@
                     <div class="tab-content mt-3">
                         
                         <div class="tab-pane fade show active" id="vehicle">
-    
-                            <div class="accordion mt-3" id="accordionExample">
+
+                            {{-- ── Filter Options ── --}}
+                            <div class="accordion mt-3" id="accordionVehicle">
                                 <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingOne">
+                                    <h2 class="accordion-header" id="headingVehicle">
                                         <button
                                             class="accordion-button filter-options"
                                             type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne"
+                                            data-bs-target="#collapseVehicle"
                                             aria-expanded="true"
-                                            aria-controls="collapseOne"
+                                            aria-controls="collapseVehicle"
                                         >
                                             <div class="item-filter">
                                                 <span class="filter-icon">
@@ -884,134 +885,142 @@
                                             </div>
                                         </button>
                                     </h2>
-    
+
                                     <div
-                                        id="collapseOne"
+                                        id="collapseVehicle"
                                         class="accordion-collapse collapse show"
-                                        aria-labelledby="headingOne"
-                                        data-bs-parent="#accordionExample"
+                                        aria-labelledby="headingVehicle"
+                                        data-bs-parent="#accordionVehicle"
                                     >
                                         <div class="accordion-body">
-                                            <form class="vehicle_dform">
+                                            <form class="vehicle_dform" id="vehicleFilterForm">
                                                 <div class="filtersearch-bd justify-content-between">
                                                     <div class="vehicletype">
-                                                        <label>Start Date - End Date</label>
+                                                        <label>Date Range</label>
                                                         <input
                                                             type="text"
                                                             class="form-control"
-                                                            name="daterange"
+                                                            id="veh_filter_daterange"
                                                             placeholder="Select date range..."
                                                         />
                                                     </div>
-    
-                                                    <div class="vehicletype ms-1">
-                                                        <label> Status</label>
-                                                        <select class="form-select">
-                                                            <option>Choose..</option>
-                                                            <option>Initiated</option>
-                                                            <option>On Going</option>
-                                                            <option>Completed</option>
-                                                        </select>
-                                                    </div>
-    
-                                                </div>
-    
-                                                <div class="filtersearch-bd searchfield justify-content-start mt-3">
-                                                    <div class="ms-1" style="width: 220px">
+
+                                                    <div class="vehicletype ms-1" style="width: 220px">
+                                                        <label>Vehicle Number</label>
                                                         <div class="input-group">
                                                             <input
                                                                 type="text"
                                                                 class="form-control"
-                                                                placeholder="Search by Vehicle Number"
+                                                                id="veh_filter_vehicle"
+                                                                placeholder="Search vehicle number..."
                                                             />
-                                                            <span class="input-group-text"
-                                                                ><i class="uil uil-search"></i
-                                                            ></span>
+                                                            <span class="input-group-text"><i class="uil uil-search"></i></span>
                                                         </div>
                                                     </div>
-    
-                                                    <div class="ms-1" style="width: 220px">
-                                                        <div class="input-group">
-                                                            <input
-                                                                type="text"
-                                                                class="form-control"
-                                                                placeholder="Search by Driver"
-                                                            />
-                                                            <span class="input-group-text"
-                                                                ><i class="uil uil-search"></i
-                                                            ></span>
-                                                            <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
-                                                        </div>
+
+                                                    <div class="vehicletype ms-1 d-flex align-items-end">
+                                                        <button class="btn btn-primary" type="button" id="veh_filter_reset">
+                                                            <i class="uil uil-sync me-1"></i>Reset
+                                                        </button>
                                                     </div>
-                                                    
-                                                    <button class="btn btn-primary ms-1" type="button">
-                                                        <i class="uil uil-sync me-1"></i>Reset
-                                                    </button>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-    
-                            <!---->
+
+                            {{-- ── Allocated Vehicle List ── --}}
                             <div class="vehiclestable">
                                 <div class="itemtop">
                                     <span class="sec-title">Allocated Vehicle List</span>
-                                    <!--<a href="#" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#addTrip">-->
-                                    <!--    <i class="uil uil-plus me-1"></i>Add Trip</a>-->
                                 </div>
-                                
+
                                 <div class="table-responsive">
-                                    <table class="table custom-driver-table trip-table">
+                                    <table class="table custom-driver-table trip-table" id="allocatedVehicleTable">
                                         <thead>
                                             <tr>
                                                 <th>Vehicle Number</th>
-                                                <th>Start Date & Time</th>
-                                                <th>End Date & Time</th>
-                                                <th>Driver</th>
-                                                <!--<th class="text-center">Actions</th>-->
+                                                <th>Tyre Position</th>
+                                                <th>Driver Name &amp; Code</th>
+                                                <th>Start &amp; End Date</th>
+                                                <th>Allocated Period</th>
+                                                <th>Allocated KM Driven</th>
                                             </tr>
                                         </thead>
-                                
+
                                         <tbody>
-                                            <!-- Row 1 -->
-                                            <tr>
-                                                <td>WB-23AB-3211</td>
-                                                <td>19-09-2025 | 12:00 PM</td>
-                                                <td>-</td>
-                                                <td>Sujit Paul</td>
-                                                <!--<td class="text-center">-->
-                                                <!--    <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>-->
-                                                <!--    <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>-->
-                                                <!--</td>-->
+                                            @forelse($vehicleAllocations as $va)
+                                            @php
+                                                $vehNo    = $va->vehicle->basicinfo->vehicle_number ?? '—';
+                                                $tyrePosName = $va->tyreposition->name ?? '—';
+                                                $driver   = $va->vehicle->driverAllocation->contact ?? null;
+                                                $driverName = $driver ? $driver->contact_name : '—';
+                                                $driverCode = $driver ? ($driver->contact_code ?? '') : '';
+
+                                                $start = $va->fitment_date ? \Carbon\Carbon::parse($va->fitment_date) : null;
+                                                $end   = $va->removal_date  ? \Carbon\Carbon::parse($va->removal_date)  : null;
+
+                                                // Allocated Period
+                                                if ($start) {
+                                                    $endRef = $end ?? \Carbon\Carbon::today();
+                                                    $days   = $start->diffInDays($endRef);
+                                                    $months = $start->diffInMonths($endRef);
+                                                    $years  = $start->diffInYears($endRef);
+                                                    $periodStr = $days . ' Days';
+                                                    if ($months > 0) $periodStr .= ' / ' . $months . ' Months';
+                                                    if ($years  > 0) $periodStr .= ' / ' . $years  . ' Years';
+                                                } else {
+                                                    $periodStr = '—';
+                                                }
+
+                                                // Allocated KM Driven
+                                                if ($va->km_at_fitment !== null && $va->km_at_removal !== null) {
+                                                    $kmDriven = number_format($va->km_at_removal - $va->km_at_fitment) . ' KM';
+                                                } elseif ($va->km_at_fitment !== null) {
+                                                    $kmDriven = 'Active (from ' . number_format($va->km_at_fitment) . ' KM)';
+                                                } else {
+                                                    $kmDriven = '—';
+                                                }
+
+                                                $startStr = $start ? $start->format('d-m-Y') : '—';
+                                                $endStr   = $end   ? $end->format('d-m-Y')   : 'Active';
+                                            @endphp
+                                            <tr
+                                                data-vehicle="{{ strtolower($vehNo) }}"
+                                                data-fitment="{{ $start ? $start->format('Y-m-d') : '' }}"
+                                                data-removal="{{ $end   ? $end->format('Y-m-d')   : '' }}"
+                                            >
+                                                <td>
+                                                    <span class="fw-semibold">{{ $vehNo }}</span>
+                                                </td>
+                                                <td>{{ $tyrePosName }}</td>
+                                                <td>
+                                                    <span class="d-block">{{ $driverName }}</span>
+                                                    @if($driverCode)
+                                                        <small class="text-muted">{{ $driverCode }}</small>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <span class="d-block">{{ $startStr }}</span>
+                                                    <small class="text-muted">to {{ $endStr }}</small>
+                                                </td>
+                                                <td>{{ $periodStr }}</td>
+                                                <td>{{ $kmDriven }}</td>
                                             </tr>
-                                            <tr>
-                                                <td>WB-23AB-3222</td>
-                                                <td>19-09-2025 | 12:00 PM</td>
-                                                <td>25-09-2025 | 12:00 PM</td>
-                                                <td>Sujit Paul</td>
-                                                <!--<td class="text-center">-->
-                                                <!--    <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>-->
-                                                <!--    <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>-->
-                                                <!--</td>-->
+                                            @empty
+                                            <tr id="veh-empty-row">
+                                                <td colspan="6" class="text-center text-muted py-4">
+                                                    <i class="uil uil-truck fs-4 d-block mb-1"></i>
+                                                    No vehicle allocation history found for this tyre.
+                                                </td>
                                             </tr>
-                                            <tr>
-                                                <td>WB-23AB-3224</td>
-                                                <td>19-09-2025 | 12:00 PM</td>
-                                                <td>25-09-2025 | 12:00 PM</td>
-                                                <td>Sujit Paul</td>
-                                                <!--<td class="text-center">-->
-                                                <!--    <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>-->
-                                                <!--    <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>-->
-                                                <!--</td>-->
-                                            </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <!---->
-                            
+
                         </div>
                         <!--Trip-Book-content-here-END-->
                         
@@ -1045,7 +1054,7 @@
                                 <div class="col-12 col-md-8">
                                     <ul class="nav nav-pills" id="pills-tab" role="tablist">
                                       <li class="nav-item" role="presentation">
-                                        <button class="nav-link active mb-0" id="pills-maint-tab" data-bs-toggle="pill" data-bs-target="#pills-maint" type="button" role="tab" aria-controls="pills-maint" aria-selected="true">Maintenance</button>
+                                        <button class="nav-link active mb-0" id="pills-maint-tab" data-bs-toggle="pill" data-bs-target="#pills-maint" type="button" role="tab" aria-controls="pills-maint" aria-selected="true">Schedule Maintenance</button>
                                       </li>
                                       <li class="nav-item" role="presentation">
                                         <button class="nav-link mb-0" id="pills-repair-tab" data-bs-toggle="pill" data-bs-target="#pills-repair" type="button" role="tab" aria-controls="pills-repair" aria-selected="false">Repair</button>
@@ -1066,43 +1075,149 @@
                             
                             <div class="tab-content" id="pills-tabContent">
                                 <div class="tab-pane fade show active" id="pills-maint" role="tabpanel" aria-labelledby="pills-maint-tab">
+
+                                    {{-- ── Scheduled Maintenance Filter ── --}}
+                                    <div class="accordion mt-3" id="accordionMaint">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingMaint">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseMaint"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseMaint"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div
+                                                id="collapseMaint"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="headingMaint"
+                                                data-bs-parent="#accordionMaint"
+                                            >
+                                                <div class="accordion-body">
+                                                    <form id="maintFilterForm">
+                                                        <div class="filtersearch-bd justify-content-between flex-wrap gap-2">
+                                                            <div class="vehicletype">
+                                                                <label>Date Range</label>
+                                                                <input type="text" class="form-control" id="maint_filter_daterange" placeholder="Select date range..." />
+                                                            </div>
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Maintenance Type</label>
+                                                                <select class="form-select" id="maint_filter_type">
+                                                                    <option value="">All Types</option>
+                                                                    <option value="Alignment">Alignment</option>
+                                                                    <option value="Rotation">Rotation</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Status</label>
+                                                                <select class="form-select" id="maint_filter_status">
+                                                                    <option value="">All Status</option>
+                                                                    <option value="Completed">Completed</option>
+                                                                    <option value="Missed">Missed</option>
+                                                                    <option value="Pending">Pending</option>
+                                                                    <option value="Upcoming">Upcoming</option>
+                                                                    <option value="Scheduled">Scheduled</option>
+                                                                    <option value="Overdue">Overdue</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="vehicletype ms-1" style="width: 200px">
+                                                                <label>Vehicle Number</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="maint_filter_vehicle" placeholder="Vehicle number..." />
+                                                                    <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="vehicletype ms-1 d-flex align-items-end">
+                                                                <button class="btn btn-primary" type="button" id="maint_filter_reset">
+                                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- ── Scheduled Maintenance List ── --}}
                                     <div class="vehiclestable">
                                         <div class="itemtop">
-                                            <span class="sec-title">Scheduled Maintenance</span>
+                                            <span class="sec-title">Scheduled Maintenance List</span>
                                         </div>
-                                        
+
                                         <div class="table-responsive">
-                                            <table class="table custom-driver-table">
+                                            <table class="table custom-driver-table" id="maintTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Maintenance Item</th>
-                                                        <th>Last Date</th>
-                                                        <th>Next Due</th>
-                                                        <th>Odometer (KM)</th>
+                                                        <th>Vehicle Number &amp; Driver</th>
+                                                        <th>Maintenance Type</th>
+                                                        <th>Scheduled KM &amp; Date</th>
                                                         <th>Status</th>
+                                                        <th>Actual KM &amp; Date</th>
+                                                        <th>Cost</th>
+                                                        <th>Attachments</th>
                                                         <th class="text-center">Actions</th>
                                                     </tr>
                                                 </thead>
-                                        
+
                                                 <tbody>
                                                     @forelse($maintenanceSchedules as $ms)
-                                                    <tr id="maint-row-{{ $ms->id }}">
-                                                        <td>{{ $ms->maintenance_item }}</td>
-                                                        <td>{{ $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—' }}</td>
-                                                        <td>{{ $ms->next_due_date ? $ms->next_due_date->format('d-m-Y') : '—' }}</td>
-                                                        <td>{{ $ms->odometer_km ? number_format($ms->odometer_km) : '—' }}</td>
+                                                    @php
+                                                        $msVehNo     = $ms->vehicle->basicinfo->vehicle_number ?? '—';
+                                                        $msDriver    = $ms->vehicle->driverAllocation->contact->contact_name ?? '—';
+                                                        $msBadgeMap  = [
+                                                            'Completed' => 'badge-success',
+                                                            'Missed'    => 'badge-danger',
+                                                            'Pending'   => 'badge-warning',
+                                                            'Upcoming'  => 'badge-info',
+                                                            'Scheduled' => 'badge-primary',
+                                                            'Overdue'   => 'badge-danger',
+                                                            'Done'      => 'badge-success',
+                                                        ];
+                                                    @endphp
+                                                    <tr id="maint-row-{{ $ms->id }}"
+                                                        data-vehicle="{{ strtolower($msVehNo) }}"
+                                                        data-type="{{ strtolower($ms->maintenance_type ?? '') }}"
+                                                        data-status="{{ strtolower($ms->status) }}"
+                                                        data-date="{{ $ms->next_due_date ? $ms->next_due_date->format('Y-m-d') : '' }}"
+                                                    >
                                                         <td>
-                                                            @php
-                                                                $badgeMap = [
-                                                                    'Scheduled' => 'badge-primary',
-                                                                    'Pending'   => 'badge-warning',
-                                                                    'Done'      => 'badge-success',
-                                                                    'Overdue'   => 'badge-danger',
-                                                                ];
-                                                            @endphp
-                                                            <span class="badge {{ $badgeMap[$ms->status] ?? 'badge-secondary' }}">
+                                                            <span class="fw-semibold d-block">{{ $msVehNo }}</span>
+                                                            <small class="text-muted">{{ $msDriver }}</small>
+                                                        </td>
+                                                        <td>
+                                                            @if($ms->maintenance_type)
+                                                                <span class="badge badge-secondary">{{ $ms->maintenance_type }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ $ms->maintenance_item ?? '—' }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <span class="d-block">{{ $ms->scheduled_km ? number_format($ms->scheduled_km) . ' KM' : '—' }}</span>
+                                                            <small class="text-muted">{{ $ms->next_due_date ? $ms->next_due_date->format('d-m-Y') : '—' }}</small>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge {{ $msBadgeMap[$ms->status] ?? 'badge-secondary' }}">
                                                                 {{ $ms->status }}
                                                             </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="d-block">{{ $ms->actual_km ? number_format($ms->actual_km) . ' KM' : '—' }}</span>
+                                                            <small class="text-muted">{{ $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—' }}</small>
+                                                        </td>
+                                                        <td>{{ $ms->cost ? '₹' . number_format($ms->cost, 2) : '—' }}</td>
+                                                        <td>
+                                                            {{-- Attachment viewer placeholder (extensible) --}}
+                                                            <span class="text-muted small">—</span>
                                                         </td>
                                                         <td class="text-center">
                                                             <a href="javascript:void(0)"
@@ -1110,9 +1225,14 @@
                                                                title="Edit"
                                                                data-id="{{ $ms->id }}"
                                                                data-item="{{ $ms->maintenance_item }}"
+                                                               data-type="{{ $ms->maintenance_type }}"
+                                                               data-vehicle="{{ $ms->vehicle_id }}"
                                                                data-last="{{ $ms->last_done_date ? $ms->last_done_date->format('Y-m-d') : '' }}"
                                                                data-next="{{ $ms->next_due_date ? $ms->next_due_date->format('Y-m-d') : '' }}"
                                                                data-odometer="{{ $ms->odometer_km }}"
+                                                               data-scheduled-km="{{ $ms->scheduled_km }}"
+                                                               data-actual-km="{{ $ms->actual_km }}"
+                                                               data-cost="{{ $ms->cost }}"
                                                                data-status="{{ $ms->status }}"
                                                                data-notes="{{ $ms->notes }}"
                                                                data-update-url="{{ route('tyre.maintenance.update', [$tyre->id, $ms->id]) }}">
@@ -1129,7 +1249,7 @@
                                                     </tr>
                                                     @empty
                                                     <tr id="maint-empty-row">
-                                                        <td colspan="6" class="text-center text-muted py-4">
+                                                        <td colspan="8" class="text-center text-muted py-4">
                                                             <i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>
                                                             No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.
                                                         </td>
@@ -1141,48 +1261,148 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="pills-repair" role="tabpanel" aria-labelledby="pills-repair-tab">
-                                  <div class="vehiclestable">
-                                        <div class="itemtop">
-                                            <span class="sec-title">Scheduled Repair</span>
+
+                                    {{-- ── Repair Filter ── --}}
+                                    <div class="accordion mt-3" id="accordionRepair">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingRepair">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseRepair"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseRepair"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div
+                                                id="collapseRepair"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="headingRepair"
+                                                data-bs-parent="#accordionRepair"
+                                            >
+                                                <div class="accordion-body">
+                                                    <form id="repairFilterForm">
+                                                        <div class="filtersearch-bd justify-content-between flex-wrap gap-2">
+                                                            <div class="vehicletype">
+                                                                <label>Date Range</label>
+                                                                <input type="text" class="form-control" id="rep_filter_daterange" placeholder="Select date range..." />
+                                                            </div>
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Repair Category</label>
+                                                                <select class="form-select" id="rep_filter_category">
+                                                                    <option value="">All</option>
+                                                                    <option value="Major">Major</option>
+                                                                    <option value="Minor">Minor</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="vehicletype ms-1" style="width: 200px">
+                                                                <label>Vehicle Number</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="rep_filter_vehicle" placeholder="Vehicle number..." />
+                                                                    <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="vehicletype ms-1 d-flex align-items-end">
+                                                                <button class="btn btn-primary" type="button" id="rep_filter_reset">
+                                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
-                                        
+                                    </div>
+
+                                    {{-- ── Repair List ── --}}
+                                    <div class="vehiclestable">
+                                        <div class="itemtop">
+                                            <span class="sec-title">Repair List</span>
+                                        </div>
+
                                         <div class="table-responsive">
-                                            <table class="table custom-driver-table">
+                                            <table class="table custom-driver-table" id="repairTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Repair Item</th>
+                                                        <th>Vehicle Number &amp; Driver</th>
+                                                        <th>Repair</th>
                                                         <th>Repair Type</th>
-                                                        <th>Repair Start Date</th>
-                                                        <th>Expected Closure Date</th>
-                                                        <th>Actual Closure Date</th>
-                                                        <th>Workshop Name</th>
-                                                        <th>Workshop Location</th>
-                                                        <th>Odometer (KM)</th>
-                                                        <th>Status</th>
+                                                        <th>Cost</th>
+                                                        <th>Vendor</th>
+                                                        <th>Repair Date</th>
+                                                        <th>Repair KM</th>
+                                                        <th>Attachment</th>
                                                         <th class="text-center">Actions</th>
                                                     </tr>
                                                 </thead>
-                                        
+
                                                 <tbody>
-                                                    <tr>
-                                                        <td>Hub Greasing</td>
-                                                        <td>Major</td>
-                                                        <td>27-08-2025</td>
-                                                        <td>30-08-2025</td>
-                                                        <td>02-09-2025</td>
-                                                        <td>Joshan LLP</td>
-                                                        <td>Hydrabad</td>
-                                                        <td>420</td>
-                                                        <td><span class="badge badge-warning">Pending</span></td>
+                                                    @forelse($tyreRepairs as $rep)
+                                                    @php
+                                                        $repVehNo  = $rep->vehicle->basicinfo->vehicle_number ?? '—';
+                                                        $repDriver = $rep->vehicle->driverAllocation->contact->contact_name ?? '—';
+                                                        $repVendor = $rep->vendor->contact_name ?? '—';
+                                                        $repCategoryBadge = $rep->repair_category === 'Major' ? 'badge-danger' : 'badge-warning';
+                                                    @endphp
+                                                    <tr id="repair-row-{{ $rep->id }}"
+                                                        data-vehicle="{{ strtolower($repVehNo) }}"
+                                                        data-category="{{ strtolower($rep->repair_category) }}"
+                                                        data-date="{{ $rep->repair_date ? $rep->repair_date->format('Y-m-d') : '' }}"
+                                                    >
+                                                        <td>
+                                                            <span class="fw-semibold d-block">{{ $repVehNo }}</span>
+                                                            <small class="text-muted">{{ $repDriver }}</small>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge {{ $repCategoryBadge }}">{{ $rep->repair_category }}</span>
+                                                        </td>
+                                                        <td>{{ $rep->repair_type }}</td>
+                                                        <td>{{ $rep->cost ? '₹' . number_format($rep->cost, 2) : '—' }}</td>
+                                                        <td>{{ $repVendor }}</td>
+                                                        <td>{{ $rep->repair_date ? $rep->repair_date->format('d-m-Y') : '—' }}</td>
+                                                        <td>{{ $rep->repair_km ? number_format($rep->repair_km) . ' KM' : '—' }}</td>
+                                                        <td><span class="text-muted small">—</span></td>
                                                         <td class="text-center">
-                                                            <a class="item-edit text-success">
+                                                            <a href="javascript:void(0)"
+                                                               class="item-edit text-success repair-edit-btn"
+                                                               title="Edit"
+                                                               data-id="{{ $rep->id }}"
+                                                               data-vehicle="{{ $rep->vehicle_id }}"
+                                                               data-category="{{ $rep->repair_category }}"
+                                                               data-type="{{ $rep->repair_type }}"
+                                                               data-cost="{{ $rep->cost }}"
+                                                               data-vendor="{{ $rep->vendor_id }}"
+                                                               data-date="{{ $rep->repair_date ? $rep->repair_date->format('Y-m-d') : '' }}"
+                                                               data-km="{{ $rep->repair_km }}"
+                                                               data-notes="{{ $rep->notes }}"
+                                                               data-update-url="{{ route('tyre.repair.update', [$tyre->id, $rep->id]) }}">
                                                                 <i class="uil uil-pen me-2"></i>
                                                             </a>
-                                                            <a class="item-delete text-danger">
+                                                            <a href="javascript:void(0)"
+                                                               class="item-delete text-danger repair-delete-btn"
+                                                               title="Delete"
+                                                               data-id="{{ $rep->id }}"
+                                                               data-delete-url="{{ route('tyre.repair.destroy', [$tyre->id, $rep->id]) }}">
                                                                 <i class="uil uil-trash-alt"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
+                                                    @empty
+                                                    <tr id="repair-empty-row">
+                                                        <td colspan="9" class="text-center text-muted py-4">
+                                                            <i class="uil uil-wrench fs-4 d-block mb-1"></i>
+                                                            No repair records found for this tyre.
+                                                        </td>
+                                                    </tr>
+                                                    @endforelse
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1812,7 +2032,7 @@
      data-csrf="{{ csrf_token() }}"
      style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/tyre/show.js?v=2.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/show.js?v=2.2') }}"></script>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
