@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css?v=1.0') }}">
-<link href="{{ asset('css/tyre/owner-dashboard.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/tyre/owner-dashboard.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -32,6 +32,9 @@
         <div class="container-fluid">
 
         {{-- ── Filter Bar ───────────────────────────────────────────────── --}}
+        <div class="tod-filter-section-label">
+            <i class="fa fa-sliders-h"></i> Filter Options
+        </div>
         <div class="tod-filter-bar">
             <form id="tod-filter-form" method="GET" action="{{ route('tyre.owner-dashboard') }}">
                 <div class="row g-3 align-items-end">
@@ -273,10 +276,48 @@
                     </tbody>
                 </table>
                 @else
-                <div class="text-center text-muted py-4" style="font-size:13px;">
-                    <i class="fa fa-inbox fa-2x mb-2 d-block" style="color:#d1d5db;"></i>
-                    No vehicle maintenance data for this period.
-                </div>
+                {{-- Dummy data shown when no real records exist for the selected period --}}
+                <table class="tod-analytics-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Vehicle</th>
+                            <th>Repairs</th>
+                            <th>Maint.</th>
+                            <th>Total Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                        $dummyVehicles = [
+                            ['reg' => 'MH 04 AB 1234', 'make' => 'Tata LPT 2518', 'repairs' => 4, 'maint' => 6, 'total' => 28450.00],
+                            ['reg' => 'MH 04 CD 5678', 'make' => 'Ashok Leyland 2518', 'repairs' => 3, 'maint' => 5, 'total' => 21300.00],
+                            ['reg' => 'GJ 01 EF 9012', 'make' => 'Eicher Pro 6031', 'repairs' => 2, 'maint' => 7, 'total' => 18750.00],
+                            ['reg' => 'RJ 14 GH 3456', 'make' => 'Tata Ultra 3518', 'repairs' => 3, 'maint' => 4, 'total' => 15600.00],
+                            ['reg' => 'MH 12 JK 7890', 'make' => 'BharatBenz 3523', 'repairs' => 1, 'maint' => 5, 'total' => 11200.00],
+                        ];
+                        @endphp
+                        @foreach($dummyVehicles as $di => $dv)
+                        <tr style="opacity:0.72;">
+                            <td>
+                                <span class="rank-badge {{ $di < 3 ? 'rank-'.($di+1) : '' }}">{{ $di+1 }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ $dv['reg'] }}</strong><br>
+                                <small class="text-muted">{{ $dv['make'] }}</small>
+                            </td>
+                            <td class="text-center">{{ $dv['repairs'] }}</td>
+                            <td class="text-center">{{ $dv['maint'] }}</td>
+                            <td>
+                                <span class="cost-chip">₹{{ number_format($dv['total'], 2) }}</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                {{-- <div class="text-center mt-2" style="font-size:10px; color:#9ca3af; letter-spacing:0.3px;">
+                    <i class="fa fa-info-circle me-1"></i>Sample data shown — no records found for the selected period.
+                </div> --}}
                 @endif
             </div>
 
