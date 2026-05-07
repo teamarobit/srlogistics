@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use App\Models\Attachmenttype;
 use App\Models\Contact;
@@ -1364,12 +1365,339 @@ class TyreController extends Controller
     }
 
 
+    // ══════════════════════════════════════════════════════════════════════════
+    //  TYRE OWNER DASHBOARD
+    //  Read-only. High-level KPIs, RAG health, analytics, predictive planning.
+    //  Scoped by organisation_id (SD-11).
+    // ══════════════════════════════════════════════════════════════════════════
+
+    public function ownerDashboard(Request $request)
+    {
+        $orgId    = Auth::user()->organisation_id ?? 1;
+        $dateFrom = $request->input('date_from', now()->startOfMonth()->toDateString());
+        $dateTo   = $request->input('date_to',   now()->toDateString());
+
+        // ── Base scopes ──────────────────────────────────────────────────────
+        $tyreBase   = Tyre::where('organisation_id', $orgId);
+        $repairBase = \App\Models\TyreRepair::where('organisation_id', $orgId);
+        // tyremaintenanceschedules has NO organisation_id column — must scope via tyre_id
+        $orgTyreIds = Tyre::where('organisation_id', $orgId)->pluck('id')->toArray();
+        $maintBase  = TyreMaintenanceSchedule::whereIn('tyre_id', $orgTyreIds);
+
+        // ── 1. TYRE ACTIVITY SUMMARY ─────────────────────────────────────────
+
+        // New Tyres — purchased in date range
+        $newTyresQty  = (clone $tyreBase)
+            ->where('tyre_condition', 'New')
+            ->whereBetween('tyre_purchase_date', [$dateFrom, $dateTo])
+            ->count();
+        $newTyresCost = (clone $tyreBase)
+            ->where('tyre_condition', 'New')
+            ->whereBetween('tyre_purchase_date', [$dateFrom, $dateTo])
+            ->sum('tyre_price');
+
+        // Old / Used Tyres
+        $oldTyresQty  = (clone $tyreBase)
+            ->whereIn('tyre_condition', ['Used', 'Used Good'])
+            ->whereBetween('tyre_purchase_date', [$dateFrom, $dateTo])
+            ->count();
+        $oldTyresCost = (clone $tyreBase)
+            ->whereIn('tyre_condition', ['Used', 'Used Good'])
+            ->whereBetween('tyre_purchase_date', [$dateFrom, $dateTo])
+            ->sum('tyre_price');
+
+        // Re-thread Tyres — sent for rethreading in date range
+        $rethreadQty  = (clone $tyreBase)
+            ->where(function ($q) {
+                $q->where('tyre_status', 'Re-threading')
+                  ->orWhereIn('tyre_condition', ['Re-thread', 'Retread']);
+            })
+            ->whereBetween('rethreading_sent_date', [$dateFrom, $dateTo])
+            ->count();
+        $rethreadCost = (clone $tyreBase)
+            ->where(function ($q) {
+                $q->where('tyre_status', 'Re-threading')
+                  ->orWhereIn('tyre_condition', ['Re-thread', 'Retread']);
+            })
+            ->whereNotNull('rethreading_cost')
+            ->sum('rethreading_cost');
+
+        // Warranty Claims — income received in date range
+        $warrantyQty    = (clone $tyreBase)
+            ->where('tyre_status', 'Warranty Claim')
+            ->whereBetween('warranty_claim_date', [$dateFrom, $dateTo])
+            ->count();
+        $warrantyIncome = (clone $tyreBase)
+            ->where('tyre_status', 'Warranty Claim')
+            ->whereNotNull('warranty_refund_amount')
+            ->sum('warranty_refund_amount');
+
+        // Scrap Tyres — scrapped in date range
+        $scrapQty    = (clone $tyreBase)
+            ->where('tyre_status', 'Scrap')
+            ->whereBetween('scrap_sent_date', [$dateFrom, $dateTo])
+            ->count();
+        $scrapIncome = (clone $tyreBase)
+            ->where('tyre_status', 'Scrap')
+            ->whereNotNull('scrap_income')
+            ->sum('scrap_income');
+
+        // Scheduled Maintenance — done in date range
+        $maintQty  = (clone $maintBase)
+            ->whereIn('status', ['Done', 'Completed'])
+            ->whereBetween('last_done_date', [$dateFrom, $dateTo])
+            ->count();
+        $maintCost = (clone $maintBase)
+            ->whereIn('status', ['Done', 'Completed'])
+            ->whereBetween('last_done_date', [$dateFrom, $dateTo])
+            ->sum('cost');
+
+        // Repair Tyres — repaired in date range
+        $repairQty  = (clone $repairBase)
+            ->whereBetween('repair_date', [$dateFrom, $dateTo])
+            ->count();
+        $repairCost = (clone $repairBase)
+            ->whereBetween('repair_date', [$dateFrom, $dateTo])
+            ->sum('cost');
+
+        // ── 2. RAG STATUS ────────────────────────────────────────────────────
+        // Only tyres with a rated KM life set
+        $ragTyres = (clone $tyreBase)
+            ->whereNotNull('fixed_run_km')
+            ->where('fixed_run_km', '>', 0)
+            ->get(['id', 'fixed_run_km', 'actual_run_km', 'tyre_serial_number',
+                   'tyre_brand', 'tyre_model', 'tyre_condition', 'tyre_status',
+                   'allocated_vehicle_id']);
+
+        $ragGreen  = 0;
+        $ragYellow = 0;
+        $ragRed    = 0;
+
+        foreach ($ragTyres as $t) {
+            $runKm     = (float) $t->fixed_run_km;
+            $actualKm  = (float) ($t->actual_run_km ?? 0);
+            $remainPct = $runKm > 0 ? (($runKm - $actualKm) / $runKm) * 100 : 100;
+            if ($remainPct > 50)      { $ragGreen++;  }
+            elseif ($remainPct >= 10) { $ragYellow++; }
+            else                      { $ragRed++;    }
+        }
+
+        // ── 3. ANALYTICS — Vehicle highest maintenance cost ──────────────────
+        // Note: no ->with() on aggregate queries — vehicles loaded separately below
+        $vehicleRepairCosts = (clone $repairBase)
+            ->selectRaw('vehicle_id, SUM(cost) as total_repair_cost, COUNT(*) as repair_count')
+            ->whereNotNull('vehicle_id')
+            ->groupBy('vehicle_id')
+            ->orderByDesc('total_repair_cost')
+            ->limit(10)
+            ->get();
+
+        $vehicleMaintCosts = (clone $maintBase)
+            ->selectRaw('vehicle_id, SUM(cost) as total_maint_cost, COUNT(*) as maint_count')
+            ->whereNotNull('vehicle_id')
+            ->groupBy('vehicle_id')
+            ->get()
+            ->keyBy('vehicle_id');
+
+        // Load vehicles separately to avoid aggregate+eager-load issues
+        $allVehicleIds = $vehicleRepairCosts->pluck('vehicle_id')
+            ->merge($vehicleMaintCosts->keys())
+            ->unique()->filter()->values();
+        $vehicleMap = \App\Models\Vehicle::with('basicinfo')
+            ->whereIn('id', $allVehicleIds)
+            ->get()
+            ->keyBy('id');
+
+        // Merge repair + maintenance per vehicle
+        $vehicleCostMap = [];
+        foreach ($vehicleRepairCosts as $vr) {
+            $vid = $vr->vehicle_id;
+            $vehicleCostMap[$vid] = [
+                'vehicle'      => $vehicleMap[$vid] ?? null,
+                'repair_cost'  => (float) $vr->total_repair_cost,
+                'maint_cost'   => isset($vehicleMaintCosts[$vid])
+                                    ? (float) $vehicleMaintCosts[$vid]->total_maint_cost
+                                    : 0,
+                'repair_count' => $vr->repair_count,
+                'maint_count'  => isset($vehicleMaintCosts[$vid])
+                                    ? $vehicleMaintCosts[$vid]->maint_count
+                                    : 0,
+            ];
+            $vehicleCostMap[$vid]['total_cost'] = $vehicleCostMap[$vid]['repair_cost']
+                                                 + $vehicleCostMap[$vid]['maint_cost'];
+        }
+        // Also include vehicles that only have maintenance (no repairs yet)
+        foreach ($vehicleMaintCosts as $vid => $vm) {
+            if (! isset($vehicleCostMap[$vid])) {
+                $vehicleCostMap[$vid] = [
+                    'vehicle'      => $vehicleMap[$vid] ?? null,
+                    'repair_cost'  => 0,
+                    'maint_cost'   => (float) $vm->total_maint_cost,
+                    'repair_count' => 0,
+                    'maint_count'  => $vm->maint_count,
+                    'total_cost'   => (float) $vm->total_maint_cost,
+                ];
+            }
+        }
+        usort($vehicleCostMap, fn($a, $b) => $b['total_cost'] <=> $a['total_cost']);
+        $vehicleCostMap = array_slice($vehicleCostMap, 0, 10);
+
+        // ── 4. ANALYTICS — Tyre with highest total spend ─────────────────────
+        // Use correlated subqueries for accurate per-tyre cost totals
+        $tyreSpendList = (clone $tyreBase)
+            ->select([
+                'id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
+                'tyre_price', 'tyre_status', 'tyre_condition', 'rethreading_cost',
+                DB::raw('COALESCE((SELECT SUM(r.cost) FROM tyrerepairs r WHERE r.tyre_id = tyres.id AND r.deleted_at IS NULL), 0) as total_repair_cost'),
+                DB::raw('COALESCE((SELECT SUM(m.cost) FROM tyremaintenanceschedules m WHERE m.tyre_id = tyres.id AND m.deleted_at IS NULL), 0) as total_maint_cost'),
+            ])
+            ->orderByRaw('(COALESCE(tyre_price,0) + COALESCE(rethreading_cost,0)
+                + COALESCE((SELECT SUM(r.cost) FROM tyrerepairs r WHERE r.tyre_id = tyres.id AND r.deleted_at IS NULL),0)
+                + COALESCE((SELECT SUM(m.cost) FROM tyremaintenanceschedules m WHERE m.tyre_id = tyres.id AND m.deleted_at IS NULL),0)) DESC')
+            ->limit(10)
+            ->get()
+            ->map(function ($t) {
+                $total = (float)($t->tyre_price ?? 0)
+                       + (float)($t->rethreading_cost ?? 0)
+                       + (float)($t->total_repair_cost ?? 0)
+                       + (float)($t->total_maint_cost ?? 0);
+                return [
+                    'tyre'           => $t,
+                    'purchase_cost'  => (float)($t->tyre_price ?? 0),
+                    'rethread_cost'  => (float)($t->rethreading_cost ?? 0),
+                    'repair_cost'    => (float)($t->total_repair_cost ?? 0),
+                    'maint_cost'     => (float)($t->total_maint_cost ?? 0),
+                    'total_lifetime' => $total,
+                ];
+            });
+
+        // ── 5. BUDGET SECTION ────────────────────────────────────────────────
+        // Scheduled maintenance — upcoming (not yet done)
+        $budgetMaintQty = (clone $maintBase)
+            ->whereIn('status', ['Scheduled', 'Pending', 'Upcoming', 'Overdue'])
+            ->count();
+        // Estimated budget = avg completed maintenance cost × upcoming count
+        $avgMaintCost   = (clone $maintBase)
+            ->whereIn('status', ['Done', 'Completed'])
+            ->whereNotNull('cost')->where('cost', '>', 0)
+            ->avg('cost') ?? 0;
+        $budgetMaintEst = round($budgetMaintQty * $avgMaintCost, 2);
+
+        // Red tyres replacement budget
+        $avgNewTyrePrice   = (clone $tyreBase)->where('tyre_condition', 'New')
+            ->whereNotNull('tyre_price')->where('tyre_price', '>', 0)->avg('tyre_price') ?? 0;
+        $redTyreReplBudget = round($ragRed * $avgNewTyrePrice, 2);
+
+        // ── 6. PREDICTIVE PLANNING ───────────────────────────────────────────
+        $allocatedTyres = (clone $tyreBase)
+            ->where('location', 'Vehicle')
+            ->whereNotNull('fixed_run_km')
+            ->where('fixed_run_km', '>', 0)
+            ->with(['allocatedVehicle.basicinfo', 'activeVehicleMapping.tyreposition'])
+            ->get(['id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
+                   'fixed_run_km', 'actual_run_km', 'installation_date',
+                   'allocated_vehicle_id', 'organisation_id']);
+
+        $predictions = [];
+        foreach ($allocatedTyres as $tyre) {
+            $fixedKm   = (float) $tyre->fixed_run_km;
+            $actualKm  = (float) ($tyre->actual_run_km ?? 0);
+            $remaining = max(0, $fixedKm - $actualKm);
+            $remainPct = $fixedKm > 0 ? ($remaining / $fixedKm) * 100 : 0;
+
+            // Avg daily KM from mapping history
+            $mappingHistory = Vehicletyremapping::where('tyre_id', $tyre->id)
+                ->whereNotNull('km_at_fitment')
+                ->whereNotNull('km_at_removal')
+                ->whereNotNull('fitment_date')
+                ->whereNotNull('removal_date')
+                ->get(['km_at_fitment', 'km_at_removal', 'fitment_date', 'removal_date']);
+
+            $avgDailyKm = 0;
+            if ($mappingHistory->count() > 0) {
+                $totalKm   = 0;
+                $totalDays = 0;
+                foreach ($mappingHistory as $m) {
+                    $kmDiff   = max(0, $m->km_at_removal - $m->km_at_fitment);
+                    $daysDiff = \Carbon\Carbon::parse($m->fitment_date)
+                                    ->diffInDays(\Carbon\Carbon::parse($m->removal_date));
+                    if ($daysDiff > 0) {
+                        $totalKm   += $kmDiff;
+                        $totalDays += $daysDiff;
+                    }
+                }
+                $avgDailyKm = $totalDays > 0 ? $totalKm / $totalDays : 0;
+            }
+            // Fallback: estimate 300 km/day if no history available
+            $dailyKm = $avgDailyKm > 0 ? $avgDailyKm : 300;
+
+            $daysToLimit       = $dailyKm > 0 ? ceil($remaining / $dailyKm) : null;
+            $predictedReplDate = $daysToLimit !== null
+                ? now()->addDays($daysToLimit)->toDateString()
+                : null;
+
+            // RAG for prediction
+            if ($daysToLimit === null)  { $predRag = 'green'; }
+            elseif ($daysToLimit <= 30) { $predRag = 'red'; }
+            elseif ($daysToLimit <= 90) { $predRag = 'amber'; }
+            else                        { $predRag = 'green'; }
+
+            $predictions[] = [
+                'tyre'           => $tyre,
+                'remaining_km'   => round($remaining),
+                'remaining_pct'  => round($remainPct, 1),
+                'avg_daily_km'   => round($dailyKm, 1),
+                'days_to_limit'  => $daysToLimit,
+                'predicted_date' => $predictedReplDate,
+                'pred_rag'       => $predRag,
+                'has_history'    => $avgDailyKm > 0,
+            ];
+        }
+
+        // Sort: red first, then amber, then green; within each group by days ASC
+        usort($predictions, function ($a, $b) {
+            $order  = ['red' => 0, 'amber' => 1, 'green' => 2];
+            $ragCmp = ($order[$a['pred_rag']] ?? 2) <=> ($order[$b['pred_rag']] ?? 2);
+            if ($ragCmp !== 0) return $ragCmp;
+            return ($a['days_to_limit'] ?? PHP_INT_MAX) <=> ($b['days_to_limit'] ?? PHP_INT_MAX);
+        });
+
+        // ── Paginate predictions (Bootstrap-5, 15 per page) ─────────────────
+        $predPerPage     = 15;
+        $predCurrentPage = (int) $request->input('pred_page', 1);
+        $predCollection  = collect($predictions);
+        $predItems       = $predCollection
+                            ->slice(($predCurrentPage - 1) * $predPerPage, $predPerPage)
+                            ->values();
+        $paginatedPredictions = new LengthAwarePaginator(
+            $predItems,
+            $predCollection->count(),
+            $predPerPage,
+            $predCurrentPage,
+            [
+                'path'     => $request->url(),
+                'query'    => $request->query(),
+                'pageName' => 'pred_page',
+            ]
+        );
+
+        $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre Owner Dashboard retrieved.');
+
+        return view('tyre.owner-dashboard', compact(
+            'dateFrom', 'dateTo',
+            'newTyresQty', 'newTyresCost',
+            'oldTyresQty', 'oldTyresCost',
+            'rethreadQty', 'rethreadCost',
+            'warrantyQty', 'warrantyIncome',
+            'scrapQty',    'scrapIncome',
+            'maintQty',    'maintCost',
+            'repairQty',   'repairCost',
+            'ragGreen', 'ragYellow', 'ragRed',
+            'vehicleCostMap', 'tyreSpendList',
+            'budgetMaintQty', 'budgetMaintEst', 'avgMaintCost',
+            'redTyreReplBudget', 'avgNewTyrePrice',
+            'paginatedPredictions'
+        ));
+    }
+
 }
-
-
-
-
-
-
-
-

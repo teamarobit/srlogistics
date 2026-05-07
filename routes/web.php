@@ -376,6 +376,7 @@ Route::group(['middleware' => ['auth']], function() {
     // Tyre Master
     Route::prefix('tyres')->name('tyre.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\TyreController::class, 'dashboard'])->name('dashboard');
+        Route::get('/owner-dashboard', [App\Http\Controllers\TyreController::class, 'ownerDashboard'])->name('owner-dashboard');
         Route::get('/', [App\Http\Controllers\TyreController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\TyreController::class, 'create'])->name('create');
         Route::post('/save', [App\Http\Controllers\TyreController::class, 'store'])->name('save');
