@@ -179,6 +179,30 @@
                     {{-- ── LEFT COLUMN ── --}}
                     <div class="col-12 col-xl-8">
 
+                        {{-- Tyre Classification --}}
+                        <div class="sc-card mb-3">
+                            <div class="sc-card-head">
+                                <span class="sc-card-title"><i class="uil uil-layer-group me-2"></i>Tyre Classification</span>
+                            </div>
+                            <div class="p-3 p-md-4">
+                                <label class="badd-label">Tyre Condition <span class="text-danger">*</span></label>
+                                <div class="tcn-radio-row">
+                                    <label class="tcn-radio-chip">
+                                        <input type="radio" name="condition" value="New" checked>
+                                        <span>New</span>
+                                    </label>
+                                    <label class="tcn-radio-chip">
+                                        <input type="radio" name="condition" value="Used">
+                                        <span>Used</span>
+                                    </label>
+                                    <label class="tcn-radio-chip">
+                                        <input type="radio" name="condition" value="Retread">
+                                        <span>Retread</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Tyre Identity --}}
                         <div class="sc-card mb-3">
                             <div class="sc-card-head">
@@ -189,15 +213,6 @@
                                     <div class="col-12 col-md-6">
                                         <label class="badd-label" for="tcnSerial">Tyre Serial Number <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control badd-input" name="tyre_serial_number" id="tcnSerial" placeholder="e.g. TYR-2026-00095" maxlength="100">
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <label class="badd-label" for="tcnVendor">Vendor <span class="text-danger">*</span></label>
-                                        <select class="form-select tcn-select2 badd-input" name="vendor" id="tcnVendor" style="width:100%;">
-                                            <option value="">Select vendor...</option>
-                                            @foreach($tyrevendors as $v)
-                                                <option value="{{ $v->id }}">{{ $v->contact_name }} ({{ $v->company_name }})</option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="badd-label" for="tcnBrand">Tyre Brand <span class="text-danger">*</span></label>
@@ -236,37 +251,26 @@
                             </div>
                         </div>
 
-                        {{-- Tyre Classification --}}
+                        {{-- Purchase Details --}}
                         <div class="sc-card mb-3">
                             <div class="sc-card-head">
-                                <span class="sc-card-title"><i class="uil uil-layer-group me-2"></i>Tyre Classification</span>
-                            </div>
-                            <div class="p-3 p-md-4">
-                                <label class="badd-label">Tyre Condition <span class="text-danger">*</span></label>
-                                <div class="tcn-radio-row">
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="New" checked>
-                                        <span>New</span>
-                                    </label>
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="Used">
-                                        <span>Used</span>
-                                    </label>
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="Retread">
-                                        <span>Retread</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Purchase & Cost Details --}}
-                        <div class="sc-card mb-3">
-                            <div class="sc-card-head">
-                                <span class="sc-card-title"><i class="uil uil-receipt me-2"></i>Purchase &amp; Cost Details</span>
+                                <span class="sc-card-title"><i class="uil uil-receipt me-2"></i>Purchase Details</span>
                             </div>
                             <div class="p-3 p-md-4">
                                 <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="badd-label" for="tcnVendor">Vendor <span class="text-danger">*</span></label>
+                                        <select class="form-select tcn-select2 badd-input" name="vendor" id="tcnVendor" style="width:100%;">
+                                            <option value="">Select vendor...</option>
+                                            @foreach($tyrevendors as $v)
+                                                <option value="{{ $v->id }}">{{ $v->contact_name }} ({{ $v->company_name }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="badd-label" for="tcnInvoiceRef">Invoice / PO Reference</label>
+                                        <input type="text" class="form-control badd-input" name="invoice_reference" id="tcnInvoiceRef" maxlength="100" placeholder="e.g. AMR-INV-0298734 or PO-2026-00041">
+                                    </div>
                                     <div class="col-12 col-md-4">
                                         <label class="badd-label" for="tcnPrice">Tyre Price (₹) <span class="text-danger">*</span></label>
                                         <div class="input-group">
@@ -294,10 +298,6 @@
                                         <label class="badd-label" for="tcnEndOfLife">End of Life Date</label>
                                         <input type="date" class="form-control badd-input" id="tcnEndOfLife" readonly>
                                         <div class="form-text text-muted">Auto: Purchase Date + Fixed Life Months</div>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="badd-label" for="tcnInvoiceRef">Invoice / PO Reference</label>
-                                        <input type="text" class="form-control badd-input" name="invoice_reference" id="tcnInvoiceRef" maxlength="100" placeholder="e.g. AMR-INV-0298734 or PO-2026-00041">
                                     </div>
                                 </div>
                             </div>
