@@ -1029,7 +1029,7 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Life</span>
                                                     <span class="vtd-fv vtd-life-wrap">
                                                         @if($remLifePct !== null)
                                                         <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
@@ -1037,9 +1037,9 @@
                                                         @else<span class="vtd-na">—</span>@endif
                                                     </span>
                                                 </div>
-                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Actual Run KM</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
                                             </div>
                                             @if($imgCount > 0)
                                             <div class="vtd-card-foot">
@@ -1100,7 +1100,7 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Life</span>
                                                     <span class="vtd-fv vtd-life-wrap">
                                                         @if($remLifePct !== null)
                                                         <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
@@ -1108,9 +1108,9 @@
                                                         @else<span class="vtd-na">—</span>@endif
                                                     </span>
                                                 </div>
-                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Actual Run KM</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
                                             </div>
                                             @if($imgCount > 0)
                                             <div class="vtd-card-foot">
@@ -1445,7 +1445,7 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Life</span>
                                                     <span class="vtd-fv vtd-life-wrap">
                                                         @if($remLifePct !== null)
                                                         <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
@@ -1453,9 +1453,9 @@
                                                         @else<span class="vtd-na">—</span>@endif
                                                     </span>
                                                 </div>
-                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Actual Run KM</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
                                             </div>
                                             @if($imgCount > 0)
                                             <div class="vtd-card-foot">
@@ -1515,7 +1515,7 @@
                                             <div class="vtd-card-body">
                                                 <div class="vtd-field"><span class="vtd-fl">Serial No.</span><span class="vtd-fv vtd-fv-mono">{{ $m->tyre->tyre_serial_number ?? '—' }}</span></div>
                                                 <div class="vtd-field"><span class="vtd-fl">Type</span><span class="vtd-fv">@if($tyreType)<span class="vtd-type-badge">{{ $tyreType }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Life</span>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Life</span>
                                                     <span class="vtd-fv vtd-life-wrap">
                                                         @if($remLifePct !== null)
                                                         <span class="vtd-life-track"><span class="vtd-life-fill" style="width:{{ $remLifePct }}%;background:{{ $kmBalColor }};"></span></span>
@@ -1523,9 +1523,9 @@
                                                         @else<span class="vtd-na">—</span>@endif
                                                     </span>
                                                 </div>
-                                                <div class="vtd-field"><span class="vtd-fl">KM Run</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Rem. Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
-                                                <div class="vtd-field"><span class="vtd-fl">Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Actual Run KM</span><span class="vtd-fv">{{ $kmRun > 0 ? number_format($kmRun).' KM' : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Run</span><span class="vtd-fv" style="color:{{ $kmBalColor }};font-weight:600;">{{ $kmBal!==null ? ($kmBal<=0?'Overdue':number_format($kmBal).' KM') : '—' }}</span></div>
+                                                <div class="vtd-field"><span class="vtd-fl">Remaining Warranty</span><span class="vtd-fv">@if($remWarranty!==null)<span style="color:{{ $remWarranty==0?'#ea0027':($remWarranty<=3?'#d97706':'#10863f') }};font-weight:600;">{{ $remWarranty==0?'Expired':$remWarranty.' mo.' }}</span>@else<span class="vtd-na">—</span>@endif</span></div>
                                             </div>
                                             @if($imgCount > 0)
                                             <div class="vtd-card-foot">
@@ -1606,7 +1606,7 @@
                                                         <span class="text-secondary d-block">{{ $mapping->tyre->fixed_life_months ? $mapping->tyre->fixed_life_months.' Months' : '-' }}</span>
                                                     </td>
                                                     <td>
-                                                        <p>KM Run</p>
+                                                        <p>Actual Run KM</p>
                                                         <span class="text-secondary d-block">{{ $mapping->tyre->actual_run_km ? number_format($mapping->tyre->actual_run_km).' KM' : '-' }}</span>
                                                     </td>
                                                     <td>
