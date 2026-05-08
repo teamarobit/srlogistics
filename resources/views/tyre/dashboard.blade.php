@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.6') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.8') }}">
 @endsection
 
 @section('content')
@@ -211,12 +211,45 @@
                                                             <option value="Scheduled" {{ request('f_maintenance_status') == 'Scheduled' ? 'selected' : '' }}>Upcoming</option>
                                                         </select>
                                                     </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>Tyre Position</label>
+                                                        <select class="form-select" name="f_position">
+                                                            <option value="">All</option>
+                                                            @foreach($tyrePositions as $pos)
+                                                                <option value="{{ $pos->id }}" {{ request('f_position') == $pos->id ? 'selected' : '' }}>{{ $pos->description }} ({{ $pos->code }})</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>RAG Status</label>
+                                                        <select class="form-select" name="f_rag">
+                                                            <option value="">All</option>
+                                                            <option value="Green" {{ request('f_rag') == 'Green' ? 'selected' : '' }}>🟢 Green</option>
+                                                            <option value="Yellow" {{ request('f_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                            <option value="Red" {{ request('f_rag') == 'Red' ? 'selected' : '' }}>🔴 Red</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>Tracking Group</label>
+                                                        <select class="form-select" name="f_tracking_group">
+                                                            <option value="">All</option>
+                                                            @foreach($vehicleGroups as $grp)
+                                                                <option value="{{ $grp->id }}" {{ request('f_tracking_group') == $grp->id ? 'selected' : '' }}>{{ $grp->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div class="filtersearch-bd justify-content-start mt-2">
                                                     <div class="ms-1" style="width:220px;">
                                                         <div class="input-group">
                                                             <input type="text" name="f_serial" class="form-control" placeholder="Search by Serial Number" value="{{ request('f_serial') }}">
                                                             <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ms-1" style="width:220px;">
+                                                        <div class="input-group">
+                                                            <input type="text" name="f_vehicle_number" class="form-control" placeholder="Search by Vehicle Number" value="{{ request('f_vehicle_number') }}">
+                                                            <span class="input-group-text"><i class="uil uil-truck"></i></span>
                                                         </div>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
@@ -293,6 +326,15 @@
                                                             @foreach($tyrevendors as $v)
                                                                 <option value="{{ $v->id }}" {{ request('f2_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
                                                             @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>RAG Status</label>
+                                                        <select class="form-select" name="f2_rag">
+                                                            <option value="">All</option>
+                                                            <option value="Green" {{ request('f2_rag') == 'Green' ? 'selected' : '' }}>🟢 Green</option>
+                                                            <option value="Yellow" {{ request('f2_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                            <option value="Red" {{ request('f2_rag') == 'Red' ? 'selected' : '' }}>🔴 Red</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -620,12 +662,27 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>RAG Status</label>
+                                                        <select class="form-select" name="f6_rag">
+                                                            <option value="">All</option>
+                                                            <option value="Green" {{ request('f6_rag') == 'Green' ? 'selected' : '' }}>🟢 Green</option>
+                                                            <option value="Yellow" {{ request('f6_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                            <option value="Red" {{ request('f6_rag') == 'Red' ? 'selected' : '' }}>🔴 Red</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div class="filtersearch-bd justify-content-start mt-2">
                                                     <div class="ms-1" style="width:220px;">
                                                         <div class="input-group">
                                                             <input type="text" name="f6_serial" class="form-control" placeholder="Search by Serial Number" value="{{ request('f6_serial') }}">
                                                             <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ms-1" style="width:220px;">
+                                                        <div class="input-group">
+                                                            <input type="text" name="f6_vehicle_number" class="form-control" placeholder="Search by Vehicle Number" value="{{ request('f6_vehicle_number') }}">
+                                                            <span class="input-group-text"><i class="uil uil-truck"></i></span>
                                                         </div>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
@@ -694,6 +751,15 @@
                                                             @foreach($tyrevendors as $v)
                                                                 <option value="{{ $v->id }}" {{ request('f7_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
                                                             @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>RAG Status</label>
+                                                        <select class="form-select" name="f7_rag">
+                                                            <option value="">All</option>
+                                                            <option value="Green" {{ request('f7_rag') == 'Green' ? 'selected' : '' }}>🟢 Green</option>
+                                                            <option value="Yellow" {{ request('f7_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                            <option value="Red" {{ request('f7_rag') == 'Red' ? 'selected' : '' }}>🔴 Red</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -780,12 +846,27 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
+                                                    <div class="vehicletype ms-1">
+                                                        <label>RAG Status</label>
+                                                        <select class="form-select" name="f8_rag">
+                                                            <option value="">All</option>
+                                                            <option value="Green" {{ request('f8_rag') == 'Green' ? 'selected' : '' }}>🟢 Green</option>
+                                                            <option value="Yellow" {{ request('f8_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                            <option value="Red" {{ request('f8_rag') == 'Red' ? 'selected' : '' }}>🔴 Red</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div class="filtersearch-bd justify-content-start mt-2">
                                                     <div class="ms-1" style="width:220px;">
                                                         <div class="input-group">
                                                             <input type="text" name="f8_serial" class="form-control" placeholder="Search by Serial Number" value="{{ request('f8_serial') }}">
                                                             <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ms-1" style="width:220px;">
+                                                        <div class="input-group">
+                                                            <input type="text" name="f8_vehicle_number" class="form-control" placeholder="Search by Vehicle Number" value="{{ request('f8_vehicle_number') }}">
+                                                            <span class="input-group-text"><i class="uil uil-truck"></i></span>
                                                         </div>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>

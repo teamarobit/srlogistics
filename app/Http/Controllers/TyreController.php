@@ -19,6 +19,8 @@ use App\Models\TyreMaintenanceSchedule;
 use App\Models\TyreRepair;
 use App\Models\Tyrelog;
 use App\Models\Vehicletyremapping;
+use App\Models\Tyreposition;
+use App\Models\Vehiclegroup;
 
 use Auth;
 
@@ -77,6 +79,15 @@ class TyreController extends Controller
         if ($request->filled('f_vendor'))     { $q1->where('contact_id', $request->f_vendor); }
         if ($request->filled('f_maintenance_type'))   { $q1->whereHas('maintenanceSchedules', fn($mq) => $mq->where('maintenance_item', $request->f_maintenance_type)); }
         if ($request->filled('f_maintenance_status')) { $q1->whereHas('maintenanceSchedules', fn($mq) => $mq->where('status', $request->f_maintenance_status)); }
+        if ($request->filled('f_vehicle_number'))     { $q1->whereHas('allocatedVehicle.basicinfo', fn($bq) => $bq->where('vehicle_number', 'like', '%'.$request->f_vehicle_number.'%')); }
+        if ($request->filled('f_position'))           { $q1->whereHas('activeVehicleMapping.tyreposition', fn($pq) => $pq->where('id', $request->f_position)); }
+        if ($request->filled('f_tracking_group'))     { $q1->whereHas('allocatedVehicle.group', fn($gq) => $gq->where('id', $request->f_tracking_group)); }
+        if ($request->filled('f_rag')) {
+            $q1->whereNotNull('fixed_run_km')->whereNotNull('actual_run_km')->where('fixed_run_km', '>', 0);
+            if ($request->f_rag === 'Green')  { $q1->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 70'); }
+            elseif ($request->f_rag === 'Yellow') { $q1->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 30')->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 70'); }
+            elseif ($request->f_rag === 'Red')  { $q1->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 30'); }
+        }
         $all_tyres = $q1->paginate(15, ['*'], 'tab1_page');
 
         // ── TAB 2: Ready to Use ─────────────────────────────────────────────
@@ -94,6 +105,12 @@ class TyreController extends Controller
             } else {
                 $q2->where(fn($sq) => $sq->whereNull('tyre_warrenty_end_date')->orWhere('tyre_warrenty_end_date', '<', now()->toDateString()));
             }
+        }
+        if ($request->filled('f2_rag')) {
+            $q2->whereNotNull('fixed_run_km')->whereNotNull('actual_run_km')->where('fixed_run_km', '>', 0);
+            if ($request->f2_rag === 'Green')        { $q2->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 70'); }
+            elseif ($request->f2_rag === 'Yellow')   { $q2->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 30')->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 70'); }
+            elseif ($request->f2_rag === 'Red')      { $q2->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 30'); }
         }
         $ready_tyres = $q2->paginate(15, ['*'], 'tab2_page');
 
@@ -147,8 +164,15 @@ class TyreController extends Controller
         if ($request->filled('f6_type'))      { $q6->where('tyre_type', $request->f6_type); }
         if ($request->filled('f6_condition')) { $q6->where('tyre_condition', $request->f6_condition); }
         if ($request->filled('f6_brand'))     { $q6->where('tyre_brand', $request->f6_brand); }
-        if ($request->filled('f6_vendor'))    { $q6->where('contact_id', $request->f6_vendor); }
-        if ($request->filled('f6_vehicle'))   { $q6->where('allocated_vehicle_id', $request->f6_vehicle); }
+        if ($request->filled('f6_vendor'))         { $q6->where('contact_id', $request->f6_vendor); }
+        if ($request->filled('f6_vehicle'))        { $q6->where('allocated_vehicle_id', $request->f6_vehicle); }
+        if ($request->filled('f6_vehicle_number')) { $q6->whereHas('allocatedVehicle.basicinfo', fn($bq) => $bq->where('vehicle_number', 'like', '%'.$request->f6_vehicle_number.'%')); }
+        if ($request->filled('f6_rag')) {
+            $q6->whereNotNull('fixed_run_km')->whereNotNull('actual_run_km')->where('fixed_run_km', '>', 0);
+            if ($request->f6_rag === 'Green')      { $q6->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 70'); }
+            elseif ($request->f6_rag === 'Yellow') { $q6->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 30')->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 70'); }
+            elseif ($request->f6_rag === 'Red')    { $q6->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 30'); }
+        }
         if ($request->filled('f6_warranty')) {
             if ($request->f6_warranty === 'Active') {
                 $q6->whereNotNull('tyre_warrenty_end_date')->where('tyre_warrenty_end_date', '>=', now()->toDateString());
@@ -165,6 +189,12 @@ class TyreController extends Controller
         if ($request->filled('f7_condition')) { $q7->where('tyre_condition', $request->f7_condition); }
         if ($request->filled('f7_brand'))     { $q7->where('tyre_brand', $request->f7_brand); }
         if ($request->filled('f7_vendor'))    { $q7->where('contact_id', $request->f7_vendor); }
+        if ($request->filled('f7_rag')) {
+            $q7->whereNotNull('fixed_run_km')->whereNotNull('actual_run_km')->where('fixed_run_km', '>', 0);
+            if ($request->f7_rag === 'Green')      { $q7->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 70'); }
+            elseif ($request->f7_rag === 'Yellow') { $q7->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 30')->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 70'); }
+            elseif ($request->f7_rag === 'Red')    { $q7->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 30'); }
+        }
         $direct_fitment_tyres = $q7->paginate(15, ['*'], 'tab7_page');
 
         // ── TAB 8: Yet To Decide ────────────────────────────────────────────
@@ -176,14 +206,25 @@ class TyreController extends Controller
         if ($request->filled('f8_vehicle'))   { $q8->where('last_fitted_vehicle_id', $request->f8_vehicle); }
         if ($request->filled('f8_damage'))    { $q8->where('damage_reason', 'like', '%'.$request->f8_damage.'%'); }
         if ($request->filled('f8_brand'))     { $q8->where('tyre_brand', $request->f8_brand); }
-        if ($request->filled('f8_vendor'))    { $q8->where('contact_id', $request->f8_vendor); }
+        if ($request->filled('f8_vendor'))         { $q8->where('contact_id', $request->f8_vendor); }
+        if ($request->filled('f8_vehicle_number')) { $q8->whereHas('allocatedVehicle.basicinfo', fn($bq) => $bq->where('vehicle_number', 'like', '%'.$request->f8_vehicle_number.'%')); }
+        if ($request->filled('f8_rag')) {
+            $q8->whereNotNull('fixed_run_km')->whereNotNull('actual_run_km')->where('fixed_run_km', '>', 0);
+            if ($request->f8_rag === 'Green')      { $q8->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 70'); }
+            elseif ($request->f8_rag === 'Yellow') { $q8->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) >= 30')->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 70'); }
+            elseif ($request->f8_rag === 'Red')    { $q8->whereRaw('ROUND((1 - actual_run_km / fixed_run_km) * 100) < 30'); }
+        }
         $yet_to_decide_tyres = $q8->paginate(15, ['*'], 'tab8_page');
 
         // ── Dropdown data for filters ────────────────────────────────────────
-        $tyrevendors = Contact::where('cotype_id', 6)->where('status', 'Active')
-                              ->orderBy('contact_name')->get(['id', 'contact_name']);
-        $tyreBrands  = Tyre::select('tyre_brand')->distinct()->whereNotNull('tyre_brand')
-                           ->orderBy('tyre_brand')->pluck('tyre_brand');
+        $tyrevendors   = Contact::where('cotype_id', 6)->where('status', 'Active')
+                                ->orderBy('contact_name')->get(['id', 'contact_name']);
+        $tyreBrands    = Tyre::select('tyre_brand')->distinct()->whereNotNull('tyre_brand')
+                             ->orderBy('tyre_brand')->pluck('tyre_brand');
+        $tyrePositions = Tyreposition::where('status', 'Active')
+                                     ->orderBy('description')->get(['id', 'code', 'description']);
+        $vehicleGroups = Vehiclegroup::where('status', 'Active')
+                                     ->orderBy('name')->get(['id', 'name']);
 
         $this->storeUseractivity(66, 5, Auth::id(), 0, 'Tyre dashboard retrieved.');
 
@@ -193,7 +234,7 @@ class TyreController extends Controller
             'direct_fitment_count', 'yet_to_decide_count', 'extra_on_vehicle_count',
             'all_tyres', 'ready_tyres', 'warranty_tyres', 'rethreading_tyres',
             'scrap_tyres', 'allocated_tyres', 'direct_fitment_tyres', 'yet_to_decide_tyres',
-            'tyrevendors', 'tyreBrands',
+            'tyrevendors', 'tyreBrands', 'tyrePositions', 'vehicleGroups',
             'sort', 'direction'
         ));
     }
