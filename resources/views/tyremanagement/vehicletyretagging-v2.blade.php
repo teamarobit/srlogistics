@@ -693,29 +693,45 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════════════════════
-     ADD SPARE TYRE MODAL (unchanged from v1)
+     ADD SPARE TYRE MODAL — full form mirroring Allocate Tyre
 ════════════════════════════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="addSpare" tabindex="-1" aria-labelledby="addSpareText" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="addSpareText">
-            <i class="uil uil-plus-circle me-1"></i>Add Spare Tyre
+            <i class="uil uil-plus-circle me-1"></i>Add Spare Tyre Slot
         </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addSpareInlineForm" autocomplete="off">
+        <form id="addSpareInlineForm" autocomplete="off" enctype="multipart/form-data">
+
+            {{-- ── Tyre Source ──────────────────────────────────────────── --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tyre Source <span class="text-danger">*</span></label>
+                <div class="d-flex gap-2 flex-wrap" id="spareTyreSourceBtns">
+                    <input type="radio" class="btn-check" name="spare_tyre_source" id="spareSrcWarehouse" value="SR Warehouse" checked>
+                    <label class="btn btn-outline-primary btn-sm px-3" for="spareSrcWarehouse">
+                        <i class="uil uil-archive me-1"></i>SR Warehouse
+                    </label>
+                    <input type="radio" class="btn-check" name="spare_tyre_source" id="spareSrcDirect" value="Direct Fitment">
+                    <label class="btn btn-outline-secondary btn-sm px-3" for="spareSrcDirect">
+                        <i class="uil uil-truck me-1"></i>Direct Fitment
+                    </label>
+                </div>
+                <div class="invalid-feedback d-block" id="spare_err_tyre_source"></div>
+            </div>
+
+            {{-- ── Condition + Type ─────────────────────────────────────── --}}
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Tyre Condition <span class="text-danger">*</span></label>
                     <select class="form-select" name="condition" id="spareTyreConditionSelect">
                         <option value="">Select Condition</option>
                         <option value="New">New</option>
-                        <option value="Re-thread">Rethread</option>
                         <option value="Used">Used</option>
-                        <option value="Retread">Retread</option>
-                        <option value="Used Good">Used Good</option>
+                        <option value="Re-thread">Re-thread</option>
                     </select>
                     <div class="invalid-feedback" id="spare_err_condition"></div>
                 </div>
@@ -729,25 +745,57 @@
                     <div class="invalid-feedback" id="spare_err_tyre_type"></div>
                 </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Select Tyre <span class="text-danger">*</span></label>
-                <div id="spareTyreDropdownState" class="text-muted small mb-1">
-                    — Select condition &amp; type to load available tyres —
-                </div>
-                <select class="form-select" name="tyre_id" id="spareTyreIdSelect" disabled>
-                    <option value="">— Select condition &amp; type first —</option>
-                </select>
-                <div class="invalid-feedback" id="spare_err_tyre_id"></div>
-                <div id="spareTyreHealthPreview" class="tyre-health-preview d-none mt-2">
-                    <span class="health-label">Health:</span>
-                    <div class="health-bar-track">
-                        <div class="health-bar-fill" id="spareHealthBarFill"></div>
+
+            {{-- ── SR Warehouse section ─────────────────────────────────── --}}
+            <div id="spareWarehouseSection">
+                <div class="mb-2" id="spareTyreSelectorWrap">
+                    <label class="form-label fw-semibold">Select Tyre from Warehouse <span class="text-danger">*</span></label>
+                    <div id="spareTyreDropdownState" class="text-muted small mb-1">
+                        — Select condition &amp; type to load available tyres —
                     </div>
-                    <span class="health-pct-text" id="spareHealthPctText"></span>
-                    <span class="health-rag-badge ms-2" id="spareHealthRagBadge"></span>
+                    <select class="form-select" name="tyre_id" id="spareTyreIdSelect" disabled>
+                        <option value="">— Select condition &amp; type first —</option>
+                    </select>
+                    <div class="invalid-feedback" id="spare_err_tyre_id"></div>
+                    <div id="spareTyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                        <span class="health-label">Health:</span>
+                        <div class="health-bar-track">
+                            <div class="health-bar-fill" id="spareHealthBarFill"></div>
+                        </div>
+                        <span class="health-pct-text" id="spareHealthPctText"></span>
+                        <span class="health-rag-badge ms-2" id="spareHealthRagBadge"></span>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Brand <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="spareWh_tyreBrand" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Serial Number <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="spareWh_tyreSerial" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
                 </div>
             </div>
-            <div class="row g-3 mb-2">
+
+            {{-- ── Direct Fitment section ───────────────────────────────── --}}
+            <div id="spareDirectSection" class="d-none">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tyre Brand <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tyre_brand" id="spareDirectTyreBrand" placeholder="e.g. Apollo, MRF, Bridgestone" maxlength="100" />
+                        <div class="invalid-feedback" id="spare_err_tyre_brand"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tyre Serial Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tyre_serial_number" id="spareDirectTyreSerial" placeholder="e.g. SN-12345" maxlength="100" />
+                        <div class="invalid-feedback" id="spare_err_tyre_serial_number"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Fitment Date + KM ────────────────────────────────────── --}}
+            <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Fitment Date <span class="text-danger">*</span></label>
                     <input type="date" class="form-control" name="fitment_date" id="spareFitmentDateInput" />
@@ -760,8 +808,49 @@
                         <span class="input-group-text">KM</span>
                     </div>
                     <div class="invalid-feedback" id="spare_err_km_at_fitment"></div>
+                    <div id="spareKmOdoHint" class="d-none mt-1">
+                        <small class="text-muted">
+                            <i class="uil uil-info-circle me-1"></i>Last recorded:
+                            <strong id="spareKmHintKm"></strong> KM on <strong id="spareKmHintDate"></strong>
+                        </small>
+                    </div>
+                    <div id="spareKmOdoWarning" class="d-none mt-1">
+                        <small class="text-danger fw-semibold">
+                            <i class="uil uil-exclamation-triangle me-1"></i>
+                            <span id="spareKmOdoWarningText"></span>
+                        </small>
+                    </div>
                 </div>
             </div>
+
+            {{-- ── Attachments ──────────────────────────────────────────── --}}
+            <div class="mb-1">
+                <label class="form-label fw-semibold">
+                    <i class="uil uil-paperclip me-1"></i>Attachments
+                    <span class="text-muted fw-normal small ms-1">(JPG / PNG / WEBP, max 5 MB each)</span>
+                </label>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Tyre Serial Number Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_serial" id="sparePhotoSerial" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="spare_err_photo_serial"></div>
+                        <div id="sparePreviewSerial" class="mt-1 d-none"><img class="at-thumb" alt="Serial preview" /></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Tyre on Truck Fitment Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_fitment" id="sparePhotoFitment" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="spare_err_photo_fitment"></div>
+                        <div id="sparePreviewFitment" class="mt-1 d-none"><img class="at-thumb" alt="Fitment preview" /></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted mb-1">Odometer Photo</label>
+                        <input type="file" class="form-control form-control-sm" name="photo_odometer" id="sparePhotoOdometer" accept="image/jpeg,image/png,image/webp" />
+                        <div class="invalid-feedback" id="spare_err_photo_odometer"></div>
+                        <div id="sparePreviewOdometer" class="mt-1 d-none"><img class="at-thumb" alt="Odometer preview" /></div>
+                    </div>
+                </div>
+            </div>
+
         </form>
       </div>
       <div class="modal-footer">

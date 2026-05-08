@@ -343,22 +343,85 @@ $(document).ready(function () {
 
     // ── A11. OPEN ADD SPARE MODAL ────────────────────────────────────────────
     $(document).on('click', '.btn-add-spare-slot', function () {
-        resetSpareTyreDropdown();
+        // Reset source toggle to Warehouse
+        $('#spareSrcWarehouse').prop('checked', true);
+        showSpareWarehouseSection();
+
+        // Reset condition + type
         $('#spareTyreConditionSelect').val('');
         $('#spareTyreTypeSelect').val('');
+        resetSpareTyreDropdown();
+
+        // Reset auto-fill + direct fitment fields
+        $('#spareWh_tyreBrand').val('');
+        $('#spareWh_tyreSerial').val('');
+        $('#spareDirectTyreBrand').val('');
+        $('#spareDirectTyreSerial').val('');
+
+        // Reset date / km
         $('#spareFitmentDateInput').val('');
         $('#spareKmAtFitmentInput').val('');
+        $('#spareKmOdoHint').addClass('d-none');
+        $('#spareKmOdoWarning').addClass('d-none');
+
+        // Show odometer hint if vehicle has a last recorded KM
+        if (typeof lastKnownKm !== 'undefined' && lastKnownKm && lastKnownDate) {
+            const formatted = new Date(lastKnownDate).toLocaleDateString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+            $('#spareKmHintKm').text(lastKnownKm.toLocaleString('en-IN'));
+            $('#spareKmHintDate').text(formatted);
+            $('#spareKmOdoHint').removeClass('d-none');
+        }
+
+        // Reset photos
+        $('#sparePhotoSerial, #sparePhotoFitment, #sparePhotoOdometer').val('');
+        $('#sparePreviewSerial, #sparePreviewFitment, #sparePreviewOdometer').addClass('d-none').find('img').attr('src', '');
+
         clearSpareFormErrors();
     });
 
-    function resetSpareTyreDropdown() {
-        $('#spareTyreIdSelect').prop('disabled', true).html('<option value="">— Select condition &amp; type first —</option>');
-        $('#spareTyreDropdownState').text('— Select condition & type to load available tyres —').removeClass('text-danger text-success text-warning').addClass('text-muted');
-        $('#spareTyreHealthPreview').addClass('d-none');
+    function showSpareWarehouseSection() {
+        $('#spareWarehouseSection').removeClass('d-none');
+        $('#spareDirectSection').addClass('d-none');
+        $('#spareDirectTyreBrand').removeAttr('required');
+        $('#spareDirectTyreSerial').removeAttr('required');
     }
+
+    function showSpareDirectSection() {
+        $('#spareWarehouseSection').addClass('d-none');
+        $('#spareDirectSection').removeClass('d-none');
+        resetSpareTyreDropdown();
+        $('#spareWh_tyreBrand').val('');
+        $('#spareWh_tyreSerial').val('');
+    }
+
+    function resetSpareTyreDropdown() {
+        $('#spareTyreIdSelect')
+            .prop('disabled', true)
+            .html('<option value="">— Select condition &amp; type first —</option>');
+        $('#spareTyreDropdownState')
+            .text('— Select condition & type to load available tyres —')
+            .removeClass('text-danger text-success text-warning')
+            .addClass('text-muted');
+        $('#spareTyreHealthPreview').addClass('d-none');
+        $('#spareWh_tyreBrand').val('');
+        $('#spareWh_tyreSerial').val('');
+    }
+
+    // ── A11b. SPARE SOURCE TOGGLE ────────────────────────────────────────────
+    $(document).on('change', 'input[name="spare_tyre_source"]', function () {
+        clearSpareFormErrors();
+        if ($(this).val() === 'SR Warehouse') {
+            showSpareWarehouseSection();
+        } else {
+            showSpareDirectSection();
+        }
+    });
 
     // ── A12. SPARE AJAX TYRE DROPDOWN ────────────────────────────────────────
     function maybeFetchSpareTyres() {
+        if ($('#spareSrcWarehouse').is(':checked') === false) return;
         const condition = $('#spareTyreConditionSelect').val();
         const type      = $('#spareTyreTypeSelect').val();
         if (!condition || !type) { resetSpareTyreDropdown(); return; }
@@ -366,6 +429,8 @@ $(document).ready(function () {
         $('#spareTyreIdSelect').prop('disabled', true).html('<option value="">Loading…</option>');
         $('#spareTyreDropdownState').text('Fetching…').removeClass('text-danger text-success text-warning text-muted').addClass('text-muted');
         $('#spareTyreHealthPreview').addClass('d-none');
+        $('#spareWh_tyreBrand').val('');
+        $('#spareWh_tyreSerial').val('');
 
         $.ajax({
             url: getTyreListUrl, method: 'GET', data: { condition, type }, dataType: 'json',
@@ -380,7 +445,7 @@ $(document).ready(function () {
                 tyres.forEach(function (t) {
                     const healthLabel = t.health_pct !== null ? ` [${t.health_pct}% health]` : ' [health N/A]';
                     const ragEmoji = t.rag_status === 'green' ? '🟢' : t.rag_status === 'amber' ? '🟡' : t.rag_status === 'red' ? '🔴' : '⚫';
-                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
+                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
                 });
                 $('#spareTyreIdSelect').prop('disabled', false).html(options);
                 $('#spareTyreDropdownState').text(`${tyres.length} tyre(s) available.`).removeClass('text-muted text-danger text-warning').addClass('text-success');
@@ -393,11 +458,16 @@ $(document).ready(function () {
     }
     $('#spareTyreConditionSelect, #spareTyreTypeSelect').on('change', maybeFetchSpareTyres);
 
-    // ── A13. SPARE TYRE SELECTED → HEALTH PREVIEW ────────────────────────────
+    // ── A13. SPARE TYRE SELECTED → HEALTH PREVIEW + AUTO-FILL ────────────────
     $(document).on('change', '#spareTyreIdSelect', function () {
         const $opt      = $(this).find('option:selected');
         const healthPct = $opt.data('health');
         const rag       = $opt.data('rag') || 'grey';
+
+        // Auto-fill brand + serial (read-only display fields)
+        $('#spareWh_tyreBrand').val($opt.data('brand') || '');
+        $('#spareWh_tyreSerial').val($opt.data('serial') || '');
+
         if (!$(this).val() || healthPct === '') { $('#spareTyreHealthPreview').addClass('d-none'); return; }
         const pct = parseFloat(healthPct);
         if (!isNaN(pct)) {
@@ -409,27 +479,79 @@ $(document).ready(function () {
         $('#spareTyreHealthPreview').removeClass('d-none');
     });
 
+    // ── A13b. SPARE ODOMETER VALIDATION ─────────────────────────────────────
+    function validateSpareOdometer() {
+        if (typeof lastKnownKm === 'undefined' || !lastKnownKm || !lastKnownDate) return true;
+        const fitDate = $('#spareFitmentDateInput').val();
+        const kmVal   = $('#spareKmAtFitmentInput').val();
+        if (!fitDate || kmVal === '') { $('#spareKmOdoWarning').addClass('d-none'); return true; }
+        const fDate = new Date(fitDate), lDate = new Date(lastKnownDate);
+        const enteredKm = parseFloat(kmVal);
+        if (fDate >= lDate && enteredKm < lastKnownKm) {
+            const formatted = lDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            $('#spareKmOdoWarningText').text('KM must be ≥ ' + lastKnownKm.toLocaleString('en-IN') + ' (last recorded on ' + formatted + ').');
+            $('#spareKmOdoWarning').removeClass('d-none');
+            return false;
+        }
+        $('#spareKmOdoWarning').addClass('d-none');
+        return true;
+    }
+    $('#spareFitmentDateInput, #spareKmAtFitmentInput').on('change input', validateSpareOdometer);
+
+    // ── A13c. SPARE PHOTO PREVIEWS ───────────────────────────────────────────
+    setupPhotoPreview('sparePhotoSerial',   'sparePreviewSerial');
+    setupPhotoPreview('sparePhotoFitment',  'sparePreviewFitment');
+    setupPhotoPreview('sparePhotoOdometer', 'sparePreviewOdometer');
+
     // ── A14. SAVE ADD SPARE ───────────────────────────────────────────────────
     $('#saveAddSpare').on('click', function () {
         const $btn      = $(this);
-        const tyreId    = $('#spareTyreIdSelect').val();
+        const source    = $('input[name="spare_tyre_source"]:checked').val();
+        const condition = $('#spareTyreConditionSelect').val();
+        const type      = $('#spareTyreTypeSelect').val();
         const fitment   = $('#spareFitmentDateInput').val();
-        const kmFitment = $('#spareKmAtFitmentInput').val();
+        const km        = $('#spareKmAtFitmentInput').val();
 
         clearSpareFormErrors();
         let hasError = false;
-        if (!$('#spareTyreConditionSelect').val()) { showSpareError('spare_err_condition',    'Tyre condition is required.'); hasError = true; }
-        if (!$('#spareTyreTypeSelect').val())      { showSpareError('spare_err_tyre_type',    'Tyre type is required.');      hasError = true; }
-        if (!tyreId)                               { showSpareError('spare_err_tyre_id',      'Please select a tyre.');       hasError = true; }
-        if (!fitment)                              { showSpareError('spare_err_fitment_date', 'Fitment date is required.');   hasError = true; }
+        if (!source)    { showSpareError('spare_err_tyre_source', 'Tyre source is required.');    hasError = true; }
+        if (!condition) { showSpareError('spare_err_condition',   'Tyre condition is required.'); hasError = true; }
+        if (!type)      { showSpareError('spare_err_tyre_type',   'Tyre type is required.');      hasError = true; }
+        if (source === 'SR Warehouse') {
+            if (!$('#spareTyreIdSelect').val()) { showSpareError('spare_err_tyre_id', 'Please select a tyre.'); hasError = true; }
+        } else {
+            if (!$('#spareDirectTyreBrand').val().trim())  { showSpareError('spare_err_tyre_brand',         'Tyre brand is required.');         hasError = true; }
+            if (!$('#spareDirectTyreSerial').val().trim()) { showSpareError('spare_err_tyre_serial_number', 'Tyre serial number is required.'); hasError = true; }
+        }
+        if (!fitment) { showSpareError('spare_err_fitment_date', 'Fitment date is required.'); hasError = true; }
+        if (!validateSpareOdometer()) { showSpareError('spare_err_km_at_fitment', $('#spareKmOdoWarningText').text()); hasError = true; }
         if (hasError) return;
 
         $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
 
+        const fd = new FormData();
+        fd.append('_token', csrfToken);
+        fd.append('fitment_date', fitment);
+        if (km) fd.append('km_at_fitment', km);
+        if (source === 'SR Warehouse') {
+            fd.append('tyre_id', $('#spareTyreIdSelect').val());
+        } else {
+            fd.append('tyre_brand',         $('#spareDirectTyreBrand').val().trim());
+            fd.append('tyre_serial_number', $('#spareDirectTyreSerial').val().trim());
+        }
+        const sparePhotoFields = {
+            photo_serial:   '#sparePhotoSerial',
+            photo_fitment:  '#sparePhotoFitment',
+            photo_odometer: '#sparePhotoOdometer'
+        };
+        $.each(sparePhotoFields, function (fieldName, selector) {
+            const input = $(selector)[0];
+            if (input && input.files && input.files[0]) fd.append(fieldName, input.files[0]);
+        });
+
         $.ajax({
             url: addSpareUrl, method: 'POST',
-            data: { _token: csrfToken, tyre_id: tyreId, fitment_date: fitment, km_at_fitment: kmFitment || null },
-            dataType: 'json',
+            data: fd, contentType: false, processData: false, dataType: 'json',
             success: function (res) {
                 $('#addSpare').modal('hide');
                 Toast.fire({ icon: 'success', title: res.message || 'Spare tyre added successfully!',
@@ -456,6 +578,7 @@ $(document).ready(function () {
     function clearSpareFormErrors() {
         $('#addSpareInlineForm .invalid-feedback').text('').hide();
         $('#addSpareInlineForm select, #addSpareInlineForm input').removeClass('is-invalid');
+        $('#spareKmOdoWarning').addClass('d-none');
     }
 
 
