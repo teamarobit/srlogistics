@@ -4,7 +4,7 @@
 {{-- Reuse Battery-Add design system for identical patterns --}}
 <link href="{{ asset('css/Inventory/battery-add.css?v=1.1') }}" rel="stylesheet">
 {{-- Tyre-specific additions (reminder toggles, maintenance grid, tube-type picker) --}}
-<link href="{{ asset('css/tyre/create-new.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/tyre/create-new.css?v=2.0') }}" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">
 @endsection
 
@@ -179,30 +179,6 @@
                     {{-- ── LEFT COLUMN ── --}}
                     <div class="col-12 col-xl-8">
 
-                        {{-- Tyre Classification --}}
-                        <div class="sc-card mb-3">
-                            <div class="sc-card-head">
-                                <span class="sc-card-title"><i class="uil uil-layer-group me-2"></i>Tyre Classification</span>
-                            </div>
-                            <div class="p-3 p-md-4">
-                                <label class="badd-label">Tyre Condition <span class="text-danger">*</span></label>
-                                <div class="tcn-radio-row">
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="New" checked>
-                                        <span>New</span>
-                                    </label>
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="Used">
-                                        <span>Used</span>
-                                    </label>
-                                    <label class="tcn-radio-chip">
-                                        <input type="radio" name="condition" value="Retread">
-                                        <span>Retread</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- Tyre Identity --}}
                         <div class="sc-card mb-3">
                             <div class="sc-card-head">
@@ -210,6 +186,28 @@
                             </div>
                             <div class="p-3 p-md-4">
                                 <div class="row g-3">
+                                    {{-- CR-5: Tyre Condition (merged from Initial Condition — first field) --}}
+                                    <div class="col-12">
+                                        <label class="badd-label">Tyre Condition <span class="text-danger">*</span></label>
+                                        <div class="tcn-radio-row">
+                                            <label class="tcn-radio-chip active">
+                                                <input type="radio" name="initial_condition" value="New" checked>
+                                                <span>New</span>
+                                            </label>
+                                            <label class="tcn-radio-chip">
+                                                <input type="radio" name="initial_condition" value="Retreaded">
+                                                <span>Retreaded</span>
+                                            </label>
+                                            <label class="tcn-radio-chip">
+                                                <input type="radio" name="initial_condition" value="Used Good">
+                                                <span>Used (Good)</span>
+                                            </label>
+                                            <label class="tcn-radio-chip">
+                                                <input type="radio" name="initial_condition" value="Scrap">
+                                                <span>Scrap</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class="col-12 col-md-6">
                                         <label class="badd-label" for="tcnSerial">Tyre Serial Number <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control badd-input" name="tyre_serial_number" id="tcnSerial" placeholder="e.g. TYR-2026-00095" maxlength="100">
@@ -247,6 +245,20 @@
                                             <option value="Trailer">Trailer Tyre</option>
                                         </select>
                                     </div>
+                                    {{-- CR-1: Tube Type moved here from Technical Specifications --}}
+                                    <div class="col-12 col-md-6">
+                                        <label class="badd-label">Tube Type <span class="text-danger">*</span></label>
+                                        <div class="tcn-radio-row">
+                                            <label class="tcn-radio-chip active">
+                                                <input type="radio" name="tube_type" value="Tubeless" checked>
+                                                <span>Tubeless</span>
+                                            </label>
+                                            <label class="tcn-radio-chip">
+                                                <input type="radio" name="tube_type" value="Tube">
+                                                <span>Tube</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -271,13 +283,35 @@
                                         <label class="badd-label" for="tcnInvoiceRef">Invoice / PO Reference</label>
                                         <input type="text" class="form-control badd-input" name="invoice_reference" id="tcnInvoiceRef" maxlength="100" placeholder="e.g. AMR-INV-0298734 or PO-2026-00041">
                                     </div>
-                                    <div class="col-12 col-md-4">
-                                        <label class="badd-label" for="tcnPrice">Tyre Price (₹) <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text badd-unit">₹</span>
-                                            <input type="number" class="form-control badd-input" name="tyre_price" id="tcnPrice" placeholder="0.00" min="0" step="0.01">
+                                    {{-- CR-2: Tyre Price — sub-heading + Taxable / GST / Total --}}
+                                    <div class="col-12">
+                                        <div class="tcn-price-section-heading">
+                                            <span>Tyre Price</span>
+                                            <small class="text-muted">All amounts in ₹ &nbsp;·&nbsp; GST @ 28%</small>
                                         </div>
                                     </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label" for="tcnTaxable">Taxable Amount <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text badd-unit">₹</span>
+                                            <input type="number" class="form-control badd-input" name="tyre_taxable_amount" id="tcnTaxable" placeholder="0.00" min="0" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label" for="tcnGst">GST <small class="text-muted fw-normal">(28%)</small></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text badd-unit">₹</span>
+                                            <input type="number" class="form-control badd-input" name="tyre_gst_amount" id="tcnGst" placeholder="0.00" min="0" step="0.01" readonly tabindex="-1">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label" for="tcnTotal">Total Amount</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text badd-unit">₹</span>
+                                            <input type="number" class="form-control badd-input" name="tyre_total_amount" id="tcnTotal" placeholder="0.00" min="0" step="0.01" readonly tabindex="-1">
+                                        </div>
+                                    </div>
+
                                     <div class="col-12 col-md-4">
                                         <label class="badd-label" for="tcnPurchaseDate">Tyre Purchase Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control badd-input" name="tyre_purchase_date" id="tcnPurchaseDate" value="{{ date('Y-m-d') }}">
@@ -289,15 +323,55 @@
                                             <span class="input-group-text badd-unit">mo.</span>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6">
+                                    <div class="col-12 col-md-4">
                                         <label class="badd-label" for="tcnWarrantyExpiry">Warranty Expiry Date</label>
-                                        <input type="date" class="form-control badd-input" id="tcnWarrantyExpiry" readonly>
+                                        <input type="date" class="form-control badd-input" id="tcnWarrantyExpiry" readonly tabindex="-1">
                                         <div class="form-text text-muted">Auto: Purchase Date + Warranty Months</div>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        <label class="badd-label" for="tcnEndOfLife">End of Life Date</label>
-                                        <input type="date" class="form-control badd-input" id="tcnEndOfLife" readonly>
-                                        <div class="form-text text-muted">Auto: Purchase Date + Fixed Life Months</div>
+
+                                    {{-- CR-3: Flap / Tube radio buttons (button-style, unselected by default) --}}
+                                    <div class="col-12">
+                                        <label class="badd-label">Flap / Tube</label>
+                                        <div class="tcn-radio-row" id="tcnFlapTubeRow">
+                                            <label class="tcn-radio-chip" id="tcnFlapChip">
+                                                <input type="radio" name="flap_tube_type" value="Flap" id="tcnFlapRadio">
+                                                <span>Flap</span>
+                                            </label>
+                                            <label class="tcn-radio-chip" id="tcnTubeChip">
+                                                <input type="radio" name="flap_tube_type" value="Tube" id="tcnTubeRadio">
+                                                <span>Tube</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {{-- Conditional price block — shown when Flap or Tube is selected --}}
+                                    <div class="col-12 d-none" id="tcnFlapTubePriceSection">
+                                        <div class="tcn-price-section-heading tcn-price-section-heading--sub">
+                                            <span id="tcnFlapTubePriceLabel">Accessory Price</span>
+                                            <small class="text-muted">All amounts in ₹ &nbsp;·&nbsp; GST @ 28%</small>
+                                        </div>
+                                        <div class="row g-3 mt-0">
+                                            <div class="col-12 col-md-4">
+                                                <label class="badd-label" for="tcnFTTaxable">Taxable Amount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text badd-unit">₹</span>
+                                                    <input type="number" class="form-control badd-input" name="flap_tube_taxable_amount" id="tcnFTTaxable" placeholder="0.00" min="0" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <label class="badd-label" for="tcnFTGst">GST <small class="text-muted fw-normal">(28%)</small></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text badd-unit">₹</span>
+                                                    <input type="number" class="form-control badd-input" name="flap_tube_gst_amount" id="tcnFTGst" placeholder="0.00" min="0" step="0.01" readonly tabindex="-1">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <label class="badd-label" for="tcnFTTotal">Total Amount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text badd-unit">₹</span>
+                                                    <input type="number" class="form-control badd-input" name="flap_tube_total_amount" id="tcnFTTotal" placeholder="0.00" min="0" step="0.01" readonly tabindex="-1">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -342,6 +416,12 @@
                                             <input type="number" class="form-control badd-input" name="actual_run_month" id="tcnActualRunMonth" value="0" min="0">
                                             <span class="input-group-text badd-unit">mo.</span>
                                         </div>
+                                    </div>
+                                    {{-- CR-4: End of Life Date moved here from Purchase Details --}}
+                                    <div class="col-12 col-md-6">
+                                        <label class="badd-label" for="tcnEndOfLife">End of Life Date</label>
+                                        <input type="date" class="form-control badd-input" id="tcnEndOfLife" readonly tabindex="-1">
+                                        <div class="form-text text-muted">Auto: Purchase Date + Fixed Life Months</div>
                                     </div>
                                 </div>
                             </div>
@@ -428,19 +508,6 @@
                                         <div class="input-group">
                                             <input type="number" class="form-control badd-input" name="tread_depth_mm" id="tcnTreadDepth" step="0.1" min="0" max="50" placeholder="e.g. 15.5">
                                             <span class="input-group-text badd-unit">mm</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="badd-label">Tube Type <span class="text-danger">*</span></label>
-                                        <div class="tcn-radio-row">
-                                            <label class="tcn-radio-chip">
-                                                <input type="radio" name="tube_type" value="Tubeless" checked>
-                                                <span>Tubeless</span>
-                                            </label>
-                                            <label class="tcn-radio-chip">
-                                                <input type="radio" name="tube_type" value="Tube">
-                                                <span>Tube</span>
-                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -552,37 +619,6 @@
                             </div>
                         </div>
 
-                        {{-- Initial Condition --}}
-                        <div class="sc-card mb-3">
-                            <div class="sc-card-head">
-                                <span class="sc-card-title"><i class="uil uil-check-circle me-2"></i>Initial Condition <span class="text-danger">*</span></span>
-                            </div>
-                            <div class="p-3">
-                                <div class="badd-cond-group" id="tcnInitCondGroup">
-                                    <label class="badd-cond-opt active" for="tcnIcNew">
-                                        <input type="radio" name="initial_condition" id="tcnIcNew" value="New" class="d-none" checked>
-                                        <span class="btd-cond-new">New</span>
-                                        <span class="badd-cond-desc">Fresh, unused</span>
-                                    </label>
-                                    <label class="badd-cond-opt" for="tcnIcRetread">
-                                        <input type="radio" name="initial_condition" id="tcnIcRetread" value="Retreaded" class="d-none">
-                                        <span class="btd-cond-used">Retreaded</span>
-                                        <span class="badd-cond-desc">Treaded & restored</span>
-                                    </label>
-                                    <label class="badd-cond-opt" for="tcnIcUsed">
-                                        <input type="radio" name="initial_condition" id="tcnIcUsed" value="Used Good" class="d-none">
-                                        <span class="btd-cond-used">Used (Good)</span>
-                                        <span class="badd-cond-desc">Previously used, still good</span>
-                                    </label>
-                                    <label class="badd-cond-opt" for="tcnIcScrap">
-                                        <input type="radio" name="initial_condition" id="tcnIcScrap" value="Scrap" class="d-none">
-                                        <span class="btd-cond-weak">Scrap</span>
-                                        <span class="badd-cond-desc">End of life / for disposal</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
@@ -610,5 +646,5 @@
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('customjs/tyre/create-new.js?v=1.4') }}"></script>
+<script src="{{ asset('customjs/tyre/create-new.js?v=2.0') }}"></script>
 @endsection

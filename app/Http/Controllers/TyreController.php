@@ -1093,8 +1093,7 @@ class TyreController extends Controller
             'tyre_type'               => 'required|in:Radial,Nylon',
             'tyre_size'               => 'required|string|max:50',
 
-            // Classification
-            'condition'               => 'required|in:New,Used,Retread',
+            // Classification — CR-5: 'condition' field removed; tyre_condition derived from initial_condition
             'tyre_category'           => 'required|in:Drive,Steer,Trailer',
 
             // Stock Location — single radio group value:
@@ -1104,8 +1103,15 @@ class TyreController extends Controller
             //   'fitment'       → direct fitment to vehicle
             'stock_location'          => ['nullable', 'string', 'regex:/^(wh:\d+|ws:\d+|fitment)?$/'],
 
-            // Purchase & Cost
-            'tyre_price'              => 'required|numeric|min:0',
+            // Purchase & Cost — CR-2: price is now split into Taxable / GST / Total
+            'tyre_taxable_amount'     => 'required|numeric|min:0',
+            'tyre_gst_amount'         => 'nullable|numeric|min:0',
+            'tyre_total_amount'       => 'nullable|numeric|min:0',
+            // CR-3: Flap / Tube (optional) — DB columns pending; validated but not yet persisted
+            'flap_tube_type'          => 'nullable|in:Flap,Tube',
+            'flap_tube_taxable_amount'=> 'nullable|numeric|min:0',
+            'flap_tube_gst_amount'    => 'nullable|numeric|min:0',
+            'flap_tube_total_amount'  => 'nullable|numeric|min:0',
             'tyre_purchase_date'      => 'required|date|before_or_equal:today',
             'tyre_warranty_months'    => 'required|integer|min:0|max:120',
 
@@ -1256,7 +1262,13 @@ class TyreController extends Controller
                     'installation_date'         => $request->installation_date ? date('Y-m-d', strtotime($request->installation_date)) : null,
 
                     'contact_id'                => $request->vendor,
-                    'tyre_condition'            => $request->condition,                 // New|Used|Retread
+                    // CR-5: tyre_condition derived from consolidated initial_condition field
+                    'tyre_condition'            => [
+                        'New'       => 'New',
+                        'Retreaded' => 'Retread',
+                        'Used Good' => 'Used Good',
+                        'Scrap'     => 'Scrap',
+                    ][$request->initial_condition] ?? 'New',
                     'initial_condition'         => $request->initial_condition,         // New|Retreaded|Used Good|Scrap
 
                     'tyre_source_mode'          => $request->tyre_source_mode,
@@ -1273,7 +1285,10 @@ class TyreController extends Controller
                     'tyre_size'                 => $request->tyre_size,
                     'tyre_category'             => $request->tyre_category,
                     'tyre_serial_number'        => $serial,
-                    'tyre_price'                => $request->tyre_price,
+                    // CR-2: store total (taxable + GST) in existing tyre_price column
+                    // TODO: new columns tyre_taxable_amount / tyre_gst_amount / tyre_total_amount
+                    //       pending Amit approval (requires migration on live table)
+                    'tyre_price'                => $request->tyre_total_amount ?? $request->tyre_taxable_amount ?? 0,
 
                     'tyre_purchase_date'        => $purchaseDate,
                     'tyre_issue_date'           => $request->tyre_issue_date ? date('Y-m-d', strtotime($request->tyre_issue_date)) : null,

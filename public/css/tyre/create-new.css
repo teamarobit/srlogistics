@@ -1,6 +1,11 @@
 /* ==========================================================================
-   Tyre Create-New — supplementary styles (tcn-* prefix)
+   Tyre Create-New — supplementary styles (tcn-* prefix)  v2.0
    Base layout inherits from css/Inventory/battery-add.css (badd-*, sc-*)
+
+   v2.0 additions:
+     - .tcn-price-section-heading  (CR-2 Tyre Price sub-heading)
+     - #tcnFlapTubePriceSection     (CR-3 conditional Flap/Tube price block)
+     - .badd-input[readonly]        (readonly field visual override)
    ========================================================================== */
 
 /* ---------- Radio chip row (Radial/Nylon, New/Used/Retread, Tube/Tubeless) */
@@ -220,4 +225,46 @@
     font-size: 12px;
     display: block;
     margin-top: 4px;
+}
+
+/* ---------- CR-2: Price section sub-heading (Tyre Price heading + Flap/Tube heading) */
+.tcn-price-section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 0 6px;
+    border-bottom: 1.5px solid #e3e7ef;
+    margin-bottom: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #032671;
+}
+.tcn-price-section-heading small {
+    font-size: 11px;
+    font-weight: 400;
+}
+/* Sub-variant used inside the Flap/Tube conditional block */
+.tcn-price-section-heading--sub {
+    border-bottom-color: #d0d8ea;
+    padding-top: 0;
+    margin-bottom: 4px;
+}
+
+/* ---------- CR-3: Flap/Tube conditional price section */
+#tcnFlapTubePriceSection {
+    background: #f7f9fc;
+    border: 1px solid #e3e7ef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 4px;
+}
+
+/* ---------- Readonly price fields (GST + Total) */
+.badd-input[readonly] {
+    background-color: #f3f6fa !important;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+.input-group .badd-input[readonly] {
+    border-color: #dfe4ec;
 }
