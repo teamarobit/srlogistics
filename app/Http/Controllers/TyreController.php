@@ -1135,7 +1135,7 @@ class TyreController extends Controller
             'installation_date'       => 'nullable|date|required_with:allocated_vehicle_id',
 
             // Technical
-            'ply_rating'              => 'required|integer|min:4|max:24',
+            'ply_rating'              => 'nullable|integer|min:4|max:24',
             'load_index'              => 'nullable|integer|min:0|max:300',
             'speed_rating'            => 'nullable|string|max:2',
             'tread_depth_mm'          => 'nullable|numeric|min:0|max:50',

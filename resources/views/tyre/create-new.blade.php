@@ -224,6 +224,14 @@
                                         <label class="badd-label" for="tcnSize">Tyre Size <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control badd-input" name="tyre_size" id="tcnSize" placeholder="e.g. 295/90 R20" maxlength="50">
                                     </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="badd-label" for="tcnCategory">Tyre Category <span class="text-danger">*</span></label>
+                                        <select class="form-select badd-input" name="tyre_category" id="tcnCategory">
+                                            <option value="Drive" selected>Drive Tyre</option>
+                                            <option value="Steer">Steer Tyre</option>
+                                            <option value="Trailer">Trailer Tyre</option>
+                                        </select>
+                                    </div>
                                     <div class="col-12 col-md-6">
                                         <label class="badd-label">Tyre Type <span class="text-danger">*</span></label>
                                         <div class="tcn-radio-row">
@@ -236,14 +244,6 @@
                                                 <span>Nylon</span>
                                             </label>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <label class="badd-label" for="tcnCategory">Tyre Category <span class="text-danger">*</span></label>
-                                        <select class="form-select badd-input" name="tyre_category" id="tcnCategory">
-                                            <option value="Drive" selected>Drive Tyre</option>
-                                            <option value="Steer">Steer Tyre</option>
-                                            <option value="Trailer">Trailer Tyre</option>
-                                        </select>
                                     </div>
                                     {{-- CR-1: Tube Type moved here from Technical Specifications --}}
                                     <div class="col-12 col-md-6">
@@ -484,35 +484,7 @@
                             </div>
                         </div>
 
-                        {{-- Technical Specifications --}}
-                        <div class="sc-card mb-3">
-                            <div class="sc-card-head">
-                                <span class="sc-card-title"><i class="uil uil-bolt-alt me-2"></i>Technical Specifications</span>
-                            </div>
-                            <div class="p-3 p-md-4">
-                                <div class="row g-3">
-                                    <div class="col-12 col-md-3">
-                                        <label class="badd-label" for="tcnPlyRating">Ply Rating <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control badd-input" name="ply_rating" id="tcnPlyRating" value="16" min="4" max="24">
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <label class="badd-label" for="tcnLoadIndex">Load Index</label>
-                                        <input type="number" class="form-control badd-input" name="load_index" id="tcnLoadIndex" min="0" max="300" placeholder="e.g. 152">
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <label class="badd-label" for="tcnSpeedRating">Speed Rating</label>
-                                        <input type="text" class="form-control badd-input" name="speed_rating" id="tcnSpeedRating" maxlength="2" placeholder="e.g. L">
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <label class="badd-label" for="tcnTreadDepth">Tread Depth</label>
-                                        <div class="input-group">
-                                            <input type="number" class="form-control badd-input" name="tread_depth_mm" id="tcnTreadDepth" step="0.1" min="0" max="50" placeholder="e.g. 15.5">
-                                            <span class="input-group-text badd-unit">mm</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Technical Specifications card removed (CR-2026-05-08) --}}
 
                         {{-- Tyre Images --}}
                         <div class="sc-card mb-3">
