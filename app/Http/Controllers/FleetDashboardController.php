@@ -991,6 +991,7 @@ class FleetDashboardController extends Controller
 
                 return [
                     'id'                   => $log->id,
+                    'log_type'             => $log->log_type ?? 'Replacement', // null = legacy → treat as Replacement
                     'tyre_serial'          => $log->tyre?->tyre_serial_number ?? '—',
                     'tyre_brand'           => $log->tyre?->tyre_brand ?? '',
                     'tyre_model'           => $log->tyre?->tyre_model ?? '',
@@ -1007,13 +1008,19 @@ class FleetDashboardController extends Controller
                 ];
             });
 
+        // Split into two groups for the grouped timeline UI
+        $replacementLogs = $logs->filter(fn($l) => $l['log_type'] === 'Replacement')->values();
+        $rotationLogs    = $logs->filter(fn($l) => $l['log_type'] === 'Rotation')->values();
+
         return response()->json([
-            'success'       => true,
-            'vehicle_no'    => $vehicle->vehicle_no ?? '—',
-            'position_code' => $tyreposition->code ?? '—',
-            'position_desc' => $tyreposition->description ?? null,
-            'logs'          => $logs,
-            'tyre_photos'   => [],
+            'success'          => true,
+            'vehicle_no'       => $vehicle->vehicle_no ?? '—',
+            'position_code'    => $tyreposition->code ?? '—',
+            'position_desc'    => $tyreposition->description ?? null,
+            'replacement_logs' => $replacementLogs,
+            'rotation_logs'    => $rotationLogs,
+            'logs'             => $logs,        // flat array kept for backward compat
+            'tyre_photos'      => [],
         ], 200);
     }
 

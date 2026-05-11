@@ -42,6 +42,7 @@ class TyreManagementController extends Controller
                                 ];
                     $vehicletyremapping = Vehicletyremapping::create($data);
                     $data['vehicletyremapping_id'] = $vehicletyremapping->id;
+                    $data['notes'] = 'Mapping initiated';
                     Vehicletyremappinglog::create($data);
                 }
             }else{
@@ -150,6 +151,7 @@ class TyreManagementController extends Controller
                     ];
                     $vehicletyremapping = Vehicletyremapping::create($data);
                     $data['vehicletyremapping_id'] = $vehicletyremapping->id;
+                    $data['notes'] = 'Mapping initiated';
                     Vehicletyremappinglog::create($data);
                 }
             } else {
@@ -473,6 +475,7 @@ class TyreManagementController extends Controller
                     'fitment_date'          => $fitmentDate,
                     'km_at_fitment'         => $kmAtFitment,
                     'status'                => 'Active',
+                    'log_type'              => 'Replacement',
                     'notes'                 => $source,
                     'created_by'            => $userId,
                 ]);
@@ -1061,7 +1064,7 @@ class TyreManagementController extends Controller
                 ]);
 
                 // 6e. History log for the position (never update — insert only)
-                Vehicletyremappinglog::create([
+                $replacementMappingLog = Vehicletyremappinglog::create([
                     'vehicletyremapping_id' => $mapping->id,
                     'vehicle_id'            => $vehicle->id,
                     'tyre_id'               => $newTyre->id,
@@ -1069,6 +1072,7 @@ class TyreManagementController extends Controller
                     'fitment_date'          => $replacementDate,
                     'km_at_fitment'         => $replacementKm,
                     'status'                => 'Active',
+                    'log_type'              => 'Replacement',
                     'notes'                 => 'Replacement | Source: ' . $source,
                     'created_by'            => $userId,
                 ]);
@@ -1192,6 +1196,17 @@ class TyreManagementController extends Controller
                         'mediable_id'   => $newTyreLog->id,
                         'mediable_type' => Tyrelog::class,
                         'created_by'    => $userId,
+                    ]);
+
+                    // Also attach fitment photo to the mapping log so the
+                    // position-history timeline modal can display it per log row.
+                    $replacementMappingLog->medias()->create([
+                        'type'       => 'Image',
+                        'file_name'  => '[' . $label . '] ' . $file->getClientOriginalName(),
+                        'file_path'  => 'tyre/' . $fileName,
+                        'file_type'  => $file->getClientMimeType(),
+                        'file_size'  => $file->getSize(),
+                        'created_by' => $userId,
                     ]);
                 }
 
