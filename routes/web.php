@@ -413,6 +413,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
         // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)
         Route::post('/vehicle/{vehicle}/add-spare', [App\Http\Controllers\TyreManagementController::class, 'addSpareTyre'])->name('vehicle.add.spare');
+        // POST: Take Action modal — log an alignment event for a mapped tyre
+        Route::post('/vehicle/{vehicle}/log-alignment', [App\Http\Controllers\TyreManagementController::class, 'logAlignment'])->name('vehicle.log.alignment');
+        // GET: Take Action modal — look up a donor vehicle by registration number (Another Vehicle source)
+        Route::get('/lookup-vehicle', [App\Http\Controllers\TyreManagementController::class, 'lookupVehicleByNumber'])->name('lookup.vehicle.by.number');
     });
     
     /******************************** Vehicle Master **********************************************************/

@@ -592,6 +592,9 @@ $(document).ready(function () {
     let _tamCurrentLifePct   = null;
     let _tamActiveTab        = 'replace';
 
+    /* ── State: donor vehicle lookup results ─────────────────────────────── */
+    let _tamDonorPositions   = [];   /* array of position objects from lookupVehicleByNumber */
+
     /* ── B1. OPEN TAKE ACTION MODAL ─────────────────────────────────────── */
     $(document).on('click', '.btn-open-take-action', function () {
         const $btn         = $(this);
@@ -729,18 +732,19 @@ $(document).ready(function () {
         }
     }
 
-    /* ── B6. OLD TYRE DESTINATION ────────────────────────────────────────── */
+    /* ── B6. OLD TYRE DESTINATION — Replace tab ─────────────────────────── */
     $(document).on('change', 'input[name="old_tyre_destination"]', function () {
         const val = $(this).val();
 
-        /* Deactivate all pills */
-        $('.tam-old-source-pill').removeClass('active');
+        /* Deactivate pills in Replace tab only */
+        $('#tamOldSourceGrid .tam-old-source-pill').removeClass('active');
         $(this).closest('.tam-old-source-pill').addClass('active');
 
         /* Reset conditionals */
         $('#tamOwnVehicleOverLimitAlert').addClass('d-none');
         $('#tamOldOtherVehicleWrap').hide();
         $('#tamOldDestVehicleNo').val('');
+        $('#tamOldDestPosition').val('');
 
         if (val === 'Own Vehicle' || val === 'Spare Tyre') {
             /* Check if spare limit exceeded (max 2 spares assumed) */
@@ -755,11 +759,58 @@ $(document).ready(function () {
         $('#tamErrOldDest').text('');
     });
 
-    /* Old tyre action pill selection */
+    /* Old tyre action pill selection — Replace tab */
     $(document).on('change', 'input[name="old_tyre_action"]', function () {
-        $('.tam-old-action-pill').removeClass('active');
+        $('#tamOldActionGrid .tam-old-action-pill').removeClass('active');
         $(this).closest('.tam-old-action-pill').addClass('active');
         $('#tamErrOldAction').text('');
+
+        /* Show/hide Warranty Claim attachment section */
+        if ($(this).val() === 'Warranty Claim') {
+            $('#tamWarrantyClaimSection').removeClass('d-none');
+        } else {
+            $('#tamWarrantyClaimSection').addClass('d-none');
+        }
+    });
+
+    /* ── B6b. ROTATE TAB — OLD TYRE DESTINATION + ACTION ────────────────── */
+    $(document).on('change', 'input[name="rot_old_tyre_destination"]', function () {
+        const val = $(this).val();
+
+        /* Activate pill */
+        $('#tamRotOldSourceGrid .tam-old-source-pill').removeClass('active');
+        $(this).closest('.tam-old-source-pill').addClass('active');
+
+        /* Reset conditionals */
+        $('#tamRotOwnVehicleOverLimitAlert').addClass('d-none');
+        $('#tamRotOldOtherVehicleWrap').hide();
+        $('#tamRotOldDestVehicleNo').val('');
+        $('#tamRotOldDestPosition').val('');
+
+        if (val === 'Own Vehicle' || val === 'Spare Tyre') {
+            const spares = (typeof spareTyresList !== 'undefined') ? spareTyresList : [];
+            if (spares.length >= 2) {
+                $('#tamRotOwnVehicleOverLimitAlert').removeClass('d-none');
+            }
+        } else if (val === 'Another Vehicle') {
+            $('#tamRotOldOtherVehicleWrap').show();
+        }
+
+        $('#tamErrRotOldDest').text('');
+    });
+
+    /* Rotate tab — old tyre action pill */
+    $(document).on('change', 'input[name="rot_old_tyre_action"]', function () {
+        $('#tamRotOldActionGrid .tam-old-action-pill').removeClass('active');
+        $(this).closest('.tam-old-action-pill').addClass('active');
+        $('#tamErrRotOldAction').text('');
+
+        /* Show/hide Warranty Claim attachment section */
+        if ($(this).val() === 'Warranty Claim') {
+            $('#tamRotWarrantyClaimSection').removeClass('d-none');
+        } else {
+            $('#tamRotWarrantyClaimSection').addClass('d-none');
+        }
     });
 
     /* ── B7. ROTATE TAB — REASON CARD SELECTION ─────────────────────────── */
@@ -904,15 +955,150 @@ $(document).ready(function () {
         reader.readAsDataURL(file);
     });
 
-    /* ── B11. DONOR VEHICLE LOOKUP STUB ─────────────────────────────────── */
+    /* ── B11. DONOR VEHICLE LOOKUP ───────────────────────────────────────── */
+
+    /* Helper — reset all donor-panel state to blank */
+    function tamResetDonorPanel() {
+        _tamDonorPositions = [];
+        $('#tamDonorInfoBanner').addClass('d-none');
+        $('#tamDonorRegLabel').text('');
+        $('#tamDonorTyreCount').text('');
+        $('#tamDonorPositionWrap').addClass('d-none');
+        $('#tamOtherPositionSelect').html('<option value="">— Select a position —</option>');
+        $('#tamDonorMappingId').val('');
+        $('#tamDonorTyrePreview').addClass('d-none');
+        $('#tamDonorNoTyreAlert').addClass('d-none');
+        /* Clear preview fields */
+        $('#tamDonorTyreSerial').text('—');
+        $('#tamDonorTyreBrand').text('—');
+        $('#tamDonorTyreCondition').text('—');
+        $('#tamDonorTyreType').text('—');
+        $('#tamDonorHealthFill').css('width', '0%').removeClass('rag-bg-green rag-bg-amber rag-bg-red rag-bg-grey').addClass('rag-bg-grey');
+        $('#tamDonorHealthPct').text('—');
+        $('#tamDonorTyreRag').text('⚫ Untagged').removeClass('rag-green rag-amber rag-red').addClass('rag-grey');
+    }
+
+    /* B11a — LOOKUP BUTTON CLICK */
     $(document).on('click', '#tamBtnLookupVehicle', function () {
         const vehicleNo = $('#tamOtherVehicleNo').val().trim();
+        const $btn      = $(this);
+
+        /* Validation */
         if (!vehicleNo) {
-            $('#tamErrOtherVehicle').text('Enter a vehicle number to look up.');
+            $('#tamErrOtherVehicle').text('Enter a vehicle registration number to look up.');
             return;
         }
-        /* Full AJAX lookup wired in next sprint when backend endpoint exists */
-        Toast.fire({ icon: 'info', title: 'Vehicle lookup — backend wiring coming soon.' });
+        $('#tamErrOtherVehicle').text('');
+
+        /* Reset previous results */
+        tamResetDonorPanel();
+
+        /* Loading state */
+        const originalHtml = $btn.html();
+        $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Looking up…').prop('disabled', true);
+
+        $.ajax({
+            url      : lookupVehicleUrl,
+            method   : 'GET',
+            data     : { vehicle_number: vehicleNo },
+            dataType : 'json',
+            success  : function (res) {
+                $btn.html(originalHtml).prop('disabled', false);
+
+                if (!res.success || !res.vehicle) {
+                    $('#tamErrOtherVehicle').text(res.message || 'Vehicle not found.');
+                    return;
+                }
+
+                /* Store positions for position-select handler */
+                _tamDonorPositions = res.positions || [];
+
+                /* Show success banner */
+                $('#tamDonorRegLabel').text(res.vehicle.reg_number);
+                $('#tamDonorTyreCount').text(
+                    res.total_with_tyre + ' tyre(s) fitted across ' + _tamDonorPositions.length + ' position(s)'
+                );
+                $('#tamDonorInfoBanner').removeClass('d-none');
+
+                /* Populate position select — only positions that have a tyre */
+                let opts = '<option value="">— Select a position —</option>';
+                _tamDonorPositions.forEach(function (p) {
+                    if (p.has_tyre) {
+                        const lifeTxt = p.life_pct !== null ? ' [' + p.life_pct + '% life]' : '';
+                        opts += '<option value="' + p.position_code + '">' + p.position_code + lifeTxt + '</option>';
+                    }
+                });
+
+                if (res.total_with_tyre === 0) {
+                    /* No positions have tyres — show warning, no dropdown */
+                    $('#tamDonorNoTyreAlert').removeClass('d-none');
+                } else {
+                    $('#tamOtherPositionSelect').html(opts);
+                    $('#tamDonorPositionWrap').removeClass('d-none');
+                }
+            },
+            error    : function (xhr) {
+                $btn.html(originalHtml).prop('disabled', false);
+                const res = xhr.responseJSON || {};
+                if (xhr.status === 422) {
+                    $('#tamErrOtherVehicle').text(res.message || 'Vehicle not found. Check the registration number.');
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message || 'Lookup failed. Please try again.' });
+                }
+            }
+        });
+    });
+
+    /* B11b — POSITION SELECT CHANGE → populate tyre preview */
+    $(document).on('change', '#tamOtherPositionSelect', function () {
+        const posCode = $(this).val();
+
+        /* Clear preview */
+        $('#tamDonorMappingId').val('');
+        $('#tamDonorTyrePreview').addClass('d-none');
+        $('#tamDonorNoTyreAlert').addClass('d-none');
+
+        if (!posCode) return;
+
+        /* Find position object */
+        const pos = _tamDonorPositions.find(function (p) { return p.position_code === posCode; });
+        if (!pos) return;
+
+        /* Store mapping_id for form submission */
+        $('#tamDonorMappingId').val(pos.mapping_id || '');
+
+        if (!pos.has_tyre) {
+            $('#tamDonorNoTyreAlert').removeClass('d-none');
+            return;
+        }
+
+        /* Populate preview card */
+        $('#tamDonorTyreSerial').text(pos.serial || '—');
+        $('#tamDonorTyreBrand').text(pos.brand || '—');
+        $('#tamDonorTyreCondition').text(pos.condition || '—');
+        $('#tamDonorTyreType').text(pos.type || '—');
+
+        const pct = parseFloat(pos.life_pct);
+        const rag = pos.rag || 'grey';
+
+        if (!isNaN(pct)) {
+            $('#tamDonorHealthFill')
+                .css('width', pct + '%')
+                .removeClass('rag-bg-green rag-bg-amber rag-bg-red rag-bg-grey')
+                .addClass('rag-bg-' + rag);
+            $('#tamDonorHealthPct').text(pct + '%');
+        } else {
+            $('#tamDonorHealthFill').css('width', '0%').addClass('rag-bg-grey');
+            $('#tamDonorHealthPct').text('N/A');
+        }
+
+        const ragLabel = rag === 'green' ? '🟢 Good' : rag === 'amber' ? '🟡 Moderate' : rag === 'red' ? '🔴 Critical' : '⚫ Unknown';
+        $('#tamDonorTyreRag')
+            .text(ragLabel)
+            .removeClass('rag-green rag-amber rag-red rag-grey')
+            .addClass('rag-' + rag);
+
+        $('#tamDonorTyrePreview').removeClass('d-none');
     });
 
     /* ── B12. SUBMIT TAKE ACTION MODAL ──────────────────────────────────── */
@@ -925,32 +1111,62 @@ $(document).ready(function () {
             if (!tamValidateAlignmentTab()) return;
         }
 
-        /* ── Backend stub: show Coming Soon toast (remove when endpoint is live) ── */
-        Toast.fire({
-            icon : 'info',
-            title: '✅ Validation passed! Backend submission wiring coming in next sprint.'
-        });
+        if (_tamActiveTab === 'alignment') {
+            tamSubmitAlignment($(this));
+        } else {
+            /* Replace and Rotate backend — next sprint */
+            Toast.fire({
+                icon : 'info',
+                title: '✅ Validation passed! Replace/Rotate backend submission coming in next sprint.'
+            });
+        }
+    });
 
-        /* ── When backend is ready, replace the Toast above with this AJAX pattern:
-        const $btn = $(this);
+    /* ── B12a. ALIGNMENT AJAX SUBMIT ─────────────────────────────────────── */
+    function tamSubmitAlignment($btn) {
+        const fd = new FormData();
+        fd.append('_token', csrfToken);
+        fd.append('mapping_id',     _tamCurrentMappingId);
+        fd.append('alignment_date', $('#tamAlnDate').val());
+        fd.append('alignment_km',   $('#tamAlnKm').val());
+
+        const invoiceInput = document.getElementById('tamAlnInvoice');
+        if (invoiceInput && invoiceInput.files && invoiceInput.files[0]) {
+            fd.append('alignment_invoice', invoiceInput.files[0]);
+        }
+
+        const originalLabel = $btn.html();
         $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
-        const fd = tamBuildFormData();
-        const url = takeActionBaseUrl + '/' + _tamActiveTab + '-tyre';
+
         $.ajax({
-            url: url, method: 'POST', data: fd, contentType: false, processData: false, dataType: 'json',
+            url: takeActionBaseUrl + '/log-alignment',
+            method: 'POST',
+            data: fd,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
             success: function (res) {
                 $('#takeActionModal').modal('hide');
-                Toast.fire({ icon: 'success', title: res.message || 'Action logged!',
-                    didClose: function () { window.location.reload(); } });
+                Toast.fire({
+                    icon: 'success',
+                    title: res.message || 'Alignment logged successfully!',
+                    didClose: function () { window.location.reload(); }
+                });
             },
             error: function (xhr) {
-                $btn.html('<i class="uil uil-check me-1"></i>' + $('#tamSubmitLabel').text()).prop('disabled', false);
+                $btn.html(originalLabel).prop('disabled', false);
                 const res = xhr.responseJSON || {};
-                Toast.fire({ icon: 'error', title: res.message || 'Submission failed.' });
+                if (xhr.status === 422 && res.errors) {
+                    /* Show first validation error */
+                    const firstField = Object.keys(res.errors)[0];
+                    const firstMsg   = res.errors[firstField][0];
+                    Toast.fire({ icon: 'warning', title: firstMsg || res.message || 'Validation failed.' });
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message || 'Submission failed. Please try again.' });
+                }
             }
         });
-        ── */
-    });
+    }
 
     /* ── B13. VALIDATE REPLACE TAB ───────────────────────────────────────── */
     function tamValidateReplaceTab() {
@@ -1043,6 +1259,18 @@ $(document).ready(function () {
             } else { $('#tamErrRotMapping').text(''); }
         }
 
+        /* Old tyre destination */
+        if (!$('input[name="rot_old_tyre_destination"]:checked').val()) {
+            $('#tamErrRotOldDest').text('Please select a destination for the rotated-out tyre.');
+            ok = false;
+        } else { $('#tamErrRotOldDest').text(''); }
+
+        /* Old tyre action */
+        if (!$('input[name="rot_old_tyre_action"]:checked').val()) {
+            $('#tamErrRotOldAction').text('Please select an action for the old tyre.');
+            ok = false;
+        } else { $('#tamErrRotOldAction').text(''); }
+
         if (!ok) {
             Toast.fire({ icon: 'warning', title: 'Please fill all required fields in the Rotate tab.' });
         }
@@ -1096,10 +1324,11 @@ $(document).ready(function () {
         $('.tam-source-card').removeClass('active');
         $('.tam-src-panel:not(#tamOldTyreSection)').hide();
         $('#tamOldTyreSection').hide();
-        $('.tam-old-source-pill').removeClass('active');
-        $('.tam-old-action-pill').removeClass('active');
+        $('#tamOldSourceGrid .tam-old-source-pill').removeClass('active');
+        $('#tamOldActionGrid .tam-old-action-pill').removeClass('active');
         $('#tamOwnVehicleOverLimitAlert').addClass('d-none');
         $('#tamOldOtherVehicleWrap').hide();
+        $('#tamWarrantyClaimSection').addClass('d-none');
         $('#tamOtherPosAlert').addClass('d-none');
         $('#tamNoSpareAlert').addClass('d-none');
         $('#tamSpareFieldsWrap').show();
@@ -1117,7 +1346,18 @@ $(document).ready(function () {
         _tamMappingRowCount = 0;
         $('#tamMappingRows .tam-mapping-row').remove();
         $('#tamMappingEmpty').show();
+        /* Reset rotate old tyre sections */
+        $('#tamRotOldSourceGrid .tam-old-source-pill').removeClass('active');
+        $('#tamRotOldActionGrid .tam-old-action-pill').removeClass('active');
+        $('#tamRotOwnVehicleOverLimitAlert').addClass('d-none');
+        $('#tamRotOldOtherVehicleWrap').hide();
+        $('#tamRotWarrantyClaimSection').addClass('d-none');
         $('#tamPaneRotate .tam-field-error').text('');
+
+        /* Reset donor vehicle lookup panel */
+        $('#tamOtherVehicleNo').val('');
+        $('#tamErrOtherVehicle').text('');
+        tamResetDonorPanel();
 
         /* Reset Alignment form */
         $('#tamAlignForm')[0] && $('#tamAlignForm')[0].reset();

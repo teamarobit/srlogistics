@@ -83,7 +83,8 @@
             const allMappings       = @json($allMappingsJson);
             const spareTyresList    = @json($spareTyresJson);
             const mountedPositions  = @json($mountedPositionsJson);
-            const takeActionBaseUrl = "{{ url('tyremanage/vehicle/'.$vehicle->id) }}";
+            const takeActionBaseUrl   = "{{ url('tyremanage/vehicle/'.$vehicle->id) }}";
+            const lookupVehicleUrl    = "{{ route('tyremanage.lookup.vehicle.by.number') }}";
         </script>
 
         {{-- ── MAIN LAYOUT ─────────────────────────────────────────────────── --}}
@@ -1243,15 +1244,13 @@
                         <div class="tam-section-title" style="margin-top:10px;">
                             <i class="uil uil-exchange me-1"></i>Transfer from Another Vehicle
                         </div>
-                        <div class="tam-alert tam-alert-info">
-                            <i class="uil uil-info-circle"></i>
-                            <span>Only extra tyres (non-spare) from the donor vehicle can be selected. If the selected position is occupied, an alert will be shown.</span>
-                        </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold" style="font-size:12px;">Vehicle Number (Donor) <span class="text-danger">*</span></label>
+
+                        {{-- Step 1: Vehicle Lookup ─────────────────────────── --}}
+                        <div class="row g-2 mb-2 align-items-end">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size:12px;">Vehicle Registration Number (Donor) <span class="text-danger">*</span></label>
                                 <div class="tam-vehicle-lookup">
-                                    <input type="text" class="form-control form-control-sm" name="donor_vehicle_number" id="tamOtherVehicleNo" placeholder="e.g. MH12AB1234" maxlength="15">
+                                    <input type="text" class="form-control form-control-sm" name="donor_vehicle_number" id="tamOtherVehicleNo" placeholder="e.g. TS09QA3963" maxlength="20" autocomplete="off">
                                     <button type="button" class="tam-btn-lookup" id="tamBtnLookupVehicle">
                                         <i class="uil uil-search me-1"></i>Lookup
                                     </button>
@@ -1259,32 +1258,78 @@
                                 <span class="tam-field-error" id="tamErrOtherVehicle"></span>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:12px;">Tyre Position <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" name="donor_position" id="tamOtherPosition" placeholder="e.g. D1, C1" maxlength="5">
-                                <div class="tam-pos-note">
-                                    <i class="uil uil-info-circle"></i>
-                                    Enter position code
-                                </div>
-                                <span class="tam-field-error" id="tamErrOtherPosition"></span>
-                            </div>
-                            <div class="col-md-2">
                                 <label class="form-label fw-semibold" style="font-size:12px;">Replace Date <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control form-control-sm" name="replacement_date_other" id="tamOtherDate">
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label fw-semibold" style="font-size:12px;">KM</label>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size:12px;">KM at Replacement</label>
                                 <div class="input-group input-group-sm">
                                     <input type="number" class="form-control" name="replacement_km_other" id="tamOtherKm" min="0" placeholder="0">
                                     <span class="input-group-text">KM</span>
                                 </div>
                             </div>
                         </div>
-                        {{-- Donor vehicle position alert --}}
-                        <div class="tam-alert tam-alert-danger d-none" id="tamOtherPosAlert">
-                            <i class="uil uil-exclamation-triangle"></i>
-                            <span id="tamOtherPosAlertText">Selected position on donor vehicle is not empty.</span>
+
+                        {{-- Donor vehicle found banner (shown after successful lookup) --}}
+                        <div class="tam-donor-info-banner d-none" id="tamDonorInfoBanner">
+                            <i class="uil uil-check-circle"></i>
+                            <div>
+                                <span class="tam-donor-info-reg" id="tamDonorRegLabel"></span>
+                                <span class="tam-donor-info-count" id="tamDonorTyreCount"></span>
+                            </div>
                         </div>
-                        <label class="form-label fw-semibold" style="font-size:12px; margin-bottom:4px;">Attachments</label>
+
+                        {{-- Step 2: Position selection (shown after vehicle found) --}}
+                        <div class="d-none" id="tamDonorPositionWrap">
+                            <label class="form-label fw-semibold" style="font-size:12px;">Select Tyre Position to Transfer <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm" id="tamOtherPositionSelect" name="donor_position">
+                                <option value="">— Select Position —</option>
+                            </select>
+                            {{-- Hidden: stores the mapping_id of the selected donor position --}}
+                            <input type="hidden" name="donor_mapping_id" id="tamDonorMappingId">
+                            <div class="tam-pos-select-hint">
+                                <i class="uil uil-info-circle me-1"></i>Only positions with a tyre fitted are shown.
+                            </div>
+                            <span class="tam-field-error" id="tamErrOtherPosition"></span>
+                        </div>
+
+                        {{-- Tyre preview: shown when a valid position is selected --}}
+                        <div class="tam-donor-tyre-preview d-none mt-2" id="tamDonorTyrePreview">
+                            <div class="tam-donor-tyre-header">
+                                <span class="tam-donor-tyre-serial" id="tamDonorTyreSerial">—</span>
+                                <span class="rag-badge rag-grey" id="tamDonorTyreRag">⚫ Untagged</span>
+                            </div>
+                            <div class="tam-donor-tyre-grid">
+                                <div class="tam-donor-tyre-item">
+                                    <span class="tam-donor-tyre-label">Brand</span>
+                                    <span class="tam-donor-tyre-value" id="tamDonorTyreBrand">—</span>
+                                </div>
+                                <div class="tam-donor-tyre-item">
+                                    <span class="tam-donor-tyre-label">Condition</span>
+                                    <span class="tam-donor-tyre-value" id="tamDonorTyreCondition">—</span>
+                                </div>
+                                <div class="tam-donor-tyre-item">
+                                    <span class="tam-donor-tyre-label">Type</span>
+                                    <span class="tam-donor-tyre-value" id="tamDonorTyreType">—</span>
+                                </div>
+                            </div>
+                            <div class="tam-donor-health-bar">
+                                <div class="tam-donor-health-track">
+                                    <div class="tam-donor-health-fill rag-bg-grey" id="tamDonorHealthFill" style="width:0%"></div>
+                                </div>
+                                <span class="tam-donor-health-pct" id="tamDonorHealthPct">—</span>
+                                <small class="text-muted" style="font-size:10px;">life remaining</small>
+                            </div>
+                        </div>
+
+                        {{-- No-tyre alert (position exists but is empty) --}}
+                        <div class="tam-no-tyre-alert d-none mt-2" id="tamDonorNoTyreAlert">
+                            <i class="uil uil-exclamation-triangle"></i>
+                            <span>This position has no tyre fitted on the donor vehicle.</span>
+                        </div>
+
+                        {{-- Attachments --}}
+                        <label class="form-label fw-semibold mt-2" style="font-size:12px; margin-bottom:4px;">Attachments</label>
                         <div class="tam-photo-grid">
                             <div class="tam-photo-slot">
                                 <span class="tam-photo-slot-label">Serial No. Photo</span>
@@ -1344,10 +1389,23 @@
                                     <i class="uil uil-exclamation-triangle"></i>
                                     <span>This vehicle already has the maximum number of spare tyres. Please choose a different destination.</span>
                                 </div>
-                                {{-- Another Vehicle destination: vehicle number input --}}
+                                {{-- Another Vehicle destination: vehicle number + position --}}
                                 <div class="tam-conditional mt-2" id="tamOldOtherVehicleWrap">
-                                    <label class="form-label fw-semibold" style="font-size:12px;">Destination Vehicle Number <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control form-control-sm" name="old_tyre_destination_vehicle" id="tamOldDestVehicleNo" placeholder="e.g. MH12AB5678" maxlength="15">
+                                    <div class="row g-2">
+                                        <div class="col-md-7">
+                                            <label class="form-label fw-semibold" style="font-size:12px;">Destination Vehicle Number <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" name="old_tyre_destination_vehicle" id="tamOldDestVehicleNo" placeholder="e.g. MH12AB5678" maxlength="15">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-semibold" style="font-size:12px;">Position on Destination Vehicle <span class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" name="old_tyre_destination_position" id="tamOldDestPosition">
+                                                <option value="">— Select Position —</option>
+                                                @foreach($tyrepositions as $tp)
+                                                    <option value="{{ $tp->code }}">{{ $tp->code }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1379,6 +1437,45 @@
                             </label>
                         </div>
                         <span class="tam-field-error" id="tamErrOldAction"></span>
+
+                        {{-- Warranty Claim: conditional attachment section --}}
+                        <div class="tam-warranty-section d-none mt-3" id="tamWarrantyClaimSection">
+                            <div class="tam-warranty-box">
+                                <div class="tam-warranty-title">
+                                    <i class="uil uil-receipt me-1"></i>Warranty Claim Documents
+                                </div>
+                                <p class="text-muted mb-2" style="font-size:11px;">
+                                    Attach the warranty claim form, damaged tyre photo, and vendor invoice. These will be linked to the claim record.
+                                </p>
+                                <div class="tam-photo-grid">
+                                    <div class="tam-photo-slot">
+                                        <span class="tam-photo-slot-label">Claim Form / Letter</span>
+                                        <input type="file" class="form-control form-control-sm" name="warranty_claim_form" id="tamWrnClaimForm" accept="image/jpeg,image/png,image/webp,application/pdf">
+                                        <img class="tam-photo-thumb" id="tamWrnClaimFormThumb" alt="Preview">
+                                    </div>
+                                    <div class="tam-photo-slot">
+                                        <span class="tam-photo-slot-label">Damaged Tyre Photo</span>
+                                        <input type="file" class="form-control form-control-sm" name="warranty_damage_photo" id="tamWrnDamagePhoto" accept="image/jpeg,image/png,image/webp">
+                                        <img class="tam-photo-thumb" id="tamWrnDamageThumb" alt="Preview">
+                                    </div>
+                                    <div class="tam-photo-slot">
+                                        <span class="tam-photo-slot-label">Vendor Invoice</span>
+                                        <input type="file" class="form-control form-control-sm" name="warranty_invoice" id="tamWrnInvoice" accept="image/jpeg,image/png,image/webp,application/pdf">
+                                        <img class="tam-photo-thumb" id="tamWrnInvoiceThumb" alt="Preview">
+                                    </div>
+                                </div>
+                                <div class="row g-2 mt-1">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:12px;">Claim Reference Number</label>
+                                        <input type="text" class="form-control form-control-sm" name="warranty_claim_ref" id="tamWrnClaimRef" placeholder="e.g. WC-2024-001">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:12px;">Claim Date</label>
+                                        <input type="date" class="form-control form-control-sm" name="warranty_claim_date" id="tamWrnClaimDate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1485,6 +1582,130 @@
                             <span class="tam-photo-slot-label">Rotation Invoice</span>
                             <input type="file" class="form-control form-control-sm" name="rotation_invoice" id="tamRotInvoice" accept="image/jpeg,image/png,image/webp,application/pdf">
                             <img class="tam-photo-thumb" id="tamRotInvoiceThumb" alt="Preview">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SECTION 5: Old Tyre Destination --}}
+                <div class="tam-section">
+                    <hr class="tam-hr">
+                    <div class="tam-section-title">
+                        <span class="tam-section-num">5</span>
+                        Old Tyre Destination
+                        <span class="text-muted fw-normal ms-1" style="font-size:10px; text-transform:none; letter-spacing:0;">(Where does the removed tyre go?)</span>
+                    </div>
+                    <label class="form-label fw-semibold" style="font-size:12px;">Where should the rotated-out tyre go? <span class="text-danger">*</span></label>
+                    <div class="tam-old-source-grid" id="tamRotOldSourceGrid">
+                        <label class="tam-old-source-pill" for="tamRotOldSrcGarage">
+                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcGarage" value="SR Garage" class="d-none">
+                            SR Garage
+                        </label>
+                        <label class="tam-old-source-pill" for="tamRotOldSrcVendor">
+                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcVendor" value="Tyre Vendor" class="d-none">
+                            Tyre Vendor
+                        </label>
+                        <label class="tam-old-source-pill" for="tamRotOldSrcOwn">
+                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcOwn" value="Own Vehicle" class="d-none">
+                            Own Vehicle (Spare)
+                        </label>
+                        <label class="tam-old-source-pill" for="tamRotOldSrcSpare">
+                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcSpare" value="Spare Tyre" class="d-none">
+                            Keep as Spare
+                        </label>
+                        <label class="tam-old-source-pill" for="tamRotOldSrcOther">
+                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcOther" value="Another Vehicle" class="d-none">
+                            Another Vehicle
+                        </label>
+                    </div>
+                    <span class="tam-field-error" id="tamErrRotOldDest"></span>
+                    {{-- Own vehicle spare limit alert --}}
+                    <div class="tam-alert tam-alert-warning d-none mt-2" id="tamRotOwnVehicleOverLimitAlert">
+                        <i class="uil uil-exclamation-triangle"></i>
+                        <span>This vehicle already has the maximum number of spare tyres. Please choose a different destination.</span>
+                    </div>
+                    {{-- Another Vehicle: vehicle + position --}}
+                    <div class="tam-conditional mt-2" id="tamRotOldOtherVehicleWrap" style="display:none;">
+                        <div class="row g-2">
+                            <div class="col-md-7">
+                                <label class="form-label fw-semibold" style="font-size:12px;">Destination Vehicle Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" name="rot_old_tyre_destination_vehicle" id="tamRotOldDestVehicleNo" placeholder="e.g. MH12AB5678" maxlength="15">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold" style="font-size:12px;">Position on Destination Vehicle <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" name="rot_old_tyre_destination_position" id="tamRotOldDestPosition">
+                                    <option value="">— Select Position —</option>
+                                    @foreach($tyrepositions as $tp)
+                                        <option value="{{ $tp->code }}">{{ $tp->code }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SECTION 6: Old Tyre Action --}}
+                <div class="tam-section">
+                    <div class="tam-section-title">
+                        <span class="tam-section-num">6</span>
+                        Old Tyre Action
+                    </div>
+                    <label class="form-label fw-semibold" style="font-size:12px;">What should be done with the old tyre? <span class="text-danger">*</span></label>
+                    <div class="tam-old-action-grid" id="tamRotOldActionGrid">
+                        <label class="tam-old-action-pill" for="tamRotActWarranty">
+                            <input type="radio" name="rot_old_tyre_action" id="tamRotActWarranty" value="Warranty Claim" class="d-none">
+                            🔖 Warranty Claim
+                        </label>
+                        <label class="tam-old-action-pill" for="tamRotActRethread">
+                            <input type="radio" name="rot_old_tyre_action" id="tamRotActRethread" value="Re-thread" class="d-none">
+                            🔄 Re-thread
+                        </label>
+                        <label class="tam-old-action-pill" for="tamRotActScrap">
+                            <input type="radio" name="rot_old_tyre_action" id="tamRotActScrap" value="Scrap" class="d-none">
+                            🗑️ Scrap
+                        </label>
+                        <label class="tam-old-action-pill" for="tamRotActDecide">
+                            <input type="radio" name="rot_old_tyre_action" id="tamRotActDecide" value="Yet to Decide" class="d-none">
+                            ⏳ Yet to Decide
+                        </label>
+                    </div>
+                    <span class="tam-field-error" id="tamErrRotOldAction"></span>
+
+                    {{-- Rotate: Warranty Claim attachment section --}}
+                    <div class="tam-warranty-section d-none mt-3" id="tamRotWarrantyClaimSection">
+                        <div class="tam-warranty-box">
+                            <div class="tam-warranty-title">
+                                <i class="uil uil-receipt me-1"></i>Warranty Claim Documents
+                            </div>
+                            <p class="text-muted mb-2" style="font-size:11px;">
+                                Attach the warranty claim form, damaged tyre photo, and vendor invoice.
+                            </p>
+                            <div class="tam-photo-grid">
+                                <div class="tam-photo-slot">
+                                    <span class="tam-photo-slot-label">Claim Form / Letter</span>
+                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_claim_form" id="tamRotWrnClaimForm" accept="image/jpeg,image/png,image/webp,application/pdf">
+                                    <img class="tam-photo-thumb" id="tamRotWrnClaimFormThumb" alt="Preview">
+                                </div>
+                                <div class="tam-photo-slot">
+                                    <span class="tam-photo-slot-label">Damaged Tyre Photo</span>
+                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_damage_photo" id="tamRotWrnDamagePhoto" accept="image/jpeg,image/png,image/webp">
+                                    <img class="tam-photo-thumb" id="tamRotWrnDamageThumb" alt="Preview">
+                                </div>
+                                <div class="tam-photo-slot">
+                                    <span class="tam-photo-slot-label">Vendor Invoice</span>
+                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_invoice" id="tamRotWrnInvoice" accept="image/jpeg,image/png,image/webp,application/pdf">
+                                    <img class="tam-photo-thumb" id="tamRotWrnInvoiceThumb" alt="Preview">
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:12px;">Claim Reference Number</label>
+                                    <input type="text" class="form-control form-control-sm" name="rot_warranty_claim_ref" id="tamRotWrnClaimRef" placeholder="e.g. WC-2024-001">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:12px;">Claim Date</label>
+                                    <input type="date" class="form-control form-control-sm" name="rot_warranty_claim_date" id="tamRotWrnClaimDate">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

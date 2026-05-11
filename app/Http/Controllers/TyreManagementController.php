@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
+use App\Models\Media;
 use App\Models\Tyre;
 use App\Models\Tyreposition;
+use App\Models\Tyrelog;
 use App\Models\Vehicle;
 use App\Models\Vehicletyremapping;
 use App\Models\Vehicletyremappinglog;
@@ -603,6 +605,216 @@ class TyreManagementController extends Controller
                 'message' => 'Something went wrong: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+     * POST  tyremanage/vehicle/{vehicle}/log-alignment
+     * Take Action Modal — Alignment tab submit
+     *
+     * Writes a tyrelog row with action_type = 'Alignment', updates
+     * tyre.last_alignment_km, and stores the invoice attachment to medias.
+     * ══════════════════════════════════════════════════════════════════════ */
+    public function logAlignment(Request $request, Vehicle $vehicle)
+    {
+        // ── 1. Validate ───────────────────────────────────────────────────────
+        $validator = Validator::make($request->all(), [
+            'mapping_id'      => 'required|integer',
+            'alignment_date'  => 'required|date',
+            'alignment_km'    => 'required|numeric|min:0',
+            'alignment_invoice' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+        ], [
+            'required'   => 'This field is required.',
+            'numeric'    => 'Must be a number.',
+            'min'        => 'Must be at least :min.',
+            'mimes'      => 'Only JPG, PNG, WEBP, or PDF files are allowed.',
+            'max'        => 'File size must not exceed 5 MB.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+                'message' => 'Please fill all required fields.',
+            ], 422);
+        }
+
+        // ── 2. Resolve mapping (must belong to this vehicle) ─────────────────
+        $mapping = Vehicletyremapping::find($request->mapping_id);
+        if (!$mapping || $mapping->vehicle_id != $vehicle->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid tyre position mapping.',
+            ], 422);
+        }
+
+        $tyre = Tyre::find($mapping->tyre_id);
+        if (!$tyre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tyre found at this position.',
+            ], 422);
+        }
+
+        // ── 3. Transaction ────────────────────────────────────────────────────
+        try {
+            $result = DB::transaction(function () use ($request, $vehicle, $mapping, $tyre) {
+                $userId       = Auth::id();
+                $alignDate    = date('Y-m-d', strtotime($request->alignment_date));
+                $alignKm      = (float) $request->alignment_km;
+
+                // 3a. Insert tyrelog row
+                $log = Tyrelog::create([
+                    'action_type'   => 'Alignment',
+                    'action_date'   => $alignDate,
+                    'action_km'     => $alignKm,
+                    'vehicle_id'    => $vehicle->id,
+                    'mapping_id'    => $mapping->id,
+                    'tyre_id'       => $tyre->id,
+                    'contact_id'    => $tyre->contact_id ?? 0,
+                    'tyre_condition'=> $tyre->tyre_condition ?? 'Used',
+                    'tyre_model'    => $tyre->tyre_model ?? '',
+                    'tyre_type'     => $tyre->tyre_type,
+                    'tyre_brand'    => $tyre->tyre_brand,
+                    'tyre_price'    => $tyre->tyre_price ?? 0,
+                    'tyre_serial_number' => $tyre->tyre_serial_number,
+                    'action_notes'  => 'Wheel Alignment logged via Take Action modal.',
+                    'created_by'    => $userId,
+                ]);
+
+                // 3b. Update tyre.last_alignment_km
+                $tyre->update(['last_alignment_km' => $alignKm]);
+
+                // 3c. Store invoice attachment to medias (morphable on Tyrelog)
+                if ($request->hasFile('alignment_invoice')) {
+                    $file     = $request->file('alignment_invoice');
+                    $fileType = $file->getClientMimeType();
+                    $fileSize = $file->getSize();
+                    $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('medias' . DIRECTORY_SEPARATOR . 'tyre' . DIRECTORY_SEPARATOR), $fileName);
+
+                    Media::create([
+                        'type'          => 'Image',
+                        'file_name'     => '[Alignment Invoice] ' . $file->getClientOriginalName(),
+                        'file_path'     => 'tyre/' . $fileName,
+                        'file_type'     => $fileType,
+                        'file_size'     => $fileSize,
+                        'mediable_id'   => $log->id,
+                        'mediable_type' => Tyrelog::class,
+                        'created_by'    => $userId,
+                    ]);
+                }
+
+                return $log;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Alignment logged successfully.',
+                'log_id'  => $result->id,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+     * GET  tyremanage/lookup-vehicle?vehicle_number=TS09QA3963
+     * Take Action Modal — "Another Vehicle" source: look up a donor vehicle
+     * by registration number. Returns the vehicle details and all of its
+     * mounted tyre positions with tyre data (for the position dropdown).
+     * ══════════════════════════════════════════════════════════════════════ */
+    public function lookupVehicleByNumber(Request $request)
+    {
+        $regNumber = trim($request->input('vehicle_number', ''));
+
+        if (!$regNumber) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vehicle number is required.',
+            ], 422);
+        }
+
+        // Search by vehicle_no (partial match, case-insensitive)
+        $vehicle = Vehicle::where('vehicle_no', 'like', '%' . $regNumber . '%')
+            ->first();
+
+        if (!$vehicle) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No vehicle found matching "' . $regNumber . '".',
+            ], 422);
+        }
+
+        // Load all mappings for the donor vehicle with tyre + position data
+        $mappings = Vehicletyremapping::with(['tyre', 'tyreposition'])
+            ->where('vehicle_id', $vehicle->id)
+            ->get();
+
+        // Compute RAG / life metrics inline (same logic as vehicleTyreTaggingV2)
+        foreach ($mappings as $mapping) {
+            $tyre = $mapping->tyre;
+            if (!$tyre) {
+                $mapping->rag_status         = 'grey';
+                $mapping->life_remaining_pct = null;
+                $mapping->remaining_run_km   = null;
+                continue;
+            }
+
+            $lifeRemainingPct = null;
+            if ($tyre->fixed_run_km > 0) {
+                $lifeRemainingPct = max(0, round(
+                    (($tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) / $tyre->fixed_run_km) * 100, 1
+                ));
+            }
+
+            if ($lifeRemainingPct === null) {
+                $ragStatus = 'grey';
+            } elseif ($lifeRemainingPct >= 50) {
+                $ragStatus = 'green';
+            } elseif ($lifeRemainingPct >= 20) {
+                $ragStatus = 'amber';
+            } else {
+                $ragStatus = 'red';
+            }
+
+            $mapping->rag_status         = $ragStatus;
+            $mapping->life_remaining_pct = $lifeRemainingPct;
+            $mapping->remaining_run_km   = $tyre->fixed_run_km > 0
+                ? max(0, $tyre->fixed_run_km - ($tyre->actual_run_km ?? 0))
+                : null;
+        }
+
+        $positions = $mappings->map(function ($m) {
+            $tyre = $m->tyre;
+            return [
+                'mapping_id'    => $m->id,
+                'position_code' => $m->tyreposition?->code ?? '?',
+                'status'        => $m->status,
+                'has_tyre'      => $tyre !== null,
+                'tyre_id'       => $tyre?->id,
+                'serial'        => $tyre?->tyre_serial_number ?? '',
+                'brand'         => $tyre?->tyre_brand ?? '',
+                'condition'     => $tyre?->tyre_condition ?? '',
+                'type'          => $tyre?->tyre_type ?? '',
+                'life_pct'      => $m->life_remaining_pct,
+                'rag'           => $m->rag_status ?? 'grey',
+                'remaining_km'  => $m->remaining_run_km,
+            ];
+        })->values();
+
+        return response()->json([
+            'success'         => true,
+            'vehicle'         => [
+                'id'         => $vehicle->id,
+                'reg_number' => $vehicle->vehicle_no,
+            ],
+            'positions'       => $positions,
+            'total_with_tyre' => $positions->where('has_tyre', true)->count(),
+        ], 200);
     }
 
     // public function store(Request $request)
