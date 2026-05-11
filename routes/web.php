@@ -578,6 +578,9 @@ Route::group(['middleware' => ['auth']], function() {
         // AJAX: full tyre history logs by tyre_id (eye-icon timeline modal)
         Route::get('/tyre/{tyre}/mapping-logs', [App\Http\Controllers\FleetDashboardController::class, 'getTyreMappingLogs'])->name('getTyreMappingLogs');
 
+        // AJAX: position-specific tyre history logs by vehicle + position (eye-icon modal — position view)
+        Route::get('/vehicle/{vehicle}/position/{tyreposition}/position-logs', [App\Http\Controllers\FleetDashboardController::class, 'getPositionMappingLogs'])->name('getPositionMappingLogs');
+
         Route::get('/vehicle/{vehicle}/tyre-details/create', [App\Http\Controllers\FleetDashboardController::class, 'manageTyreDetails'])->name('createTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/save', [App\Http\Controllers\FleetDashboardController::class, 'storeTyreDetails'])->name('saveTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/update', [App\Http\Controllers\FleetDashboardController::class, 'updateTyreDetails'])->name('updateTyreDetails');

@@ -1,5 +1,5 @@
 /**
- * vehicle-details-tyre.js  v3.4
+ * vehicle-details-tyre.js  v3.5
  * Tyre section interactions for Vehicle Details V2 page.
  *
  * SD-1  : All tyre JS lives here — no inline scripts in blade.
@@ -338,6 +338,16 @@ function vtdRenderTimeline(res) {
             var posTitle = log.tyre_position_desc ? log.tyre_position_desc : log.tyre_position_code;
             html += ' &nbsp;<span class="vtd-tl-position-badge" title="' + vtdEsc(posTitle) + '">' +
                     vtdEsc(log.tyre_position_code) +
+                    '</span>';
+        }
+
+        /* Tyre serial badge — shown when position-based logs return tyre info per entry */
+        if (log.tyre_serial && log.tyre_serial !== '—') {
+            var tyreLabel = vtdEsc(log.tyre_serial);
+            if (log.tyre_brand) { tyreLabel += ' &nbsp;·&nbsp; ' + vtdEsc(log.tyre_brand); }
+            if (log.tyre_model) { tyreLabel += ' ' + vtdEsc(log.tyre_model); }
+            html += ' &nbsp;<span class="vtd-tl-tyre-badge" title="Tyre: ' + vtdEsc(log.tyre_serial) + '">' +
+                    '<i class="uil uil-circle me-1"></i>' + tyreLabel +
                     '</span>';
         }
 

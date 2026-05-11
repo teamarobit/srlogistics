@@ -1623,6 +1623,24 @@
     cursor: default;
 }
 
+/* Tyre serial badge — shown in position-based log view, one per log entry */
+.vtd-tl-tyre-badge {
+    display: inline-block;
+    background: #f6f3ff;
+    color: #6541c1;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    letter-spacing: 0.03em;
+    cursor: default;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 /* Attachment toggle icon button */
 .vtd-tl-attach-toggle {
     display: inline-flex;

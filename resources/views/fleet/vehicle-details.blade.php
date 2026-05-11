@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.3') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.4') }}">
 
 @endsection
 
@@ -1015,7 +1015,7 @@
                                             data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
-                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getPositionMappingLogs', [$vehicle->id, $m->tyreposition_id]) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1086,7 +1086,7 @@
                                             data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
-                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getPositionMappingLogs', [$vehicle->id, $m->tyreposition_id]) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1176,7 +1176,7 @@
                                             data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
-                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getPositionMappingLogs', [$vehicle->id, $m->tyreposition_id]) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -1246,7 +1246,7 @@
                                             data-imgcount="{{ $imgCount }}"
                                             data-manage-url="{{ route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id) }}"
                                             data-tyre-id="{{ ($m && $m->tyre) ? $m->tyre->id : '' }}"
-                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getTyreMappingLogs', $m->tyre->id) : '' }}">
+                                            data-logs-url="{{ ($m && $m->tyre) ? route('fleetdashboard.getPositionMappingLogs', [$vehicle->id, $m->tyreposition_id]) : '' }}">
                                             <div class="vtd-card-head">
                                                 <span class="vtd-pos-dot" style="background:{{ $hex }};"></span>
                                                 <span class="vtd-pos-label">{{ $lbl }}</span>
@@ -6092,7 +6092,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.4') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.5') }}"></script>
 
 <script>
 

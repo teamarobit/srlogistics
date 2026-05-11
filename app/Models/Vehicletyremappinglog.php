@@ -26,6 +26,11 @@ class Vehicletyremappinglog extends Model
         return $this->belongsTo(Tyreposition::class);
     }
 
+    public function tyre()
+    {
+        return $this->belongsTo(Tyre::class);
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -465,7 +465,7 @@ class TyreManagementController extends Controller
                 ]);
 
                 // 4. Insert history log row (never update — insert only)
-                Vehicletyremappinglog::create([
+                $mappingLog = Vehicletyremappinglog::create([
                     'vehicletyremapping_id' => $mapping->id,
                     'vehicle_id'            => $vehicle->id,
                     'tyre_id'               => $tyreId,
@@ -476,6 +476,13 @@ class TyreManagementController extends Controller
                     'notes'                 => $source,
                     'created_by'            => $userId,
                 ]);
+
+                // 5. Attach the same fitment photos to the log entry so the
+                //    position-history timeline (eye-icon modal) can display them
+                //    per log row via $log->medias.
+                if (!empty($mediaData) && $mappingLog) {
+                    $mappingLog->medias()->createMany($mediaData);
+                }
             });
 
             return response()->json([
