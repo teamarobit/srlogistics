@@ -307,6 +307,243 @@ display: flex;align-items: center;border:1px solid #c7c2c2; border-radius: 3px;}
     margin: 0;    padding: 0;    width: 45px;    height: 35px;    background: #032671;    display: flex;
     align-items: center;    justify-content: center;    border-radius: 0 2px 2px 0px;    color: #fff; }
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   TYRE MOVEMENT LOG — Timeline  (prefix: tl-)
+   Added: 2026-05-11
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Log Summary Strip (4 counters) ──────────────────────────────── */
+.tl-log-summary {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #f0f3f9;
+}
+.tl-log-sum-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    border-right: 1px solid #f0f3f9;
+}
+.tl-log-sum-item:last-child { border-right: none; }
+.tl-log-sum-val {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #032671;
+    line-height: 1.2;
+}
+.tl-log-sum-lbl {
+    display: block;
+    font-size: 11px;
+    color: #8898aa;
+    margin-top: 2px;
+}
+
+/* ── Timeline Container ───────────────────────────────────────────── */
+.tl-timeline {
+    position: relative;
+}
+.tl-log-event {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+
+/* ── Dot Column ───────────────────────────────────────────────────── */
+.tl-dot-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    padding-top: 2px;
+}
+.tl-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    z-index: 1;
+}
+.tl-connector {
+    width: 2px;
+    flex: 1;
+    min-height: 32px;
+    background: #e4e8f0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+/* ── Dot Color Variants ───────────────────────────────────────────── */
+.tl-dot-create      { background: #e3ecff; color: #032671; }
+.tl-dot-fitment     { background: #e6f4ea; color: #10863f; }
+.tl-dot-replacement { background: #fff3e0; color: #d97706; }
+.tl-dot-rotation    { background: #e3f0ff; color: #1565c0; }
+.tl-dot-alignment   { background: #ede7f6; color: #5c35a5; }
+.tl-dot-warranty    { background: #fff8e1; color: #f59e0b; }
+.tl-dot-rethread    { background: #e0f7fa; color: #00796b; }
+.tl-dot-scrap       { background: #fdecea; color: #ea0027; }
+.tl-dot-pending     { background: #f4f6f9; color: #8898aa; }
+.tl-dot-other       { background: #f4f6f9; color: #8898aa; }
+
+/* ── Timeline Card ────────────────────────────────────────────────── */
+.tl-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8ecf4;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.tl-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid #f4f6f9;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.tl-event-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* Badge color variants */
+.tl-badge-create      { background: #e3ecff; color: #032671; }
+.tl-badge-fitment     { background: #e6f4ea; color: #10863f; }
+.tl-badge-replacement { background: #fff3e0; color: #d97706; }
+.tl-badge-rotation    { background: #e3f0ff; color: #1565c0; }
+.tl-badge-alignment   { background: #ede7f6; color: #5c35a5; }
+.tl-badge-warranty    { background: #fff8e1; color: #f59e0b; }
+.tl-badge-rethread    { background: #e0f7fa; color: #00796b; }
+.tl-badge-scrap       { background: #fdecea; color: #ea0027; }
+.tl-badge-pending     { background: #f4f6f9; color: #8898aa; }
+.tl-badge-other       { background: #f4f6f9; color: #8898aa; }
+
+.tl-event-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2533;
+}
+.tl-date {
+    font-size: 11px;
+    color: #adb5bd;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Card body */
+.tl-card-body { padding: 12px 16px; }
+.tl-detail-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 5px;
+    align-items: flex-start;
+}
+.tl-dl {
+    font-size: 11px;
+    color: #8898aa;
+    min-width: 110px;
+    flex-shrink: 0;
+}
+.tl-dv {
+    font-size: 12px;
+    color: #1a2533;
+}
+.tl-notes {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #485D6B;
+    background: #f8f9fc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    border-left: 3px solid #dee2e6;
+}
+
+/* Card left-border accent by event type */
+.tl-ev-create      .tl-card { border-left: 3px solid #032671; }
+.tl-ev-fitment     .tl-card { border-left: 3px solid #10863f; }
+.tl-ev-replacement .tl-card { border-left: 3px solid #d97706; }
+.tl-ev-rotation    .tl-card { border-left: 3px solid #1565c0; }
+.tl-ev-alignment   .tl-card { border-left: 3px solid #5c35a5; }
+.tl-ev-warranty    .tl-card { border-left: 3px solid #f59e0b; }
+.tl-ev-rethread    .tl-card { border-left: 3px solid #00796b; }
+.tl-ev-scrap       .tl-card { border-left: 3px solid #ea0027; }
+.tl-ev-pending     .tl-card { border-left: 3px solid #8898aa; }
+.tl-ev-other       .tl-card { border-left: 3px solid #8898aa; }
+
+/* ── Attachments Row ──────────────────────────────────────────────── */
+.tl-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+.tl-att-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #032671;
+    background: #f0f4ff;
+    border: 1px solid #c5d0ee;
+    border-radius: 20px;
+    padding: 3px 10px;
+    text-decoration: none;
+    transition: background 0.15s;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.tl-att-chip:hover { background: #dde5f7; color: #032671; }
+.tl-att-chip .uil { font-size: 13px; flex-shrink: 0; }
+
+/* ── Empty State ──────────────────────────────────────────────────── */
+.tl-log-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: #adb5bd;
+}
+.tl-log-empty-icon {
+    font-size: 44px;
+    opacity: 0.28;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* ── Filter + Load More row ───────────────────────────────────────── */
+.tl-log-filter { font-size: 12px; }
+.tl-log-loadmore {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #f0f3f9;
+}
+.tl-log-count { font-size: 11px; color: #adb5bd; }
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .tl-log-summary { flex-wrap: wrap; }
+    .tl-log-sum-item { flex: 1 1 50%; border-bottom: 1px solid #f0f3f9; }
+    .tl-dot-wrap { width: 28px; }
+    .tl-dot { width: 28px; height: 28px; font-size: 13px; }
+    .tl-card-header { flex-direction: column; gap: 4px; }
+    .tl-dl { min-width: 90px; }
+}
+
 .vehicleinfo-wrap .filter-options .filterbd .item-row02 .fxportbtn {	/* margin: 0 0 0 8px; */	/* padding: 0; */	/* min-width: auto; */	background: transparent;
 	color: #fff;	font-family: Inter;	font-weight: 500;
 	font-size: 13px;	line-height: 19px;	letter-spacing: 0%;	text-transform: initial; 

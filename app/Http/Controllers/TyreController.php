@@ -474,6 +474,12 @@ class TyreController extends Controller
             $ragClass  = 'badge-danger';
         }
 
+        // Movement Log — full chronological log for this tyre (newest first)
+        $tyreLogs = Tyrelog::where('tyre_id', $tyre->id)
+            ->with(['medias', 'createdBy', 'vehicle.basicinfo'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $this->storeUseractivity(66, 5, Auth::id(), $tyre->id, 'Tyre details retrieved');
 
         return view('tyre.show', compact(
@@ -481,7 +487,8 @@ class TyreController extends Controller
             'mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
             'maintenanceSchedules', 'tyreLifeInfo',
             'remainingWarrantyMonths', 'ragStatus', 'ragClass',
-            'vehicleAllocations', 'tyreRepairs'
+            'vehicleAllocations', 'tyreRepairs',
+            'tyreLogs'
         ));
     }
 

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.3') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/show.css?v=3.3') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/show.css?v=3.4') }}">
 
 @endsection
     
@@ -839,6 +839,13 @@
                         </li>
                         
                         <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#movement-log">
+                                <span class="icon"><i class="uil uil-history" style="font-size:18px;vertical-align:middle;"></i></span>
+                                Movement Log
+                            </button>
+                        </li>
+
+                        <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#maintenance">
                                 <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" /></span>
                                 Maintenance
@@ -1023,7 +1030,265 @@
 
                         </div>
                         <!--Trip-Book-content-here-END-->
-                        
+
+                        {{-- ══════════════════════════════════════════
+                             MOVEMENT LOG TAB
+                        ══════════════════════════════════════════ --}}
+                        <div class="tab-pane fade" id="movement-log">
+
+                            @php
+                                /* ── Summary strip counters ── */
+                                $tlTotal        = $tyreLogs->count();
+                                $tlVehiclesUsed = $tyreLogs->whereNotNull('vehicle_id')->pluck('vehicle_id')->unique()->count();
+                                $tlActions      = $tyreLogs->whereNotNull('action_type')->count();
+                                $tlCurrentVeh   = $tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? '—';
+                            @endphp
+
+                            <div class="sc-card mt-3">
+
+                                {{-- ── Card Head ── --}}
+                                <div class="sc-card-head d-flex align-items-center justify-content-between">
+                                    <span class="sc-card-title">
+                                        <i class="uil uil-history me-2"></i>Movement Log
+                                    </span>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <select class="form-select form-select-sm tl-log-filter"
+                                                id="tl-log-type-filter"
+                                                style="width:155px;">
+                                            <option value="">All Events</option>
+                                            <option value="fitment">Fitment</option>
+                                            <option value="replacement">Replacement</option>
+                                            <option value="rotation">Rotation</option>
+                                            <option value="alignment">Alignment</option>
+                                            <option value="warranty claim">Warranty Claim</option>
+                                            <option value="re-thread">Re-thread</option>
+                                            <option value="scrap">Scrap</option>
+                                            <option value="yet to decide">Yet to Decide</option>
+                                            <option value="other">Other</option>
+                                            <option value="null">Created (initial)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- ── Summary Strip ── --}}
+                                <div class="tl-log-summary">
+                                    <div class="tl-log-sum-item">
+                                        <span class="tl-log-sum-val">{{ $tlTotal }}</span>
+                                        <span class="tl-log-sum-lbl">Total Events</span>
+                                    </div>
+                                    <div class="tl-log-sum-item">
+                                        <span class="tl-log-sum-val" style="font-size:13px;">{{ $tlCurrentVeh }}</span>
+                                        <span class="tl-log-sum-lbl">Current Vehicle</span>
+                                    </div>
+                                    <div class="tl-log-sum-item">
+                                        <span class="tl-log-sum-val">{{ $tlVehiclesUsed }}</span>
+                                        <span class="tl-log-sum-lbl">Vehicles Used On</span>
+                                    </div>
+                                    <div class="tl-log-sum-item">
+                                        <span class="tl-log-sum-val">{{ $tlActions }}</span>
+                                        <span class="tl-log-sum-lbl">Actions Logged</span>
+                                    </div>
+                                </div>
+
+                                {{-- ── Timeline ── --}}
+                                <div class="tl-timeline p-3 p-md-4">
+
+                                    @forelse($tyreLogs as $log)
+                                    @php
+                                        /* ── Event type helpers ── */
+                                        $rawType  = $log->action_type;                          // e.g. "Alignment" or null
+                                        $typeKey  = $rawType ? strtolower(str_replace([' ','-'], ['','-'], $rawType)) : 'create';
+                                        // Normalise to CSS-safe key
+                                        $typeKey  = match($rawType) {
+                                            'Fitment'        => 'fitment',
+                                            'Replacement'    => 'replacement',
+                                            'Rotation'       => 'rotation',
+                                            'Alignment'      => 'alignment',
+                                            'Warranty Claim' => 'warranty',
+                                            'Re-thread'      => 'rethread',
+                                            'Scrap'          => 'scrap',
+                                            'Yet to Decide'  => 'pending',
+                                            'Other'          => 'other',
+                                            default          => 'create',
+                                        };
+
+                                        /* ── Event title ── */
+                                        $vehNo    = $log->vehicle?->basicinfo?->vehicle_number ?? null;
+                                        $vehLabel = $vehNo ? $vehNo : '—';
+                                        $evTitle  = match($rawType) {
+                                            'Fitment'        => 'Fitted to ' . $vehLabel,
+                                            'Replacement'    => 'Tyre replaced on ' . $vehLabel,
+                                            'Rotation'       => 'Wheel rotation on ' . $vehLabel,
+                                            'Alignment'      => 'Wheel alignment on ' . $vehLabel,
+                                            'Warranty Claim' => 'Warranty claim logged',
+                                            'Re-thread'      => 'Sent for re-threading',
+                                            'Scrap'          => 'Marked as Scrap',
+                                            'Yet to Decide'  => 'Status: Yet to Decide',
+                                            'Other'          => 'Action logged',
+                                            default          => 'Tyre record created',
+                                        };
+
+                                        /* ── Badge label ── */
+                                        $badgeLabel = $rawType ?? 'Created';
+
+                                        /* ── Icons per type ── */
+                                        $dotIcon = match($typeKey) {
+                                            'fitment'     => 'uil-car-sideview',
+                                            'replacement' => 'uil-sync',
+                                            'rotation'    => 'uil-redo',
+                                            'alignment'   => 'uil-ruler-combined',
+                                            'warranty'    => 'uil-shield-check',
+                                            'rethread'    => 'uil-circle',
+                                            'scrap'       => 'uil-trash-alt',
+                                            'pending'     => 'uil-clock',
+                                            'other'       => 'uil-clipboard-notes',
+                                            default       => 'uil-plus-circle',
+                                        };
+
+                                        /* ── Date/time ── */
+                                        $logDate   = $log->created_at
+                                                        ? \Carbon\Carbon::parse($log->created_at)->format('d M Y · h:i A')
+                                                        : '—';
+                                        $actionDate = $log->action_date
+                                                        ? \Carbon\Carbon::parse($log->action_date)->format('d M Y')
+                                                        : '—';
+
+                                        /* ── filter data-event-type value ── */
+                                        $filterType = $rawType ? strtolower($rawType) : 'null';
+
+                                        /* ── Is last event? (no connector) ── */
+                                        $isLast = $loop->last;
+                                    @endphp
+
+                                    <div class="tl-log-event tl-ev-{{ $typeKey }}"
+                                         data-event-type="{{ $filterType }}">
+
+                                        {{-- Dot column --}}
+                                        <div class="tl-dot-wrap">
+                                            <div class="tl-dot tl-dot-{{ $typeKey }}">
+                                                <i class="uil {{ $dotIcon }}"></i>
+                                            </div>
+                                            @unless($isLast)
+                                            <div class="tl-connector"></div>
+                                            @endunless
+                                        </div>
+
+                                        {{-- Event card --}}
+                                        <div class="tl-card">
+                                            <div class="tl-card-header">
+                                                <div>
+                                                    <span class="tl-event-badge tl-badge-{{ $typeKey }}">
+                                                        {{ $badgeLabel }}
+                                                    </span>
+                                                    <span class="tl-event-title">{{ $evTitle }}</span>
+                                                </div>
+                                                <span class="tl-date">{{ $logDate }}</span>
+                                            </div>
+
+                                            <div class="tl-card-body">
+                                                <div class="row g-2">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Action Date</span>
+                                                            <span class="tl-dv">{{ $actionDate }}</span>
+                                                        </div>
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Condition</span>
+                                                            <span class="tl-dv">{{ $log->tyre_condition ?? '—' }}</span>
+                                                        </div>
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Vehicle No.</span>
+                                                            <span class="tl-dv">{{ $vehNo ?? '—' }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Action KM</span>
+                                                            <span class="tl-dv">
+                                                                {{ $log->action_km !== null ? number_format($log->action_km) . ' KM' : '—' }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Location</span>
+                                                            <span class="tl-dv">{{ $log->location ?? '—' }}</span>
+                                                        </div>
+                                                        <div class="tl-detail-row">
+                                                            <span class="tl-dl">Created By</span>
+                                                            <span class="tl-dv">{{ $log->createdBy?->name ?? '—' }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Notes — skip if stored as JSON (system-generated structured data) --}}
+                                                @php
+                                                    $notesText   = $log->action_notes ?? '';
+                                                    $notesIsJson = !empty($notesText)
+                                                                    && json_decode($notesText) !== null
+                                                                    && json_last_error() === JSON_ERROR_NONE;
+                                                @endphp
+                                                @if(!empty($notesText) && !$notesIsJson)
+                                                <div class="tl-notes">
+                                                    <i class="uil uil-notes me-1"></i>{{ $notesText }}
+                                                </div>
+                                                @endif
+
+                                                {{-- Attachments --}}
+                                                @if($log->medias->count() > 0)
+                                                <div class="tl-attachments">
+                                                    @foreach($log->medias as $media)
+                                                    @php
+                                                        $isImage   = str_contains(strtolower($media->file_type ?? ''), 'image');
+                                                        $attIcon   = $isImage ? 'uil-image' : 'uil-file-alt';
+                                                        $attUrl    = asset('medias/' . $media->file_path);
+                                                        $attLabel  = \Illuminate\Support\Str::limit($media->file_name ?? 'Attachment', 28);
+                                                    @endphp
+                                                    <a href="{{ $attUrl }}" target="_blank"
+                                                       class="tl-att-chip"
+                                                       title="{{ $media->file_name }}">
+                                                        <i class="uil {{ $attIcon }}"></i>
+                                                        {{ $attLabel }}
+                                                    </a>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+
+                                            </div>{{-- /.tl-card-body --}}
+                                        </div>{{-- /.tl-card --}}
+
+                                    </div>{{-- /.tl-log-event --}}
+
+                                    @empty
+
+                                    {{-- Empty state (no logs at all) --}}
+                                    <div class="tl-log-empty" id="tl-log-empty-all">
+                                        <i class="uil uil-history tl-log-empty-icon"></i>
+                                        <p class="mb-0">No movement history for this tyre.</p>
+                                    </div>
+
+                                    @endforelse
+
+                                    {{-- Empty state shown by JS when filter returns 0 results --}}
+                                    <div class="tl-log-empty" id="tl-log-empty" style="display:none;">
+                                        <i class="uil uil-search tl-log-empty-icon"></i>
+                                        <p class="mb-0">No events for this filter.</p>
+                                    </div>
+
+                                </div>{{-- /.tl-timeline --}}
+
+                                {{-- Load-more strip --}}
+                                @if($tyreLogs->count() > 0)
+                                <div class="tl-log-loadmore">
+                                    <span></span>
+                                    <span class="tl-log-count">
+                                        Showing {{ $tyreLogs->count() }} {{ Str::plural('event', $tyreLogs->count()) }}
+                                    </span>
+                                </div>
+                                @endif
+
+                            </div>{{-- /.sc-card --}}
+                        </div>{{-- /#movement-log --}}
+                        {{-- ══ END MOVEMENT LOG TAB ══ --}}
+
                         <!--Maintenance-content-here-->
                         <div class="tab-pane fade" id="maintenance">
                             <div class="totalrevenue mt-3">
@@ -2033,6 +2298,8 @@
      style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/tyre/show.js?v=2.2') }}"></script>
+{{-- Movement Log tab JS (SD-1: external file only) --}}
+<script src="{{ asset('js/tyre/show.js?v=1.0') }}"></script>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
