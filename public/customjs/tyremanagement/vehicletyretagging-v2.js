@@ -808,110 +808,23 @@ $(document).ready(function () {
         }
     });
 
-    /* ── B6b. ROTATE TAB — OLD TYRE DESTINATION + ACTION ────────────────── */
-    $(document).on('change', 'input[name="rot_old_tyre_destination"]', function () {
-        const val = $(this).val();
-
-        /* Activate pill */
-        $('#tamRotOldSourceGrid .tam-old-source-pill').removeClass('active');
-        $(this).closest('.tam-old-source-pill').addClass('active');
-
-        /* Reset conditionals */
-        $('#tamRotOwnVehicleOverLimitAlert').addClass('d-none');
-        $('#tamRotOldOtherVehicleWrap').hide();
-        $('#tamRotOldDestVehicleNo').val('');
-        $('#tamRotOldDestPosition').val('');
-
-        if (val === 'Own Vehicle' || val === 'Spare Tyre') {
-            const spares = (typeof spareTyresList !== 'undefined') ? spareTyresList : [];
-            if (spares.length >= 2) {
-                $('#tamRotOwnVehicleOverLimitAlert').removeClass('d-none');
-            }
-        } else if (val === 'Another Vehicle') {
-            $('#tamRotOldOtherVehicleWrap').show();
-        }
-
-        $('#tamErrRotOldDest').text('');
-    });
-
-    /* Rotate tab — old tyre action pill */
-    $(document).on('change', 'input[name="rot_old_tyre_action"]', function () {
-        $('#tamRotOldActionGrid .tam-old-action-pill').removeClass('active');
-        $(this).closest('.tam-old-action-pill').addClass('active');
-        $('#tamErrRotOldAction').text('');
-
-        /* Show/hide Warranty Claim attachment section */
-        if ($(this).val() === 'Warranty Claim') {
-            $('#tamRotWarrantyClaimSection').removeClass('d-none');
-        } else {
-            $('#tamRotWarrantyClaimSection').addClass('d-none');
-        }
-    });
-
-    /* ── B7. ROTATE TAB — REASON CARD SELECTION ─────────────────────────── */
-    $(document).on('change', 'input[name="rotation_reason"]', function () {
-        const val = $(this).val();
-
-        /* Activate reason card */
-        $('.tam-reason-card').removeClass('active');
-        $(this).closest('.tam-reason-card').addClass('active');
-
-        /* Health alert: if tyre life > 60% and reason is "Tyre Weak" */
-        if (val === 'Tyre Weak' && _tamCurrentLifePct !== null && _tamCurrentLifePct > 60) {
-            $('#tamRotateWeakHealthText').text(
-                'This tyre has ' + _tamCurrentLifePct + '% life remaining. ' +
-                'Marking it as weak may indicate potential tyre damage. Please verify before proceeding.'
-            );
-            $('#tamRotateWeakHealthAlert').removeClass('d-none');
-        } else {
-            $('#tamRotateWeakHealthAlert').addClass('d-none');
-        }
-
-        /* Interval alert: for Scheduled Maintenance check last rotation KM */
-        if (val === 'Scheduled Maintenance Tyre Rotation') {
-            tamCheckRotationInterval();
-        } else {
-            $('#tamRotIntervalAlert').addClass('d-none');
-        }
-
-        $('#tamErrRotReason').text('');
-    });
-
-    function tamCheckRotationInterval() {
-        /* Client-side check using allMappings data */
-        const currentKm = typeof lastKnownKm !== 'undefined' ? lastKnownKm : 0;
-        if (!currentKm) { $('#tamRotIntervalAlert').addClass('d-none'); return; }
-
-        /* Find interval data from allMappings */
-        const mapping = (typeof allMappings !== 'undefined') ?
-            allMappings.find(function (m) { return m.pos === _tamCurrentPos; }) : null;
-
-        /* If we don't have interval data, skip the check */
-        if (!mapping) { $('#tamRotIntervalAlert').addClass('d-none'); return; }
-
-        /* Data lives on tyre object — we don't have it here so skip */
-        $('#tamRotIntervalAlert').addClass('d-none');
-    }
-
     /* ── B8. ROTATE TAB — DYNAMIC MAPPING ROWS ──────────────────────────── */
     let _tamMappingRowCount = 0;
 
     $(document).on('click', '#tamBtnAddMapping', function () {
         _tamMappingRowCount++;
         const rowId = 'tamMapRow' + _tamMappingRowCount;
-        const fromOptions = tamBuildPositionOptions('');
-        const toOptions   = tamBuildPositionOptions('');
 
+        /* Build initial empty selects — tamRefreshAllMappingDropdowns will
+           immediately filter out already-used positions after append */
         const $row = $(`
             <div class="tam-mapping-row" id="${rowId}">
-                <select class="form-select form-select-sm tam-map-from" name="rotation_mapping[${_tamMappingRowCount}][from]">
+                <select class="form-select form-select-sm tam-map-from" name="rotation_mapping[${rowId}][from]">
                     <option value="">— From —</option>
-                    ${fromOptions}
                 </select>
                 <span class="tam-mapping-arrow"><i class="uil uil-arrow-right"></i></span>
-                <select class="form-select form-select-sm tam-map-to" name="rotation_mapping[${_tamMappingRowCount}][to]">
+                <select class="form-select form-select-sm tam-map-to" name="rotation_mapping[${rowId}][to]">
                     <option value="">— To —</option>
-                    ${toOptions}
                 </select>
                 <button type="button" class="tam-btn-remove-row" data-row="${rowId}" title="Remove row">
                     <i class="uil uil-trash"></i>
@@ -919,19 +832,177 @@ $(document).ready(function () {
             </div>
         `);
 
-        /* Hide empty notice */
+        /* Append row, then refresh options (excludes positions used by other rows) */
         $('#tamMappingEmpty').hide();
         $('#tamMappingRows').append($row);
         $('#tamErrRotMapping').text('');
+        tamRefreshAllMappingDropdowns();
+        tamSyncRotationDetails();
     });
 
     $(document).on('click', '.tam-btn-remove-row', function () {
         const rowId = $(this).data('row');
+        /* Remove corresponding detail row first */
+        $('#tamRotDetailsRows [data-map-row="' + rowId + '"]').remove();
         $('#' + rowId).remove();
         if ($('#tamMappingRows .tam-mapping-row').length === 0) {
             $('#tamMappingEmpty').show();
+            $('#tamRotDetailsRows').html(
+                '<div class="tam-mapping-empty" id="tamRotDetailsEmpty">' +
+                '<i class="uil uil-info-circle me-1"></i>Add mapping rows above to fill rotation details' +
+                '</div>'
+            );
         }
+        tamRefreshAllMappingDropdowns();
     });
+
+    /* ── B8b. MAPPING FROM/TO CHANGE — sync label + restrict used positions ─ */
+    $(document).on('change', '.tam-map-from, .tam-map-to', function () {
+        tamRefreshAllMappingDropdowns();
+        tamSyncRotationDetails();
+    });
+
+    /* ── B8c. tamSyncRotationDetails — keeps detail rows in step with mapping ── */
+    function tamSyncRotationDetails() {
+        const $mapRows = $('#tamMappingRows .tam-mapping-row');
+
+        if ($mapRows.length === 0) {
+            $('#tamRotDetailsRows').html(
+                '<div class="tam-mapping-empty" id="tamRotDetailsEmpty">' +
+                '<i class="uil uil-info-circle me-1"></i>Add mapping rows above to fill rotation details' +
+                '</div>'
+            );
+            return;
+        }
+
+        /* Remove any detail rows for mapping rows that no longer exist */
+        $('#tamRotDetailsRows .tam-rot-detail-row').each(function () {
+            if ($('#' + $(this).data('map-row')).length === 0) {
+                $(this).remove();
+            }
+        });
+
+        /* Add / update a detail row for each mapping row */
+        $mapRows.each(function () {
+            const rowId   = $(this).attr('id');
+            const fromVal = $(this).find('.tam-map-from').val() || '—';
+            const toVal   = $(this).find('.tam-map-to').val()   || '—';
+            const label   = fromVal + ' &rarr; ' + toVal;
+
+            const $existing = $('#tamRotDetailsRows [data-map-row="' + rowId + '"]');
+
+            if ($existing.length) {
+                /* Just refresh the label — never touch entered values */
+                $existing.find('.tam-rot-detail-pair-label').html(
+                    '<i class="uil uil-arrows-h me-1" style="font-size:14px;"></i>' + label
+                );
+            } else {
+                /* Build a fresh detail row */
+                const $dr = $(
+                    '<div class="tam-rot-detail-row" data-map-row="' + rowId + '">' +
+                        '<div class="tam-rot-detail-pair-label">' +
+                            '<i class="uil uil-arrows-h me-1" style="font-size:14px;"></i>' + label +
+                        '</div>' +
+                        '<div class="row g-2">' +
+                            '<div class="col-md-4">' +
+                                '<label class="form-label fw-semibold" style="font-size:12px;">Rotation Date <span class="text-danger">*</span></label>' +
+                                '<input type="date" class="form-control form-control-sm tam-rot-detail-date" name="rotation_details[' + rowId + '][date]">' +
+                                '<span class="tam-field-error tam-rot-detail-err-date"></span>' +
+                            '</div>' +
+                            '<div class="col-md-4">' +
+                                '<label class="form-label fw-semibold" style="font-size:12px;">KM at Rotation (From Tyre) <span class="text-danger">*</span></label>' +
+                                '<div class="input-group input-group-sm">' +
+                                    '<input type="number" class="form-control tam-rot-detail-km-from" name="rotation_details[' + rowId + '][km_from]" min="0" placeholder="0">' +
+                                    '<span class="input-group-text">KM</span>' +
+                                '</div>' +
+                                '<span class="tam-field-error tam-rot-detail-err-km-from"></span>' +
+                            '</div>' +
+                            '<div class="col-md-4">' +
+                                '<label class="form-label fw-semibold" style="font-size:12px;">KM at Rotation (To Tyre) <span class="text-danger">*</span></label>' +
+                                '<div class="input-group input-group-sm">' +
+                                    '<input type="number" class="form-control tam-rot-detail-km-to" name="rotation_details[' + rowId + '][km_to]" min="0" placeholder="0">' +
+                                    '<span class="input-group-text">KM</span>' +
+                                '</div>' +
+                                '<span class="tam-field-error tam-rot-detail-err-km-to"></span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+                );
+                $('#tamRotDetailsRows').append($dr);
+            }
+        });
+
+        /* Re-order detail rows to match mapping row order */
+        $mapRows.each(function () {
+            const rowId = $(this).attr('id');
+            $('#tamRotDetailsRows').append($('#tamRotDetailsRows [data-map-row="' + rowId + '"]'));
+        });
+
+        $('#tamErrRotDetails').text('');
+    }
+
+    /* ── B8d. tamRefreshAllMappingDropdowns — prevent duplicate position use ─
+       Each tyre position may appear at most once across ALL From and To columns.
+       After any From/To change, every row's dropdowns are rebuilt to only show
+       positions not already claimed by another row.                            */
+    function tamRefreshAllMappingDropdowns() {
+        const $rows = $('#tamMappingRows .tam-mapping-row');
+        if ($rows.length === 0) return;
+
+        const allPositions = (typeof allMappings !== 'undefined')
+            ? allMappings.map(function (m) { return m.pos; }).filter(Boolean)
+            : [];
+
+        /* Snapshot: rowId → { from, to } */
+        const rowSelections = {};
+        $rows.each(function () {
+            const id = $(this).attr('id');
+            rowSelections[id] = {
+                from: $(this).find('.tam-map-from').val() || '',
+                to:   $(this).find('.tam-map-to').val()   || '',
+            };
+        });
+
+        /* Rebuild each row's dropdowns */
+        $rows.each(function () {
+            const rowId    = $(this).attr('id');
+            const $fromSel = $(this).find('.tam-map-from');
+            const $toSel   = $(this).find('.tam-map-to');
+            const curFrom  = rowSelections[rowId].from;
+            const curTo    = rowSelections[rowId].to;
+
+            /* Positions locked by OTHER rows (in From OR To column) */
+            const usedByOthers = new Set();
+            $.each(rowSelections, function (id, sel) {
+                if (id === rowId) return;
+                if (sel.from) usedByOthers.add(sel.from);
+                if (sel.to)   usedByOthers.add(sel.to);
+            });
+
+            /* From options: exclude positions used by others + this row's To */
+            let fromHtml = '<option value="">— From —</option>';
+            allPositions.forEach(function (pos) {
+                if (usedByOthers.has(pos)) return;
+                if (pos === curTo)         return;   /* From ≠ To */
+                const sel = pos === curFrom ? ' selected' : '';
+                fromHtml += '<option value="' + pos + '"' + sel + '>' + pos + '</option>';
+            });
+
+            /* To options: exclude positions used by others + this row's From */
+            let toHtml = '<option value="">— To —</option>';
+            allPositions.forEach(function (pos) {
+                if (usedByOthers.has(pos)) return;
+                if (pos === curFrom)       return;   /* To ≠ From */
+                const sel = pos === curTo ? ' selected' : '';
+                toHtml += '<option value="' + pos + '"' + sel + '>' + pos + '</option>';
+            });
+
+            $fromSel.html(fromHtml);
+            $toSel.html(toHtml);
+        });
+
+        $('#tamErrRotMapping').text('');
+    }
 
     function tamBuildPositionOptions(selectedVal) {
         const positions = (typeof allMappings !== 'undefined') ?
@@ -1158,14 +1229,47 @@ $(document).ready(function () {
             tamSubmitAlignment($(this));
         } else if (_tamActiveTab === 'replace') {
             tamSubmitReplace($(this));
-        } else {
-            /* Rotate backend — next sprint */
-            Toast.fire({
-                icon : 'info',
-                title: '✅ Validation passed! Rotate backend submission coming in next sprint.'
-            });
+        } else if (_tamActiveTab === 'rotate') {
+            tamSubmitRotate($(this));
         }
     });
+
+    /* ── B12r. ROTATE AJAX SUBMIT ────────────────────────────────────────── */
+    function tamSubmitRotate($btn) {
+        const fd = new FormData($('#tamRotateForm')[0]);
+        fd.append('_token', csrfToken);
+
+        const originalLabel = $btn.html();
+        $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
+
+        $.ajax({
+            url         : takeActionBaseUrl + '/log-rotate',
+            method      : 'POST',
+            data        : fd,
+            contentType : false,
+            processData : false,
+            dataType    : 'json',
+            success     : function (res) {
+                $('#takeActionModal').modal('hide');
+                Toast.fire({
+                    icon    : 'success',
+                    title   : res.message || 'Tyre rotation logged successfully!',
+                    didClose: function () { window.location.reload(); }
+                });
+            },
+            error       : function (xhr) {
+                $btn.html(originalLabel).prop('disabled', false);
+                const res = xhr.responseJSON || {};
+                if (xhr.status === 422 && res.errors) {
+                    const firstField = Object.keys(res.errors)[0];
+                    const firstMsg   = res.errors[firstField][0];
+                    Toast.fire({ icon: 'warning', title: res.message || firstMsg || 'Validation failed.' });
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message || 'Submission failed. Please try again.' });
+                }
+            }
+        });
+    }
 
     /* ── B12a. ALIGNMENT AJAX SUBMIT ─────────────────────────────────────── */
     function tamSubmitAlignment($btn) {
@@ -1407,49 +1511,82 @@ $(document).ready(function () {
     function tamValidateRotateTab() {
         let ok = true;
 
-        if (!$('input[name="rotation_reason"]:checked').val()) {
-            $('#tamErrRotReason').text('Please select a rotation reason.');
-            ok = false;
-        } else { $('#tamErrRotReason').text(''); }
-
-        if (!$('#tamRotDate').val()) {
-            $('#tamErrRotDate').text('Rotation date is required.');
-            ok = false;
-        } else { $('#tamErrRotDate').text(''); }
-
-        if ($('#tamRotKm').val() === '') {
-            $('#tamErrRotKm').text('KM at rotation is required.');
-            ok = false;
-        } else { $('#tamErrRotKm').text(''); }
-
+        /* 1. Mapping rows — must have at least one row */
         if ($('#tamMappingRows .tam-mapping-row').length === 0) {
             $('#tamErrRotMapping').text('Please add at least one mapping row.');
             ok = false;
         } else {
-            /* Check each row has From and To selected */
-            let rowOk = true;
+            let rowOk   = true;
+            const usedPositions = new Set();
+            let dupPos  = false;
+
             $('#tamMappingRows .tam-mapping-row').each(function () {
-                if (!$(this).find('.tam-map-from').val() || !$(this).find('.tam-map-to').val()) {
-                    rowOk = false;
+                const fromVal = $(this).find('.tam-map-from').val();
+                const toVal   = $(this).find('.tam-map-to').val();
+
+                /* Both positions must be selected */
+                if (!fromVal || !toVal) { rowOk = false; return; }
+
+                /* From ≠ To */
+                if (fromVal === toVal) { dupPos = true; return; }
+
+                /* Each position must be unique across all From + To columns */
+                if (usedPositions.has(fromVal) || usedPositions.has(toVal)) {
+                    dupPos = true; return;
                 }
+                usedPositions.add(fromVal);
+                usedPositions.add(toVal);
             });
+
             if (!rowOk) {
                 $('#tamErrRotMapping').text('Each mapping row must have both From and To positions selected.');
                 ok = false;
-            } else { $('#tamErrRotMapping').text(''); }
+            } else if (dupPos) {
+                $('#tamErrRotMapping').text('Each position can only be used once. Remove the duplicate and try again.');
+                ok = false;
+            } else {
+                $('#tamErrRotMapping').text('');
+            }
         }
 
-        /* Old tyre destination */
-        if (!$('input[name="rot_old_tyre_destination"]:checked').val()) {
-            $('#tamErrRotOldDest').text('Please select a destination for the rotated-out tyre.');
-            ok = false;
-        } else { $('#tamErrRotOldDest').text(''); }
+        /* 2. Rotation Details — one row per mapping pair, all fields required */
+        let detailOk = true;
+        $('#tamRotDetailsRows .tam-rot-detail-row').each(function () {
+            const $dr = $(this);
 
-        /* Old tyre action */
-        if (!$('input[name="rot_old_tyre_action"]:checked').val()) {
-            $('#tamErrRotOldAction').text('Please select an action for the old tyre.');
+            if (!$dr.find('.tam-rot-detail-date').val()) {
+                $dr.find('.tam-rot-detail-err-date').text('Required');
+                detailOk = false;
+            } else {
+                $dr.find('.tam-rot-detail-err-date').text('');
+            }
+
+            if ($dr.find('.tam-rot-detail-km-from').val() === '') {
+                $dr.find('.tam-rot-detail-err-km-from').text('Required');
+                detailOk = false;
+            } else {
+                $dr.find('.tam-rot-detail-err-km-from').text('');
+            }
+
+            if ($dr.find('.tam-rot-detail-km-to').val() === '') {
+                $dr.find('.tam-rot-detail-err-km-to').text('Required');
+                detailOk = false;
+            } else {
+                $dr.find('.tam-rot-detail-err-km-to').text('');
+            }
+        });
+        if (!detailOk) {
+            $('#tamErrRotDetails').text('Please complete all rotation details above.');
             ok = false;
-        } else { $('#tamErrRotOldAction').text(''); }
+        } else {
+            $('#tamErrRotDetails').text('');
+        }
+
+        /* 5. Rotation Reason textarea */
+        if ($.trim($('#tamRotReason').val()) === '') {
+            $('#tamErrRotReason').text('Rotation reason is required.');
+            ok = false;
+        } else { $('#tamErrRotReason').text(''); }
 
         if (!ok) {
             Toast.fire({ icon: 'warning', title: 'Please fill all required fields in the Rotate tab.' });
@@ -1519,19 +1656,15 @@ $(document).ready(function () {
 
         /* Reset Rotate form */
         $('#tamRotateForm')[0] && $('#tamRotateForm')[0].reset();
-        $('.tam-reason-card').removeClass('active');
-        $('#tamRotateWeakHealthAlert').addClass('d-none');
-        $('#tamRotIntervalAlert').addClass('d-none');
-        /* Remove all mapping rows */
+        /* Remove all mapping rows and their detail rows */
         _tamMappingRowCount = 0;
         $('#tamMappingRows .tam-mapping-row').remove();
         $('#tamMappingEmpty').show();
-        /* Reset rotate old tyre sections */
-        $('#tamRotOldSourceGrid .tam-old-source-pill').removeClass('active');
-        $('#tamRotOldActionGrid .tam-old-action-pill').removeClass('active');
-        $('#tamRotOwnVehicleOverLimitAlert').addClass('d-none');
-        $('#tamRotOldOtherVehicleWrap').hide();
-        $('#tamRotWarrantyClaimSection').addClass('d-none');
+        $('#tamRotDetailsRows').html(
+            '<div class="tam-mapping-empty" id="tamRotDetailsEmpty">' +
+            '<i class="uil uil-info-circle me-1"></i>Add mapping rows above to fill rotation details' +
+            '</div>'
+        );
         $('#tamPaneRotate .tam-field-error').text('');
 
         /* Reset donor vehicle lookup panel */

@@ -1510,69 +1510,12 @@
                TAB 2: ROTATE TYRE
           ───────────────────────────────────────────────────────────────── --}}
           <div class="tam-tab-pane" id="tamPaneRotate">
-            <form id="tamRotateForm" autocomplete="off" enctype="multipart/form-data">
+            <form id="tamRotateForm" autocomplete="off">
 
-                {{-- Tyre Life Alert for Weak Reason --}}
-                <div class="tam-alert tam-alert-warning d-none" id="tamRotateWeakHealthAlert">
-                    <i class="uil uil-exclamation-triangle"></i>
-                    <strong>Healthy Tyre Alert:</strong>&nbsp;
-                    <span id="tamRotateWeakHealthText">This tyre still has significant life remaining. Marking it as weak may indicate damage. Please verify before proceeding.</span>
-                </div>
-
-                {{-- SECTION 1: Rotation Reason --}}
+                {{-- SECTION 1: Tyre Position Mapping --}}
                 <div class="tam-section">
                     <div class="tam-section-title">
                         <span class="tam-section-num">1</span>
-                        Rotation Reason
-                    </div>
-                    <div class="tam-reason-grid">
-                        <label class="tam-reason-card" for="tamRotReasonScheduled">
-                            <input type="radio" name="rotation_reason" id="tamRotReasonScheduled" value="Scheduled Maintenance Tyre Rotation" class="d-none">
-                            <div class="tam-reason-icon"><i class="uil uil-calendar-alt"></i></div>
-                            <div class="tam-reason-label">Scheduled Maintenance</div>
-                        </label>
-                        <label class="tam-reason-card" for="tamRotReasonWeak">
-                            <input type="radio" name="rotation_reason" id="tamRotReasonWeak" value="Tyre Weak" class="d-none">
-                            <div class="tam-reason-icon"><i class="uil uil-exclamation-triangle"></i></div>
-                            <div class="tam-reason-label">Tyre Weak</div>
-                        </label>
-                    </div>
-                    <span class="tam-field-error" id="tamErrRotReason"></span>
-
-                    {{-- Scheduled: interval alert --}}
-                    <div class="tam-alert tam-alert-warning d-none mt-2" id="tamRotIntervalAlert">
-                        <i class="uil uil-clock"></i>
-                        <span id="tamRotIntervalAlertText">Rotation interval has not been reached yet. Rotation is restricted for scheduled maintenance.</span>
-                    </div>
-                </div>
-
-                {{-- SECTION 2: Rotation Details --}}
-                <div class="tam-section">
-                    <div class="tam-section-title">
-                        <span class="tam-section-num">2</span>
-                        Rotation Details
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold" style="font-size:12px;">Rotation Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control form-control-sm" name="rotation_date" id="tamRotDate">
-                            <span class="tam-field-error" id="tamErrRotDate"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold" style="font-size:12px;">KM at Rotation <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-sm">
-                                <input type="number" class="form-control" name="rotation_km" id="tamRotKm" min="0" placeholder="0">
-                                <span class="input-group-text">KM</span>
-                            </div>
-                            <span class="tam-field-error" id="tamErrRotKm"></span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- SECTION 3: Tyre Mapping --}}
-                <div class="tam-section">
-                    <div class="tam-section-title">
-                        <span class="tam-section-num">3</span>
                         Tyre Position Mapping
                         <span class="text-muted fw-normal ms-1" style="font-size:10px; text-transform:none; letter-spacing:0;">(From → To. Unmapped tyres go to spare)</span>
                     </div>
@@ -1595,141 +1538,32 @@
                     <span class="tam-field-error" id="tamErrRotMapping"></span>
                 </div>
 
-                {{-- SECTION 4: Attachment --}}
+                {{-- SECTION 2: Rotation Details (dynamically generated — one row per mapping pair) --}}
                 <div class="tam-section">
                     <div class="tam-section-title">
-                        <span class="tam-section-num">4</span>
-                        Rotation Invoice
+                        <span class="tam-section-num">2</span>
+                        Rotation Details
+                        <span class="text-muted fw-normal ms-1" style="font-size:10px; text-transform:none; letter-spacing:0;">(One set per mapping pair)</span>
                     </div>
-                    <div class="tam-photo-grid" style="grid-template-columns: repeat(2, 1fr);">
-                        <div class="tam-photo-slot">
-                            <span class="tam-photo-slot-label">Rotation Invoice</span>
-                            <input type="file" class="form-control form-control-sm" name="rotation_invoice" id="tamRotInvoice" accept="image/jpeg,image/png,image/webp,application/pdf">
-                            <img class="tam-photo-thumb" id="tamRotInvoiceThumb" alt="Preview">
+                    <div id="tamRotDetailsRows">
+                        <div class="tam-mapping-empty" id="tamRotDetailsEmpty">
+                            <i class="uil uil-info-circle me-1"></i>Add mapping rows above to fill rotation details
                         </div>
                     </div>
+                    <span class="tam-field-error" id="tamErrRotDetails"></span>
                 </div>
 
-                {{-- SECTION 5: Old Tyre Destination --}}
-                <div class="tam-section">
-                    <hr class="tam-hr">
-                    <div class="tam-section-title">
-                        <span class="tam-section-num">5</span>
-                        Old Tyre Destination
-                        <span class="text-muted fw-normal ms-1" style="font-size:10px; text-transform:none; letter-spacing:0;">(Where does the removed tyre go?)</span>
-                    </div>
-                    <label class="form-label fw-semibold" style="font-size:12px;">Where should the rotated-out tyre go? <span class="text-danger">*</span></label>
-                    <div class="tam-old-source-grid" id="tamRotOldSourceGrid">
-                        <label class="tam-old-source-pill" for="tamRotOldSrcGarage">
-                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcGarage" value="SR Garage" class="d-none">
-                            SR Garage
-                        </label>
-                        <label class="tam-old-source-pill" for="tamRotOldSrcVendor">
-                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcVendor" value="Tyre Vendor" class="d-none">
-                            Tyre Vendor
-                        </label>
-                        <label class="tam-old-source-pill" for="tamRotOldSrcOwn">
-                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcOwn" value="Own Vehicle" class="d-none">
-                            Own Vehicle (Spare)
-                        </label>
-                        <label class="tam-old-source-pill" for="tamRotOldSrcSpare">
-                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcSpare" value="Spare Tyre" class="d-none">
-                            Keep as Spare
-                        </label>
-                        <label class="tam-old-source-pill" for="tamRotOldSrcOther">
-                            <input type="radio" name="rot_old_tyre_destination" id="tamRotOldSrcOther" value="Another Vehicle" class="d-none">
-                            Another Vehicle
-                        </label>
-                    </div>
-                    <span class="tam-field-error" id="tamErrRotOldDest"></span>
-                    {{-- Own vehicle spare limit alert --}}
-                    <div class="tam-alert tam-alert-warning d-none mt-2" id="tamRotOwnVehicleOverLimitAlert">
-                        <i class="uil uil-exclamation-triangle"></i>
-                        <span>This vehicle already has the maximum number of spare tyres. Please choose a different destination.</span>
-                    </div>
-                    {{-- Another Vehicle: vehicle + position --}}
-                    <div class="tam-conditional mt-2" id="tamRotOldOtherVehicleWrap" style="display:none;">
-                        <div class="row g-2">
-                            <div class="col-md-7">
-                                <label class="form-label fw-semibold" style="font-size:12px;">Destination Vehicle Number <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" name="rot_old_tyre_destination_vehicle" id="tamRotOldDestVehicleNo" placeholder="e.g. MH12AB5678" maxlength="15">
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold" style="font-size:12px;">Position on Destination Vehicle <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" name="rot_old_tyre_destination_position" id="tamRotOldDestPosition">
-                                    <option value="">— Select Position —</option>
-                                    @foreach($tyrepositions as $tp)
-                                        <option value="{{ $tp->code }}">{{ $tp->code }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- SECTION 6: Old Tyre Action --}}
+                {{-- SECTION 3: Rotation Reason --}}
                 <div class="tam-section">
                     <div class="tam-section-title">
-                        <span class="tam-section-num">6</span>
-                        Old Tyre Action
+                        <span class="tam-section-num">3</span>
+                        Rotation Reason
                     </div>
-                    <label class="form-label fw-semibold" style="font-size:12px;">What should be done with the old tyre? <span class="text-danger">*</span></label>
-                    <div class="tam-old-action-grid" id="tamRotOldActionGrid">
-                        <label class="tam-old-action-pill" for="tamRotActWarranty">
-                            <input type="radio" name="rot_old_tyre_action" id="tamRotActWarranty" value="Warranty Claim" class="d-none">
-                            🔖 Warranty Claim
-                        </label>
-                        <label class="tam-old-action-pill" for="tamRotActRethread">
-                            <input type="radio" name="rot_old_tyre_action" id="tamRotActRethread" value="Re-thread" class="d-none">
-                            🔄 Re-thread
-                        </label>
-                        <label class="tam-old-action-pill" for="tamRotActScrap">
-                            <input type="radio" name="rot_old_tyre_action" id="tamRotActScrap" value="Scrap" class="d-none">
-                            🗑️ Scrap
-                        </label>
-                        <label class="tam-old-action-pill" for="tamRotActDecide">
-                            <input type="radio" name="rot_old_tyre_action" id="tamRotActDecide" value="Yet to Decide" class="d-none">
-                            ⏳ Yet to Decide
-                        </label>
-                    </div>
-                    <span class="tam-field-error" id="tamErrRotOldAction"></span>
-
-                    {{-- Rotate: Warranty Claim attachment section --}}
-                    <div class="tam-warranty-section d-none mt-3" id="tamRotWarrantyClaimSection">
-                        <div class="tam-warranty-box">
-                            <div class="tam-warranty-title">
-                                <i class="uil uil-receipt me-1"></i>Warranty Claim Documents
-                            </div>
-                            <p class="text-muted mb-2" style="font-size:11px;">
-                                Attach the warranty claim form, damaged tyre photo, and vendor invoice.
-                            </p>
-                            <div class="tam-photo-grid">
-                                <div class="tam-photo-slot">
-                                    <span class="tam-photo-slot-label">Claim Form / Letter</span>
-                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_claim_form" id="tamRotWrnClaimForm" accept="image/jpeg,image/png,image/webp,application/pdf">
-                                    <img class="tam-photo-thumb" id="tamRotWrnClaimFormThumb" alt="Preview">
-                                </div>
-                                <div class="tam-photo-slot">
-                                    <span class="tam-photo-slot-label">Damaged Tyre Photo</span>
-                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_damage_photo" id="tamRotWrnDamagePhoto" accept="image/jpeg,image/png,image/webp">
-                                    <img class="tam-photo-thumb" id="tamRotWrnDamageThumb" alt="Preview">
-                                </div>
-                                <div class="tam-photo-slot">
-                                    <span class="tam-photo-slot-label">Vendor Invoice</span>
-                                    <input type="file" class="form-control form-control-sm" name="rot_warranty_invoice" id="tamRotWrnInvoice" accept="image/jpeg,image/png,image/webp,application/pdf">
-                                    <img class="tam-photo-thumb" id="tamRotWrnInvoiceThumb" alt="Preview">
-                                </div>
-                            </div>
-                            <div class="row g-2 mt-1">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold" style="font-size:12px;">Claim Reference Number</label>
-                                    <input type="text" class="form-control form-control-sm" name="rot_warranty_claim_ref" id="tamRotWrnClaimRef" placeholder="e.g. WC-2024-001">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold" style="font-size:12px;">Claim Date</label>
-                                    <input type="date" class="form-control form-control-sm" name="rot_warranty_claim_date" id="tamRotWrnClaimDate">
-                                </div>
-                            </div>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:12px;">Rotation Reason <span class="text-danger">*</span></label>
+                            <textarea class="form-control form-control-sm" name="rotation_reason" id="tamRotReason" rows="3" placeholder="Enter reason for tyre rotation..."></textarea>
+                            <span class="tam-field-error" id="tamErrRotReason"></span>
                         </div>
                     </div>
                 </div>

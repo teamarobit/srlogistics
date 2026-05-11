@@ -1322,6 +1322,213 @@ class TyreManagementController extends Controller
     }
 
     /* ══════════════════════════════════════════════════════════════════════
+     * POST tyremanage/vehicle/{vehicle}/log-rotate
+     * Take Action Modal — Rotate Tyre tab.
+     *
+     * Receives one or more From→To position pairs, each with its own
+     * rotation date, km_from, and km_to.  For every pair:
+     *   1. Snapshot both positions → vehicletyremappinglogs (log_type='Rotation')
+     *   2. Swap tyre_ids on both vehicletyremappings rows, update fitment date/km
+     *
+     * All writes are inside one DB::transaction(). (SD-5, SD-6)
+     * Uses find() not findOrFail() for AJAX safety. (SD-8)
+     * ══════════════════════════════════════════════════════════════════════ */
+    public function logRotate(Request $request, Vehicle $vehicle)
+    {
+        // ── 1. Validate top-level fields ──────────────────────────────────
+        $validator = Validator::make($request->all(), [
+            'rotation_mapping'          => 'required|array|min:1',
+            'rotation_mapping.*.from'   => 'required|string|max:20',
+            'rotation_mapping.*.to'     => 'required|string|max:20',
+            'rotation_details'          => 'required|array|min:1',
+            'rotation_details.*.date'   => 'required|date',
+            'rotation_details.*.km_from'=> 'nullable|numeric|min:0',
+            'rotation_details.*.km_to'  => 'nullable|numeric|min:0',
+            'rotation_reason'           => 'required|string|max:1000',
+        ], [
+            'required' => 'This field is required.',
+            'array'    => 'Invalid data format.',
+            'min'      => 'Must have at least one mapping row.',
+            'date'     => 'Invalid date.',
+            'numeric'  => 'Must be a number.',
+            'max'      => 'Value is too long.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+                'message' => 'Please fill all required fields.',
+            ], 422);
+        }
+
+        $userId          = Auth::id();
+        $mappingPairs    = $request->input('rotation_mapping');   // [rowKey => [from, to]]
+        $detailsMap      = $request->input('rotation_details');   // [rowKey => [date, km_from, km_to]]
+        $rotationReason  = trim($request->input('rotation_reason'));
+
+        // ── 2. Pre-flight: resolve every pair before the transaction ──────
+        $pairs = [];   // will hold all resolved data
+
+        foreach ($mappingPairs as $rowKey => $map) {
+            $fromCode = trim($map['from'] ?? '');
+            $toCode   = trim($map['to']   ?? '');
+
+            if (!$fromCode || !$toCode) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Each mapping row must have both a From and a To position.',
+                ], 422);
+            }
+
+            if ($fromCode === $toCode) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "From and To positions cannot be the same (row: {$fromCode}).",
+                ], 422);
+            }
+
+            $details = $detailsMap[$rowKey] ?? [];
+            $rotDate = $details['date']    ?? null;
+            $kmFrom  = isset($details['km_from']) && $details['km_from'] !== '' ? (int)$details['km_from'] : null;
+            $kmTo    = isset($details['km_to'])   && $details['km_to']   !== '' ? (int)$details['km_to']   : null;
+
+            if (!$rotDate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Rotation date is required for the {$fromCode}→{$toCode} pair.",
+                ], 422);
+            }
+
+            // SD-8: find() not findOrFail() in JSON methods
+            $fromMapping = Vehicletyremapping::with('tyreposition')
+                ->where('vehicle_id', $vehicle->id)
+                ->whereHas('tyreposition', fn ($q) => $q->where('code', $fromCode))
+                ->first();
+
+            if (!$fromMapping) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Position '{$fromCode}' not found on this vehicle.",
+                ], 422);
+            }
+
+            if (!$fromMapping->tyre_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Position '{$fromCode}' has no tyre fitted — cannot rotate.",
+                ], 422);
+            }
+
+            $toMapping = Vehicletyremapping::with('tyreposition')
+                ->where('vehicle_id', $vehicle->id)
+                ->whereHas('tyreposition', fn ($q) => $q->where('code', $toCode))
+                ->first();
+
+            if (!$toMapping) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Position '{$toCode}' not found on this vehicle.",
+                ], 422);
+            }
+
+            if (!$toMapping->tyre_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Position '{$toCode}' has no tyre fitted — cannot rotate.",
+                ], 422);
+            }
+
+            $pairs[] = compact('fromMapping', 'toMapping', 'rotDate', 'kmFrom', 'kmTo', 'fromCode', 'toCode');
+        }
+
+        // ── 3. Execute all writes in a single transaction ──────────────────
+        try {
+            DB::transaction(function () use ($pairs, $vehicle, $userId, $rotationReason) {
+                foreach ($pairs as $pair) {
+                    $fromMapping  = $pair['fromMapping'];
+                    $toMapping    = $pair['toMapping'];
+                    $rotDate      = $pair['rotDate'];
+                    $kmFrom       = $pair['kmFrom'];
+                    $kmTo         = $pair['kmTo'];
+                    $fromCode     = $pair['fromCode'];
+                    $toCode       = $pair['toCode'];
+
+                    $fromTyreId   = $fromMapping->tyre_id;
+                    $toTyreId     = $toMapping->tyre_id;
+
+                    $noteFrom = "Rotation | {$fromCode}→{$toCode} | Reason: {$rotationReason}";
+                    $noteTo   = "Rotation | {$toCode}→{$fromCode} | Reason: {$rotationReason}";
+
+                    // 3a. Snapshot FROM position before swap
+                    Vehicletyremappinglog::create([
+                        'vehicletyremapping_id' => $fromMapping->id,
+                        'vehicle_id'            => $vehicle->id,
+                        'tyre_id'               => $fromTyreId,
+                        'tyreposition_id'       => $fromMapping->tyreposition_id,
+                        'fitment_date'          => $fromMapping->fitment_date,
+                        'km_at_fitment'         => $fromMapping->km_at_fitment,
+                        'removal_date'          => $rotDate,
+                        'km_at_removal'         => $kmFrom,
+                        'status'                => $fromMapping->status,
+                        'log_type'              => 'Rotation',
+                        'notes'                 => $noteFrom,
+                        'created_by'            => $userId,
+                    ]);
+
+                    // 3b. Snapshot TO position before swap
+                    Vehicletyremappinglog::create([
+                        'vehicletyremapping_id' => $toMapping->id,
+                        'vehicle_id'            => $vehicle->id,
+                        'tyre_id'               => $toTyreId,
+                        'tyreposition_id'       => $toMapping->tyreposition_id,
+                        'fitment_date'          => $toMapping->fitment_date,
+                        'km_at_fitment'         => $toMapping->km_at_fitment,
+                        'removal_date'          => $rotDate,
+                        'km_at_removal'         => $kmTo,
+                        'status'                => $toMapping->status,
+                        'log_type'              => 'Rotation',
+                        'notes'                 => $noteTo,
+                        'created_by'            => $userId,
+                    ]);
+
+                    // 3c. Swap: FROM position now carries the TO tyre
+                    $fromMapping->update([
+                        'tyre_id'       => $toTyreId,
+                        'fitment_date'  => $rotDate,
+                        'km_at_fitment' => $kmFrom,
+                        'removal_date'  => null,
+                        'km_at_removal' => null,
+                        'notes'         => $noteFrom,
+                    ]);
+
+                    // 3d. Swap: TO position now carries the FROM tyre
+                    $toMapping->update([
+                        'tyre_id'       => $fromTyreId,
+                        'fitment_date'  => $rotDate,
+                        'km_at_fitment' => $kmTo,
+                        'removal_date'  => null,
+                        'km_at_removal' => null,
+                        'notes'         => $noteTo,
+                    ]);
+                }
+            });
+
+            $pairCount = count($pairs);
+            return response()->json([
+                'success' => true,
+                'message' => "Tyre rotation logged successfully ({$pairCount} pair" . ($pairCount > 1 ? 's' : '') . ').',
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
      * GET  tyremanage/lookup-vehicle?vehicle_number=TS09QA3963
      * Take Action Modal — "Another Vehicle" source: look up a donor vehicle
      * by registration number. Returns the vehicle details and all of its
