@@ -674,171 +674,230 @@ class TyreController extends Controller
 
     public function edit(Tyre $tyre)
     {
-        $tyrevendors = Contact::where('cotype_id', 6)->where('status','Active')->get();
-        
+        $tyrevendors = Contact::where('cotype_id', 6)->where('status', 'Active')->get();
+
+        $warehouses = \App\Models\Warehouse::where('status', 'Active')
+            ->orderBy('warehouse_type')
+            ->orderBy('name')
+            ->get(['id', 'name', 'warehouse_type']);
+
+        $workshops = \App\Models\Workshop::active()
+            ->orderBy('ownership')
+            ->orderBy('name')
+            ->get(['id', 'name', 'workshop_code', 'ownership']);
+
         $this->storeUseractivity(66, 5, Auth::id(), $tyre->id, 'Tyre details retrieved.');
-        
-        return view('tyre.edit',compact('tyre', 'tyrevendors'));
+
+        return view('tyre.edit', compact('tyre', 'tyrevendors', 'warehouses', 'workshops'));
     }
     
     public function update(Request $request, Tyre $tyre)
     {
+        // ── Validation ────────────────────────────────────────────────────────
         $rules = [
             'vendor' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (!Contact::where('cotype_id', 6)->where('id', $value)->where('status', 'Active')->exists()) {
+                    if (! Contact::where('cotype_id', 6)->where('id', $value)->where('status', 'Active')->exists()) {
                         $fail('Vendor is invalid or not active.');
                     }
-                }
+                },
             ],
-            'condition'             => 'required|in:New,Re-thread',
-            'tyre_model_name'       => 'required',
-            'tyre_type'             => 'required|in:Radial,Nylon',
-            'tyre_brand'            => 'required',
-            'tyre_price'            => 'required|numeric|min:0',
-            'tyre_serial_number'    => 'required',
-            'tyre_purchase_date'    => 'required|date',
-            'tyre_issue_date'       => 'required|date|after_or_equal:tyre_purchase_date',
-            'tyre_warranty_months'  => 'required',
-    
-            'alignment_interval_km' => 'nullable|numeric|min:0',
-            'rotation_interval_km'  => 'nullable|numeric|min:0',
-    
-            'fixed_run_km'          => 'nullable|numeric|min:0',
-            'fixed_life_months'     => 'nullable|numeric|min:0',
-            'actual_run_km'         => 'nullable|numeric|min:0',
-            'actual_run_month'      => 'nullable|numeric|min:0',
-            'last_alignment_km'     => 'nullable|numeric|min:0',
-            'last_rotation_km'      => 'nullable|numeric|min:0',
-            
-            
-            'files' => 'nullable|array',
-            'files.*' => [
-                'file',
-                'max:2048', // 2MB
-                'mimes:jpg,jpeg,png,webp'
-            ],
+
+            // Identity
+            'initial_condition'    => 'required|in:New,Retreaded,Used Good,Scrap',
+            'tyre_serial_number'   => 'required|string|max:100',
+            'tyre_brand'           => 'required|string|max:100',
+            'tyre_model_name'      => 'required|string|max:100',
+            'tyre_size'            => 'nullable|string|max:50',
+            'tyre_category'        => 'nullable|in:Drive,Steer,Trailer',
+            'tyre_type'            => 'required|in:Radial,Nylon',
+            'tube_type'            => 'nullable|in:Tube,Tubeless',
+
+            // Purchase
+            'invoice_reference'    => 'nullable|string|max:100',
+            'tyre_taxable_amount'  => 'required|numeric|min:0',
+            'tyre_gst_amount'      => 'nullable|numeric|min:0',
+            'tyre_total_amount'    => 'nullable|numeric|min:0',
+            'tyre_purchase_date'   => 'required|date',
+            'tyre_warranty_months' => 'required|integer|min:0|max:120',
+
+            // Lifecycle
+            'tyre_issue_date'      => 'nullable|date|after_or_equal:tyre_purchase_date',
+            'fixed_run_km'         => 'required|numeric|min:0',
+            'fixed_life_months'    => 'required|numeric|min:0|max:240',
+            'actual_run_km'        => 'nullable|numeric|min:0',
+            'actual_run_month'     => 'nullable|numeric|min:0',
+
+            // Maintenance
+            'last_alignment_km'    => 'nullable|numeric|min:0',
+            'last_rotation_km'     => 'nullable|numeric|min:0',
+            'alignment_interval_km'=> 'nullable|numeric|min:0',
+            'rotation_interval_km' => 'nullable|numeric|min:0',
+
+            // Notes
+            'notes'                => 'nullable|string|max:2000',
+
+            // New images (optional — existing images remain)
+            'files'                => 'nullable|array|max:4',
+            'files.*'              => ['file', 'max:2048', 'mimes:jpg,jpeg,png,webp'],
         ];
-        
-        if(!$tyre->images()->count()){
-            $rules['files'] = 'required|array|min:1';
-            $rules['files.*'] = [
-                'required',
-                'file',
-                'max:2048', // 2MB
-                'mimes:jpg,jpeg,png,webp'
-            ];
-        }
-    
+
         $validator = Validator::make($request->all(), $rules, [
-            'required' => 'This field is required.',
-            'numeric'  => 'Only numeric values are allowed.',
-            'min'      => 'Value must be at least :min.',
-            'in'       => 'Invalid selection.',
+            'required'        => 'This field is required.',
+            'numeric'         => 'Only numeric values are allowed.',
+            'integer'         => 'Only whole numbers are allowed.',
+            'min'             => 'Value must be at least :min.',
+            'max'             => 'Value must not exceed :max.',
+            'in'              => 'Invalid selection.',
+            'date'            => 'Invalid date.',
+            'after_or_equal'  => 'Date must be on or after the Purchase Date.',
+            'mimes'           => 'Only JPG, PNG, WebP images are allowed.',
         ]);
-    
+
         if ($validator->fails()) {
-            $errors = [];
-    
-            foreach ($validator->errors()->toArray() as $field => $messages) {
-                $errors[$field] = $messages;
-            }
-    
             return response()->json([
-                'data' => $errors,
-                'message' => 'Please fill with valid data.'
-            ], 422);
+                'data'    => $validator->errors()->toArray(),
+                'errors'  => $validator->errors()->toArray(),
+                'message' => 'Please fill the form with valid data.',
+            ], 422); // SD-9
         }
-    
+
         try {
-            DB::transaction(function () use ($request, $tyre) {
-                $userId = Auth::id();
-    
+            DB::transaction(function () use ($request, $tyre) { // SD-5 + SD-6
+                $userId       = Auth::id();
+                $purchaseDate = date('Y-m-d', strtotime($request->tyre_purchase_date));
+
+                // ── Image uploads ────────────────────────────────────────────
                 $mediaData = [];
-                if($request->file('files')){
+                if ($request->file('files')) {
+                    $tyreDir = public_path('medias' . DIRECTORY_SEPARATOR . 'tyre');
+                    if (! is_dir($tyreDir)) { @mkdir($tyreDir, 0775, true); }
+
                     foreach ($request->file('files') as $file) {
-            
-                        // unique file name
                         $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-                        
-                        $file_mime_type = $file->getClientMimeType();
-                        $file_size = $file->getSize();
-                        
-                        $file->move(public_path('medias'.DIRECTORY_SEPARATOR.'tyre'.DIRECTORY_SEPARATOR),  $fileName );
-            
+                        $file->move($tyreDir, $fileName);
                         $mediaData[] = [
-                            'type'  => 'Image',
+                            'type'       => 'Image',
                             'file_name'  => $file->getClientOriginalName(),
                             'file_path'  => 'tyre/' . $fileName,
-                            'file_type'  => $file_mime_type,
-                            'file_size'  => $file_size,
-                            'created_by'   => $userId,
+                            'file_type'  => $file->getClientMimeType(),
+                            'file_size'  => $file->getSize(),
+                            'created_by' => $userId,
                             'created_at' => now(),
                             'updated_at' => now(),
                         ];
                     }
                 }
-    
-                $data = [
-                    'contact_id' => $request->vendor,
-                    'tyre_condition' => $request->condition,
-    
-                    'tyre_model' => $request->tyre_model_name,
-                    'tyre_type'  => $request->tyre_type,
-                    'tyre_brand' => $request->tyre_brand,
-                    'tyre_price' => $request->tyre_price,
-                    'tyre_serial_number' => $request->tyre_serial_number,
-    
-                    'tyre_purchase_date' => date('Y-m-d', strtotime($request->tyre_purchase_date)),
-                    'tyre_issue_date'    => date('Y-m-d', strtotime($request->tyre_issue_date)),
-                    'tyre_warranty_months' => $request->tyre_warranty_months,
-                    'tyre_warrenty_end_date' => date('Y-m-d', strtotime('+' . $request->tyre_warranty_months . ' months', strtotime($request->tyre_purchase_date))),
-    
-                    'fixed_run_km' => $request->fixed_run_km,
-                    'fixed_life_months' => $request->fixed_life_months,
-                    'actual_run_km' => $request->actual_run_km,
-                    'actual_run_month' => $request->actual_run_month,
-    
-                    'alignment_interval_km' => $request->alignment_interval_km,
-                    'set_reminder_for_alignment' => $request->has('set_reminder_for_alignment') ? 'Yes' : 'No',
-    
-                    'rotation_interval_km' => $request->rotation_interval_km,
-                    'set_reminder_for_rotation' => $request->has('set_reminder_for_rotation') ? 'Yes' : 'No',
-    
-                    'last_alignment_km' => $request->last_alignment_km,
-                    'last_rotation_km' => $request->last_rotation_km,
-    
-                    'updated_by' => $userId,
+
+                // ── Map initial_condition → tyre_condition (SD-11 Title Case) ─
+                $condMap = [
+                    'New'       => 'New',
+                    'Retreaded' => 'Retread',
+                    'Used Good' => 'Used Good',
+                    'Scrap'     => 'Scrap',
                 ];
-    
+                $tyreCondition = $condMap[$request->initial_condition] ?? 'New';
+
+                // ── Auto-calc dates ───────────────────────────────────────────
+                $warrantyEnd = date('Y-m-d', strtotime(
+                    '+' . (int) $request->tyre_warranty_months . ' months',
+                    strtotime($purchaseDate)
+                ));
+                $endOfLife = ($request->fixed_life_months !== null)
+                    ? date('Y-m-d', strtotime(
+                        '+' . (int) $request->fixed_life_months . ' months',
+                        strtotime($purchaseDate)
+                      ))
+                    : $tyre->end_of_life_date;
+
+                // ── Price: store total in tyre_price (same workaround as storeNew) ─
+                $tyrePrice = $request->tyre_total_amount ?? $request->tyre_taxable_amount ?? 0;
+
+                // ── Build update data ─────────────────────────────────────────
+                $data = [
+                    'contact_id'                 => $request->vendor,
+
+                    // Identity
+                    'initial_condition'          => $request->initial_condition,
+                    'tyre_condition'             => $tyreCondition,
+                    'tyre_serial_number'         => strtoupper(trim((string) $request->tyre_serial_number)),
+                    'tyre_brand'                 => $request->tyre_brand,
+                    'tyre_model'                 => $request->tyre_model_name,
+                    'tyre_size'                  => $request->tyre_size,
+                    'tyre_category'              => $request->tyre_category,
+                    'tyre_type'                  => $request->tyre_type,
+                    'tube_type'                  => $request->tube_type,
+
+                    // Purchase
+                    'invoice_reference'          => $request->invoice_reference,
+                    'tyre_price'                 => $tyrePrice,
+                    'tyre_purchase_date'         => $purchaseDate,
+                    'tyre_warranty_months'       => $request->tyre_warranty_months,
+                    'tyre_warrenty_end_date'     => $warrantyEnd,
+
+                    // Lifecycle
+                    'tyre_issue_date'            => $request->tyre_issue_date
+                                                        ? date('Y-m-d', strtotime($request->tyre_issue_date))
+                                                        : null,
+                    'fixed_run_km'               => $request->fixed_run_km,
+                    'fixed_life_months'          => $request->fixed_life_months,
+                    'actual_run_km'              => $request->actual_run_km,
+                    'actual_run_month'           => $request->actual_run_month,
+                    'end_of_life_date'           => $endOfLife,
+
+                    // Maintenance
+                    'last_alignment_km'          => $request->last_alignment_km,
+                    'last_rotation_km'           => $request->last_rotation_km,
+                    'alignment_interval_km'      => $request->alignment_interval_km,
+                    'set_reminder_for_alignment' => $request->has('set_reminder_for_alignment') ? 'Yes' : 'No',
+                    'rotation_interval_km'       => $request->rotation_interval_km,
+                    'set_reminder_for_rotation'  => $request->has('set_reminder_for_rotation') ? 'Yes' : 'No',
+
+                    // Notes
+                    'notes'                      => $request->notes,
+
+                    'updated_by'                 => $userId,
+                ];
+
                 $tyre->update($data);
-                
-                if(count($mediaData) > 0){
+
+                if (count($mediaData) > 0) {
                     $tyre->medias()->createMany($mediaData);
                 }
-                
-                unset($data['updated_by']);
-                $data['created_by'] = $userId;
-    
-                Tyrelog::create($data + [
-                    'tyre_id' => $tyre->id
-                ]);
-    
+
+                // ── Log the update ────────────────────────────────────────────
+                $logColumns = [
+                    'location', 'warehouse_id', 'contact_id', 'tyre_condition',
+                    'tyre_model', 'tyre_type', 'tyre_brand', 'tyre_price',
+                    'tyre_serial_number', 'tyre_purchase_date', 'tyre_issue_date',
+                    'tyre_warranty_months', 'tyre_warrenty_end_date',
+                    'fixed_run_km', 'fixed_life_months', 'actual_run_km', 'actual_run_month',
+                    'alignment_interval_km', 'set_reminder_for_alignment',
+                    'rotation_interval_km', 'set_reminder_for_rotation',
+                    'last_alignment_km', 'last_rotation_km',
+                    'discard_note', 'discard_date',
+                ];
+                $logData              = array_intersect_key($data, array_flip($logColumns));
+                $logData['tyre_id']   = $tyre->id;
+                $logData['created_by'] = $userId;
+                unset($logData['updated_by']);
+                Tyrelog::create($logData);
+
                 $this->storeUseractivity(66, 4, $userId, $tyre->id, 'Updated tyre details.');
-            });
-    
+            }); // SD-5: transaction returns are unused here (update, not create)
+
             return response()->json([
-                'success' => true,
-                'message' => 'Tyre detail updated successfully.',
-                'redirect_url' => route('tyre.dashboard')
-            ]);
-    
+                'success'      => true,
+                'message'      => 'Tyre updated successfully.',
+                'redirect_url' => route('tyre.dashboard'),
+            ], 200); // SD-9
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500); // SD-9
         }
     }
     
