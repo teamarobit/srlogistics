@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SR Logistics — Tyre Tagging v2 JS  |  vehicletyretagging-v2.js  v1.0
+   SR Logistics — Tyre Tagging v2 JS  |  vehicletyretagging-v2.js  v2.0
    Handles:
      • All v1 behaviour (SVG RAG, SVG↔card sync, Allocate Tyre, Add Spare)
      • Take Action Modal (v2 — new):
@@ -7,11 +7,13 @@
          – Tab switching (Replace / Rotate / Alignment)
          – Replace tab: reason, damage resp, driver fine conditional,
            source card selection, 4 source panels, old tyre destination/action
+           Donor vehicle ≠ current vehicle validation (client + server)
+           tamSubmitReplace() — full AJAX POST to /log-replace
          – Rotate tab: reason cards, interval alert, health alert,
            dynamic mapping rows, invoice photo
          – Alignment tab: overdue/early alerts, invoice photo
+           tamSubmitAlignment() — full AJAX POST to /log-alignment
          – Photo thumbnail previews throughout
-         – Submit stub (Toast — backend wired in future sprint)
          – Full form reset on modal close
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -1010,6 +1012,14 @@ $(document).ready(function () {
                     return;
                 }
 
+                /* Validation: donor vehicle must not be the current vehicle */
+                if (res.vehicle.id === vehicleId) {
+                    $('#tamErrOtherVehicle').text(
+                        'Donor vehicle cannot be the same as the current vehicle. Use "Same Vehicle Spare" instead.'
+                    );
+                    return;
+                }
+
                 /* Store positions for position-select handler */
                 _tamDonorPositions = res.positions || [];
 
@@ -1113,11 +1123,13 @@ $(document).ready(function () {
 
         if (_tamActiveTab === 'alignment') {
             tamSubmitAlignment($(this));
+        } else if (_tamActiveTab === 'replace') {
+            tamSubmitReplace($(this));
         } else {
-            /* Replace and Rotate backend — next sprint */
+            /* Rotate backend — next sprint */
             Toast.fire({
                 icon : 'info',
-                title: '✅ Validation passed! Replace/Rotate backend submission coming in next sprint.'
+                title: '✅ Validation passed! Rotate backend submission coming in next sprint.'
             });
         }
     });
@@ -1161,6 +1173,108 @@ $(document).ready(function () {
                     const firstField = Object.keys(res.errors)[0];
                     const firstMsg   = res.errors[firstField][0];
                     Toast.fire({ icon: 'warning', title: firstMsg || res.message || 'Validation failed.' });
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message || 'Submission failed. Please try again.' });
+                }
+            }
+        });
+    }
+
+    /* ── B12b. REPLACE AJAX SUBMIT ───────────────────────────────────────── */
+    function tamSubmitReplace($btn) {
+        const src = $('input[name="replacement_source"]:checked').val();
+
+        const fd = new FormData();
+        fd.append('_token',                csrfToken);
+        fd.append('mapping_id',            _tamCurrentMappingId);
+        fd.append('replacement_reason',    $('#tamRplReason').val());
+        fd.append('damage_reason',         $('#tamRplDamageReason').val());
+        fd.append('driver_fine_amount',    $('#tamDriverFineAmount').val() || '');
+        fd.append('replacement_source',    src);
+        fd.append('old_tyre_destination',  $('input[name="old_tyre_destination"]:checked').val() || '');
+        fd.append('old_tyre_action',       $('input[name="old_tyre_action"]:checked').val() || '');
+
+        // Damage photos (common to all sources)
+        ['damage_photo_1', 'damage_photo_2', 'damage_photo_3'].forEach(function (name) {
+            const el = document.getElementById(name);
+            if (el && el.files && el.files[0]) { fd.append(name, el.files[0]); }
+        });
+
+        // Source-specific fields and photos
+        if (src === 'SR Garage') {
+            fd.append('new_tyre_condition_garage', $('#tamGarCondition').val());
+            fd.append('new_tyre_type_garage',      $('#tamGarType').val());
+            fd.append('new_tyre_brand_garage',     $('#tamGarBrand').val());
+            fd.append('new_tyre_serial_garage',    $('#tamGarSerial').val());
+            fd.append('replacement_date_garage',   $('#tamGarDate').val());
+            fd.append('replacement_km_garage',     $('#tamGarKm').val() || '');
+            ['garage_serial_photo', 'garage_fitment_photo', 'garage_odometer_photo'].forEach(function (name) {
+                const el = document.getElementById(name);
+                if (el && el.files && el.files[0]) { fd.append(name, el.files[0]); }
+            });
+        } else if (src === 'Direct Fitment') {
+            fd.append('new_tyre_condition_direct', $('#tamDirCondition').val());
+            fd.append('new_tyre_type_direct',      $('#tamDirType').val());
+            fd.append('new_tyre_brand_direct',     $('#tamDirBrand').val());
+            fd.append('new_tyre_serial_direct',    $('#tamDirSerial').val());
+            fd.append('replacement_date_direct',   $('#tamDirDate').val());
+            fd.append('replacement_km_direct',     $('#tamDirKm').val() || '');
+            ['direct_serial_photo', 'direct_fitment_photo', 'direct_odometer_photo'].forEach(function (name) {
+                const el = document.getElementById(name);
+                if (el && el.files && el.files[0]) { fd.append(name, el.files[0]); }
+            });
+        } else if (src === 'Same Vehicle Spare') {
+            fd.append('spare_tyre_mapping_id',  $('#tamSpareSelect').val());
+            fd.append('replacement_date_spare', $('#tamSpareDate').val());
+            fd.append('replacement_km_spare',   $('#tamSpareKm').val() || '');
+            ['spare_serial_photo', 'spare_fitment_photo', 'spare_odometer_photo'].forEach(function (name) {
+                const el = document.getElementById(name);
+                if (el && el.files && el.files[0]) { fd.append(name, el.files[0]); }
+            });
+        } else if (src === 'Another Vehicle') {
+            fd.append('donor_mapping_id',         $('#tamDonorMappingId').val());
+            fd.append('replacement_date_other',   $('#tamOtherDate').val());
+            fd.append('replacement_km_other',     $('#tamOtherKm').val() || '');
+            ['other_serial_photo', 'other_fitment_photo', 'other_odometer_photo'].forEach(function (name) {
+                const el = document.getElementById(name);
+                if (el && el.files && el.files[0]) { fd.append(name, el.files[0]); }
+            });
+        }
+
+        const originalLabel = $btn.html();
+        $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…').prop('disabled', true);
+
+        $.ajax({
+            url         : takeActionBaseUrl + '/log-replace',
+            method      : 'POST',
+            data        : fd,
+            contentType : false,
+            processData : false,
+            dataType    : 'json',
+            success     : function (res) {
+                $('#takeActionModal').modal('hide');
+                Toast.fire({
+                    icon    : 'success',
+                    title   : res.message || 'Tyre replacement logged successfully!',
+                    didClose: function () { window.location.reload(); }
+                });
+            },
+            error       : function (xhr) {
+                $btn.html(originalLabel).prop('disabled', false);
+                const res = xhr.responseJSON || {};
+                if (xhr.status === 422 && res.errors) {
+                    const firstField = Object.keys(res.errors)[0];
+                    const firstMsg   = res.errors[firstField][0];
+
+                    /* Route known fields to their inline error spans */
+                    if (firstField === 'donor_vehicle_number') {
+                        $('#tamErrOtherVehicle').text(firstMsg);
+                    } else if (firstField === 'old_tyre_destination') {
+                        /* Spare capacity exceeded — show under the destination pills */
+                        $('#tamErrOldDest').text(firstMsg);
+                    }
+
+                    Toast.fire({ icon: 'warning', title: res.message || firstMsg || 'Validation failed.' });
                 } else {
                     Toast.fire({ icon: 'error', title: res.message || 'Submission failed. Please try again.' });
                 }

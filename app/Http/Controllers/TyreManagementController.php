@@ -722,6 +722,491 @@ class TyreManagementController extends Controller
     }
 
     /* ══════════════════════════════════════════════════════════════════════
+     * POST  tyremanage/vehicle/{vehicle}/log-replace
+     * Take Action Modal — Replace Tyre tab submit
+     *
+     * Supports four replacement sources:
+     *   SR Garage        — manual brand/serial; new Tyre record created
+     *   Direct Fitment   — manual brand/serial; new Tyre record created
+     *   Same Vehicle Spare — spare mapping's tyre moved to mounted position
+     *   Another Vehicle  — donor vehicle's tyre transferred here
+     *
+     * Writes:
+     *   1. Tyrelog row (action_type = 'Replacement') — audit trail
+     *   2. Photo attachments → medias (mediable on Tyrelog, type = 'Image')
+     *   3. Vehicletyremapping updated (new tyre_id, fitment_date, km)
+     *   4. Vehicletyremappinglog inserted for the position history
+     *   5. Old tyre location updated per old_tyre_destination choice
+     *
+     * Validation enforces donor vehicle ≠ current vehicle when source is
+     * "Another Vehicle" (SD-8: find(), not findOrFail(), in JSON method).
+     * ══════════════════════════════════════════════════════════════════════ */
+    public function logReplace(Request $request, Vehicle $vehicle)
+    {
+        $source = $request->replacement_source;
+
+        // ── 1. Base validation rules ───────────────────────────────────────
+        $rules = [
+            'mapping_id'           => 'required|integer',
+            'replacement_reason'   => 'required|string',
+            'damage_reason'        => 'required|string',
+            'driver_fine_amount'   => 'nullable|numeric|min:0',
+            'replacement_source'   => 'required|in:SR Garage,Direct Fitment,Same Vehicle Spare,Another Vehicle',
+            'old_tyre_destination' => 'required|string',
+            'old_tyre_action'      => 'required|string',
+            'damage_photo_1'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'damage_photo_2'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'damage_photo_3'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ];
+
+        // Source-specific validation
+        if ($source === 'SR Garage') {
+            $rules['new_tyre_brand_garage']     = 'required|string|max:100';
+            $rules['new_tyre_serial_garage']    = 'required|string|max:100';
+            $rules['new_tyre_condition_garage'] = 'required|in:New,Used,Re-thread';
+            $rules['new_tyre_type_garage']      = 'required|in:Radial,Nylon';
+            $rules['replacement_date_garage']   = 'required|date';
+            $rules['replacement_km_garage']     = 'nullable|numeric|min:0';
+            $rules['garage_serial_photo']       = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['garage_fitment_photo']      = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['garage_odometer_photo']     = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+        } elseif ($source === 'Direct Fitment') {
+            $rules['new_tyre_brand_direct']     = 'required|string|max:100';
+            $rules['new_tyre_serial_direct']    = 'required|string|max:100';
+            $rules['new_tyre_condition_direct'] = 'required|in:New,Used,Re-thread';
+            $rules['new_tyre_type_direct']      = 'required|in:Radial,Nylon';
+            $rules['replacement_date_direct']   = 'required|date';
+            $rules['replacement_km_direct']     = 'nullable|numeric|min:0';
+            $rules['direct_serial_photo']       = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['direct_fitment_photo']      = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['direct_odometer_photo']     = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+        } elseif ($source === 'Same Vehicle Spare') {
+            $rules['spare_tyre_mapping_id']     = 'required|integer';
+            $rules['replacement_date_spare']    = 'required|date';
+            $rules['replacement_km_spare']      = 'nullable|numeric|min:0';
+            $rules['spare_serial_photo']        = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['spare_fitment_photo']       = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['spare_odometer_photo']      = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+        } elseif ($source === 'Another Vehicle') {
+            $rules['donor_mapping_id']          = 'required|integer';
+            $rules['replacement_date_other']    = 'required|date';
+            $rules['replacement_km_other']      = 'nullable|numeric|min:0';
+            $rules['other_serial_photo']        = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['other_fitment_photo']       = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+            $rules['other_odometer_photo']      = 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120';
+        }
+
+        $validator = Validator::make($request->all(), $rules, [
+            'required' => 'This field is required.',
+            'numeric'  => 'Must be a number.',
+            'min'      => 'Must be at least :min.',
+            'in'       => 'Invalid selection.',
+            'mimes'    => 'Only JPG, PNG, or WEBP images are allowed.',
+            'max'      => 'File size must not exceed 5 MB.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+                'message' => 'Please fill all required fields.',
+            ], 422);
+        }
+
+        // ── 2. Driver fine required when damage_reason = Driver ────────────
+        if ($request->damage_reason === 'Driver' && empty($request->driver_fine_amount)) {
+            return response()->json([
+                'success' => false,
+                'errors'  => ['driver_fine_amount' => ['Driver fine amount is required when Driver is responsible.']],
+                'message' => 'Driver fine amount is required.',
+            ], 422);
+        }
+
+        // ── 3. Resolve current mapping (SD-8: find() not findOrFail()) ─────
+        $mapping = Vehicletyremapping::find($request->mapping_id);
+        if (!$mapping || $mapping->vehicle_id != $vehicle->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid tyre position mapping.',
+            ], 422);
+        }
+
+        $oldTyre = Tyre::find($mapping->tyre_id);
+        if (!$oldTyre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tyre found at this position.',
+            ], 422);
+        }
+
+        // ── 4. Source-specific pre-checks ─────────────────────────────────
+        $spareMapping = null;
+        $donorMapping = null;
+
+        if ($source === 'Same Vehicle Spare') {
+            $spareMapping = Vehicletyremapping::find($request->spare_tyre_mapping_id);
+            if (!$spareMapping || $spareMapping->vehicle_id != $vehicle->id || !$spareMapping->tyre_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected spare tyre is not valid or does not belong to this vehicle.',
+                ], 422);
+            }
+        }
+
+        if ($source === 'Another Vehicle') {
+            $donorMapping = Vehicletyremapping::find($request->donor_mapping_id);
+            if (!$donorMapping || !$donorMapping->tyre_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected donor tyre position is invalid.',
+                ], 422);
+            }
+
+            // ── CRITICAL: donor vehicle must NOT be the current vehicle ────
+            if ($donorMapping->vehicle_id == $vehicle->id) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => [
+                        'donor_vehicle_number' => [
+                            'Donor vehicle cannot be the same as the current vehicle. Use "Same Vehicle Spare" instead.'
+                        ],
+                    ],
+                    'message' => 'Donor vehicle cannot be the same as the current vehicle.',
+                ], 422);
+            }
+        }
+
+        // ── 4b. Spare capacity guard ──────────────────────────────────────
+        // A vehicle may hold at most 2 spare tyres. If the old tyre is being
+        // kept on this vehicle as a spare, confirm the limit is not already met.
+        if (in_array($request->old_tyre_destination, ['Own Vehicle', 'Spare Tyre'])) {
+            $currentSpareCount = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+                ->where('status', 'Spare')
+                ->whereNotNull('tyre_id')
+                ->count();
+
+            if ($currentSpareCount >= 2) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => [
+                        'old_tyre_destination' => [
+                            'This vehicle already has ' . $currentSpareCount . ' spare tyre(s). Maximum 2 spare tyres are allowed per vehicle. Please choose a different destination for the old tyre.',
+                        ],
+                    ],
+                    'message' => 'Maximum spare tyre limit (2) reached for this vehicle.',
+                ], 422);
+            }
+        }
+
+        // ── 5. Resolve replacement date and KM per source ─────────────────
+        $replacementDate = match ($source) {
+            'SR Garage'          => date('Y-m-d', strtotime($request->replacement_date_garage)),
+            'Direct Fitment'     => date('Y-m-d', strtotime($request->replacement_date_direct)),
+            'Same Vehicle Spare' => date('Y-m-d', strtotime($request->replacement_date_spare)),
+            'Another Vehicle'    => date('Y-m-d', strtotime($request->replacement_date_other)),
+            default              => date('Y-m-d'),
+        };
+
+        $replacementKm = match ($source) {
+            'SR Garage'          => $request->replacement_km_garage    ?? null,
+            'Direct Fitment'     => $request->replacement_km_direct    ?? null,
+            'Same Vehicle Spare' => $request->replacement_km_spare     ?? null,
+            'Another Vehicle'    => $request->replacement_km_other     ?? null,
+            default              => null,
+        };
+
+        // ── 6. Transaction ─────────────────────────────────────────────────
+        try {
+            $result = DB::transaction(function () use (
+                $request, $vehicle, $mapping, $oldTyre, $source,
+                $spareMapping, $donorMapping, $replacementDate, $replacementKm
+            ) {
+                $userId = Auth::id();
+
+                // 6a. Resolve / create the replacement tyre record
+                $newTyre = null;
+
+                $orgId = Auth::user()->organisation_id ?? 1;
+
+                if ($source === 'SR Garage') {
+                    $newTyre = Tyre::create([
+                        'organisation_id'    => $orgId,
+                        'contact_id'         => null,
+                        'location'           => 'Vehicle',
+                        'tyre_condition'     => $request->new_tyre_condition_garage,
+                        'tyre_type'          => $request->new_tyre_type_garage,
+                        'tyre_brand'         => $request->new_tyre_brand_garage,
+                        'tyre_model'         => $request->new_tyre_brand_garage,
+                        'tyre_serial_number' => $request->new_tyre_serial_garage,
+                        'created_by'         => $userId,
+                    ]);
+                } elseif ($source === 'Direct Fitment') {
+                    $newTyre = Tyre::create([
+                        'organisation_id'    => $orgId,
+                        'contact_id'         => null,
+                        'location'           => 'Vehicle',
+                        'tyre_condition'     => $request->new_tyre_condition_direct,
+                        'tyre_type'          => $request->new_tyre_type_direct,
+                        'tyre_brand'         => $request->new_tyre_brand_direct,
+                        'tyre_model'         => $request->new_tyre_brand_direct,
+                        'tyre_serial_number' => $request->new_tyre_serial_direct,
+                        'created_by'         => $userId,
+                    ]);
+                } elseif ($source === 'Same Vehicle Spare') {
+                    $newTyre = Tyre::find($spareMapping->tyre_id);
+                    $spareMapping->update(['tyre_id' => null, 'status' => 'Inactive']);
+                    Vehicletyremappinglog::create([
+                        'vehicletyremapping_id' => $spareMapping->id,
+                        'vehicle_id'            => $vehicle->id,
+                        'tyre_id'               => null,
+                        'tyreposition_id'       => $spareMapping->tyreposition_id,
+                        'status'                => 'Inactive',
+                        'notes'                 => 'Spare tyre moved to mounted position during tyre replacement.',
+                        'created_by'            => $userId,
+                    ]);
+                } elseif ($source === 'Another Vehicle') {
+                    $newTyre = Tyre::find($donorMapping->tyre_id);
+                    $donorMapping->update(['tyre_id' => null, 'status' => 'Inactive']);
+                    Vehicletyremappinglog::create([
+                        'vehicletyremapping_id' => $donorMapping->id,
+                        'vehicle_id'            => $donorMapping->vehicle_id,
+                        'tyre_id'               => null,
+                        'tyreposition_id'       => $donorMapping->tyreposition_id,
+                        'status'                => 'Inactive',
+                        'notes'                 => 'Tyre transferred to vehicle #' . $vehicle->vehicle_no . ' as replacement.',
+                        'created_by'            => $userId,
+                    ]);
+                }
+
+                if (!$newTyre) {
+                    throw new \Exception('Could not resolve replacement tyre.');
+                }
+
+                // Update new tyre allocation fields so the Tyre record reflects
+                // it is now fitted to this vehicle (SD-11: always set organisation_id).
+                $newTyre->update([
+                    'allocated_vehicle_id' => $vehicle->id,
+                    'current_status'       => 'Allocated',
+                    'location'             => 'Vehicle',
+                ]);
+
+                // 6b. Handle old tyre disposal — clear its allocation, set status.
+                $oldTyreNewLocation = match ($request->old_tyre_destination) {
+                    'SR Garage'                 => 'Warehouse',
+                    'Tyre Vendor'               => 'Service Center',
+                    'Own Vehicle', 'Spare Tyre' => 'Vehicle',
+                    default                     => 'Warehouse',
+                };
+                $oldTyreCurrentStatus = match ($request->old_tyre_destination) {
+                    'Own Vehicle', 'Spare Tyre' => 'Allocated',
+                    'Tyre Vendor'               => 'Workshop',
+                    default                     => 'Warehouse',
+                };
+                $oldTyre->update([
+                    'location'             => $oldTyreNewLocation,
+                    'current_status'       => $oldTyreCurrentStatus,
+                    'allocated_vehicle_id' => in_array($request->old_tyre_destination, ['Own Vehicle', 'Spare Tyre'])
+                                                 ? $vehicle->id
+                                                 : null,
+                ]);
+
+                // 6c. Keep old tyre as spare on this vehicle if requested
+                if (in_array($request->old_tyre_destination, ['Own Vehicle', 'Spare Tyre'])) {
+                    $allSparePositions = Tyreposition::where('code', 'like', 'S%')
+                        ->where('status', 'Active')->orderBy('code')->get();
+                    $occupiedSpareIds = Vehicletyremapping::where('vehicle_id', $vehicle->id)
+                        ->whereNotNull('tyre_id')
+                        ->whereIn('tyreposition_id', $allSparePositions->pluck('id'))
+                        ->pluck('tyreposition_id')->toArray();
+                    $availableSparePos = $allSparePositions->first(
+                        fn($p) => !in_array($p->id, $occupiedSpareIds)
+                    );
+                    if ($availableSparePos) {
+                        $newSpareMapping = Vehicletyremapping::create([
+                            'vehicle_id'      => $vehicle->id,
+                            'tyre_id'         => $oldTyre->id,
+                            'tyreposition_id' => $availableSparePos->id,
+                            'status'          => 'Spare',
+                            'fitment_date'    => $replacementDate,
+                            'km_at_fitment'   => $replacementKm,
+                            'notes'           => 'Kept as spare after tyre replacement.',
+                            'created_by'      => $userId,
+                        ]);
+                        Vehicletyremappinglog::create([
+                            'vehicletyremapping_id' => $newSpareMapping->id,
+                            'vehicle_id'            => $vehicle->id,
+                            'tyre_id'               => $oldTyre->id,
+                            'tyreposition_id'       => $availableSparePos->id,
+                            'status'                => 'Spare',
+                            'notes'                 => 'Moved to spare after tyre replacement.',
+                            'created_by'            => $userId,
+                        ]);
+                    }
+                }
+
+                // 6d. Swap the mapping to the new tyre
+                $mapping->update([
+                    'tyre_id'       => $newTyre->id,
+                    'status'        => 'Active',
+                    'fitment_date'  => $replacementDate,
+                    'km_at_fitment' => $replacementKm,
+                    'notes'         => 'Replaced via Take Action modal. Source: ' . $source,
+                ]);
+
+                // 6e. History log for the position (never update — insert only)
+                Vehicletyremappinglog::create([
+                    'vehicletyremapping_id' => $mapping->id,
+                    'vehicle_id'            => $vehicle->id,
+                    'tyre_id'               => $newTyre->id,
+                    'tyreposition_id'       => $mapping->tyreposition_id,
+                    'fitment_date'          => $replacementDate,
+                    'km_at_fitment'         => $replacementKm,
+                    'status'                => 'Active',
+                    'notes'                 => 'Replacement | Source: ' . $source,
+                    'created_by'            => $userId,
+                ]);
+
+                // 6f. Tyrelog audit row for the removed tyre
+                $actionNotes = json_encode([
+                    'source'             => $source,
+                    'replacement_reason' => $request->replacement_reason,
+                    'damage_reason'      => $request->damage_reason,
+                    'driver_fine'        => $request->driver_fine_amount,
+                    'old_destination'    => $request->old_tyre_destination,
+                    'old_action'         => $request->old_tyre_action,
+                    'new_tyre_id'        => $newTyre->id,
+                ]);
+
+                $log = Tyrelog::create([
+                    'action_type'        => 'Replacement',
+                    'action_date'        => $replacementDate,
+                    'action_km'          => $replacementKm ?? 0,
+                    'vehicle_id'         => $vehicle->id,
+                    'mapping_id'         => $mapping->id,
+                    'tyre_id'            => $oldTyre->id,
+                    'contact_id'         => $oldTyre->contact_id ?? 0,
+                    'tyre_condition'     => $oldTyre->tyre_condition ?? 'Used',
+                    'tyre_model'         => $oldTyre->tyre_model ?? '',
+                    'tyre_type'          => $oldTyre->tyre_type,
+                    'tyre_brand'         => $oldTyre->tyre_brand,
+                    'tyre_price'         => $oldTyre->tyre_price ?? 0,
+                    'tyre_serial_number' => $oldTyre->tyre_serial_number,
+                    'action_notes'       => $actionNotes,
+                    'created_by'         => $userId,
+                ]);
+
+                // 6g. Tyrelog audit row for the newly fitted tyre (Fitment)
+                $newTyreLog = Tyrelog::create([
+                    'action_type'        => 'Fitment',
+                    'action_date'        => $replacementDate,
+                    'action_km'          => $replacementKm ?? 0,
+                    'vehicle_id'         => $vehicle->id,
+                    'mapping_id'         => $mapping->id,
+                    'tyre_id'            => $newTyre->id,
+                    'contact_id'         => $newTyre->contact_id ?? 0,
+                    'tyre_condition'     => $newTyre->tyre_condition ?? 'New',
+                    'tyre_model'         => $newTyre->tyre_model ?? '',
+                    'tyre_type'          => $newTyre->tyre_type ?? '',
+                    'tyre_brand'         => $newTyre->tyre_brand ?? '',
+                    'tyre_price'         => $newTyre->tyre_price ?? 0,
+                    'tyre_serial_number' => $newTyre->tyre_serial_number,
+                    'action_notes'       => json_encode([
+                        'source'          => $source,
+                        'replaced_tyre_id' => $oldTyre->id,
+                    ]),
+                    'created_by'         => $userId,
+                ]);
+
+                // 6h. Photo attachments → medias table (type = Image, mediable = Tyrelog)
+                // Damage photos → old tyre's Replacement log ($log)
+                $damagePhotos = [
+                    'damage_photo_1' => 'Damage Photo 1',
+                    'damage_photo_2' => 'Damage Photo 2',
+                    'damage_photo_3' => 'Damage Photo 3',
+                ];
+
+                foreach ($damagePhotos as $inputName => $label) {
+                    if (!$request->hasFile($inputName)) {
+                        continue;
+                    }
+                    $file     = $request->file($inputName);
+                    $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('medias' . DIRECTORY_SEPARATOR . 'tyre' . DIRECTORY_SEPARATOR), $fileName);
+                    Media::create([
+                        'type'          => 'Image',
+                        'file_name'     => '[' . $label . '] ' . $file->getClientOriginalName(),
+                        'file_path'     => 'tyre/' . $fileName,
+                        'file_type'     => $file->getClientMimeType(),
+                        'file_size'     => $file->getSize(),
+                        'mediable_id'   => $log->id,
+                        'mediable_type' => Tyrelog::class,
+                        'created_by'    => $userId,
+                    ]);
+                }
+
+                // Fitment photos → new tyre's Fitment log ($newTyreLog)
+                $fitmentPhotos = match ($source) {
+                    'SR Garage'          => [
+                        'garage_serial_photo'   => 'Serial Number Photo',
+                        'garage_fitment_photo'  => 'Fitment Photo',
+                        'garage_odometer_photo' => 'Odometer Photo',
+                    ],
+                    'Direct Fitment'     => [
+                        'direct_serial_photo'   => 'Serial Number Photo',
+                        'direct_fitment_photo'  => 'Fitment Photo',
+                        'direct_odometer_photo' => 'Odometer Photo',
+                    ],
+                    'Same Vehicle Spare' => [
+                        'spare_serial_photo'    => 'Serial Number Photo',
+                        'spare_fitment_photo'   => 'Fitment Photo',
+                        'spare_odometer_photo'  => 'Odometer Photo',
+                    ],
+                    'Another Vehicle'    => [
+                        'other_serial_photo'    => 'Serial Number Photo',
+                        'other_fitment_photo'   => 'Fitment Photo',
+                        'other_odometer_photo'  => 'Odometer Photo',
+                    ],
+                    default => [],
+                };
+
+                foreach ($fitmentPhotos as $inputName => $label) {
+                    if (!$request->hasFile($inputName)) {
+                        continue;
+                    }
+                    $file     = $request->file($inputName);
+                    $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('medias' . DIRECTORY_SEPARATOR . 'tyre' . DIRECTORY_SEPARATOR), $fileName);
+                    Media::create([
+                        'type'          => 'Image',
+                        'file_name'     => '[' . $label . '] ' . $file->getClientOriginalName(),
+                        'file_path'     => 'tyre/' . $fileName,
+                        'file_type'     => $file->getClientMimeType(),
+                        'file_size'     => $file->getSize(),
+                        'mediable_id'   => $newTyreLog->id,
+                        'mediable_type' => Tyrelog::class,
+                        'created_by'    => $userId,
+                    ]);
+                }
+
+                return $log;
+            });
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Tyre replacement logged successfully.',
+                'log_id'       => $result->id,
+                'redirect_url' => route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
      * GET  tyremanage/lookup-vehicle?vehicle_number=TS09QA3963
      * Take Action Modal — "Another Vehicle" source: look up a donor vehicle
      * by registration number. Returns the vehicle details and all of its
@@ -738,9 +1223,7 @@ class TyreManagementController extends Controller
             ], 422);
         }
 
-        // Search by vehicle_no (partial match, case-insensitive)
-        $vehicle = Vehicle::where('vehicle_no', 'like', '%' . $regNumber . '%')
-            ->first();
+        $vehicle = Vehicle::where('vehicle_no', 'like', '%' . $regNumber . '%')->first();
 
         if (!$vehicle) {
             return response()->json([
@@ -749,12 +1232,10 @@ class TyreManagementController extends Controller
             ], 422);
         }
 
-        // Load all mappings for the donor vehicle with tyre + position data
         $mappings = Vehicletyremapping::with(['tyre', 'tyreposition'])
             ->where('vehicle_id', $vehicle->id)
             ->get();
 
-        // Compute RAG / life metrics inline (same logic as vehicleTyreTaggingV2)
         foreach ($mappings as $mapping) {
             $tyre = $mapping->tyre;
             if (!$tyre) {
@@ -771,15 +1252,10 @@ class TyreManagementController extends Controller
                 ));
             }
 
-            if ($lifeRemainingPct === null) {
-                $ragStatus = 'grey';
-            } elseif ($lifeRemainingPct >= 50) {
-                $ragStatus = 'green';
-            } elseif ($lifeRemainingPct >= 20) {
-                $ragStatus = 'amber';
-            } else {
-                $ragStatus = 'red';
-            }
+            if ($lifeRemainingPct === null)      { $ragStatus = 'grey'; }
+            elseif ($lifeRemainingPct >= 50)     { $ragStatus = 'green'; }
+            elseif ($lifeRemainingPct >= 20)     { $ragStatus = 'amber'; }
+            else                                 { $ragStatus = 'red'; }
 
             $mapping->rag_status         = $ragStatus;
             $mapping->life_remaining_pct = $lifeRemainingPct;
@@ -816,162 +1292,4 @@ class TyreManagementController extends Controller
             'total_with_tyre' => $positions->where('has_tyre', true)->count(),
         ], 200);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $rules = [
-    //         'vendor'                => [
-    //                                         'required',
-    //                                         function($attribute, $value, $fail){
-    //                                             if(!Contact::where('cotype_id', 6)->where('id', $value)->where('status', 'Active')->exists()){
-    //                                                 $fail('Vendor is invalid or not active.');
-    //                                             }
-    //                                         }
-    //                                     ],
-    //         'condition'             => 'required|in:New,Re-thread',
-    //         'tyre_model_name'       => 'required',
-    //         'tyre_type'             => 'required|in:Radial,Nylon',
-    //         'tyre_brand'            => 'required',
-    //         'tyre_price'            => 'required|numeric|min:0',
-    //         'tyre_serial_number'    => 'required',
-    //         'tyre_purchase_date'    => 'required|date',
-    //         'tyre_issue_date'       => 'required|date|after_or_equal:tyre_purchase_date',
-    //         'tyre_warranty_months'  => 'required',
-    
-    //         'alignment_interval_km' => 'nullable|numeric|min:0',
-    //         'rotation_interval_km'  => 'nullable|numeric|min:0',
-    
-    //         'fixed_run_km'          => 'nullable|numeric|min:0',
-    //         'fixed_life_months'     => 'nullable|numeric|min:0',
-    //         'actual_run_km'         => 'nullable|numeric|min:0',
-    //         'actual_run_month'      => 'nullable|numeric|min:0',
-    //         'last_alignment_km'     => 'nullable|numeric|min:0',
-    //         'last_rotation_km'      => 'nullable|numeric|min:0',
-            
-    //         'files' => 'required|array|min:1',
-    //         'files.*' => [
-    //             'required',
-    //             'file',
-    //             'max:2048', // 2MB
-    //             'mimes:jpg,jpeg,png,webp'
-    //         ],
-    //     ];
-    
-    //     $validator = Validator::make($request->all(), $rules, [
-    //         'required' => 'This field is required.',
-    //         'numeric'  => 'Only numeric values are allowed.',
-    //         'min'      => 'Value must be at least :min.',
-    //         'in'       => 'Invalid selection.',
-    //     ]);
-    
-    //     if ($validator->fails()) {
-    //         $errors = [];
-    
-    //         foreach ($validator->errors()->toArray() as $field => $messages) {
-    //             $errors[$field] = $messages;
-    //         }
-    
-    //         return response()->json([
-    //             'data' => $errors,
-    //             'message' => 'Please fill with valid data.'
-    //         ], 422);
-    //     }
-    
-    //     try {
-    //         DB::transaction(function () use ($request) {
-    //             $userId = Auth::id();
-    //             $mediaData = [];
-        
-    //             foreach ($request->file('files') as $file) {
-        
-    //                 // unique file name
-    //                 $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-                    
-    //                 $file_mime_type = $file->getClientMimeType();
-    //                 $file_size = $file->getSize();
-                    
-    //                 $file->move(public_path('medias'.DIRECTORY_SEPARATOR.'tyre'.DIRECTORY_SEPARATOR),  $fileName );
-        
-    //                 $mediaData[] = [
-    //                     'type'  => 'Image',
-    //                     'file_name'  => $file->getClientOriginalName(),
-    //                     'file_path'  => 'tyre/' . $fileName,
-    //                     'file_type'  => $file_mime_type,
-    //                     'file_size'  => $file_size,
-    //                     'created_by'   => $userId,
-    //                     'created_at' => now(),
-    //                     'updated_at' => now(),
-    //                 ];
-    //             }
-    
-    //             $data = [
-    //                 'contact_id' => $request->vendor,
-    //                 'location' => 'Warehouse',
-    //                 'warehouse_id' => 1,
-    //                 'tyre_condition' => $request->condition,
-    
-    //                 'tyre_model' => $request->tyre_model_name,
-    //                 'tyre_type'  => $request->tyre_type,
-    //                 'tyre_brand' => $request->tyre_brand,
-    //                 'tyre_price' => $request->tyre_price,
-    //                 'tyre_serial_number' => $request->tyre_serial_number,
-    
-    //                 'tyre_purchase_date' => date('Y-m-d', strtotime($request->tyre_purchase_date)),
-    //                 'tyre_issue_date'    => date('Y-m-d', strtotime($request->tyre_issue_date)),
-    //                 'tyre_warranty_months' => $request->tyre_warranty_months,
-    //                 'tyre_warrenty_end_date'    => date('Y-m-d', strtotime('+' . $request->tyre_warranty_months . ' months', strtotime($request->tyre_purchase_date))),
-    
-    //                 'fixed_run_km' => $request->fixed_run_km,
-    //                 'fixed_life_months' => $request->fixed_life_months,
-    //                 'actual_run_km' => $request->actual_run_km,
-    //                 'actual_run_month' => $request->actual_run_month,
-    
-    //                 'alignment_interval_km' => $request->alignment_interval_km,
-    //                 'set_reminder_for_alignment' => $request->has('set_reminder_for_alignment') ? 'Yes' : 'No',
-    
-    //                 'rotation_interval_km' => $request->rotation_interval_km,
-    //                 'set_reminder_for_rotation' => $request->has('set_reminder_for_rotation') ? 'Yes' : 'No',
-    
-    //                 'last_alignment_km' => $request->last_alignment_km,
-    //                 'last_rotation_km' => $request->last_rotation_km,
-    
-    //                 'created_by' => $userId,
-    //             ];
-    
-    //             $tyre = Tyre::create($data);
-    //             if(count($mediaData) > 0){
-    //                 $tyre->medias()->createMany($mediaData);
-    //             }
-    
-    //             Tyrelog::create($data + [
-    //                 'tyre_id' => $tyre->id
-    //             ]);
-    
-    //             $this->storeUseractivity(66, 3, $userId, $tyre->id, 'Added tyre details.');
-    //         });
-    
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Tyre detail saved successfully.',
-    //             'redirect_url' => route('tyre.dashboard')
-    //         ]);
-    
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $e->getMessage()
-    //         ], 422);
-    //     }
-    // }
-    
-    
-    
 }
-
-
-
-
-
-
-
-

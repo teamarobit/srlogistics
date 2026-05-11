@@ -415,6 +415,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/vehicle/{vehicle}/add-spare', [App\Http\Controllers\TyreManagementController::class, 'addSpareTyre'])->name('vehicle.add.spare');
         // POST: Take Action modal — log an alignment event for a mapped tyre
         Route::post('/vehicle/{vehicle}/log-alignment', [App\Http\Controllers\TyreManagementController::class, 'logAlignment'])->name('vehicle.log.alignment');
+        // POST: Take Action modal — log a tyre replacement for a mapped position
+        Route::post('/vehicle/{vehicle}/log-replace', [App\Http\Controllers\TyreManagementController::class, 'logReplace'])->name('vehicle.log.replace');
         // GET: Take Action modal — look up a donor vehicle by registration number (Another Vehicle source)
         Route::get('/lookup-vehicle', [App\Http\Controllers\TyreManagementController::class, 'lookupVehicleByNumber'])->name('lookup.vehicle.by.number');
     });

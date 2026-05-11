@@ -113,7 +113,7 @@
                             <div class="rag-legend-item"><span class="rag-dot green"></span><span>Good (&ge;50%)</span></div>
                             <div class="rag-legend-item"><span class="rag-dot amber"></span><span>Moderate (20–49%)</span></div>
                             <div class="rag-legend-item"><span class="rag-dot red"></span><span>Critical (&lt;20%)</span></div>
-                            <div class="rag-legend-item"><span class="rag-dot grey"></span><span>Untagged</span></div>
+                            <div class="rag-legend-item"><span class="rag-dot grey"></span><span>No KM Data / Untagged</span></div>
                         </div>
                     </div>
                 </div>
@@ -149,6 +149,7 @@
                                         @if($rag === 'green') 🟢 Good
                                         @elseif($rag === 'amber') 🟡 Moderate
                                         @elseif($rag === 'red') 🔴 Critical
+                                        @elseif($rag === 'grey') ⚫ No KM Data
                                         @else ⚫ Untagged
                                         @endif
                                     </span>
@@ -439,6 +440,7 @@
                                         @if($rag === 'green') 🟢 Good
                                         @elseif($rag === 'amber') 🟡 Moderate
                                         @elseif($rag === 'red') 🔴 Critical
+                                        @elseif($rag === 'grey') ⚫ No KM Data
                                         @else ⚫ Untagged
                                         @endif
                                     </span>
