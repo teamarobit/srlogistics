@@ -719,7 +719,7 @@ $(document).ready(function () {
         $sel.empty().append('<option value="">— Select Spare Tyre —</option>');
         spares.forEach(function (s) {
             const lifeTxt = s.life !== null ? ` [${s.life}% life]` : '';
-            $sel.append(`<option value="${s.id}">${s.serial} — ${s.brand || 'N/A'}${lifeTxt} (${s.pos})</option>`);
+            $sel.append(`<option value="${s.id}">Pos ${s.pos}: ${s.serial} — ${s.brand || 'N/A'}${lifeTxt}</option>`);
         });
     }
 
@@ -742,13 +742,25 @@ $(document).ready(function () {
         $('#tamOldSourceGrid .tam-old-source-pill').removeClass('active');
         $(this).closest('.tam-old-source-pill').addClass('active');
 
-        /* Reset conditionals */
+        /* Reset all conditionals */
         $('#tamOwnVehicleOverLimitAlert').addClass('d-none');
         $('#tamOldOtherVehicleWrap').hide();
         $('#tamOldDestVehicleNo').val('');
+        $('#tamErrOldDestVehicleNo').text('');
         $('#tamOldDestPosition').val('');
+        $('#tamErrOldDestPosition').text('');
+        $('#tamOldDestWarehouseWrap').addClass('d-none');
+        $('#tamOldDestWarehouseId').val('');
+        $('#tamOldDestWorkshopWrap').addClass('d-none');
+        $('#tamOldDestWorkshopId').val('');
 
-        if (val === 'Own Vehicle' || val === 'Spare Tyre') {
+        if (val === 'SR Garage') {
+            $('#tamOldDestWarehouseWrap').removeClass('d-none');
+            tamPopulateOldDestWarehouse();
+        } else if (val === 'Workshop') {
+            $('#tamOldDestWorkshopWrap').removeClass('d-none');
+            tamPopulateOldDestWorkshop();
+        } else if (val === 'Own Vehicle') {
             /* Check if spare limit exceeded (max 2 spares assumed) */
             const spares = (typeof spareTyresList !== 'undefined') ? spareTyresList : [];
             if (spares.length >= 2) {
@@ -760,6 +772,27 @@ $(document).ready(function () {
 
         $('#tamErrOldDest').text('');
     });
+
+    /* ── Populate warehouse dropdown in Old Tyre Destination ──────────── */
+    function tamPopulateOldDestWarehouse() {
+        const $sel = $('#tamOldDestWarehouseId');
+        const whs  = (typeof warehousesList !== 'undefined') ? warehousesList : [];
+        $sel.empty().append('<option value="">— Select Warehouse —</option>');
+        whs.forEach(function (w) {
+            const typeTxt = w.type ? ' (' + w.type + ')' : '';
+            $sel.append(`<option value="${w.id}">${w.name}${typeTxt}</option>`);
+        });
+    }
+
+    /* ── Populate workshop dropdown in Old Tyre Destination ───────────── */
+    function tamPopulateOldDestWorkshop() {
+        const $sel = $('#tamOldDestWorkshopId');
+        const wks  = (typeof workshopsList !== 'undefined') ? workshopsList : [];
+        $sel.empty().append('<option value="">— Select Workshop —</option>');
+        wks.forEach(function (w) {
+            $sel.append(`<option value="${w.id}">${w.name}</option>`);
+        });
+    }
 
     /* Old tyre action pill selection — Replace tab */
     $(document).on('change', 'input[name="old_tyre_action"]', function () {
@@ -1191,8 +1224,12 @@ $(document).ready(function () {
         fd.append('damage_reason',         $('#tamRplDamageReason').val());
         fd.append('driver_fine_amount',    $('#tamDriverFineAmount').val() || '');
         fd.append('replacement_source',    src);
-        fd.append('old_tyre_destination',  $('input[name="old_tyre_destination"]:checked').val() || '');
-        fd.append('old_tyre_action',       $('input[name="old_tyre_action"]:checked').val() || '');
+        fd.append('old_tyre_destination',          $('input[name="old_tyre_destination"]:checked').val() || '');
+        fd.append('old_dest_warehouse_id',        $('#tamOldDestWarehouseId').val() || '');
+        fd.append('old_dest_workshop_id',         $('#tamOldDestWorkshopId').val() || '');
+        fd.append('old_tyre_destination_vehicle', $('#tamOldDestVehicleNo').val().trim() || '');
+        fd.append('old_tyre_destination_position', $('#tamOldDestPosition').val() || '');
+        // fd.append('old_tyre_action', $('input[name="old_tyre_action"]:checked').val() || ''); // disabled 2026-05-11
 
         // Damage photos (common to all sources)
         ['damage_photo_1', 'damage_photo_2', 'damage_photo_3'].forEach(function (name) {
@@ -1320,16 +1357,45 @@ $(document).ready(function () {
         }
 
         /* Old tyre destination */
-        if (!$('input[name="old_tyre_destination"]:checked').val()) {
+        const oldDest = $('input[name="old_tyre_destination"]:checked').val();
+        if (!oldDest) {
             $('#tamErrOldDest').text('Please select a destination for the removed tyre.');
             ok = false;
         } else { $('#tamErrOldDest').text(''); }
 
-        /* Old tyre action */
-        if (!$('input[name="old_tyre_action"]:checked').val()) {
-            $('#tamErrOldAction').text('Please select an action for the old tyre.');
+        /* Warehouse required when SR Garage selected */
+        if (oldDest === 'SR Garage' && !$('#tamOldDestWarehouseId').val()) {
+            $('#tamErrOldDestWarehouse').text('Please select a warehouse.');
             ok = false;
-        } else { $('#tamErrOldAction').text(''); }
+        } else { $('#tamErrOldDestWarehouse').text(''); }
+
+        /* Workshop required when Workshop selected */
+        if (oldDest === 'Workshop' && !$('#tamOldDestWorkshopId').val()) {
+            $('#tamErrOldDestWorkshop').text('Please select a workshop.');
+            ok = false;
+        } else { $('#tamErrOldDestWorkshop').text(''); }
+
+        /* Another Vehicle: vehicle number + position required */
+        if (oldDest === 'Another Vehicle') {
+            if (!$('#tamOldDestVehicleNo').val().trim()) {
+                $('#tamErrOldDestVehicleNo').text('Please enter the destination vehicle number.');
+                ok = false;
+            } else { $('#tamErrOldDestVehicleNo').text(''); }
+
+            if (!$('#tamOldDestPosition').val()) {
+                $('#tamErrOldDestPosition').text('Please select a position on the destination vehicle.');
+                ok = false;
+            } else { $('#tamErrOldDestPosition').text(''); }
+        } else {
+            $('#tamErrOldDestVehicleNo').text('');
+            $('#tamErrOldDestPosition').text('');
+        }
+
+        /* Old tyre action — validation disabled (section commented out 2026-05-11) */
+        // if (!$('input[name="old_tyre_action"]:checked').val()) {
+        //     $('#tamErrOldAction').text('Please select an action for the old tyre.');
+        //     ok = false;
+        // } else { $('#tamErrOldAction').text(''); }
 
         if (!ok) {
             Toast.fire({ icon: 'warning', title: 'Please fill all required fields in the Replace tab.' });

@@ -16,6 +16,8 @@ use App\Models\Tyrelog;
 use App\Models\Vehicle;
 use App\Models\Vehicletyremapping;
 use App\Models\Vehicletyremappinglog;
+use App\Models\Warehouse;
+use App\Models\Workshop;
 
 use Auth;
 
@@ -222,7 +224,10 @@ class TyreManagementController extends Controller
         $lastKnownKm   = $lastMappingWithKm ? (int) $lastMappingWithKm->km_at_fitment : null;
         $lastKnownDate = $lastMappingWithKm ? $lastMappingWithKm->fitment_date          : null;
 
-        return view('tyremanagement.vehicletyretagging-v2', compact('tyrepositions', 'vehicle', 'lastKnownKm', 'lastKnownDate'));
+        $warehouses = Warehouse::active()->orderBy('name')->get(['id', 'name', 'warehouse_type']);
+        $workshops  = Workshop::active()->orderBy('name')->get(['id', 'name']);
+
+        return view('tyremanagement.vehicletyretagging-v2', compact('tyrepositions', 'vehicle', 'lastKnownKm', 'lastKnownDate', 'warehouses', 'workshops'));
     }
 
     public function tagTyreToVehicle(Request $request, Vehicle $vehicle){
@@ -606,7 +611,7 @@ class TyreManagementController extends Controller
             return response()->json([
                 'success'      => true,
                 'message'      => 'Spare tyre added successfully.',
-                'redirect_url' => route('tyremanage.vehicle.tyre.tagging', $vehicle->id),
+                'redirect_url' => route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id),
             ], 200);
 
         } catch (\Exception $e) {
@@ -761,12 +766,16 @@ class TyreManagementController extends Controller
             'replacement_reason'   => 'required|string',
             'damage_reason'        => 'required|string',
             'driver_fine_amount'   => 'nullable|numeric|min:0',
-            'replacement_source'   => 'required|in:SR Garage,Direct Fitment,Same Vehicle Spare,Another Vehicle',
-            'old_tyre_destination' => 'required|string',
-            'old_tyre_action'      => 'required|string',
-            'damage_photo_1'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
-            'damage_photo_2'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
-            'damage_photo_3'       => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'replacement_source'    => 'required|in:SR Garage,Direct Fitment,Same Vehicle Spare,Another Vehicle',
+            'old_tyre_destination'           => 'required|string',
+            'old_tyre_action'                => 'nullable|string',   // section disabled on UI — 2026-05-11
+            'old_dest_warehouse_id'          => 'nullable|integer',
+            'old_dest_workshop_id'           => 'nullable|integer',
+            'old_tyre_destination_vehicle'   => 'nullable|string|max:20',
+            'old_tyre_destination_position'  => 'nullable|string|max:10',
+            'damage_photo_1'        => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'damage_photo_2'        => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'damage_photo_3'        => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
         ];
 
         // Source-specific validation
@@ -908,6 +917,58 @@ class TyreManagementController extends Controller
             }
         }
 
+        // ── 4c. Old tyre destination — Another Vehicle: validate position is free ──
+        $destVehicle        = null;
+        $destVehicleMapping = null;
+
+        if ($request->old_tyre_destination === 'Another Vehicle') {
+            if (empty($request->old_tyre_destination_vehicle) || empty($request->old_tyre_destination_position)) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['old_tyre_destination_vehicle' => ['Destination vehicle number and position are required.']],
+                    'message' => 'Please provide the destination vehicle and position.',
+                ], 422);
+            }
+
+            $destVehicle = Vehicle::where('vehicle_no', $request->old_tyre_destination_vehicle)->first();
+            if (!$destVehicle) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['old_tyre_destination_vehicle' => ['Vehicle "' . $request->old_tyre_destination_vehicle . '" not found in the system.']],
+                    'message' => 'Destination vehicle not found.',
+                ], 422);
+            }
+
+            $destPosition = Tyreposition::where('code', $request->old_tyre_destination_position)
+                ->where('status', 'Active')->first();
+            if (!$destPosition) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['old_tyre_destination_position' => ['Invalid tyre position "' . $request->old_tyre_destination_position . '".']],
+                    'message' => 'Invalid tyre position.',
+                ], 422);
+            }
+
+            $destVehicleMapping = Vehicletyremapping::where('vehicle_id', $destVehicle->id)
+                ->where('tyreposition_id', $destPosition->id)
+                ->latest('id')
+                ->first();
+
+            // Position must exist as an Inactive row (slot is free)
+            if (!$destVehicleMapping || $destVehicleMapping->status !== 'Inactive') {
+                $statusNote = $destVehicleMapping
+                    ? 'Current status: ' . $destVehicleMapping->status . '.'
+                    : 'This position is not configured on the destination vehicle.';
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['old_tyre_destination_position' => [
+                        'Position "' . $request->old_tyre_destination_position . '" on vehicle "' . $request->old_tyre_destination_vehicle . '" is not available. ' . $statusNote . ' Choose an empty (Inactive) position.',
+                    ]],
+                    'message' => 'Destination position is not free.',
+                ], 422);
+            }
+        }
+
         // ── 5. Resolve replacement date and KM per source ─────────────────
         $replacementDate = match ($source) {
             'SR Garage'          => date('Y-m-d', strtotime($request->replacement_date_garage)),
@@ -929,7 +990,8 @@ class TyreManagementController extends Controller
         try {
             $result = DB::transaction(function () use (
                 $request, $vehicle, $mapping, $oldTyre, $source,
-                $spareMapping, $donorMapping, $replacementDate, $replacementKm
+                $spareMapping, $donorMapping, $replacementDate, $replacementKm,
+                $destVehicle, $destVehicleMapping
             ) {
                 $userId = Auth::id();
 
@@ -1003,21 +1065,26 @@ class TyreManagementController extends Controller
                 // 6b. Handle old tyre disposal — clear its allocation, set status.
                 $oldTyreNewLocation = match ($request->old_tyre_destination) {
                     'SR Garage'                 => 'Warehouse',
-                    'Tyre Vendor'               => 'Service Center',
+                    'Workshop'                  => 'Service Center',
                     'Own Vehicle', 'Spare Tyre' => 'Vehicle',
+                    'Another Vehicle'           => 'Vehicle',
                     default                     => 'Warehouse',
                 };
                 $oldTyreCurrentStatus = match ($request->old_tyre_destination) {
                     'Own Vehicle', 'Spare Tyre' => 'Allocated',
-                    'Tyre Vendor'               => 'Workshop',
+                    'Workshop'                  => 'Workshop',
+                    'Another Vehicle'           => 'Allocated',
                     default                     => 'Warehouse',
+                };
+                $oldTyreAllocatedVehicle = match ($request->old_tyre_destination) {
+                    'Own Vehicle', 'Spare Tyre' => $vehicle->id,
+                    'Another Vehicle'           => $destVehicle?->id,
+                    default                     => null,
                 };
                 $oldTyre->update([
                     'location'             => $oldTyreNewLocation,
                     'current_status'       => $oldTyreCurrentStatus,
-                    'allocated_vehicle_id' => in_array($request->old_tyre_destination, ['Own Vehicle', 'Spare Tyre'])
-                                                 ? $vehicle->id
-                                                 : null,
+                    'allocated_vehicle_id' => $oldTyreAllocatedVehicle,
                 ]);
 
                 // 6c. Keep old tyre as spare on this vehicle if requested
@@ -1054,6 +1121,30 @@ class TyreManagementController extends Controller
                     }
                 }
 
+                // 6c-ii. Transfer old tyre to destination vehicle's position
+                if ($request->old_tyre_destination === 'Another Vehicle' && $destVehicleMapping) {
+                    $destVehicleMapping->update([
+                        'tyre_id'       => $oldTyre->id,
+                        'status'        => 'Active',
+                        'fitment_date'  => $replacementDate,
+                        'km_at_fitment' => $replacementKm,
+                        'notes'         => 'Tyre received from vehicle #' . $vehicle->vehicle_no . ' as replacement transfer.',
+                        'updated_by'    => $userId,
+                    ]);
+                    Vehicletyremappinglog::create([
+                        'vehicletyremapping_id' => $destVehicleMapping->id,
+                        'vehicle_id'            => $destVehicleMapping->vehicle_id,
+                        'tyre_id'               => $oldTyre->id,
+                        'tyreposition_id'       => $destVehicleMapping->tyreposition_id,
+                        'fitment_date'          => $replacementDate,
+                        'km_at_fitment'         => $replacementKm,
+                        'status'                => 'Active',
+                        'log_type'              => 'Fitment',
+                        'notes'                 => 'Tyre transferred from vehicle #' . $vehicle->vehicle_no,
+                        'created_by'            => $userId,
+                    ]);
+                }
+
                 // 6d. Swap the mapping to the new tyre
                 $mapping->update([
                     'tyre_id'       => $newTyre->id,
@@ -1079,13 +1170,15 @@ class TyreManagementController extends Controller
 
                 // 6f. Tyrelog audit row for the removed tyre
                 $actionNotes = json_encode([
-                    'source'             => $source,
-                    'replacement_reason' => $request->replacement_reason,
-                    'damage_reason'      => $request->damage_reason,
-                    'driver_fine'        => $request->driver_fine_amount,
-                    'old_destination'    => $request->old_tyre_destination,
-                    'old_action'         => $request->old_tyre_action,
-                    'new_tyre_id'        => $newTyre->id,
+                    'source'              => $source,
+                    'replacement_reason'  => $request->replacement_reason,
+                    'damage_reason'       => $request->damage_reason,
+                    'driver_fine'         => $request->driver_fine_amount,
+                    'old_destination'     => $request->old_tyre_destination,
+                    'old_dest_warehouse'  => $request->old_dest_warehouse_id,
+                    'old_dest_workshop'   => $request->old_dest_workshop_id,
+                    'old_action'          => $request->old_tyre_action,
+                    'new_tyre_id'         => $newTyre->id,
                 ]);
 
                 $log = Tyrelog::create([

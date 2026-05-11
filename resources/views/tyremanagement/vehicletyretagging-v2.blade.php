@@ -66,16 +66,19 @@
                         'rag'     => $m->rag_status ?? 'grey',
                     ];
                 })->values();
-                $spareTyresJson = $vehicle->vehicletyremappings->where('status', 'Spare')->map(function($m) {
-                    return [
-                        'id'      => $m->id,
-                        'pos'     => $m->tyreposition?->code ?? '',
-                        'serial'  => $m->tyre?->tyre_serial_number ?? 'N/A',
-                        'brand'   => $m->tyre?->tyre_brand ?? '',
-                        'tyre_id' => $m->tyre?->id,
-                        'life'    => $m->life_remaining_pct,
-                    ];
-                })->values();
+                $spareTyresJson = $vehicle->vehicletyremappings
+                    ->filter(fn($m) => str_starts_with($m->tyreposition?->code ?? '', 'S'))  // S-position spare slots
+                    ->filter(fn($m) => !is_null($m->tyre_id))   // only slots with an actual tyre
+                    ->map(function($m) {
+                        return [
+                            'id'      => $m->id,
+                            'pos'     => $m->tyreposition?->code ?? '',
+                            'serial'  => $m->tyre?->tyre_serial_number ?? 'N/A',
+                            'brand'   => $m->tyre?->tyre_brand ?? '',
+                            'tyre_id' => $m->tyre?->id,
+                            'life'    => $m->life_remaining_pct,
+                        ];
+                    })->values();
                 $mountedPositionsJson = $vehicle->vehicletyremappings->where('status', '!=', 'Spare')->map(function($m) {
                     return ['pos' => $m->tyreposition?->code ?? '', 'id' => $m->id];
                 })->values();
@@ -83,6 +86,8 @@
             const allMappings       = @json($allMappingsJson);
             const spareTyresList    = @json($spareTyresJson);
             const mountedPositions  = @json($mountedPositionsJson);
+            const warehousesList    = @json($warehouses->map(fn($w) => ['id' => $w->id, 'name' => $w->name, 'type' => $w->warehouse_type]));
+            const workshopsList     = @json($workshops->map(fn($w) => ['id' => $w->id, 'name' => $w->name]));
             const takeActionBaseUrl   = "{{ url('tyremanage/vehicle/'.$vehicle->id) }}";
             const lookupVehicleUrl    = "{{ route('tyremanage.lookup.vehicle.by.number') }}";
         </script>
@@ -1369,16 +1374,12 @@
                                         SR Garage
                                     </label>
                                     <label class="tam-old-source-pill" for="tamOldSrcVendor">
-                                        <input type="radio" name="old_tyre_destination" id="tamOldSrcVendor" value="Tyre Vendor" class="d-none">
-                                        Tyre Vendor
+                                        <input type="radio" name="old_tyre_destination" id="tamOldSrcVendor" value="Workshop" class="d-none">
+                                        Workshop
                                     </label>
                                     <label class="tam-old-source-pill" for="tamOldSrcOwnVehicle">
                                         <input type="radio" name="old_tyre_destination" id="tamOldSrcOwnVehicle" value="Own Vehicle" class="d-none">
                                         Own Vehicle (Spare)
-                                    </label>
-                                    <label class="tam-old-source-pill" for="tamOldSrcSpare">
-                                        <input type="radio" name="old_tyre_destination" id="tamOldSrcSpare" value="Spare Tyre" class="d-none">
-                                        Keep as Spare
                                     </label>
                                     <label class="tam-old-source-pill" for="tamOldSrcOtherVeh">
                                         <input type="radio" name="old_tyre_destination" id="tamOldSrcOtherVeh" value="Another Vehicle" class="d-none">
@@ -1386,6 +1387,25 @@
                                     </label>
                                 </div>
                                 <span class="tam-field-error" id="tamErrOldDest"></span>
+
+                                {{-- SR Garage: warehouse dropdown --}}
+                                <div class="mt-2 d-none" id="tamOldDestWarehouseWrap">
+                                    <label class="form-label fw-semibold" style="font-size:12px;">Select Warehouse <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" name="old_dest_warehouse_id" id="tamOldDestWarehouseId">
+                                        <option value="">— Select Warehouse —</option>
+                                    </select>
+                                    <span class="tam-field-error" id="tamErrOldDestWarehouse"></span>
+                                </div>
+
+                                {{-- Workshop: workshop dropdown --}}
+                                <div class="mt-2 d-none" id="tamOldDestWorkshopWrap">
+                                    <label class="form-label fw-semibold" style="font-size:12px;">Select Workshop <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" name="old_dest_workshop_id" id="tamOldDestWorkshopId">
+                                        <option value="">— Select Workshop —</option>
+                                    </select>
+                                    <span class="tam-field-error" id="tamErrOldDestWorkshop"></span>
+                                </div>
+
                                 {{-- Own Vehicle over-limit alert --}}
                                 <div class="tam-alert tam-alert-warning d-none mt-2" id="tamOwnVehicleOverLimitAlert">
                                     <i class="uil uil-exclamation-triangle"></i>
@@ -1397,6 +1417,7 @@
                                         <div class="col-md-7">
                                             <label class="form-label fw-semibold" style="font-size:12px;">Destination Vehicle Number <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm" name="old_tyre_destination_vehicle" id="tamOldDestVehicleNo" placeholder="e.g. MH12AB5678" maxlength="15">
+                                            <span class="tam-field-error" id="tamErrOldDestVehicleNo"></span>
                                         </div>
                                         <div class="col-md-5">
                                             <label class="form-label fw-semibold" style="font-size:12px;">Position on Destination Vehicle <span class="text-danger">*</span></label>
@@ -1406,6 +1427,7 @@
                                                     <option value="{{ $tp->code }}">{{ $tp->code }}</option>
                                                 @endforeach
                                             </select>
+                                            <span class="tam-field-error" id="tamErrOldDestPosition"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1413,7 +1435,8 @@
                         </div>
                     </div>
 
-                    {{-- Old Tyre Action --}}
+                    {{-- Old Tyre Action — commented out (2026-05-11) --}}
+                    {{-- SECTION 6 DISABLED: Uncomment when Old Tyre Action workflow is ready
                     <div class="tam-section">
                         <div class="tam-section-title">
                             <span class="tam-section-num">6</span>
@@ -1439,8 +1462,6 @@
                             </label>
                         </div>
                         <span class="tam-field-error" id="tamErrOldAction"></span>
-
-                        {{-- Warranty Claim: conditional attachment section --}}
                         <div class="tam-warranty-section d-none mt-3" id="tamWarrantyClaimSection">
                             <div class="tam-warranty-box">
                                 <div class="tam-warranty-title">
@@ -1479,6 +1500,7 @@
                             </div>
                         </div>
                     </div>
+                    END SECTION 6 DISABLED --}}
                 </div>
 
             </form>
