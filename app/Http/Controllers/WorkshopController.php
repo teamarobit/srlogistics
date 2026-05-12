@@ -641,7 +641,253 @@ class WorkshopController extends Controller
 
     public function createBattery()
     {
-        return view('inventory.battery-add');
+        $batteryvendors = \App\Models\Contact::where('cotype_id', 7)->where('status', 'Active')->get();
+
+        $warehouses = \App\Models\Warehouse::where('status', 'Active')
+            ->orderBy('warehouse_type')
+            ->orderBy('name')
+            ->get(['id', 'name', 'warehouse_type']);
+
+        $workshops = \App\Models\Workshop::active()
+            ->orderBy('ownership')
+            ->orderBy('name')
+            ->get(['id', 'name', 'workshop_code', 'ownership']);
+
+        return view('inventory.battery-add', compact('batteryvendors', 'warehouses', 'workshops'));
+    }
+
+    public function storeBattery(Request $request)
+    {
+        // ── Validation rules ──────────────────────────────────────────────
+        $rules = [
+            'battery_source_mode'  => 'required|in:Existing,New PO,Fitment',
+            'battery_serial'       => 'required|string|max:100',
+            'battery_brand'        => 'required|string|max:100',
+            'battery_model'        => 'nullable|string|max:100',
+            'battery_capacity'     => 'required|numeric|min:0.1',
+            'battery_voltage'      => 'required|string|max:10',
+            'battery_condition'    => 'required|in:New,Used,Replaced Under Warranty',
+
+            // Purchase
+            'vendor_id'                  => 'nullable|integer|exists:contacts,id',
+            'battery_invoice_ref'        => 'nullable|string|max:100',
+            'battery_purchase_cost'      => 'nullable|numeric|min:0',
+            'battery_purchase_date'      => 'nullable|date',
+            'battery_warranty_months'    => 'nullable|integer|min:0|max:120',
+            'invoice_file'               => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+            'fitment_invoice_file'       => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+
+            // Lifecycle
+            'battery_issue_date'         => 'nullable|date',
+            'battery_fixed_life_months'  => 'nullable|integer|min:1|max:600',
+            'battery_actual_usage_months'=> 'nullable|integer|min:0',
+
+            // Maintenance
+            'last_voltage_check_date'    => 'nullable|date',
+            'last_charging_check_date'   => 'nullable|date',
+            'battery_health_pct'         => 'nullable|integer|min:0|max:100',
+            'next_inspection_due_date'   => 'nullable|date',
+
+            // Location & notes
+            'stock_location'             => 'nullable|string|max:50',
+            'battery_notes'              => 'nullable|string|max:2000',
+
+            // Attachments (Dropzone)
+            'files'                      => 'nullable|array|max:4',
+            'files.*'                    => 'file|mimes:pdf,jpg,jpeg,png,webp|max:3072',
+        ];
+
+        // Source-mode conditional rules
+        $mode = $request->input('battery_source_mode');
+        if ($mode === 'Existing') {
+            $rules['source_origin_note'] = 'required|string|max:500';
+        } elseif ($mode === 'New PO') {
+            $rules['purchase_order_reference'] = 'required|string|max:100';
+        } elseif ($mode === 'Fitment') {
+            $rules['fitment_source_origin_note'] = 'required|string|max:500';
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        // ── Stock location parsing ────────────────────────────────────────
+        $stockLocation = $request->input('stock_location', '');
+        $warehouseId   = null;
+        $workshopId    = null;
+        $locationName  = 'Unassigned';
+        $locationType  = 'Unassigned';
+
+        if ($stockLocation === 'fitment') {
+            $locationType = 'Fitment';
+            $locationName = 'Fitment';
+        } elseif (preg_match('/^(wh|ws):(\d+)$/', $stockLocation, $m)) {
+            if ($m[1] === 'wh') {
+                $warehouseId  = (int) $m[2];
+                $locationType = 'Warehouse';
+            } else {
+                $workshopId   = (int) $m[2];
+                $locationType = 'Workshop';
+            }
+        }
+
+        // ── Warranty expiry auto-calc ─────────────────────────────────────
+        $warrantyMonths = (int) $request->input('battery_warranty_months', 0);
+        $warrantyExpiry = null;
+        if ($warrantyMonths > 0 && $request->input('battery_purchase_date')) {
+            $warrantyExpiry = date(
+                'Y-m-d',
+                strtotime('+' . $warrantyMonths . ' months', strtotime($request->input('battery_purchase_date')))
+            );
+        }
+
+        // ── End-of-life auto-calc ─────────────────────────────────────────
+        $fixedLifeMonths = $request->input('battery_fixed_life_months');
+        $endOfLife       = null;
+        if ($fixedLifeMonths && $request->input('battery_issue_date')) {
+            $endOfLife = date(
+                'Y-m-d',
+                strtotime('+' . $fixedLifeMonths . ' months', strtotime($request->input('battery_issue_date')))
+            );
+        }
+
+        // ── Organisation ──────────────────────────────────────────────────
+        $orgId     = auth()->user()->organisation_id ?? 1;
+        $userId    = auth()->id();
+
+        try {
+            $battery = \Illuminate\Support\Facades\DB::transaction(function () use (
+                $request, $mode, $warrantyMonths, $warrantyExpiry, $endOfLife,
+                $warehouseId, $workshopId, $locationType, $orgId, $userId
+            ) {
+                // ── Create Battery record ──────────────────────────────────
+                $battery = \App\Models\Battery::create([
+                    'organisation_id'             => $orgId,
+                    'battery_source_mode'         => $mode,
+                    'source_origin_note'          => $request->input('source_origin_note'),
+                    'fitment_source_origin_note'  => $request->input('fitment_source_origin_note'),
+                    'purchase_order_reference'    => $request->input('purchase_order_reference'),
+
+                    'battery_serial'              => $request->input('battery_serial'),
+                    'battery_brand'               => $request->input('battery_brand'),
+                    'battery_model'               => $request->input('battery_model'),
+                    'battery_capacity'            => $request->input('battery_capacity'),
+                    'battery_voltage'             => $request->input('battery_voltage'),
+                    'battery_condition'           => $request->input('battery_condition'),
+
+                    'vendor_id'                   => $request->input('vendor_id') ?: null,
+                    'battery_invoice_ref'         => $request->input('battery_invoice_ref'),
+                    'battery_purchase_cost'       => $request->input('battery_purchase_cost') ?: null,
+                    'battery_purchase_date'       => $request->input('battery_purchase_date') ?: null,
+                    'battery_warranty_months'     => $warrantyMonths,
+                    'battery_warranty_expiry_date'=> $warrantyExpiry,
+
+                    'battery_issue_date'          => $request->input('battery_issue_date') ?: null,
+                    'battery_fixed_life_months'   => $request->input('battery_fixed_life_months') ?: null,
+                    'battery_end_of_life_date'    => $endOfLife,
+                    'battery_actual_usage_months' => $request->input('battery_actual_usage_months') ?: null,
+
+                    'last_voltage_check_date'     => $request->input('last_voltage_check_date') ?: null,
+                    'last_charging_check_date'    => $request->input('last_charging_check_date') ?: null,
+                    'battery_health_pct'          => $request->input('battery_health_pct') ?: null,
+                    'next_inspection_due_date'    => $request->input('next_inspection_due_date') ?: null,
+                    'maintenance_reminder_enabled'=> $request->boolean('maintenance_reminder_enabled'),
+
+                    'warehouse_id'                => $warehouseId,
+                    'workshop_id'                 => $workshopId,
+                    'stock_location_type'         => $locationType,
+                    'current_status'              => 'In Stock',
+
+                    'battery_notes'               => $request->input('battery_notes'),
+                    'created_by'                  => $userId,
+                    'updated_by'                  => $userId,
+                ]);
+
+                // ── Invoice file storage ───────────────────────────────────
+                $invoiceFileKey = ($mode === 'Fitment') ? 'fitment_invoice_file' : 'invoice_file';
+                if ($request->hasFile($invoiceFileKey) && $request->file($invoiceFileKey)->isValid()) {
+                    $file     = $request->file($invoiceFileKey);
+                    $invDir   = public_path('medias' . DIRECTORY_SEPARATOR . 'battery' . DIRECTORY_SEPARATOR . 'invoices');
+                    if (! is_dir($invDir)) { @mkdir($invDir, 0775, true); }
+                    $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                    $file->move($invDir, $filename);
+                    $battery->update(['invoice_file_path' => 'battery/invoices/' . $filename]);
+                }
+
+                // ── Dropzone attachment images (medias table, type='Image') ──
+                $mediaData = [];
+                if ($request->hasFile('files')) {
+                    $imgDir = public_path('medias' . DIRECTORY_SEPARATOR . 'battery');
+                    if (! is_dir($imgDir)) { @mkdir($imgDir, 0775, true); }
+
+                    foreach ($request->file('files') as $file) {
+                        if (! $file->isValid()) { continue; }
+                        $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                        $file->move($imgDir, $filename);
+                        $mediaData[] = [
+                            'type'       => 'Image',
+                            'file_name'  => $file->getClientOriginalName(),
+                            'file_path'  => 'battery/' . $filename,
+                            'file_type'  => $file->getClientMimeType(),
+                            'file_size'  => $file->getSize(),
+                            'created_by' => $userId,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+                if (count($mediaData) > 0) {
+                    $battery->medias()->createMany($mediaData);
+                }
+
+                // ── Initial battery log entry ─────────────────────────────
+                \App\Models\Batterylog::create([
+                    'battery_id'               => $battery->id,
+                    'organisation_id'          => $orgId,
+                    'action'                   => 'Added',
+                    'battery_source_mode'      => $battery->battery_source_mode,
+                    'battery_serial'           => $battery->battery_serial,
+                    'battery_brand'            => $battery->battery_brand,
+                    'battery_model'            => $battery->battery_model,
+                    'battery_capacity'         => $battery->battery_capacity,
+                    'battery_voltage'          => $battery->battery_voltage,
+                    'battery_condition'        => $battery->battery_condition,
+                    'vendor_id'                => $battery->vendor_id,
+                    'battery_invoice_ref'      => $battery->battery_invoice_ref,
+                    'battery_purchase_cost'    => $battery->battery_purchase_cost,
+                    'battery_purchase_date'    => $battery->battery_purchase_date,
+                    'battery_warranty_months'  => $battery->battery_warranty_months,
+                    'battery_warranty_expiry_date' => $battery->battery_warranty_expiry_date,
+                    'battery_issue_date'       => $battery->battery_issue_date,
+                    'battery_fixed_life_months'=> $battery->battery_fixed_life_months,
+                    'stock_location_type'      => $battery->stock_location_type,
+                    'warehouse_id'             => $battery->warehouse_id,
+                    'workshop_id'              => $battery->workshop_id,
+                    'battery_status'           => $battery->current_status,
+                    'log_notes'                => $battery->battery_notes,
+                    'created_by'               => $userId,
+                ]);
+
+                return $battery;
+            });
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Battery added to inventory successfully.',
+                'redirect_url' => route('inventory.battery-dashboard'),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save battery: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function batteryDetails($id)

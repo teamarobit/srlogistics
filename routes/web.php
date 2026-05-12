@@ -746,6 +746,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/batteries',        [App\Http\Controllers\WorkshopController::class, 'batteryInventory'])->name('batteries');
         Route::get('/battery-dashboard',[App\Http\Controllers\WorkshopController::class, 'batteryDashboard'])->name('battery-dashboard');
         Route::get('/battery/add',          [App\Http\Controllers\WorkshopController::class, 'createBattery'])->name('battery.add');
+        Route::post('/battery/save',        [App\Http\Controllers\WorkshopController::class, 'storeBattery'])->name('battery.save');
         Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
         Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
         Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
