@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.2') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -109,52 +109,32 @@
             </div>
             --}}
 
-            {{-- Summary Stat Cards --}}
-            <div class="row g-3 mb-3">
-                <div class="col-lg col-md-4 col-6">
-                    <div class="btd-stat-card btd-navy">
-                        <div class="btd-stat-icon"><i class="uil uil-bolt-alt"></i></div>
-                        <div class="btd-stat-body">
-                            <div class="btd-stat-val">52</div>
-                            <div class="btd-stat-label">All Batteries</div>
+            {{-- Summary Stat Cards — tyre-counter-card style --}}
+            <div class="tyre-counters-wrap mb-3">
+                @php
+                    $batTotal = 52;
+                    $pctBat   = fn($n) => $batTotal > 0 ? round($n * 100 / $batTotal) : 0;
+
+                    $batCards = [
+                        ['count' => 52, 'label' => 'All Batteries',         'pct' => 100,           'color' => 'tc-blue'],
+                        ['count' => 10, 'label' => 'In Warehouse',          'pct' => $pctBat(10),   'color' => 'tc-green'],
+                        ['count' => 5,  'label' => 'In Workshop',           'pct' => $pctBat(5),    'color' => 'tc-indigo'],
+                        ['count' => 30, 'label' => 'Allocated to Vehicles', 'pct' => $pctBat(30),   'color' => 'tc-amber'],
+                        ['count' => 7,  'label' => 'Discarded',             'pct' => $pctBat(7),    'color' => 'tc-red'],
+                    ];
+                @endphp
+                <div class="tyre-counters-row">
+                    @foreach($batCards as $card)
+                    <div class="tyre-counter-card {{ $card['color'] }}">
+                        <div class="tc-body">
+                            <div class="tc-count">{{ $card['count'] }}</div>
+                            <div class="tc-label">{{ $card['label'] }}</div>
+                        </div>
+                        <div class="tc-footer">
+                            <span class="tc-pct"><i class="uil uil-arrow-up-right"></i> {{ $card['pct'] }}%</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg col-md-4 col-6">
-                    <div class="btd-stat-card btd-green">
-                        <div class="btd-stat-icon"><i class="uil uil-warehouse"></i></div>
-                        <div class="btd-stat-body">
-                            <div class="btd-stat-val">10</div>
-                            <div class="btd-stat-label">In Warehouse</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg col-md-4 col-6">
-                    <div class="btd-stat-card btd-amber" style="border-left-color:#7b1fa2;">
-                        <div class="btd-stat-icon" style="background:#f3e5f5;color:#7b1fa2;"><i class="uil uil-tools"></i></div>
-                        <div class="btd-stat-body">
-                            <div class="btd-stat-val" style="color:#7b1fa2;">5</div>
-                            <div class="btd-stat-label">In Workshop</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg col-md-4 col-6">
-                    <div class="btd-stat-card btd-amber">
-                        <div class="btd-stat-icon"><i class="uil uil-truck"></i></div>
-                        <div class="btd-stat-body">
-                            <div class="btd-stat-val">30</div>
-                            <div class="btd-stat-label">Allocated to Vehicles</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg col-md-4 col-6">
-                    <div class="btd-stat-card btd-grey">
-                        <div class="btd-stat-icon"><i class="uil uil-trash-alt"></i></div>
-                        <div class="btd-stat-body">
-                            <div class="btd-stat-val">7</div>
-                            <div class="btd-stat-label">Discarded</div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 

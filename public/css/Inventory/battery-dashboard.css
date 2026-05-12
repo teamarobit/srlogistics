@@ -499,3 +499,201 @@
     margin-bottom: 4px;
     display: block;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BATTERY COUNTERS — matching Tyre Dashboard counter card design (v1.0)
+═══════════════════════════════════════════════════════════════════════════ */
+
+.tyre-counters-wrap {
+    padding: 0 0 6px;
+}
+
+.tyre-counters-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.tyre-counters-row .tyre-counter-card {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.tyre-counter-card {
+    position: relative;
+    border-radius: 12px;
+    padding: 10px 16px 9px;
+    overflow: hidden;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 76px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 8px rgba(3, 38, 113, 0.07);
+}
+
+.tyre-counter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(3, 38, 113, 0.13);
+}
+
+.tyre-counter-card::after {
+    content: '';
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.13);
+    pointer-events: none;
+}
+
+.tyre-counter-card::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.09);
+    pointer-events: none;
+}
+
+.tc-body {
+    position: relative;
+    z-index: 1;
+}
+
+.tc-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+    margin-bottom: 2px;
+    letter-spacing: -0.5px;
+}
+
+.tc-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tc-footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 6px;
+}
+
+.tc-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e293b;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.tc-pct i {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* ── Colour themes ──────────────────────────────────────────────────────── */
+
+.tyre-counter-card.tc-blue {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-left: 4px solid #032671;
+    border-top: 1px solid #c5d4ee;
+    border-right: 1px solid #c5d4ee;
+    border-bottom: 1px solid #c5d4ee;
+}
+.tyre-counter-card.tc-blue .tc-count { color: #032671; }
+.tyre-counter-card.tc-blue .tc-label { color: #2d4a8a; }
+.tyre-counter-card.tc-blue .tc-pct   { color: #032671; background: #d0dcf0; }
+.tyre-counter-card.tc-blue::after    { background: rgba(3, 38, 113, 0.06); }
+.tyre-counter-card.tc-blue::before   { background: rgba(3, 38, 113, 0.04); }
+
+.tyre-counter-card.tc-green {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border-left: 4px solid #16a34a;
+    border-top: 1px solid #a7ddb8;
+    border-right: 1px solid #a7ddb8;
+    border-bottom: 1px solid #a7ddb8;
+}
+.tyre-counter-card.tc-green .tc-count { color: #14532d; }
+.tyre-counter-card.tc-green .tc-label { color: #15803d; }
+.tyre-counter-card.tc-green .tc-pct   { color: #14532d; background: #bbf7d0; }
+.tyre-counter-card.tc-green::after    { background: rgba(22, 163, 74, 0.06); }
+.tyre-counter-card.tc-green::before   { background: rgba(22, 163, 74, 0.04); }
+
+.tyre-counter-card.tc-indigo {
+    background: linear-gradient(135deg, #f0f0ff 0%, #ebe9fb 100%);
+    border-left: 4px solid #4338ca;
+    border-top: 1px solid #c7c4f5;
+    border-right: 1px solid #c7c4f5;
+    border-bottom: 1px solid #c7c4f5;
+}
+.tyre-counter-card.tc-indigo .tc-count { color: #3730a3; }
+.tyre-counter-card.tc-indigo .tc-label { color: #4f46a0; }
+.tyre-counter-card.tc-indigo .tc-pct   { color: #3730a3; background: #dddcfb; }
+.tyre-counter-card.tc-indigo::after    { background: rgba(67, 56, 202, 0.06); }
+.tyre-counter-card.tc-indigo::before   { background: rgba(67, 56, 202, 0.04); }
+
+.tyre-counter-card.tc-amber {
+    background: linear-gradient(135deg, #fffbf0 0%, #fef8e7 100%);
+    border-left: 4px solid #d97706;
+    border-top: 1px solid #f5dfa0;
+    border-right: 1px solid #f5dfa0;
+    border-bottom: 1px solid #f5dfa0;
+}
+.tyre-counter-card.tc-amber .tc-count { color: #92400e; }
+.tyre-counter-card.tc-amber .tc-label { color: #b45309; }
+.tyre-counter-card.tc-amber .tc-pct   { color: #92400e; background: #fde8a0; }
+.tyre-counter-card.tc-amber::after    { background: rgba(217, 119, 6, 0.06); }
+.tyre-counter-card.tc-amber::before   { background: rgba(217, 119, 6, 0.04); }
+
+.tyre-counter-card.tc-red {
+    background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+    border-left: 4px solid #dc2626;
+    border-top: 1px solid #f5b8b8;
+    border-right: 1px solid #f5b8b8;
+    border-bottom: 1px solid #f5b8b8;
+}
+.tyre-counter-card.tc-red .tc-count { color: #7f1d1d; }
+.tyre-counter-card.tc-red .tc-label { color: #b91c1c; }
+.tyre-counter-card.tc-red .tc-pct   { color: #7f1d1d; background: #fecaca; }
+.tyre-counter-card.tc-red::after    { background: rgba(220, 38, 38, 0.06); }
+.tyre-counter-card.tc-red::before   { background: rgba(220, 38, 38, 0.04); }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+    .tyre-counters-row { flex-wrap: wrap; }
+    .tyre-counters-row .tyre-counter-card {
+        flex: 0 0 calc(33.33% - 8px);
+        max-width: calc(33.33% - 8px);
+    }
+}
+
+@media (max-width: 768px) {
+    .tyre-counters-row .tyre-counter-card {
+        flex: 0 0 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
+}
