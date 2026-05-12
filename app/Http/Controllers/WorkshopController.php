@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\Insuranceclaim;
 use App\Models\Insuranceclaimfollowup;
 use App\Models\Vehicle;
 use App\Models\Vehiclebasicinfo;
 use App\Models\Workshop;
+use App\Models\State;
+use App\Models\City;
 use App\Models\SparePart;
 use App\Models\WsSparePartCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class WorkshopController extends Controller
 {
@@ -158,7 +162,7 @@ class WorkshopController extends Controller
 
     public function masterWorkshops(Request $request)
     {
-        $query = Workshop::whereNull('deleted_at')->orderBy('workshop_code');
+        $query = Workshop::with(['state', 'city'])->whereNull('deleted_at')->orderBy('workshop_code');
 
         if ($ownership = $request->ownership) {
             $query->where('ownership', $ownership);
@@ -169,31 +173,72 @@ class WorkshopController extends Controller
         $ownCount      = Workshop::whereNull('deleted_at')->where('ownership', 'Own')->count();
         $externalCount = Workshop::whereNull('deleted_at')->where('ownership', 'External')->count();
 
-        return view('ws.master-workshops', compact('workshops', 'ownCount', 'externalCount'));
+        // India states only (country_id = 101)
+        $states = State::where('country_id', 101)->orderBy('name')->get(['id', 'name', 'country_id']);
+
+        return view('ws.master-workshops', compact('workshops', 'ownCount', 'externalCount', 'states'));
     }
 
-    public function masterWorkshopStore(Request $request)
+    /**
+     * AJAX — Return cities for a given state.
+     * GET /workshop/master/workshops/cities?state_id={id}
+     * SD-9: Explicit HTTP status code.
+     */
+    public function masterWorkshopCities(Request $request): JsonResponse
+    {
+        $stateId = $request->integer('state_id');
+
+        if (! $stateId) {
+            return response()->json([], 200);
+        }
+
+        $cities = City::where('state_id', $stateId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($cities, 200);
+    }
+
+    /**
+     * Resolve city: find by (state_id, name) — create if not found.
+     * Called inside DB::transaction() — SD-6 compliant.
+     */
+    private function resolveCity(int $stateId, string $cityName): City
+    {
+        return City::firstOrCreate(
+            ['state_id' => $stateId, 'name' => trim($cityName)]
+        );
+    }
+
+    public function masterWorkshopStore(Request $request): JsonResponse
     {
         $request->validate([
             'name'          => 'required|string|max:255',
             'ownership'     => 'required|in:Own,External',
             'workshop_type' => 'required|in:Workshop,Mobile Unit,Hybrid,Brand ASC,Third Party,Warranty,Multi-Brand',
             'brand'         => 'nullable|string|max:100',
+            'state_id'      => 'nullable|integer|exists:states,id',
             'city'          => 'nullable|string|max:100',
-            'state'         => 'nullable|string|max:100',
             'contact_phone' => 'nullable|string|max:20',
         ]);
 
         try {
-            $ws = \DB::transaction(function () use ($request) {
+            // SD-5: DB::transaction with try-catch and return
+            // SD-6: Multiple tables (workshops + cities) inside one transaction
+            $ws = DB::transaction(function () use ($request): Workshop {
+                $cityId = null;
+                if ($request->state_id && $request->city) {
+                    $cityId = $this->resolveCity((int) $request->state_id, $request->city)->id;
+                }
+
                 return Workshop::create([
                     'workshop_code'    => Workshop::nextWorkshopCode($request->ownership, $request->city ?? 'GEN'),
                     'name'             => $request->name,
                     'ownership'        => $request->ownership,
                     'workshop_type'    => $request->workshop_type,
                     'brand'            => $request->brand,
-                    'city'             => $request->city,
-                    'state'            => $request->state,
+                    'state_id'         => $request->state_id,
+                    'city_id'          => $cityId,
                     'address'          => $request->address,
                     'pincode'          => $request->pincode,
                     'manager_name'     => $request->manager_name,
@@ -202,7 +247,8 @@ class WorkshopController extends Controller
                     'technician_count' => $request->technician_count ?? 0,
                     'notes'            => $request->notes,
                     'status'           => 'Active',
-                    'created_by'       => auth()->id(),
+                    'organisation_id'  => Auth::user()->organisation_id ?? 1,
+                    'created_by'       => Auth::id(),
                 ]);
             });
 
@@ -210,7 +256,7 @@ class WorkshopController extends Controller
                 'success'  => true,
                 'workshop' => $ws,
                 'message'  => $ws->name . ' added successfully.',
-            ], 201);
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -220,12 +266,12 @@ class WorkshopController extends Controller
         }
     }
 
-    public function masterWorkshopUpdate(Request $request, int $id)
+    public function masterWorkshopUpdate(Request $request, int $id): JsonResponse
     {
-        // SD-8: use find() + manual 404 — never findOrFail() in AJAX methods
+        // SD-8: use find() + manual 422 — never findOrFail() in AJAX methods
         $ws = Workshop::find($id);
         if (! $ws) {
-            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 404);
+            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 422);
         }
 
         $request->validate([
@@ -233,21 +279,27 @@ class WorkshopController extends Controller
             'ownership'     => 'required|in:Own,External',
             'workshop_type' => 'required|in:Workshop,Mobile Unit,Hybrid,Brand ASC,Third Party,Warranty,Multi-Brand',
             'brand'         => 'nullable|string|max:100',
+            'state_id'      => 'nullable|integer|exists:states,id',
             'city'          => 'nullable|string|max:100',
-            'state'         => 'nullable|string|max:100',
             'contact_phone' => 'nullable|string|max:20',
             'status'        => 'nullable|in:Active,Inactive',
         ]);
 
         try {
-            \DB::transaction(function () use ($request, $ws) {
+            // SD-5 + SD-6: transaction with try-catch, return, multi-table write
+            DB::transaction(function () use ($request, $ws): void {
+                $cityId = null;
+                if ($request->state_id && $request->city) {
+                    $cityId = $this->resolveCity((int) $request->state_id, $request->city)->id;
+                }
+
                 $ws->update([
                     'name'             => $request->name,
                     'ownership'        => $request->ownership,
                     'workshop_type'    => $request->workshop_type,
                     'brand'            => $request->brand,
-                    'city'             => $request->city,
-                    'state'            => $request->state,
+                    'state_id'         => $request->state_id,
+                    'city_id'          => $cityId,
                     'address'          => $request->address,
                     'pincode'          => $request->pincode,
                     'manager_name'     => $request->manager_name,
@@ -256,7 +308,7 @@ class WorkshopController extends Controller
                     'technician_count' => $request->technician_count ?? $ws->technician_count,
                     'notes'            => $request->notes,
                     'status'           => $request->status ?? $ws->status,
-                    'updated_by'       => auth()->id(),
+                    'updated_by'       => Auth::id(),
                 ]);
             });
 
@@ -274,23 +326,25 @@ class WorkshopController extends Controller
         }
     }
 
-    public function masterWorkshopDestroy(int $id)
+    public function masterWorkshopChangeStatus(int $id)
     {
         // SD-8: use find() + manual 404 — never findOrFail() in AJAX methods
         $ws = Workshop::find($id);
         if (! $ws) {
-            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 404);
+            return response()->json(['success' => false, 'message' => 'Workshop not found.'], 422);
         }
 
         try {
             \DB::transaction(function () use ($ws) {
-                $ws->delete(); // soft delete
+                $ws->update([
+                    'status' => $ws->status == 'Active' ? 'Inactive' : 'Active'
+                ]);
             });
 
-            return response()->json(['success' => true, 'message' => $ws->name . ' removed from workshop master.'], 200);
+            return response()->json(['success' => true, 'message' => $ws->name . ' status has been changed successfully..'], 200);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to remove workshop.'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to change the status of workshop.'], 500);
         }
     }
 

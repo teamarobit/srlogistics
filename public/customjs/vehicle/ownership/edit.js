@@ -43,7 +43,10 @@ $(document).ready(function() {
                     title: response.message || 'Saved successfully!'
                 });
                 $('#editBtn').html('Save').attr('disabled', false);
-                window.location.href = LISTING;
+
+                setTimeout(() => {
+                    window.location.href = LISTING;
+                }, 2000);
             },
             error: function (xhr) {
                     $('#editBtn').html('Save').prop('disabled', false);

@@ -21,6 +21,11 @@ class Vehicletyremapping extends Model
         return $this->belongsTo(Tyre::class);
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
+    }
+
     public function tyreposition()
     {
         return $this->belongsTo(Tyreposition::class);

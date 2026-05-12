@@ -1,3 +1,10 @@
+// ── Read config injected by blade via data-* (SD-1 compliant) ──────────────
+var _cfg       = document.getElementById('tyreShowConfig') || {};
+var PDF_LOGO   = (_cfg.dataset && _cfg.dataset.pdfLogo)   || '';
+var OTHER_LOGO = (_cfg.dataset && _cfg.dataset.otherLogo) || '';
+var CSRF_TOKEN = (_cfg.dataset && _cfg.dataset.csrf)       || ($('meta[name="csrf-token"]').attr('content') || '');
+
+// ── Toast mixin (SD-7) ───────────────────────────────────────────────────────
 const Toast = Swal.mixin({
       toast: true,
       position: 'top',
@@ -554,14 +561,212 @@ $(document).ready(function() {
         return false;
     });
 
+    // ── Yet To Decide: Change Status dropdown (Accordion 7) ─────────────────
+    $(document).on('change', '.ytd-change-status', function () {
+        var $sel     = $(this);
+        var newStatus = $sel.val();
+        var url       = $sel.data('url');
+
+        if (!newStatus) return;
+
+        Swal.fire({
+            title: 'Move Tyre?',
+            html: 'Move this tyre to <strong>' + newStatus + '</strong>?<br><small class="text-muted">This will update the tyre status.</small>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Move',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#032671',
+            reverseButtons: true
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        _token: CSRF_TOKEN,
+                        tyre_status: newStatus
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        Toast.fire({ icon: 'success', title: res.message || 'Status updated.' });
+                        setTimeout(function () { location.reload(); }, 1200);
+                    },
+                    error: function (xhr) {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong.';
+                        Toast.fire({ icon: 'error', title: msg });
+                        $sel.val(''); // reset dropdown
+                    }
+                });
+            } else {
+                $sel.val(''); // reset dropdown on cancel
+            }
+        });
+    });
+
+    // ── Allocated Vehicle Tab — Filter date range picker ────────────────────
+    $('#veh_filter_daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear', format: 'DD-MM-YYYY' }
+    });
+    $('#veh_filter_daterange').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+        filterAllocatedVehicleTable();
+    });
+    $('#veh_filter_daterange').on('cancel.daterangepicker', function() {
+        $(this).val('');
+        filterAllocatedVehicleTable();
+    });
+    $('#veh_filter_vehicle').on('input', function() { filterAllocatedVehicleTable(); });
+    $('#veh_filter_reset').on('click', function() {
+        $('#veh_filter_daterange').val('');
+        $('#veh_filter_vehicle').val('');
+        filterAllocatedVehicleTable();
+    });
+
+    function filterAllocatedVehicleTable() {
+        var drVal  = $('#veh_filter_daterange').val().trim();
+        var vehVal = $('#veh_filter_vehicle').val().trim().toLowerCase();
+        var startD = null, endD = null;
+        if (drVal) {
+            var parts = drVal.split(' - ');
+            if (parts.length === 2) { startD = moment(parts[0], 'DD-MM-YYYY'); endD = moment(parts[1], 'DD-MM-YYYY'); }
+        }
+        $('#allocatedVehicleTable tbody tr').each(function() {
+            var $row = $(this);
+            if ($row.attr('id') === 'veh-empty-row') return;
+            var rowVeh = ($row.data('vehicle') || '').toLowerCase();
+            var rowFit = $row.data('fitment') || '';
+            var vehMatch  = !vehVal || rowVeh.indexOf(vehVal) !== -1;
+            var dateMatch = true;
+            if (startD && endD && rowFit) { var d = moment(rowFit,'YYYY-MM-DD'); dateMatch = d.isSameOrAfter(startD) && d.isSameOrBefore(endD); }
+            $row.toggle(vehMatch && dateMatch);
+        });
+    }
+
+    // ── Scheduled Maintenance Tab — Filter ───────────────────────────────────
+    $('#maint_filter_daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear', format: 'DD-MM-YYYY' }
+    });
+    $('#maint_filter_daterange').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+        filterMaintTable();
+    });
+    $('#maint_filter_daterange').on('cancel.daterangepicker', function() {
+        $(this).val('');
+        filterMaintTable();
+    });
+    $('#maint_filter_type, #maint_filter_status').on('change', function() { filterMaintTable(); });
+    $('#maint_filter_vehicle').on('input', function() { filterMaintTable(); });
+    $('#maint_filter_reset').on('click', function() {
+        $('#maint_filter_daterange').val('');
+        $('#maint_filter_type').val('');
+        $('#maint_filter_status').val('');
+        $('#maint_filter_vehicle').val('');
+        filterMaintTable();
+    });
+
+    function filterMaintTable() {
+        var drVal    = $('#maint_filter_daterange').val().trim();
+        var typeVal  = ($('#maint_filter_type').val() || '').toLowerCase();
+        var statVal  = ($('#maint_filter_status').val() || '').toLowerCase();
+        var vehVal   = $('#maint_filter_vehicle').val().trim().toLowerCase();
+        var startD = null, endD = null;
+        if (drVal) {
+            var parts = drVal.split(' - ');
+            if (parts.length === 2) { startD = moment(parts[0],'DD-MM-YYYY'); endD = moment(parts[1],'DD-MM-YYYY'); }
+        }
+        $('#maintTable tbody tr').each(function() {
+            var $row = $(this);
+            if ($row.attr('id') === 'maint-empty-row') return;
+            var rowVeh    = ($row.data('vehicle')  || '').toLowerCase();
+            var rowType   = ($row.data('type')     || '').toLowerCase();
+            var rowStatus = ($row.data('status')   || '').toLowerCase();
+            var rowDate   = $row.data('date')      || '';
+            var vehMatch    = !vehVal   || rowVeh.indexOf(vehVal)     !== -1;
+            var typeMatch   = !typeVal  || rowType.indexOf(typeVal)   !== -1;
+            var statusMatch = !statVal  || rowStatus.indexOf(statVal) !== -1;
+            var dateMatch   = true;
+            if (startD && endD && rowDate) { var d = moment(rowDate,'YYYY-MM-DD'); dateMatch = d.isSameOrAfter(startD) && d.isSameOrBefore(endD); }
+            $row.toggle(vehMatch && typeMatch && statusMatch && dateMatch);
+        });
+    }
+
+    // ── Repair Tab — Filter ──────────────────────────────────────────────────
+    $('#rep_filter_daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear', format: 'DD-MM-YYYY' }
+    });
+    $('#rep_filter_daterange').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+        filterRepairTable();
+    });
+    $('#rep_filter_daterange').on('cancel.daterangepicker', function() {
+        $(this).val('');
+        filterRepairTable();
+    });
+    $('#rep_filter_category').on('change', function() { filterRepairTable(); });
+    $('#rep_filter_vehicle').on('input',   function() { filterRepairTable(); });
+    $('#rep_filter_reset').on('click', function() {
+        $('#rep_filter_daterange').val('');
+        $('#rep_filter_category').val('');
+        $('#rep_filter_vehicle').val('');
+        filterRepairTable();
+    });
+
+    function filterRepairTable() {
+        var drVal  = $('#rep_filter_daterange').val().trim();
+        var catVal = ($('#rep_filter_category').val() || '').toLowerCase();
+        var vehVal = $('#rep_filter_vehicle').val().trim().toLowerCase();
+        var startD = null, endD = null;
+        if (drVal) {
+            var parts = drVal.split(' - ');
+            if (parts.length === 2) { startD = moment(parts[0],'DD-MM-YYYY'); endD = moment(parts[1],'DD-MM-YYYY'); }
+        }
+        $('#repairTable tbody tr').each(function() {
+            var $row = $(this);
+            if ($row.attr('id') === 'repair-empty-row') return;
+            var rowVeh  = ($row.data('vehicle')  || '').toLowerCase();
+            var rowCat  = ($row.data('category') || '').toLowerCase();
+            var rowDate = $row.data('date')       || '';
+            var vehMatch  = !vehVal || rowVeh.indexOf(vehVal) !== -1;
+            var catMatch  = !catVal || rowCat.indexOf(catVal) !== -1;
+            var dateMatch = true;
+            if (startD && endD && rowDate) { var d = moment(rowDate,'YYYY-MM-DD'); dateMatch = d.isSameOrAfter(startD) && d.isSameOrBefore(endD); }
+            $row.toggle(vehMatch && catMatch && dateMatch);
+        });
+    }
+
+    // ── Repair delete handler ────────────────────────────────────────────────
+    $(document).on('click', '.repair-delete-btn', function() {
+        var url  = $(this).data('delete-url');
+        Swal.fire({
+            position: 'center', icon: 'warning',
+            title: 'Delete this repair record?',
+            showConfirmButton: true, showCancelButton: true,
+            confirmButtonText: 'Yes, Delete', cancelButtonText: 'Cancel',
+            confirmButtonColor: '#1F75A8', reverseButtons: true
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url, method: 'POST',
+                    data: { _token: CSRF_TOKEN },
+                    dataType: 'json',
+                    success: function(res) { Toast.fire({ icon: 'success', title: res.message }); setTimeout(function() { location.reload(); }, 1200); },
+                    error:   function(xhr) { Toast.fire({ icon: 'error', title: (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong.' }); }
+                });
+            }
+        });
+    });
+
+    // ── Nav tab persistence ──────────────────────────────────────────────────
     const savedNav = localStorage.getItem(storageKey);
-    
+
     let targetEl;
     $(document).on('click', '.nav_click', function(e){
         e.preventDefault();
-    
         const navTarget = $(this).data('bs-target');
-        
         localStorage.setItem(storageKey, navTarget);
     });
 
@@ -575,6 +780,5 @@ $(document).ready(function() {
         const tab = new bootstrap.Tab(targetEl);
         tab.show();
     }
-
 
 });

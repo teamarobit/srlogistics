@@ -103,8 +103,10 @@
 @endsection
 
 @section('js')
-
-<script type="text/javascript" src="{{asset('js/Vehicle/Ownership/edit.js')}}"></script>
+<script>
+    var LISTING = "{{ route('vehicleownership.index') }}";
+</script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/edit.js')}}"></script>
 
 @endsection
 

@@ -216,16 +216,7 @@ class FleetDashboardController extends Controller
     
         if (!$vehicle) {
             abort(404);
-        }
-        
-        //dd($vehicle);
-        //dd($id);
-        //dd($vehicle->basicinfo);
-        //dd($vehicle->loanaccounts);
-        //dd($vehicle->cronGivenEMIs);
-        //dd($vehicle->cronGivenEMIs->financeNotes);
-        //dd($vehicle->comments);
-        
+        }      
         
         $gpsproviders = Gpsprovider::where('status', 'Active')->orderBy('name')->get();
         $fasttagproviders = Fasttagprovider::where('status', 'Active')->orderBy('name')->get();
@@ -964,6 +955,73 @@ class FleetDashboardController extends Controller
             'logs'         => $logs,
             'tyre_photos'  => $tyrePhotos,
         ]);
+    }
+
+    // Position Mapping Logs (AJAX) --------------------------------------------
+    /**
+     * GET /fleet-dashboard/vehicle/{vehicle}/position/{tyreposition}/position-logs
+     * Returns vehicletyremappinglogs for a specific position on a specific vehicle.
+     * Shows ALL tyres that have ever been fitted to this position on this vehicle,
+     * ordered newest-first. Each log includes tyre serial, attachments, and timestamps.
+     * Used by the eye-icon timeline modal on vehicle details pages (position view).
+     * SD-8: uses find() pattern — no findOrFail() in JSON methods.
+     */
+    public function getPositionMappingLogs(Vehicle $vehicle, \App\Models\Tyreposition $tyreposition)
+    {
+        $logs = Vehicletyremappinglog::with(['tyre', 'medias'])
+            ->where('vehicle_id', $vehicle->id)
+            ->where('tyreposition_id', $tyreposition->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($log) {
+                $attachments = $log->medias->map(function ($media) {
+                    $url = $media->file_path
+                        ? (Str::startsWith($media->file_path, ['http://', 'https://'])
+                            ? $media->file_path
+                            : asset('medias/' . ltrim($media->file_path, '/')))
+                        : null;
+                    return [
+                        'url'  => $url,
+                        'name' => $media->file_name ?? $media->original_name ?? 'Attachment',
+                        'date' => $media->created_at ? $media->created_at->format('d M Y') : null,
+                        'time' => $media->created_at ? $media->created_at->format('h:i A') : null,
+                        'type' => $media->type ?? 'Image',
+                    ];
+                })->values()->toArray();
+
+                return [
+                    'id'                   => $log->id,
+                    'log_type'             => $log->log_type ?? 'Replacement', // null = legacy → treat as Replacement
+                    'tyre_serial'          => $log->tyre?->tyre_serial_number ?? '—',
+                    'tyre_brand'           => $log->tyre?->tyre_brand ?? '',
+                    'tyre_model'           => $log->tyre?->tyre_model ?? '',
+                    'created_at_formatted' => $log->created_at ? $log->created_at->format('d M Y, h:i A') : '—',
+                    'fitment_date'         => $log->fitment_date
+                        ? Carbon::parse($log->fitment_date)->format('d M Y') : null,
+                    'km_at_fitment'        => $log->km_at_fitment,
+                    'removal_date'         => $log->removal_date
+                        ? Carbon::parse($log->removal_date)->format('d M Y') : null,
+                    'km_at_removal'        => $log->km_at_removal,
+                    'status'               => $log->status,
+                    'notes'                => $log->notes,
+                    'attachments'          => $attachments,
+                ];
+            });
+
+        // Split into two groups for the grouped timeline UI
+        $replacementLogs = $logs->filter(fn($l) => $l['log_type'] === 'Replacement')->values();
+        $rotationLogs    = $logs->filter(fn($l) => $l['log_type'] === 'Rotation')->values();
+
+        return response()->json([
+            'success'          => true,
+            'vehicle_no'       => $vehicle->vehicle_no ?? '—',
+            'position_code'    => $tyreposition->code ?? '—',
+            'position_desc'    => $tyreposition->description ?? null,
+            'replacement_logs' => $replacementLogs,
+            'rotation_logs'    => $rotationLogs,
+            'logs'             => $logs,        // flat array kept for backward compat
+            'tyre_photos'      => [],
+        ], 200);
     }
 
     // Tyre --------------------------------------------------------------------

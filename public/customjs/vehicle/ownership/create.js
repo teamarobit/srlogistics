@@ -48,7 +48,10 @@ $(document).ready(function() {
                     title: response.message || 'Saved successfully!'
                 });
                 $('#addBtn').html('Save').attr('disabled', false);
-                window.location.href = LISTING;
+                
+                setTimeout(() => {
+                    window.location.href = LISTING;
+                }, 2000);
             },
             
             error: function (xhr) {
@@ -136,7 +139,14 @@ $(document).ready(function() {
     });
 
 
-    
+        // Inline script from create.blade.php
+    $('.add-vs').click(function(){
+        $('.added-vs-sec').show();
+    })
+    $('.dell-vs').click(function(){
+        $('.added-vs-sec').hide();
+    })
+
     
 
 

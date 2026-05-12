@@ -47,3 +47,541 @@
 
 /*----*/
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYRE COUNTERS — Redesigned v3.0 (Two-row layout with SR Garage section)
+   Row 1: 5 primary fleet counters
+   Row 2: 4 SR Garage counters under a labelled section header
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Outer wrapper — sits inside .itemvehicles-bd > .container-fluid */
+.tyre-counters-wrap {
+    padding: 14px 0 6px;
+}
+
+/* ── Counter row (flexbox) ─────────────────────────────────────────────── */
+.tyre-counters-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+/* Row 1: 5 cards — each flex: 1 fills equally */
+.tyre-counters-row .tyre-counter-card {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Row 2 (garage): 4 cards — fixed to 25% each so they don't balloon */
+.tyre-counters-row--garage .tyre-counter-card {
+    flex: 0 0 calc(25% - 9px);
+    max-width: calc(25% - 9px);
+}
+
+/* ── Individual card ───────────────────────────────────────────────────── */
+.tyre-counter-card {
+    position: relative;
+    border-radius: 12px;
+    padding: 10px 16px 9px;
+    overflow: hidden;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 76px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 8px rgba(3, 38, 113, 0.07);
+}
+
+.tyre-counter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(3, 38, 113, 0.13);
+}
+
+/* Decorative circles (pseudo-elements) */
+.tyre-counter-card::after {
+    content: '';
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.13);
+    pointer-events: none;
+}
+
+.tyre-counter-card::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.09);
+    pointer-events: none;
+}
+
+/* ── Card body: count + label ─────────────────────────────────────────── */
+.tc-body {
+    position: relative;
+    z-index: 1;
+}
+
+.tc-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+    margin-bottom: 2px;
+    letter-spacing: -0.5px;
+}
+
+.tc-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── Card footer: percentage pill ─────────────────────────────────────── */
+.tc-footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 6px;
+}
+
+.tc-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e293b;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.tc-pct i {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* ── Light-shade colour themes — harmonised to project theme #032671 ──── */
+
+/* All Tyres — Navy (Primary theme) */
+.tyre-counter-card.tc-blue {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-left: 4px solid #032671;
+    border-top: 1px solid #c5d4ee;
+    border-right: 1px solid #c5d4ee;
+    border-bottom: 1px solid #c5d4ee;
+}
+.tyre-counter-card.tc-blue .tc-count { color: #032671; }
+.tyre-counter-card.tc-blue .tc-label { color: #2d4a8a; }
+.tyre-counter-card.tc-blue .tc-pct   { color: #032671; background: #d0dcf0; }
+.tyre-counter-card.tc-blue::after    { background: rgba(3, 38, 113, 0.06); }
+.tyre-counter-card.tc-blue::before   { background: rgba(3, 38, 113, 0.04); }
+
+/* Allocate Tyres — Indigo */
+.tyre-counter-card.tc-indigo {
+    background: linear-gradient(135deg, #f0f0ff 0%, #ebe9fb 100%);
+    border-left: 4px solid #4338ca;
+    border-top: 1px solid #c7c4f5;
+    border-right: 1px solid #c7c4f5;
+    border-bottom: 1px solid #c7c4f5;
+}
+.tyre-counter-card.tc-indigo .tc-count { color: #3730a3; }
+.tyre-counter-card.tc-indigo .tc-label { color: #4f46a0; }
+.tyre-counter-card.tc-indigo .tc-pct   { color: #3730a3; background: #dddcfb; }
+.tyre-counter-card.tc-indigo::after    { background: rgba(67, 56, 202, 0.06); }
+.tyre-counter-card.tc-indigo::before   { background: rgba(67, 56, 202, 0.04); }
+
+/* Direct Fitment — Purple */
+.tyre-counter-card.tc-purple {
+    background: linear-gradient(135deg, #f8f0ff 0%, #f3eefb 100%);
+    border-left: 4px solid #7c3aed;
+    border-top: 1px solid #d8c4f5;
+    border-right: 1px solid #d8c4f5;
+    border-bottom: 1px solid #d8c4f5;
+}
+.tyre-counter-card.tc-purple .tc-count { color: #6d28d9; }
+.tyre-counter-card.tc-purple .tc-label { color: #7c3aed; }
+.tyre-counter-card.tc-purple .tc-pct   { color: #6d28d9; background: #e9d8fb; }
+.tyre-counter-card.tc-purple::after    { background: rgba(124, 58, 237, 0.06); }
+.tyre-counter-card.tc-purple::before   { background: rgba(124, 58, 237, 0.04); }
+
+/* Yet To Decide — Amber */
+.tyre-counter-card.tc-amber {
+    background: linear-gradient(135deg, #fffbf0 0%, #fef8e7 100%);
+    border-left: 4px solid #d97706;
+    border-top: 1px solid #f5dfa0;
+    border-right: 1px solid #f5dfa0;
+    border-bottom: 1px solid #f5dfa0;
+}
+.tyre-counter-card.tc-amber .tc-count { color: #92400e; }
+.tyre-counter-card.tc-amber .tc-label { color: #b45309; }
+.tyre-counter-card.tc-amber .tc-pct   { color: #92400e; background: #fde8a0; }
+.tyre-counter-card.tc-amber::after    { background: rgba(217, 119, 6, 0.06); }
+.tyre-counter-card.tc-amber::before   { background: rgba(217, 119, 6, 0.04); }
+
+/* Extra Tyres on Vehicle — Teal */
+.tyre-counter-card.tc-teal {
+    background: linear-gradient(135deg, #f0fbfb 0%, #e8f7f7 100%);
+    border-left: 4px solid #0d9488;
+    border-top: 1px solid #99d6d3;
+    border-right: 1px solid #99d6d3;
+    border-bottom: 1px solid #99d6d3;
+}
+.tyre-counter-card.tc-teal .tc-count { color: #134e4a; }
+.tyre-counter-card.tc-teal .tc-label { color: #0f766e; }
+.tyre-counter-card.tc-teal .tc-pct   { color: #134e4a; background: #b2e8e4; }
+.tyre-counter-card.tc-teal::after    { background: rgba(13, 148, 136, 0.06); }
+.tyre-counter-card.tc-teal::before   { background: rgba(13, 148, 136, 0.04); }
+
+/* Ready to Use — Green */
+.tyre-counter-card.tc-green {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border-left: 4px solid #16a34a;
+    border-top: 1px solid #a7ddb8;
+    border-right: 1px solid #a7ddb8;
+    border-bottom: 1px solid #a7ddb8;
+}
+.tyre-counter-card.tc-green .tc-count { color: #14532d; }
+.tyre-counter-card.tc-green .tc-label { color: #15803d; }
+.tyre-counter-card.tc-green .tc-pct   { color: #14532d; background: #bbf7d0; }
+.tyre-counter-card.tc-green::after    { background: rgba(22, 163, 74, 0.06); }
+.tyre-counter-card.tc-green::before   { background: rgba(22, 163, 74, 0.04); }
+
+/* Warranty Claim — Orange */
+.tyre-counter-card.tc-orange {
+    background: linear-gradient(135deg, #fff8f5 0%, #fef3eb 100%);
+    border-left: 4px solid #ea580c;
+    border-top: 1px solid #f5c4a8;
+    border-right: 1px solid #f5c4a8;
+    border-bottom: 1px solid #f5c4a8;
+}
+.tyre-counter-card.tc-orange .tc-count { color: #9a3412; }
+.tyre-counter-card.tc-orange .tc-label { color: #c2410c; }
+.tyre-counter-card.tc-orange .tc-pct   { color: #9a3412; background: #fed7aa; }
+.tyre-counter-card.tc-orange::after    { background: rgba(234, 88, 12, 0.06); }
+.tyre-counter-card.tc-orange::before   { background: rgba(234, 88, 12, 0.04); }
+
+/* Re-Threading — Cyan */
+.tyre-counter-card.tc-cyan {
+    background: linear-gradient(135deg, #f0fafd 0%, #ebf9fd 100%);
+    border-left: 4px solid #0891b2;
+    border-top: 1px solid #9fd8e8;
+    border-right: 1px solid #9fd8e8;
+    border-bottom: 1px solid #9fd8e8;
+}
+.tyre-counter-card.tc-cyan .tc-count { color: #164e63; }
+.tyre-counter-card.tc-cyan .tc-label { color: #0e7490; }
+.tyre-counter-card.tc-cyan .tc-pct   { color: #164e63; background: #bae6fd; }
+.tyre-counter-card.tc-cyan::after    { background: rgba(8, 145, 178, 0.06); }
+.tyre-counter-card.tc-cyan::before   { background: rgba(8, 145, 178, 0.04); }
+
+/* Scrap Tyres — Red */
+.tyre-counter-card.tc-red {
+    background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+    border-left: 4px solid #dc2626;
+    border-top: 1px solid #f5b8b8;
+    border-right: 1px solid #f5b8b8;
+    border-bottom: 1px solid #f5b8b8;
+}
+.tyre-counter-card.tc-red .tc-count { color: #7f1d1d; }
+.tyre-counter-card.tc-red .tc-label { color: #b91c1c; }
+.tyre-counter-card.tc-red .tc-pct   { color: #7f1d1d; background: #fecaca; }
+.tyre-counter-card.tc-red::after    { background: rgba(220, 38, 38, 0.06); }
+.tyre-counter-card.tc-red::before   { background: rgba(220, 38, 38, 0.04); }
+
+/* ── SR Garage section header ─────────────────────────────────────────── */
+.tyre-counters-section {
+    margin-top: 10px;
+}
+
+.tc-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.tc-section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #032671;
+    background: #e8eef7;
+    padding: 4px 13px;
+    border-radius: 20px;
+    white-space: nowrap;
+    border: 1px solid #c5d4ee;
+}
+
+.tc-section-badge i {
+    font-size: 13px;
+    color: #032671;
+}
+
+.tc-section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #c5d4ee 0%, transparent 100%);
+}
+
+/* ── Responsive breakpoints ───────────────────────────────────────────── */
+
+/* Tablet (≤1200px): wrap to 2–3 per row */
+@media (max-width: 1200px) {
+    .tyre-counters-row {
+        flex-wrap: wrap;
+    }
+    .tyre-counters-row .tyre-counter-card {
+        flex: 0 0 calc(33.33% - 8px);
+        max-width: calc(33.33% - 8px);
+    }
+    .tyre-counters-row--garage .tyre-counter-card {
+        flex: 0 0 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
+}
+
+/* Mobile (≤768px): 2 per row */
+@media (max-width: 768px) {
+    .tyre-counters-row .tyre-counter-card,
+    .tyre-counters-row--garage .tyre-counter-card {
+        flex: 0 0 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
+}
+
+/* Small mobile (≤480px): full width */
+@media (max-width: 480px) {
+    .tyre-counters-row .tyre-counter-card,
+    .tyre-counters-row--garage .tyre-counter-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYRE DASHBOARD v2.0 — New-tab styles
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tab nav: wraps gracefully for 8 pills ───────────────────────────── */
+.tyre-tab-nav {
+    flex-wrap: wrap;
+    gap: 4px 0;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 6px;
+}
+.tyre-tab-nav .nav-link {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+}
+.tyre-tab-nav .nav-link.active {
+    background-color: #032671 !important;
+    color: #fff !important;
+}
+.tyre-tab-nav .nav-link:not(.active):hover {
+    background: #e8eef7;
+    color: #032671;
+}
+
+/* ── Serial number link ──────────────────────────────────────────────── */
+.text-primary-custom {
+    color: #032671 !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+.text-primary-custom:hover {
+    text-decoration: underline;
+    color: #0547c3 !important;
+}
+
+/* ── RAG / Life badges ───────────────────────────────────────────────── */
+.rag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+}
+.rag-badge.rag-green  { background: #198754; }
+.rag-badge.rag-yellow { background: #ffc107; color: #212529; }
+.rag-badge.rag-red    { background: #dc3545; }
+
+/* ── Tyre status badges ──────────────────────────────────────────────── */
+.tyre-badge-ready    { background: #198754 !important; color: #fff !important; }
+.tyre-badge-warranty { background: #fd7e14 !important; color: #fff !important; }
+.tyre-badge-rethread { background: #0dcaf0 !important; color: #212529 !important; }
+.tyre-badge-scrap    { background: #dc3545 !important; color: #fff !important; }
+.tyre-badge-allocated{ background: #0d6efd !important; color: #fff !important; }
+.tyre-badge-fitment  { background: #6f42c1 !important; color: #fff !important; }
+.tyre-badge-ytd      { background: #6c757d !important; color: #fff !important; }
+.tyre-badge-closed   { background: #198754 !important; color: #fff !important; }
+
+/* Location badges (vehicle / garage) */
+.tyre-badge-allocated { background: #0d6efd !important; color: #fff !important; }
+
+/* ── Overdue / closure alert badge ──────────────────────────────────── */
+.closure-alert {
+    animation: blink-danger 1.2s step-start infinite;
+}
+@keyframes blink-danger {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
+
+/* ── Closed / scrap income rows ─────────────────────────────────────── */
+.row-closed td {
+    opacity: 0.55;
+}
+.row-closed td:first-child {
+    border-left: 3px solid #198754 !important;
+}
+
+/* ── Image view button ───────────────────────────────────────────────── */
+.btn-img-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #c0c7d0;
+    border-radius: 6px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-img-view:hover {
+    background: #032671;
+    color: #fff;
+    border-color: #032671;
+}
+
+/* ── Sortable column headers ─────────────────────────────────────────── */
+.tyre-sortable-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    position: relative;
+}
+.tyre-sortable-table thead th.sortable:hover {
+    background-color: #d4ddf0;
+}
+.tyre-sortable-table thead th .sort-icon {
+    display: inline-block;
+    font-size: 11px;
+    color: #8a9ab5;
+    margin-left: 3px;
+    vertical-align: middle;
+}
+.tyre-sortable-table thead th.sort-active {
+    background-color: #d0daf5;
+}
+.tyre-sortable-table thead th.sort-active .sort-icon {
+    color: #032671;
+    font-weight: 700;
+}
+
+/* ── Maintenance type / status badges ────────────────────────────────── */
+.badge-maint-type   { background: #e9ecef; color: #495057; font-size: 10px; }
+.badge-maint-done   { background: #d1e7dd; color: #0f5132; }
+.badge-maint-overdue{ background: #f8d7da; color: #842029; }
+.badge-maint-pending{ background: #fff3cd; color: #664d03; }
+.badge-maint-sched  { background: #cff4fc; color: #055160; }
+
+/* ── Tracking-group chip ─────────────────────────────────────────────── */
+.tracking-chip {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #eef1f7;
+    color: #495057;
+    border: 1px solid #d1d8e6;
+    margin-top: 3px;
+}
+
+/* ── Vehicle + tracking stacked cell ────────────────────────────────── */
+.vehicle-cell-line {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    color: #1F2B44;
+}
+.vehicle-cell-track {
+    display: block;
+    font-size: 10px;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+/* ── Table: compact row height for wide tables ───────────────────────── */
+.sr_dashboard0_table .custom-driver-table thead th {
+    white-space: nowrap;
+}
+.sr_dashboard0_table .custom-driver-table tbody td {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* ── Tyre position badge ─────────────────────────────────────────────── */
+.position-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #e8eef7;
+    color: #032671;
+    border: 1px solid #c5d4ee;
+    font-weight: 600;
+}
+
+/* ── Scrap / Rethread income UTR indicator ───────────────────────────── */
+.utr-filled   { color: #198754; font-weight: 600; }
+.utr-pending  { color: #dc3545; font-style: italic; }
+
+/* ── Filter row: grid layout so lone fields in last row align LEFT ───────
+   The fleet dashboard uses justify-content:space-around which centres a
+   lone item that wraps to a new row (e.g. 5 fields → 4+1).
+   Switching the tyre tab panes to CSS Grid (4 equal columns) keeps the
+   same per-row visual width while naturally left-aligning any orphan.
+─────────────────────────────────────────────────────────────────────────── */
+.tab-pane .filtersearch-bd.flex-wrap {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 8px;
+    align-items: end;
+    justify-content: unset;   /* cancel fleet's space-around */
+}
+
+/* Grid items: let the column width drive size, not the fixed 24% */
+.tab-pane .filtersearch-bd.flex-wrap .vehicletype {
+    width: auto !important;
+    margin-left: 0 !important;
+    padding-left: 0;
+}
+

@@ -1,9 +1,14 @@
 /* ==========================================================================
-   Tyre Create-New — page script
+   Tyre Create-New — page script  v2.0
    - SD-1: external JS only
    - SD-3: $.ajax() form submission
    - SD-4: inline <span class="text-danger..."> validation errors
    - SD-7: Toast.fire() for all notifications
+
+   v2.0 changes:
+     - CR-2: Tyre Price GST auto-calc (Taxable → GST 28% → Total, readonly)
+     - CR-3: Flap/Tube radio toggle + conditional price block with same GST logic
+     - CR-5: Removed tcnBindInitialCondition (merged into chip-style binding)
    ========================================================================== */
 
 /* ---------- SD-7 Toast mixin (define once at top) ---------- */
@@ -27,6 +32,7 @@ if (typeof Dropzone !== 'undefined') {
 /* ---------- Constants ---------- */
 const TCN_MAX_IMAGES = 4;
 const TCN_MAX_SIZE_MB = 3;
+const TCN_GST_RATE = 0.28; // 28% — Pneumatic tyres, HSN 4011 (India real-life rate)
 let tcnDzInstance = null;
 
 /* ---------- Helpers ---------- */
@@ -37,7 +43,6 @@ function tcnClearValidationErrors() {
 function tcnShowValidationErrors(errors) {
     tcnClearValidationErrors();
     $.each(errors, function (field, messages) {
-        // Convert dotted/bracketed field names to valid selector
         var baseField = field.split('.')[0];
         var $input = $('[name="' + baseField + '"]').first();
         if (!$input.length) {
@@ -45,7 +50,6 @@ function tcnShowValidationErrors(errors) {
         }
         if ($input.length) {
             var $target = $input;
-            // If inside input-group or a radio-card picker, push error after the group
             var $group = $input.closest('.input-group');
             if ($group.length) $target = $group;
             var $locGroup = $input.closest('.badd-loc-group');
@@ -84,14 +88,56 @@ function tcnRecalcEndOfLife() {
     $('#tcnEndOfLife').val(tcnAddDays(purchase, months));
 }
 
+/* ---------- CR-2: Tyre Price GST auto-calc ---------- */
+function tcnRecalcTyreGST() {
+    var taxable = parseFloat($('#tcnTaxable').val()) || 0;
+    if (taxable <= 0) {
+        $('#tcnGst').val('');
+        $('#tcnTotal').val('');
+        return;
+    }
+    var gst   = Math.round(taxable * TCN_GST_RATE * 100) / 100;
+    var total = Math.round((taxable + gst) * 100) / 100;
+    $('#tcnGst').val(gst.toFixed(2));
+    $('#tcnTotal').val(total.toFixed(2));
+}
+
+/* ---------- CR-3: Flap/Tube price GST auto-calc ---------- */
+function tcnRecalcFTGST() {
+    var taxable = parseFloat($('#tcnFTTaxable').val()) || 0;
+    if (taxable <= 0) {
+        $('#tcnFTGst').val('');
+        $('#tcnFTTotal').val('');
+        return;
+    }
+    var gst   = Math.round(taxable * TCN_GST_RATE * 100) / 100;
+    var total = Math.round((taxable + gst) * 100) / 100;
+    $('#tcnFTGst').val(gst.toFixed(2));
+    $('#tcnFTTotal').val(total.toFixed(2));
+}
+
+/* ---------- CR-3: Flap/Tube section toggle ---------- */
+function tcnBindFlapTube() {
+    $(document).on('change', 'input[name="flap_tube_type"]', function () {
+        var val = $(this).val(); // "Flap" or "Tube"
+        // Show price section and update label
+        $('#tcnFlapTubePriceSection').removeClass('d-none');
+        $('#tcnFlapTubePriceLabel').text(val + ' Price');
+        // Clear fields when switching between Flap and Tube
+        $('#tcnFTTaxable').val('');
+        $('#tcnFTGst').val('');
+        $('#tcnFTTotal').val('');
+    });
+}
+
 /* ---------- Dropzone ---------- */
 function tcnInitDropzone() {
     var el = document.getElementById('tcnDropzone');
     if (!el || typeof Dropzone === 'undefined') return;
-    if (el.dropzone) return; // already inited
+    if (el.dropzone) return;
 
     tcnDzInstance = new Dropzone(el, {
-        url: '/upload/images',                // placeholder; actual files POSTed with the form
+        url: '/upload/images',
         paramName: 'files',
         maxFiles: TCN_MAX_IMAGES,
         maxFilesize: TCN_MAX_SIZE_MB,
@@ -134,28 +180,15 @@ function tcnBindRadioChips() {
     });
 }
 
-/* ---------- Initial Condition card group ---------- */
-function tcnBindInitialCondition() {
-    $(document).on('click', '#tcnInitCondGroup .badd-cond-opt', function () {
-        $('#tcnInitCondGroup .badd-cond-opt').removeClass('active');
-        $(this).addClass('active');
-        $(this).find('input[type="radio"]').prop('checked', true).trigger('change');
-    });
-}
-
 /* ---------- Stock Location mode switch (Standard ↔ Fitment) ---------- */
 function tcnApplyLocationMode(mode) {
     if (mode === 'Fitment') {
-        // Hide standard options (hint, Not assigned, Warehouses, Workshops)
         $('.tcn-loc-standard').hide();
-        // Show Fitment Tyre option and mark it as selected
         $('.badd-loc-fitment-only').css('display', 'flex').addClass('active');
         $('#tcnLocFitment').prop('checked', true);
     } else {
-        // Hide Fitment option
         $('.badd-loc-fitment-only').hide().removeClass('active');
         $('#tcnLocFitment').prop('checked', false);
-        // Show standard options
         $('.tcn-loc-standard').show();
     }
 }
@@ -168,7 +201,6 @@ function tcnBindSourceToggle() {
         var mode = $(this).find('input[type="radio"]').val();
         $(this).find('input[type="radio"]').prop('checked', true);
 
-        // Hide all mode sections, then show the active one
         $('#tcnModeExisting, #tcnModeNewPO, #tcnModeFitment').removeClass('active');
 
         if (mode === 'Existing') {
@@ -189,8 +221,6 @@ function tcnBindSourceToggle() {
         }
 
         $('#tcnSourceNote, #tcnPoGrnSelect, #tcnFitmentSourceNote').removeClass('is-invalid');
-
-        // Update stock location display based on mode
         tcnApplyLocationMode(mode);
     });
 }
@@ -212,7 +242,6 @@ function tcnBindInvoiceFileZone() {
         $('#tcnFileZone .badd-file-text').text(f.name);
     });
 
-    // Fitment invoice file zone
     $(document).on('click', '#tcnFitmentFileZone', function (e) {
         if ($(e.target).is('input')) return;
         $('#tcnFitmentInvoiceFile').trigger('click');
@@ -243,7 +272,7 @@ function tcnSetSaving(isSaving) {
     }
 }
 
-/* ---------- Stock Location picker (mirrors Battery #batLocGroup pattern) ---------- */
+/* ---------- Stock Location picker ---------- */
 function tcnBindLocationPicker() {
     $('#tcnLocGroup').on('click', '.badd-loc-option', function () {
         $('#tcnLocGroup .badd-loc-option').removeClass('active');
@@ -262,7 +291,6 @@ function tcnBindSubmit() {
         var formEl = this;
         var formData = new FormData(formEl);
 
-        // Append queued Dropzone files (since autoProcessQueue is false)
         if (tcnDzInstance && tcnDzInstance.getAcceptedFiles().length) {
             tcnDzInstance.getAcceptedFiles().forEach(function (file) {
                 formData.append('files[]', file, file.name);
@@ -311,19 +339,24 @@ $(document).ready(function () {
         });
     });
 
-    /* Select2 for PO / GRN picker (matches Battery pattern) */
     $('.select2-po-grn').select2({ width: '100%', placeholder: 'Search PO or GRN...' });
 
     /* Dropzone */
     tcnInitDropzone();
 
     /* UI bindings */
-    tcnBindRadioChips();
-    tcnBindInitialCondition();
+    tcnBindRadioChips();       // handles all .tcn-radio-chip radios incl. Tyre Condition (CR-5)
+    tcnBindFlapTube();         // CR-3: Flap/Tube section toggle
     tcnBindSourceToggle();
     tcnBindInvoiceFileZone();
     tcnBindLocationPicker();
     tcnBindSubmit();
+
+    /* CR-2: Tyre Price GST auto-calc */
+    $('#tcnTaxable').on('input change', tcnRecalcTyreGST);
+
+    /* CR-3: Flap/Tube price GST auto-calc */
+    $('#tcnFTTaxable').on('input change', tcnRecalcFTGST);
 
     /* Auto-calcs */
     $('#tcnPurchaseDate, #tcnWarrantyMonths').on('change input', tcnRecalcWarranty);

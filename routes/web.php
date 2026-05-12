@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+
 /* ── DEV: patch IP logos — remove after use ──────────────────────── */
 Route::get('/dev/patch-ip-logos', function () {
     $logos = ['INS-001'=>'logo_new_india.svg','INS-002'=>'logo_united_india.svg','INS-003'=>'logo_icici_lombard.svg','INS-004'=>'logo_bajaj_allianz.svg','INS-005'=>'logo_hdfc_ergo.svg'];
@@ -375,6 +376,7 @@ Route::group(['middleware' => ['auth']], function() {
     // Tyre Master
     Route::prefix('tyres')->name('tyre.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\TyreController::class, 'dashboard'])->name('dashboard');
+        Route::get('/owner-dashboard', [App\Http\Controllers\TyreController::class, 'ownerDashboard'])->name('owner-dashboard');
         Route::get('/', [App\Http\Controllers\TyreController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\TyreController::class, 'create'])->name('create');
         Route::post('/save', [App\Http\Controllers\TyreController::class, 'store'])->name('save');
@@ -392,12 +394,17 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/{tyre}/maintenance/store', [App\Http\Controllers\TyreController::class, 'storeMaintenance'])->name('maintenance.store');
         Route::post('/{tyre}/maintenance/{schedule}/update', [App\Http\Controllers\TyreController::class, 'updateMaintenance'])->name('maintenance.update');
         Route::post('/{tyre}/maintenance/{schedule}/delete', [App\Http\Controllers\TyreController::class, 'destroyMaintenance'])->name('maintenance.destroy');
+        Route::post('/{tyre}/repair/store', [App\Http\Controllers\TyreController::class, 'storeRepair'])->name('repair.store');
+        Route::post('/{tyre}/repair/{repair}/update', [App\Http\Controllers\TyreController::class, 'updateRepair'])->name('repair.update');
+        Route::post('/{tyre}/repair/{repair}/delete', [App\Http\Controllers\TyreController::class, 'destroyRepair'])->name('repair.destroy');
+        Route::post('/{tyre}/change-status', [App\Http\Controllers\TyreController::class, 'changeStatus'])->name('changeStatus');
 
     });
     
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
+        Route::get('/vehicle/{vehicle}/tyre/tagging-v2', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTaggingV2'])->name('vehicle.tyre.tagging.v2');
         Route::get('/vehicle/{vehicle}/get-tyres', [App\Http\Controllers\TyreManagementController::class, 'tagTyreToVehicle'])->name('vehicle.get.available.tyres');
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
         // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
@@ -406,6 +413,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
         // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)
         Route::post('/vehicle/{vehicle}/add-spare', [App\Http\Controllers\TyreManagementController::class, 'addSpareTyre'])->name('vehicle.add.spare');
+        // POST: Take Action modal — log an alignment event for a mapped tyre
+        Route::post('/vehicle/{vehicle}/log-alignment', [App\Http\Controllers\TyreManagementController::class, 'logAlignment'])->name('vehicle.log.alignment');
+        // POST: Take Action modal — log a tyre replacement for a mapped position
+        Route::post('/vehicle/{vehicle}/log-replace', [App\Http\Controllers\TyreManagementController::class, 'logReplace'])->name('vehicle.log.replace');
+        // POST: Take Action modal — log a tyre rotation (swaps tyre_ids between two positions)
+        Route::post('/vehicle/{vehicle}/log-rotate', [App\Http\Controllers\TyreManagementController::class, 'logRotate'])->name('vehicle.log.rotate');
+        // GET: Take Action modal — look up a donor vehicle by registration number (Another Vehicle source)
+        Route::get('/lookup-vehicle', [App\Http\Controllers\TyreManagementController::class, 'lookupVehicleByNumber'])->name('lookup.vehicle.by.number');
     });
     
     /******************************** Vehicle Master **********************************************************/
@@ -565,6 +580,9 @@ Route::group(['middleware' => ['auth']], function() {
         // AJAX: full tyre history logs by tyre_id (eye-icon timeline modal)
         Route::get('/tyre/{tyre}/mapping-logs', [App\Http\Controllers\FleetDashboardController::class, 'getTyreMappingLogs'])->name('getTyreMappingLogs');
 
+        // AJAX: position-specific tyre history logs by vehicle + position (eye-icon modal — position view)
+        Route::get('/vehicle/{vehicle}/position/{tyreposition}/position-logs', [App\Http\Controllers\FleetDashboardController::class, 'getPositionMappingLogs'])->name('getPositionMappingLogs');
+
         Route::get('/vehicle/{vehicle}/tyre-details/create', [App\Http\Controllers\FleetDashboardController::class, 'manageTyreDetails'])->name('createTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/save', [App\Http\Controllers\FleetDashboardController::class, 'storeTyreDetails'])->name('saveTyreDetails');
         Route::post('/vehicle/{vehicle}/tyre-details/update', [App\Http\Controllers\FleetDashboardController::class, 'updateTyreDetails'])->name('updateTyreDetails');
@@ -691,10 +709,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/maintenance/insurance/vehicle/{vehicleId}/note', [App\Http\Controllers\WorkshopController::class, 'insuranceAddNote'])->name('maintenance.insurance.add-note');
 
         // Master Data — Workshops (unified Own + External; BA CIAA approved April 2026)
+        Route::get('/master/workshops/cities',     [App\Http\Controllers\WorkshopController::class, 'masterWorkshopCities'])->name('master.workshops.cities');
         Route::get('/master/workshops',            [App\Http\Controllers\WorkshopController::class, 'masterWorkshops'])->name('master.workshops');
         Route::post('/master/workshops',           [App\Http\Controllers\WorkshopController::class, 'masterWorkshopStore'])->name('master.workshops.store');
         Route::put('/master/workshops/{id}',       [App\Http\Controllers\WorkshopController::class, 'masterWorkshopUpdate'])->name('master.workshops.update');
-        Route::delete('/master/workshops/{id}',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopDestroy'])->name('master.workshops.destroy');
+        Route::post('/master/workshops/{id}/change-status',    [App\Http\Controllers\WorkshopController::class, 'masterWorkshopChangeStatus'])->name('master.workshops.changestatus');
         // Legacy redirects so any bookmarked URLs don't hard-404
         Route::redirect('/master/service-centers', '/workshop/master/workshops', 301);
         Route::redirect('/master/external-sc',     '/workshop/master/workshops', 301);

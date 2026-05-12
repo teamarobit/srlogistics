@@ -1623,6 +1623,76 @@
     cursor: default;
 }
 
+/* ── Grouped timeline section headers (Replacement / Rotation) ── */
+.vtd-tl-section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 16px 8px;
+    margin-top: 4px;
+    border-top: 1px solid #edf0f7;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.vtd-tl-section-header:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+.vtd-tl-section-replacement {
+    background: #f0f7ff;
+    color: #1a5da6;
+}
+.vtd-tl-section-replacement i { color: #1a5da6; }
+
+.vtd-tl-section-rotation {
+    background: #f3f9f0;
+    color: #276b2a;
+}
+.vtd-tl-section-rotation i { color: #276b2a; }
+
+.vtd-tl-section-count {
+    margin-left: auto;
+    background: rgba(0,0,0,0.07);
+    color: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Empty section placeholder */
+.vtd-tl-section-empty {
+    padding: 10px 20px 12px;
+    font-size: 11px;
+    color: #adb5bd;
+    font-style: italic;
+}
+
+/* Tyre serial badge — shown in position-based log view, one per log entry */
+.vtd-tl-tyre-badge {
+    display: inline-block;
+    background: #f6f3ff;
+    color: #6541c1;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    letter-spacing: 0.03em;
+    cursor: default;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 /* Attachment toggle icon button */
 .vtd-tl-attach-toggle {
     display: inline-flex;

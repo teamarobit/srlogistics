@@ -1,5 +1,5 @@
 /**
- * vehicle-details-tyre.js  v3.4
+ * vehicle-details-tyre.js  v3.6
  * Tyre section interactions for Vehicle Details V2 page.
  *
  * SD-1  : All tyre JS lives here — no inline scripts in blade.
@@ -268,16 +268,29 @@ function vtdOpenModalFromData(d) {
 }
 
 /* ─── Build timeline HTML from server response ─────────────
-   res = { tyre_serial, tyre_brand, tyre_model,
-           tyre_photos: [...], logs: [...] }
-   Each log has: vehicle_no, created_at_formatted, fitment_date,
-   km_at_fitment, removal_date, km_at_removal, status, notes,
-   created_by_name, attachments[]
+   Position-based response (eye-icon on tyre card):
+     res = { replacement_logs: [...], rotation_logs: [...],
+             logs: [...], tyre_photos: [], vehicle_no, position_code }
+   Tyre-based response (SVG click — legacy):
+     res = { tyre_serial, tyre_brand, tyre_model,
+             tyre_photos: [...], logs: [...] }
+   Each log has: log_type, tyre_serial, tyre_brand, vehicle_no,
+     created_at_formatted, fitment_date, km_at_fitment,
+     removal_date, km_at_removal, status, notes, attachments[]
 ─────────────────────────────────────────────────────────── */
 function vtdRenderTimeline(res) {
     var logs       = res.logs        || [];
     var tyrePhotos = res.tyre_photos || [];
 
+    /* ── Detect grouped (position-based) vs flat (tyre-based) response ── */
+    var isGrouped = (res.replacement_logs !== undefined || res.rotation_logs !== undefined);
+
+    if (isGrouped) {
+        vtdRenderGroupedTimeline(res);
+        return;
+    }
+
+    /* ── Flat / tyre-based rendering (existing behaviour, unchanged) ── */
     if (logs.length === 0 && tyrePhotos.length === 0) {
         $('#vtdModalBody').html(
             '<div class="vtd-timeline-empty">' +
@@ -309,111 +322,7 @@ function vtdRenderTimeline(res) {
     html += '<div class="vtd-timeline">';
 
     for (var i = 0; i < logs.length; i++) {
-        var log       = logs[i];
-        var attachId  = 'vtd-att-' + (log.id || i);   /* unique ID for toggle */
-        var hasAtt    = log.attachments && log.attachments.length > 0;
-
-        html += '<div class="vtd-tl-entry">';
-
-        /* Dot (neutral — no status colouring) */
-        html += '<div class="vtd-tl-dot dot-neutral">' +
-                '<i class="uil uil-circle"></i>' +
-                '</div>';
-
-        /* Card */
-        html += '<div class="vtd-tl-body">';
-
-        /* Row 1: datetime · vehicle number · tyre position · attachment toggle */
-        html += '<div class="vtd-tl-datetime">' +
-                '<i class="uil uil-calendar-alt"></i>' +
-                vtdEsc(log.created_at_formatted || '—');
-
-        if (log.vehicle_no && log.vehicle_no !== '—') {
-            html += ' &nbsp;<span class="vtd-tl-vehicle-no">' +
-                    '<i class="uil uil-truck me-1"></i>' + vtdEsc(log.vehicle_no) +
-                    '</span>';
-        }
-
-        if (log.tyre_position_code && log.tyre_position_code !== '—') {
-            var posTitle = log.tyre_position_desc ? log.tyre_position_desc : log.tyre_position_code;
-            html += ' &nbsp;<span class="vtd-tl-position-badge" title="' + vtdEsc(posTitle) + '">' +
-                    vtdEsc(log.tyre_position_code) +
-                    '</span>';
-        }
-
-        if (hasAtt) {
-            html += ' &nbsp;<button type="button" class="vtd-tl-attach-toggle" ' +
-                    'data-target="' + attachId + '" ' +
-                    'title="' + log.attachments.length + ' attachment' + (log.attachments.length > 1 ? 's' : '') + '">' +
-                    '<i class="uil uil-paperclip"></i>' +
-                    '</button>';
-        }
-
-        html += '</div>'; /* .vtd-tl-datetime */
-
-        /* Fields grid */
-        var hasFields = log.fitment_date ||
-                        (log.km_at_fitment !== null && log.km_at_fitment !== undefined && log.km_at_fitment !== '') ||
-                        log.removal_date ||
-                        (log.km_at_removal !== null && log.km_at_removal !== undefined && log.km_at_removal !== '');
-        if (hasFields) {
-            html += '<div class="vtd-tl-fields">';
-            if (log.fitment_date) {
-                html += '<div><div class="vtd-tl-field-label">Fitment Date</div>' +
-                        '<div class="vtd-tl-field-val">' + vtdEsc(log.fitment_date) + '</div></div>';
-            }
-            if (log.km_at_fitment !== null && log.km_at_fitment !== undefined && log.km_at_fitment !== '') {
-                html += '<div><div class="vtd-tl-field-label">KM at Fitment</div>' +
-                        '<div class="vtd-tl-field-val">' + Number(log.km_at_fitment).toLocaleString() + ' KM</div></div>';
-            }
-            if (log.removal_date) {
-                html += '<div><div class="vtd-tl-field-label">Removal Date</div>' +
-                        '<div class="vtd-tl-field-val">' + vtdEsc(log.removal_date) + '</div></div>';
-            }
-            if (log.km_at_removal !== null && log.km_at_removal !== undefined && log.km_at_removal !== '') {
-                html += '<div><div class="vtd-tl-field-label">KM at Removal</div>' +
-                        '<div class="vtd-tl-field-val">' + Number(log.km_at_removal).toLocaleString() + ' KM</div></div>';
-            }
-            html += '</div>';
-        }
-
-        /* Notes */
-        if (log.notes) {
-            html += '<div class="vtd-tl-notes">' +
-                    '<i class="uil uil-comment-alt-lines me-1"></i>' +
-                    vtdEsc(log.notes) +
-                    '</div>';
-        }
-
-        /* Attachments — hidden by default, toggled by the icon button */
-        if (hasAtt) {
-            html += '<div class="vtd-tl-attachments" id="' + attachId + '" style="display:none;">';
-            html += '<div class="vtd-tl-attach-grid">';
-            for (var j = 0; j < log.attachments.length; j++) {
-                var att     = log.attachments[j];
-                var isImage = att.type && att.type.toLowerCase() === 'image';
-                html += '<div style="text-align:center;">';
-                html += '<div class="vtd-tl-attach-item">';
-                if (att.url && isImage) {
-                    html += '<img src="' + vtdEsc(att.url) + '" ' +
-                            'alt="' + vtdEsc(att.name || 'Attachment') + '" ' +
-                            'class="vtd-tl-attach-img" ' +
-                            'onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.vtd-tl-attach-fallback\').style.display=\'flex\';" />';
-                    html += '<div class="vtd-tl-attach-fallback" style="display:none;"><i class="uil uil-image-slash"></i></div>';
-                } else {
-                    html += '<div class="vtd-tl-attach-fallback"><i class="uil uil-file-alt"></i></div>';
-                }
-                html += '</div>';
-                if (att.name) {
-                    html += '<div class="vtd-tl-attach-name" title="' + vtdEsc(att.name) + '">' + vtdEsc(att.name) + '</div>';
-                }
-                html += '</div>';
-            }
-            html += '</div></div>';
-        }
-
-        html += '</div>'; /* .vtd-tl-body */
-        html += '</div>'; /* .vtd-tl-entry */
+        html += vtdBuildLogEntryHtml(logs[i], i);
     }
 
     html += '</div>'; /* .vtd-timeline */
@@ -435,6 +344,181 @@ function vtdTimelineError(msg) {
            '<i class="uil uil-exclamation-triangle"></i>' +
            '<div>' + vtdEsc(msg) + '</div>' +
            '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GROUPED TIMELINE — position-based view
+   Renders two sections: Replacement and Rotation.
+   Called automatically when the server response contains
+   replacement_logs / rotation_logs keys.
+═══════════════════════════════════════════════════════════ */
+function vtdRenderGroupedTimeline(res) {
+    var replacementLogs = res.replacement_logs || [];
+    var rotationLogs    = res.rotation_logs    || [];
+    var totalLogs       = replacementLogs.length + rotationLogs.length;
+
+    if (totalLogs === 0) {
+        $('#vtdModalBody').html(
+            '<div class="vtd-timeline-empty">' +
+            '<i class="uil uil-history"></i>' +
+            '<div>No history logged for this position yet.</div>' +
+            '<div style="font-size:11px;color:#adb5bd;margin-top:4px;">History is recorded when a tyre is fitted or rotated.</div>' +
+            '</div>'
+        );
+        return;
+    }
+
+    var html = '';
+
+    /* ── Replacement section ─────────────────────────────── */
+    html += '<div class="vtd-tl-section-header vtd-tl-section-replacement">' +
+            '<i class="uil uil-exchange me-1"></i>Replacement' +
+            '<span class="vtd-tl-section-count">' + replacementLogs.length + '</span>' +
+            '</div>';
+
+    if (replacementLogs.length > 0) {
+        html += '<div class="vtd-timeline">';
+        for (var i = 0; i < replacementLogs.length; i++) {
+            html += vtdBuildLogEntryHtml(replacementLogs[i], i);
+        }
+        html += '</div>';
+    } else {
+        html += '<div class="vtd-tl-section-empty">No replacement logs yet.</div>';
+    }
+
+    /* ── Rotation section ────────────────────────────────── */
+    html += '<div class="vtd-tl-section-header vtd-tl-section-rotation">' +
+            '<i class="uil uil-sync me-1"></i>Rotation' +
+            '<span class="vtd-tl-section-count">' + rotationLogs.length + '</span>' +
+            '</div>';
+
+    if (rotationLogs.length > 0) {
+        html += '<div class="vtd-timeline">';
+        for (var j = 0; j < rotationLogs.length; j++) {
+            html += vtdBuildLogEntryHtml(rotationLogs[j], j);
+        }
+        html += '</div>';
+    } else {
+        html += '<div class="vtd-tl-section-empty">No rotation logs yet.</div>';
+    }
+
+    $('#vtdModalBody').html(html);
+}
+
+/* ─── Build a single timeline entry HTML (shared by flat + grouped) ──
+   Extracted from the original vtdRenderTimeline loop so both paths
+   produce identical card markup.
+─────────────────────────────────────────────────────────────────────── */
+function vtdBuildLogEntryHtml(log, idx) {
+    var attachId = 'vtd-att-' + (log.id || idx);
+    var hasAtt   = log.attachments && log.attachments.length > 0;
+    var html     = '';
+
+    html += '<div class="vtd-tl-entry">';
+
+    /* Dot */
+    html += '<div class="vtd-tl-dot dot-neutral"><i class="uil uil-circle"></i></div>';
+
+    /* Card */
+    html += '<div class="vtd-tl-body">';
+
+    /* Row 1: datetime · vehicle no · position badge · tyre serial badge · attachment toggle */
+    html += '<div class="vtd-tl-datetime">' +
+            '<i class="uil uil-calendar-alt"></i>' +
+            vtdEsc(log.created_at_formatted || '—');
+
+    if (log.vehicle_no && log.vehicle_no !== '—') {
+        html += ' &nbsp;<span class="vtd-tl-vehicle-no">' +
+                '<i class="uil uil-truck me-1"></i>' + vtdEsc(log.vehicle_no) +
+                '</span>';
+    }
+
+    if (log.tyre_position_code && log.tyre_position_code !== '—') {
+        var posTitle = log.tyre_position_desc ? log.tyre_position_desc : log.tyre_position_code;
+        html += ' &nbsp;<span class="vtd-tl-position-badge" title="' + vtdEsc(posTitle) + '">' +
+                vtdEsc(log.tyre_position_code) + '</span>';
+    }
+
+    if (log.tyre_serial && log.tyre_serial !== '—') {
+        var tyreLabel = vtdEsc(log.tyre_serial);
+        if (log.tyre_brand) { tyreLabel += ' &nbsp;·&nbsp; ' + vtdEsc(log.tyre_brand); }
+        if (log.tyre_model) { tyreLabel += ' ' + vtdEsc(log.tyre_model); }
+        html += ' &nbsp;<span class="vtd-tl-tyre-badge" title="Tyre: ' + vtdEsc(log.tyre_serial) + '">' +
+                '<i class="uil uil-circle me-1"></i>' + tyreLabel + '</span>';
+    }
+
+    if (hasAtt) {
+        html += ' &nbsp;<button type="button" class="vtd-tl-attach-toggle" ' +
+                'data-target="' + attachId + '" ' +
+                'title="' + log.attachments.length + ' attachment' + (log.attachments.length > 1 ? 's' : '') + '">' +
+                '<i class="uil uil-paperclip"></i></button>';
+    }
+
+    html += '</div>'; /* .vtd-tl-datetime */
+
+    /* Fields grid */
+    var hasFields = log.fitment_date ||
+                    (log.km_at_fitment !== null && log.km_at_fitment !== undefined && log.km_at_fitment !== '') ||
+                    log.removal_date ||
+                    (log.km_at_removal !== null && log.km_at_removal !== undefined && log.km_at_removal !== '');
+    if (hasFields) {
+        html += '<div class="vtd-tl-fields">';
+        if (log.fitment_date) {
+            html += '<div><div class="vtd-tl-field-label">Fitment Date</div>' +
+                    '<div class="vtd-tl-field-val">' + vtdEsc(log.fitment_date) + '</div></div>';
+        }
+        if (log.km_at_fitment !== null && log.km_at_fitment !== undefined && log.km_at_fitment !== '') {
+            html += '<div><div class="vtd-tl-field-label">KM at Fitment</div>' +
+                    '<div class="vtd-tl-field-val">' + Number(log.km_at_fitment).toLocaleString() + ' KM</div></div>';
+        }
+        if (log.removal_date) {
+            html += '<div><div class="vtd-tl-field-label">Removal Date</div>' +
+                    '<div class="vtd-tl-field-val">' + vtdEsc(log.removal_date) + '</div></div>';
+        }
+        if (log.km_at_removal !== null && log.km_at_removal !== undefined && log.km_at_removal !== '') {
+            html += '<div><div class="vtd-tl-field-label">KM at Removal</div>' +
+                    '<div class="vtd-tl-field-val">' + Number(log.km_at_removal).toLocaleString() + ' KM</div></div>';
+        }
+        html += '</div>';
+    }
+
+    /* Notes */
+    if (log.notes) {
+        html += '<div class="vtd-tl-notes">' +
+                '<i class="uil uil-comment-alt-lines me-1"></i>' +
+                vtdEsc(log.notes) + '</div>';
+    }
+
+    /* Attachments — hidden by default, toggled by the icon button */
+    if (hasAtt) {
+        html += '<div class="vtd-tl-attachments" id="' + attachId + '" style="display:none;">';
+        html += '<div class="vtd-tl-attach-grid">';
+        for (var k = 0; k < log.attachments.length; k++) {
+            var att     = log.attachments[k];
+            var isImage = att.type && att.type.toLowerCase() === 'image';
+            html += '<div style="text-align:center;"><div class="vtd-tl-attach-item">';
+            if (att.url && isImage) {
+                html += '<img src="' + vtdEsc(att.url) + '" ' +
+                        'alt="' + vtdEsc(att.name || 'Attachment') + '" ' +
+                        'class="vtd-tl-attach-img" ' +
+                        'onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.vtd-tl-attach-fallback\').style.display=\'flex\';" />';
+                html += '<div class="vtd-tl-attach-fallback" style="display:none;"><i class="uil uil-image-slash"></i></div>';
+            } else {
+                html += '<div class="vtd-tl-attach-fallback"><i class="uil uil-file-alt"></i></div>';
+            }
+            html += '</div>';
+            if (att.name) {
+                html += '<div class="vtd-tl-attach-name" title="' + vtdEsc(att.name) + '">' + vtdEsc(att.name) + '</div>';
+            }
+            html += '</div>';
+        }
+        html += '</div></div>';
+    }
+
+    html += '</div>'; /* .vtd-tl-body */
+    html += '</div>'; /* .vtd-tl-entry */
+
+    return html;
 }
 
 /* ─── HTML escape helper (XSS safe) ──────────────────────── */
