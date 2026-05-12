@@ -317,7 +317,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title fw-semibold"><i class="uil uil-pen me-2"></i>Edit Workshop</h6>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"><i class="uil uil-times"></i></button>
             </div>
             <div class="modal-body">
                 {{-- data-update-url: named route with __ID__ placeholder replaced by JS --}}
@@ -390,7 +390,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-theme btn-sm" id="btnUpdateWs">
+                <button type="button" class="btn btn-primary btn-sm" id="btnUpdateWs">
                     <i class="uil uil-save me-1"></i> Update
                 </button>
             </div>
