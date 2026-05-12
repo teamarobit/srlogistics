@@ -70,6 +70,7 @@
             </div>
 
             {{-- Lifecycle Flow Strip --}}
+            {{--
             <div class="btd-lifecycle mb-3">
                 <div class="btd-lc-step">
                     <div class="btd-lc-icon"><i class="uil uil-shopping-cart"></i></div>
@@ -106,6 +107,7 @@
                     <span class="btd-lc-label">Discarded</span>
                 </div>
             </div>
+            --}}
 
             {{-- Summary Stat Cards --}}
             <div class="row g-3 mb-3">
