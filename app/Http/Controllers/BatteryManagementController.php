@@ -149,19 +149,6 @@ class BatteryManagementController extends Controller
             ], 422);
         }
 
-        // ── Max 2 active batteries per vehicle ────────────────────────────
-        $activeCount = Vehiclebattery::where('vehicle_id', $vehicle->id)
-            ->where('status', 'Active')
-            ->whereNull('deleted_at')
-            ->count();
-
-        if ($activeCount >= 2) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Maximum 2 batteries can be tagged to a single vehicle. Remove an existing battery first.',
-            ], 422);
-        }
-
         // ── Resolve battery details by source ─────────────────────────────
         $warehouseBattery   = null;
         $batteryBrand       = null;
@@ -203,6 +190,19 @@ class BatteryManagementController extends Controller
 
         // ── Write to DB in transaction ────────────────────────────────────
         try {
+            // ── Max 2 active batteries per vehicle (inside try so missing status column is caught) ──
+            $activeCount = Vehiclebattery::where('vehicle_id', $vehicle->id)
+                ->where('status', 'Active')
+                ->whereNull('deleted_at')
+                ->count();
+
+            if ($activeCount >= 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Maximum 2 batteries can be tagged to a single vehicle. Remove an existing battery first.',
+                ], 422);
+            }
+
             $vehicleBattery = DB::transaction(function () use (
                 $request, $vehicle, $source,
                 $batteryBrand, $batterySerial, $batteryModel,
