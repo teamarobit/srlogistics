@@ -432,6 +432,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/vehicle/{vehicle}/battery/tag', [App\Http\Controllers\BatteryManagementController::class, 'storeBatteryTag'])->name('vehicle.battery.tag.store');
         // POST: remove a tagged battery
         Route::post('/vehicle/{vehicle}/battery/{battery}/remove', [App\Http\Controllers\BatteryManagementController::class, 'removeBatteryTag'])->name('vehicle.battery.tag.remove');
+        // POST: replace a tagged battery (Take Action modal)
+        Route::post('/vehicle/{vehicle}/battery/{battery}/replace', [App\Http\Controllers\BatteryManagementController::class, 'replaceBatteryTag'])->name('vehicle.battery.tag.replace');
         // GET: AJAX — fetch battery log history
         Route::get('/vehicle/{vehicle}/battery/{battery}/logs', [App\Http\Controllers\BatteryManagementController::class, 'getBatteryLogs'])->name('vehicle.battery.logs');
         // GET: AJAX — fetch available batteries from inventory by condition

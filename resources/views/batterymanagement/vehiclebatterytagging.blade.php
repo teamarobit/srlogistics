@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <link href="{{ asset('css/Battery/battery-tagging.css?v=2.3') }}" rel="stylesheet">
+    <link href="{{ asset('css/Battery/battery-tagging.css?v=2.9') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -152,22 +152,31 @@
 
                                 <div class="vbt-header-action-divider"></div>
 
-                                {{-- View logs button --}}
+                                {{-- History button — commented out
                                 <button type="button"
                                         class="btn-vbt-logs btn-vbt-view-logs"
                                         data-logs-url="{{ route('batterymanage.vehicle.battery.logs', [$vehicle->id, $battery->id]) }}"
                                         data-serial="{{ $battery->battery_serial_number ?? 'Battery '.$battery->id }}">
                                     <i class="uil uil-history me-1"></i>History
                                 </button>
+                                --}}
 
-                                {{-- Remove button --}}
+                                {{-- Take Action button --}}
                                 <button type="button"
-                                        class="btn-vbt-remove btn-vbt-remove-confirm"
+                                        class="btn-vbt-take-action"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#batteryTakeActionModal"
                                         data-battery-id="{{ $battery->id }}"
                                         data-vehicle-id="{{ $vehicle->id }}"
+                                        data-slot="{{ $batteryLabel }}"
                                         data-serial="{{ $battery->battery_serial_number ?? '' }}"
-                                        data-remove-url="{{ route('batterymanage.vehicle.battery.tag.remove', [$vehicle->id, $battery->id]) }}">
-                                    <i class="uil uil-times-circle me-1"></i>Remove
+                                        data-brand="{{ $battery->battery_brand ?? '' }}"
+                                        data-rag="{{ $rag }}"
+                                        data-life-pct="{{ $battery->life_remaining_pct ?? '' }}"
+                                        data-actual-km="{{ $battery->battery_actual_km ?? '' }}"
+                                        data-available-url="{{ route('batterymanage.batteries.available') }}"
+                                        data-replace-url="{{ route('batterymanage.vehicle.battery.tag.replace', [$vehicle->id, $battery->id]) }}">
+                                    <i class="uil uil-setting me-1"></i>Take Action
                                 </button>
                             </div>
                         </div>
@@ -319,7 +328,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body p-2">
-                                <div style="max-height:320px; overflow-y:auto;">
+                                <div class="vbt-attachment-log">
                                     @foreach($battery->medias as $media)
                                     <div class="vbt-attachment-item">
                                         @if($media->type === 'Image')
@@ -629,8 +638,383 @@
     </div>
 </div>
 
+{{-- ══════════════════════════════════════════════════════════════
+     TAKE ACTION MODAL — Replace Battery
+════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="batteryTakeActionModal" tabindex="-1"
+     aria-labelledby="batteryTakeActionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+
+      {{-- Modal Header --}}
+      <div class="modal-header py-2 px-3" style="border-bottom:1px solid #e9ecef;">
+        <div style="flex:1; min-width:0;">
+            <h6 class="modal-title fw-bold mb-0" id="batteryTakeActionModalLabel">
+                <i class="uil uil-setting me-1 text-primary"></i>Take Action — Replace Battery
+            </h6>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      {{-- Modal Body --}}
+      <div class="modal-body" style="padding:14px 18px;">
+
+          {{-- Battery Info Bar --}}
+          <div class="bam-header-info">
+              <span class="bam-slot-label" id="bamSlotLabel">—</span>
+              <div class="bam-battery-detail">
+                  <span class="bam-battery-serial-text" id="bamSerialText">—</span>
+                  <span class="bam-battery-brand-text"  id="bamBrandText"></span>
+              </div>
+              <span class="bam-rag-mini rag-grey" id="bamRagBadge">⚫ Not Set</span>
+              <span class="text-white ms-auto" id="bamLifeText" style="font-size:11px; opacity:0.8;"></span>
+          </div>
+
+          {{-- Replace Battery Form --}}
+          <form id="bamReplaceForm" autocomplete="off" enctype="multipart/form-data">
+              @csrf
+              <input type="hidden" id="bamBatteryId"   name="battery_id">
+              <input type="hidden" id="bamVehicleIdHid" name="vehicle_id">
+
+              {{-- SECTION 1: Replacement Reason --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">1</span>
+                      Replacement Reason
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-md-6">
+                          <label class="form-label fw-semibold" style="font-size:12px;">
+                              Reason for Replacement <span class="text-danger">*</span>
+                          </label>
+                          <select class="form-select form-select-sm" id="bamRplReason" name="replacement_reason">
+                              <option value="">— Select Reason —</option>
+                              <option value="Battery Dead">Battery Dead</option>
+                              <option value="Battery Damaged">Battery Damaged</option>
+                              <option value="Performance Drop">Performance Drop</option>
+                              <option value="Life Expired">Life Expired</option>
+                              <option value="Warranty Claim">Warranty Claim</option>
+                              <option value="Other">Other</option>
+                          </select>
+                          <span class="bam-field-error" id="bamErrReason"></span>
+                      </div>
+                  </div>
+              </div>
+
+
+              {{-- SECTION 2: Battery Condition --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">2</span>
+                      New Battery Condition
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-md-6">
+                          <label class="form-label fw-semibold" style="font-size:12px;">
+                              Battery Condition <span class="text-danger">*</span>
+                          </label>
+                          <select class="form-select form-select-sm" id="bamConditionSelect" name="battery_condition">
+                              <option value="">— Select Condition —</option>
+                              <option value="New">New</option>
+                              <option value="Used">Used</option>
+                              <option value="Replaced Under Warranty">Replaced Under Warranty</option>
+                          </select>
+                          <span class="bam-field-error" id="bamErrCondition"></span>
+                      </div>
+                  </div>
+              </div>
+
+              {{-- SECTION 3: Replacement Battery Source --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">3</span>
+                      Replacement Battery Source
+                  </div>
+
+                  <div class="bam-source-grid" id="bamSourceGrid">
+                      <label class="bam-source-card" for="bamSrcWarehouse">
+                          <input type="radio" name="battery_source" id="bamSrcWarehouse"
+                                 value="SR Warehouse" class="d-none">
+                          <span class="bam-source-icon"><i class="uil uil-archive"></i></span>
+                          <div class="bam-source-info">
+                              <div class="bam-source-title">SR Warehouse</div>
+                              <div class="bam-source-desc">From in-house inventory</div>
+                          </div>
+                          <span class="bam-source-check"><i class="uil uil-check-circle"></i></span>
+                      </label>
+                      <label class="bam-source-card" for="bamSrcDirect">
+                          <input type="radio" name="battery_source" id="bamSrcDirect"
+                                 value="Direct Fitment" class="d-none">
+                          <span class="bam-source-icon"><i class="uil uil-truck"></i></span>
+                          <div class="bam-source-info">
+                              <div class="bam-source-title">Direct Fitment</div>
+                              <div class="bam-source-desc">New battery from vendor</div>
+                          </div>
+                          <span class="bam-source-check"><i class="uil uil-check-circle"></i></span>
+                      </label>
+                  </div>
+                  <span class="bam-field-error" id="bamErrSource"></span>
+
+                  {{-- SR Warehouse sub-panel --}}
+                  <div class="bam-src-panel" id="bamPanelWarehouse">
+                      <div class="bam-src-panel-inner">
+                          <div class="mb-2">
+                              <div id="bamBatteryDropdownState" class="text-muted small mb-1">
+                                  Select a Condition above to load available stock.
+                              </div>
+                              <label class="form-label fw-semibold" style="font-size:12px;">
+                                  Select Battery from Warehouse <span class="text-danger">*</span>
+                              </label>
+                              <select class="form-select form-select-sm" id="bamWarehouseBatterySelect"
+                                      name="warehouse_battery_id" disabled>
+                                  <option value="">— Select condition first —</option>
+                              </select>
+                              <span class="bam-field-error" id="bamErrWarehouseBattery"></span>
+                          </div>
+                          <div class="row g-2">
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold small text-muted">
+                                      Battery Brand
+                                      <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                  </label>
+                                  <input type="text" class="form-control form-control-sm bg-light"
+                                         id="bamWhBrand" readonly placeholder="Auto-filled on selection">
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold small text-muted">
+                                      Serial Number
+                                      <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                  </label>
+                                  <input type="text" class="form-control form-control-sm bg-light"
+                                         id="bamWhSerial" readonly placeholder="Auto-filled on selection">
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  {{-- Direct Fitment sub-panel --}}
+                  <div class="bam-src-panel" id="bamPanelDirect">
+                      <div class="bam-src-panel-inner">
+                          <div class="row g-2">
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">
+                                      Battery Brand <span class="text-danger">*</span>
+                                  </label>
+                                  <input type="text" class="form-control form-control-sm"
+                                         name="battery_brand" id="bamDirBrand"
+                                         placeholder="e.g. Exide, Amara Raja" maxlength="100">
+                                  <span class="bam-field-error" id="bamErrDirBrand"></span>
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">
+                                      Battery Serial Number <span class="text-danger">*</span>
+                                  </label>
+                                  <input type="text" class="form-control form-control-sm"
+                                         name="battery_serial_number" id="bamDirSerial"
+                                         placeholder="e.g. BT-2024-0001" maxlength="100">
+                                  <span class="bam-field-error" id="bamErrDirSerial"></span>
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">Battery Model</label>
+                                  <input type="text" class="form-control form-control-sm"
+                                         name="battery_model" placeholder="e.g. FEO-TBTZ0" maxlength="100">
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">Capacity (Ah)</label>
+                                  <input type="text" class="form-control form-control-sm"
+                                         name="battery_capacity" placeholder="e.g. 88" maxlength="50">
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">Voltage</label>
+                                  <select class="form-select form-select-sm" name="battery_voltage">
+                                      <option value="">— Select Voltage —</option>
+                                      <option value="6V">6V</option>
+                                      <option value="12V" selected>12V</option>
+                                      <option value="24V">24V</option>
+                                      <option value="48V">48V</option>
+                                  </select>
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">Purchase Date</label>
+                                  <input type="date" class="form-control form-control-sm" name="purchase_date">
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label fw-semibold" style="font-size:12px;">Warranty (Months)</label>
+                                  <input type="number" class="form-control form-control-sm"
+                                         name="warranty_months" min="0" placeholder="e.g. 12">
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              {{-- SECTION 4: Replacement Details --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">4</span>
+                      Replacement Details
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-md-6">
+                          <label class="form-label fw-semibold" style="font-size:12px;">
+                              Replacement Date <span class="text-danger">*</span>
+                          </label>
+                          <input type="date" class="form-control form-control-sm"
+                                 name="replacement_date" id="bamRplDate">
+                          <span class="bam-field-error" id="bamErrRplDate"></span>
+                      </div>
+                      <div class="col-md-6">
+                          <label class="form-label fw-semibold" style="font-size:12px;">KM at Replacement</label>
+                          <div class="input-group input-group-sm">
+                              <input type="number" class="form-control" name="replacement_km"
+                                     id="bamRplKm" min="0" placeholder="0">
+                              <span class="input-group-text">KM</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              {{-- SECTION 5: Attachments --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">5</span>
+                      Attachments
+                      <span class="text-muted fw-normal small ms-1">(JPG/PNG/WEBP · max 5 MB)</span>
+                  </div>
+                  <div class="bam-photo-grid">
+                      <div class="bam-photo-slot">
+                          <span class="bam-photo-slot-label">Damaged Battery</span>
+                          <input type="file" class="form-control form-control-sm"
+                                 name="photo_damage" id="bamPhotoDamage"
+                                 accept="image/jpeg,image/png,image/webp">
+                          <img class="bam-photo-thumb" id="bamThumbDamage" alt="Preview">
+                      </div>
+                      <div class="bam-photo-slot">
+                          <span class="bam-photo-slot-label">New Battery Serial</span>
+                          <input type="file" class="form-control form-control-sm"
+                                 name="photo_serial" id="bamPhotoSerial"
+                                 accept="image/jpeg,image/png,image/webp">
+                          <img class="bam-photo-thumb" id="bamThumbSerial" alt="Preview">
+                      </div>
+                      <div class="bam-photo-slot">
+                          <span class="bam-photo-slot-label">Odometer</span>
+                          <input type="file" class="form-control form-control-sm"
+                                 name="photo_odometer" id="bamPhotoOdometer"
+                                 accept="image/jpeg,image/png,image/webp">
+                          <img class="bam-photo-thumb" id="bamThumbOdometer" alt="Preview">
+                      </div>
+                  </div>
+              </div>
+
+              {{-- SECTION 6: Old Battery Destination --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">6</span>
+                      Old Battery Destination
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-12">
+                          <label class="form-label fw-semibold" style="font-size:12px;">
+                              Where should the removed battery go? <span class="text-danger">*</span>
+                          </label>
+                          <div class="bam-old-dest-grid" id="bamOldDestGrid">
+                              <label class="bam-old-dest-pill" for="bamOldDestWarehouse">
+                                  <input type="radio" name="old_battery_destination"
+                                         id="bamOldDestWarehouse" value="SR Garage" class="d-none">
+                                  🏭 SR Garage
+                              </label>
+                              <label class="bam-old-dest-pill" for="bamOldDestWorkshop">
+                                  <input type="radio" name="old_battery_destination"
+                                         id="bamOldDestWorkshop" value="Workshop" class="d-none">
+                                  🔧 Workshop
+                              </label>
+                              <label class="bam-old-dest-pill" for="bamOldDestScrap">
+                                  <input type="radio" name="old_battery_destination"
+                                         id="bamOldDestScrap" value="Scrap" class="d-none">
+                                  🗑️ Scrap
+                              </label>
+                              <label class="bam-old-dest-pill" for="bamOldDestDecide">
+                                  <input type="radio" name="old_battery_destination"
+                                         id="bamOldDestDecide" value="Yet to Decide" class="d-none">
+                                  ⏳ Yet to Decide
+                              </label>
+                          </div>
+                          <span class="bam-field-error" id="bamErrOldDest"></span>
+
+                          {{-- Sub-panel: SR Warehouse --}}
+                          <div class="mt-2 d-none" id="bamOldDestWarehouseWrap">
+                              <label class="form-label fw-semibold" style="font-size:12px;">
+                                  Select Warehouse <span class="text-danger">*</span>
+                              </label>
+                              <select class="form-select form-select-sm"
+                                      name="old_dest_warehouse_id" id="bamOldDestWarehouseId">
+                                  <option value="">— Select Warehouse —</option>
+                              </select>
+                              <span class="bam-field-error" id="bamErrOldDestWarehouse"></span>
+                          </div>
+
+                          {{-- Sub-panel: Workshop --}}
+                          <div class="mt-2 d-none" id="bamOldDestWorkshopWrap">
+                              <label class="form-label fw-semibold" style="font-size:12px;">
+                                  Select Workshop <span class="text-danger">*</span>
+                              </label>
+                              <select class="form-select form-select-sm"
+                                      name="old_dest_workshop_id" id="bamOldDestWorkshopId">
+                                  <option value="">— Select Workshop —</option>
+                              </select>
+                              <span class="bam-field-error" id="bamErrOldDestWorkshop"></span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              {{-- SECTION 7: Notes --}}
+              <div class="bam-section">
+                  <div class="bam-section-title">
+                      <span class="bam-section-num">7</span>
+                      Notes
+                      <span class="bam-notes-scrap-hint text-danger fw-normal d-none ms-1" id="bamNotesScrapHint"
+                            style="font-size:10px; text-transform:none; letter-spacing:0;">(Required for Scrap)</span>
+                  </div>
+                  <div class="row g-2">
+                      <div class="col-12">
+                          <textarea class="form-control form-control-sm" id="bamNotes" name="notes"
+                                    rows="2" placeholder="Add any notes or remarks…"
+                                    style="resize:vertical; font-size:12px;"></textarea>
+                          <span class="bam-field-error" id="bamErrNotes"></span>
+                      </div>
+                  </div>
+              </div>
+
+          </form>
+
+          {{-- Data store: warehouses + workshops for JS (data only — no inline logic per SD-1) --}}
+          <div id="bamDataStore" class="d-none"
+               data-warehouses="{{ json_encode($warehouses->map(fn($w) => ['id' => $w->id, 'name' => $w->name, 'type' => $w->warehouse_type ?? ''])) }}"
+               data-workshops="{{ json_encode($workshops->map(fn($w) => ['id' => $w->id, 'name' => $w->name])) }}">
+          </div>
+
+      </div>{{-- /modal-body --}}
+
+      {{-- Modal Footer --}}
+      <div class="modal-footer py-2 px-3">
+          <button type="button" class="btn btn-sm btn-secondary"
+                  data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="bamRplSubmitBtn" class="btn btn-sm btn-primary">
+              <span id="bamRplSubmitText">
+                  <i class="uil uil-exchange me-1"></i>Replace Battery
+              </span>
+              <span id="bamRplSubmitSpinner"
+                    class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+          </button>
+      </div>
+
+    </div>
+  </div>
+</div>{{-- /batteryTakeActionModal --}}
+
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Battery/battery-tagging.js?v=2.3') }}"></script>
+<script src="{{ asset('js/Battery/battery-tagging.js?v=2.6') }}"></script>
 @endsection

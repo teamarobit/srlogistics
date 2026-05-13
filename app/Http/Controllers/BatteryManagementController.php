@@ -15,6 +15,8 @@ use App\Models\Battery;
 use App\Models\Vehiclebattery;
 use App\Models\Vehiclebatterylog;
 use App\Models\Media;
+use App\Models\Warehouse;
+use App\Models\Workshop;
 
 class BatteryManagementController extends Controller
 {
@@ -56,7 +58,15 @@ class BatteryManagementController extends Controller
             $battery->life_remaining_pct        = $lifeRemainingPct;
         }
 
-        return view('batterymanagement.vehiclebatterytagging', compact('vehicle'));
+        $warehouses = Warehouse::where('status', 'Active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'warehouse_type']);
+
+        $workshops = Workshop::where('status', 'Active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('batterymanagement.vehiclebatterytagging', compact('vehicle', 'warehouses', 'workshops'));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -417,38 +427,305 @@ class BatteryManagementController extends Controller
             ], 500);
         }
     }
-
     // ─────────────────────────────────────────────────────────────────────────
-    // GET  /batterymanage/vehicle/{vehicle}/battery/{battery}/logs  (AJAX)
+    // POST  /batterymanage/vehicle/{vehicle}/battery/{battery}/replace
+    // Take Action — Replace Battery
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function getBatteryLogs(Vehicle $vehicle, int $batteryId): JsonResponse
+    public function replaceBatteryTag(Request $request, Vehicle $vehicle, int $batteryId): JsonResponse
     {
-        $battery = Vehiclebattery::find($batteryId);
-        if (! $battery || $battery->vehicle_id !== $vehicle->id) {
-            return response()->json(['success' => false, 'message' => 'Battery not found.'], 422);
+        $oldBattery = Vehiclebattery::where('id', $batteryId)
+            ->where('vehicle_id', $vehicle->id)
+            ->first();
+
+        if (! $oldBattery) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Battery record not found for this vehicle.',
+            ], 422);
         }
 
-        $logs = Vehiclebatterylog::where('vehiclebattery_id', $batteryId)
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($log) {
-                return [
-                    'id'           => $log->id,
-                    'action'       => $log->action,
-                    'notes'        => $log->notes,
-                    'source'       => $log->battery_source ?? '—',
-                    'fitment_date' => $log->fitment_date
-                                        ? Carbon::parse($log->fitment_date)->format('d M Y')
-                                        : '—',
-                    'actual_km'    => $log->battery_actual_km
-                                        ? number_format($log->battery_actual_km) . ' KM'
-                                        : '—',
-                    'rag_status'   => $log->rag_status ?? '—',
-                    'created_at'   => Carbon::parse($log->created_at)->format('d M Y, h:i A'),
+        $source  = $request->input('battery_source');
+        $oldDest = $request->input('old_battery_destination');
+
+        // ── Validation rules ──────────────────────────────────────────────
+        $rules = [
+            'replacement_reason'      => 'required|string|max:100',
+            'battery_condition'       => 'required|in:New,Used,Replaced Under Warranty',
+            'battery_source'          => 'required|in:SR Warehouse,Direct Fitment',
+            'replacement_date'        => 'required|date',
+            'replacement_km'          => 'nullable|integer|min:0',
+            'old_battery_destination' => 'required|in:SR Garage,Workshop,Scrap,Yet to Decide',
+            'photo_damage'            => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo_serial'            => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo_odometer'          => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ];
+
+        if ($source === 'SR Warehouse') {
+            $rules['warehouse_battery_id'] = 'required|integer';
+        } else {
+            $rules['battery_brand']         = 'required|string|max:100';
+            $rules['battery_serial_number'] = 'required|string|max:100';
+            $rules['battery_model']         = 'nullable|string|max:100';
+            $rules['battery_capacity']      = 'nullable|string|max:50';
+            $rules['battery_voltage']       = 'nullable|in:6V,12V,24V,48V';
+            $rules['purchase_date']         = 'nullable|date';
+            $rules['warranty_months']       = 'nullable|integer|min:0';
+        }
+
+        if ($oldDest === 'SR Garage') {
+            $rules['old_dest_warehouse_id'] = 'required|integer';
+        } elseif ($oldDest === 'Workshop') {
+            $rules['old_dest_workshop_id'] = 'required|integer';
+        }
+
+        // Notes mandatory when old battery is scrapped
+        $rules['notes'] = $oldDest === 'Scrap'
+            ? 'required|string|max:500'
+            : 'nullable|string|max:500';
+
+        $validator = Validator::make($request->all(), $rules, [
+            'required'                         => 'This field is required.',
+            'in'                               => 'Invalid selection.',
+            'warehouse_battery_id.required'    => 'Please select a battery from the warehouse.',
+            'old_battery_destination.required' => 'Please select where the old battery should go.',
+            'old_dest_warehouse_id.required'   => 'Please select a warehouse for the old battery.',
+            'old_dest_workshop_id.required'    => 'Please select a workshop for the old battery.',
+            'notes.required'                   => 'Notes are required when scrapping the old battery.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please fill all required fields correctly.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        // ── Resolve new battery details by source ─────────────────────────
+        $warehouseBattery   = null;
+        $batteryBrand       = null;
+        $batterySerial      = null;
+        $batteryModel       = null;
+        $batteryCapacity    = null;
+        $batteryVoltage     = null;
+        $batteryCondition   = $request->battery_condition;
+        $purchaseDate       = null;
+        $warrantyMonths     = 0;
+        $warehouseBatteryId = null;
+
+        if ($source === 'SR Warehouse') {
+            $warehouseBattery = Battery::find($request->warehouse_battery_id);
+            if (! $warehouseBattery || $warehouseBattery->current_status !== 'In Stock') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected battery is not available in warehouse.',
+                ], 422);
+            }
+            $batteryBrand       = $warehouseBattery->battery_brand;
+            $batterySerial      = $warehouseBattery->battery_serial;
+            $batteryModel       = $warehouseBattery->battery_model;
+            $batteryCapacity    = $warehouseBattery->battery_capacity;
+            $batteryVoltage     = $warehouseBattery->battery_voltage;
+            $purchaseDate       = $warehouseBattery->battery_purchase_date?->toDateString();
+            $warrantyMonths     = $warehouseBattery->battery_warranty_months ?? 0;
+            $warehouseBatteryId = $warehouseBattery->id;
+        } else {
+            $batteryBrand    = $request->battery_brand;
+            $batterySerial   = $request->battery_serial_number;
+            $batteryModel    = $request->battery_model;
+            $batteryCapacity = $request->battery_capacity;
+            $batteryVoltage  = $request->battery_voltage;
+            $purchaseDate    = $request->purchase_date;
+            $warrantyMonths  = (int) ($request->warranty_months ?? 0);
+        }
+
+        try {
+            $newVehicleBattery = DB::transaction(function () use (
+                $request, $vehicle, $oldBattery, $source, $oldDest,
+                $batteryBrand, $batterySerial, $batteryModel,
+                $batteryCapacity, $batteryVoltage, $batteryCondition,
+                $purchaseDate, $warrantyMonths, $warehouseBattery, $warehouseBatteryId
+            ): Vehiclebattery {
+
+                // ── 1. Log old battery as Replaced ────────────────────────
+                Vehiclebatterylog::create([
+                    'vehiclebattery_id'        => $oldBattery->id,
+                    'vehicle_id'               => $vehicle->id,
+                    'battery_model_name'       => $oldBattery->battery_model_name,
+                    'battery_model'            => $oldBattery->battery_model,
+                    'battery_serial_number'    => $oldBattery->battery_serial_number,
+                    'battery_brand'            => $oldBattery->battery_brand,
+                    'battery_capacity'         => $oldBattery->battery_capacity,
+                    'battery_voltage'          => $oldBattery->battery_voltage,
+                    'battery_condition'        => $oldBattery->battery_condition,
+                    'battery_price'            => $oldBattery->battery_price ?? 0,
+                    'purchase_date'            => $oldBattery->purchase_date,
+                    'warranty_months'          => $oldBattery->warranty_months,
+                    'fitment_date'             => $oldBattery->fitment_date,
+                    'battery_actual_km'        => $request->replacement_km ?? $oldBattery->battery_actual_km,
+                    'battery_life_fixed'       => $oldBattery->battery_life_fixed,
+                    'battery_actual_run_months'=> $oldBattery->battery_actual_run_months,
+                    'battery_source'           => $oldBattery->battery_source,
+                    'warehouse_battery_id'     => $oldBattery->warehouse_battery_id,
+                    'km_at_fitment'            => $oldBattery->km_at_fitment ?? 0,
+                    'action'                   => 'Replaced',
+                    'notes'                    => 'Replaced via Take Action. Reason: ' . $request->replacement_reason
+                                                  . '. Old battery destination: ' . $oldDest . '.'
+                                                  . ($request->notes ? ' Notes: ' . $request->notes : ''),
+                    'organisation_id'          => Auth::user()->organisation_id ?? 1,
+                    'created_by'               => Auth::id(),
+                ]);
+
+                // ── 2. Handle old battery destination ─────────────────────
+                if ($oldBattery->warehouse_battery_id) {
+                    $destStatus = match ($oldDest) {
+                        'Scrap'     => 'Scrapped',
+                        'Workshop'  => 'In Workshop',
+                        'SR Garage' => 'In Stock',
+                        default     => 'In Stock',
+                    };
+                    $destUpdate = [
+                        'current_status'       => $destStatus,
+                        'allocated_vehicle_id' => null,
+                        'updated_by'           => Auth::id(),
+                    ];
+                    if ($oldDest === 'SR Garage' && $request->old_dest_warehouse_id) {
+                        $destUpdate['warehouse_id'] = (int) $request->old_dest_warehouse_id;
+                    }
+                    Battery::where('id', $oldBattery->warehouse_battery_id)->update($destUpdate);
+                }
+
+                // ── 3. Soft-delete old vehiclebattery ─────────────────────
+                $oldBattery->update([
+                    'status'     => 'Inactive',
+                    'updated_by' => Auth::id(),
+                ]);
+                $oldBattery->delete();
+
+                // ── 4. Mark / create new battery in inventory ─────────────
+                if ($source === 'SR Warehouse') {
+                    $warehouseBattery->update([
+                        'current_status'       => 'Installed',
+                        'allocated_vehicle_id' => $vehicle->id,
+                        'installation_date'    => $request->replacement_date,
+                        'current_odometer_km'  => $request->replacement_km ?? 0,
+                        'updated_by'           => Auth::id(),
+                    ]);
+                } else {
+                    // Direct Fitment — create inventory record
+                    $warehouseBattery = Battery::create([
+                        'organisation_id'            => Auth::user()->organisation_id ?? 1,
+                        'battery_source_mode'        => 'Fitment',
+                        'battery_serial'             => $batterySerial,
+                        'battery_brand'              => $batteryBrand,
+                        'battery_model'              => $batteryModel,
+                        'battery_capacity'           => $batteryCapacity ?? 0,
+                        'battery_voltage'            => $batteryVoltage ?? '12V',
+                        'battery_condition'          => $batteryCondition,
+                        'battery_purchase_date'      => $purchaseDate,
+                        'battery_warranty_months'    => $warrantyMonths,
+                        'current_status'             => 'Installed',
+                        'allocated_vehicle_id'       => $vehicle->id,
+                        'installation_date'          => $request->replacement_date,
+                        'current_odometer_km'        => $request->replacement_km ?? 0,
+                        'fitment_source_origin_note' => 'Tagged via Take Action — Replace',
+                        'created_by'                 => Auth::id(),
+                    ]);
+                    $warehouseBatteryId = $warehouseBattery->id;
+                }
+
+                // ── 5. Create new vehiclebattery record ───────────────────
+                $newVehicleBattery = Vehiclebattery::create([
+                    'vehicle_id'               => $vehicle->id,
+                    'battery_source'           => $source,
+                    'battery_serial_number'    => $batterySerial,
+                    'battery_brand'            => $batteryBrand,
+                    'battery_model_name'       => $batteryBrand . ($batteryModel ? ' ' . $batteryModel : ''),
+                    'battery_model'            => $batteryModel,
+                    'battery_capacity'         => $batteryCapacity,
+                    'battery_voltage'          => $batteryVoltage,
+                    'battery_condition'        => $batteryCondition,
+                    'battery_price'            => 0,
+                    'purchase_date'            => $purchaseDate,
+                    'warranty_months'          => $warrantyMonths,
+                    'fitment_date'             => $request->replacement_date,
+                    'issue_date'               => $request->replacement_date,
+                    'km_at_fitment'            => $request->replacement_km ?? 0,
+                    'battery_actual_km'        => $request->replacement_km ?? 0,
+                    'battery_life_fixed'       => null,
+                    'battery_actual_run_months'=> 0,
+                    'warehouse_battery_id'     => $warehouseBatteryId,
+                    'status'                   => 'Active',
+                    'organisation_id'          => Auth::user()->organisation_id ?? 1,
+                    'created_by'               => Auth::id(),
+                ]);
+
+                // ── 6. Log new tagging ────────────────────────────────────
+                Vehiclebatterylog::create([
+                    'vehiclebattery_id'        => $newVehicleBattery->id,
+                    'vehicle_id'               => $vehicle->id,
+                    'battery_serial_number'    => $batterySerial,
+                    'battery_brand'            => $batteryBrand,
+                    'battery_model_name'       => $newVehicleBattery->battery_model_name,
+                    'battery_model'            => $batteryModel,
+                    'battery_capacity'         => $batteryCapacity,
+                    'battery_voltage'          => $batteryVoltage,
+                    'battery_condition'        => $batteryCondition,
+                    'battery_price'            => 0,
+                    'fitment_date'             => $request->replacement_date,
+                    'issue_date'               => $request->replacement_date,
+                    'km_at_fitment'            => $request->replacement_km ?? 0,
+                    'battery_actual_km'        => $request->replacement_km ?? 0,
+                    'battery_life_fixed'       => null,
+                    'battery_actual_run_months'=> 0,
+                    'purchase_date'            => $purchaseDate,
+                    'warranty_months'          => $warrantyMonths,
+                    'fixed_life_months'        => null,
+                    'battery_source'           => $source,
+                    'warehouse_battery_id'     => $warehouseBatteryId,
+                    'action'                   => 'Tagged',
+                    'notes'                    => 'New battery tagged via Take Action — Replace.',
+                    'organisation_id'          => Auth::user()->organisation_id ?? 1,
+                    'created_by'               => Auth::id(),
+                ]);
+
+                // ── 7. Photo attachments ──────────────────────────────────
+                $photoFields = [
+                    'photo_damage'   => 'Damaged Battery',
+                    'photo_serial'   => 'New Battery Serial',
+                    'photo_odometer' => 'Odometer',
                 ];
+                foreach ($photoFields as $field => $label) {
+                    if (request()->hasFile($field)) {
+                        $file     = request()->file($field);
+                        $filename = time() . '_' . $field . '_' . $file->getClientOriginalName();
+                        $file->move(public_path('medias/battery'), $filename);
+                        Media::create([
+                            'mediable_type' => Vehiclebattery::class,
+                            'mediable_id'   => $newVehicleBattery->id,
+                            'type'          => 'Image',
+                            'file_name'     => $label . ' — ' . $file->getClientOriginalName(),
+                            'file_path'     => 'battery/' . $filename,
+                            'created_by'    => Auth::id(),
+                        ]);
+                    }
+                }
+
+                return $newVehicleBattery;
             });
 
-        return response()->json(['success' => true, 'logs' => $logs], 200);
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Battery replaced successfully.',
+                'redirect' => route('batterymanage.vehicle.battery.tagging', $vehicle->id),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to replace battery: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
