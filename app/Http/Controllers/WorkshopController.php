@@ -828,13 +828,14 @@ class WorkshopController extends Controller
                     foreach ($request->file('files') as $file) {
                         if (! $file->isValid()) { continue; }
                         $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                        $file_size = $file->getSize();
                         $file->move($imgDir, $filename);
                         $mediaData[] = [
                             'type'       => 'Image',
                             'file_name'  => $file->getClientOriginalName(),
                             'file_path'  => 'battery/' . $filename,
                             'file_type'  => $file->getClientMimeType(),
-                            'file_size'  => $file->getSize(),
+                            'file_size'  => $file_size,
                             'created_by' => $userId,
                             'created_at' => now(),
                             'updated_at' => now(),

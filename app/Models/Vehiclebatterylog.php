@@ -8,36 +8,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Vehiclebatterylog extends Model
 {
     use SoftDeletes;
-    
+
+    protected $table = 'vehiclebatterylogs';
+
+    protected $guarded = [];
+
+    protected $casts = [
+        'purchase_date' => 'date',
+        'fitment_date'  => 'date',
+        'issue_date'    => 'date',
+    ];
+
+    // ── Relationships ────────────────────────────────────────────────────
+
     public function vehiclebattery()
     {
-        return $this->hasOne(Vehiclebattery::class, 'vehiclebattery_id');
-    }
-    
-    // Vehicle
-    public function vehicle()
-    {
-        return $this->hasOne(Vehicle::class, 'vehicle_id');
+        return $this->belongsTo(Vehiclebattery::class, 'vehiclebattery_id');
     }
 
-    
-    
-    
-    // public function createdBy()
-    // {
-    //     return $this->belongsTo(User::class, 'created_by');
-    // }
-    
-    // public function updatedBy()
-    // {
-    //     return $this->belongsTo(User::class, 'updated_by');
-    // }
-    
-    // public function deletedBy()
-    // {
-    //     return $this->belongsTo(User::class, 'deleted_by');
-    // }
-    
-    
-    
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

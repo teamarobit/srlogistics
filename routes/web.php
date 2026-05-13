@@ -1,7 +1,8 @@
 <?php
-
+// v2
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -423,9 +424,23 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/lookup-vehicle', [App\Http\Controllers\TyreManagementController::class, 'lookupVehicleByNumber'])->name('lookup.vehicle.by.number');
     });
     
+    // Battery Management
+    Route::prefix('batterymanage')->name('batterymanage.')->group(function () {
+        // GET: battery tagging page for a vehicle
+        Route::get('/vehicle/{vehicle}/battery/tagging', [App\Http\Controllers\BatteryManagementController::class, 'vehicleBatteryTagging'])->name('vehicle.battery.tagging');
+        // POST: tag a new battery to a vehicle
+        Route::post('/vehicle/{vehicle}/battery/tag', [App\Http\Controllers\BatteryManagementController::class, 'storeBatteryTag'])->name('vehicle.battery.tag.store');
+        // POST: remove a tagged battery
+        Route::post('/vehicle/{vehicle}/battery/{battery}/remove', [App\Http\Controllers\BatteryManagementController::class, 'removeBatteryTag'])->name('vehicle.battery.tag.remove');
+        // GET: AJAX — fetch battery log history
+        Route::get('/vehicle/{vehicle}/battery/{battery}/logs', [App\Http\Controllers\BatteryManagementController::class, 'getBatteryLogs'])->name('vehicle.battery.logs');
+        // GET: AJAX — fetch available batteries from inventory by condition
+        Route::get('/batteries/available', [App\Http\Controllers\BatteryManagementController::class, 'getAvailableWarehouseBatteries'])->name('batteries.available');
+    });
+
     /******************************** Vehicle Master **********************************************************/
-    
-    
+
+
     // Vehicle Management
     Route::prefix('vehicle-management')->name('vehiclemanagement.')->group(function () {
         Route::get('/', [App\Http\Controllers\VehiclemanagementController::class, 'index'])->name('index');

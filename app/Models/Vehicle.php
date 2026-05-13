@@ -93,6 +93,11 @@ class Vehicle extends Model
     {
         return $this->hasMany(Vehiclebattery::class, 'vehicle_id')->latest();
     }
+
+    public function vehiclebatteries()
+    {
+        return $this->hasMany(Vehiclebattery::class, 'vehicle_id')->whereNull('deleted_at')->orderBy('id');
+    }
     
     public function digitalLocks()
     {
