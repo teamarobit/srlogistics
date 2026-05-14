@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Inventory/battery-dashboard.css?v=3.5') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-dashboard.css?v=3.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')

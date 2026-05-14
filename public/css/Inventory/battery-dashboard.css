@@ -791,25 +791,33 @@
    BATTERY DASHBOARD v3.0 — Tab Tables, Badges, RAG, Filter, Sort
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Battery Pills Tab Nav (matches tyre dashboard exactly) ─────────────── */
+/* ── Battery Pills Tab Nav ───────────────────────────────────────────────── */
 .bat-tab-nav {
-    flex-wrap: wrap;
-    gap: 4px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 6px;
+    gap: 0;
+}
+
+.bat-tab-nav::-webkit-scrollbar {
+    display: none;
 }
 
 .bat-tab-nav .nav-link {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
-    padding: 6px 14px;
+    padding: 6px 11px;
     border-radius: 20px;
     color: #495057;
     white-space: nowrap;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     background: transparent;
     border: none;
+    flex-shrink: 0;
 }
 
 .bat-tab-nav .nav-link.active {
