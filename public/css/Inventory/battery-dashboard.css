@@ -786,3 +786,384 @@
         max-width: calc(50% - 6px);
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BATTERY DASHBOARD v3.0 — Tab Tables, Badges, RAG, Filter, Sort
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Battery Pills Tab Nav (matches tyre dashboard exactly) ─────────────── */
+.bat-tab-nav {
+    flex-wrap: wrap;
+    gap: 4px 0;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 6px;
+}
+
+.bat-tab-nav .nav-link {
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: #495057;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: transparent;
+    border: none;
+}
+
+.bat-tab-nav .nav-link.active {
+    background-color: #032671 !important;
+    color: #fff !important;
+}
+
+.bat-tab-nav .nav-link:not(.active):hover {
+    background: #e8eef7;
+    color: #032671;
+}
+
+/* ── Tab Content Pane ────────────────────────────────────────────────────── */
+.bat-tab-pane {
+    padding-top: 14px;
+}
+
+/* ── Filter fields: 4-column grid (matches tyre dashboard layout exactly) ── */
+.tab-pane .filtersearch-bd.flex-wrap {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 12px;
+    align-items: end;
+    justify-content: unset;
+}
+
+.tab-pane .filtersearch-bd.flex-wrap .vehicletype {
+    width: auto !important;
+    margin-left: 0 !important;
+    padding-left: 0;
+}
+
+/* ── Filter label ────────────────────────────────────────────────────────── */
+.tab-pane .filtersearch-bd.flex-wrap .vehicletype label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 4px;
+}
+
+/* ── Bottom row (search inputs + buttons) — keep flex, not grid ─────────── */
+.tab-pane .filtersearch-bd.justify-content-start {
+    display: flex !important;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* ── Filter accordion header: restore spacing (padding was commented out in global CSS) ── */
+.tab-pane .filter-options {
+    border: 1px solid #dce3ef;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: none;
+}
+
+.tab-pane .filter-options .item-filter {
+    padding: 10px 16px;
+}
+
+.tab-pane .filter-options .item-filter .filter-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+.tab-pane .filter-options .item-filter p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #21263C;
+}
+
+/* Bootstrap accordion-button resets for filter-options */
+.tab-pane .accordion-button.filter-options {
+    padding: 0 !important;
+    background: #fff;
+    box-shadow: none;
+    border-radius: 6px !important;
+}
+
+.tab-pane .accordion-button.filter-options:not(.collapsed) {
+    background: #fff;
+    box-shadow: none;
+    border-radius: 6px 6px 0 0 !important;
+}
+
+.tab-pane .accordion-button.filter-options::after {
+    margin-right: 16px;
+    filter: invert(13%) sepia(75%) saturate(2000%) hue-rotate(211deg) brightness(60%);
+}
+
+/* ── Filter Accordion body ─────────────────────────────────────────────────── */
+.bat-filter-accordion .accordion-body {
+    background: #f9fbfe;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 12px 14px 10px;
+}
+
+.bat-filter-accordion .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #485D6B;
+    margin-bottom: 3px;
+}
+
+.bat-filter-accordion .form-control,
+.bat-filter-accordion .form-select {
+    font-size: 12px;
+    padding: 5px 8px;
+    height: 32px;
+    border-color: #ced4da;
+}
+
+/* ── Battery Dashboard Table (matches tyre dashboard exactly) ───────────── */
+.sr_dashboard0_table {
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px 0;
+}
+
+.sr_dashboard0_table .custom-driver-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.sr_dashboard0_table .custom-driver-table thead th {
+    font-size: 12px;
+    color: #2a303c;
+    font-weight: 600;
+    border: none;
+    padding: 12px 8px;
+    background-color: #e8eef7;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.sr_dashboard0_table .custom-driver-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.sr_dashboard0_table .custom-driver-table thead th.sortable:hover {
+    background-color: #d4ddf0;
+}
+
+.sr_dashboard0_table .custom-driver-table thead th.sort-active {
+    background-color: #d0daf5;
+}
+
+.sr_dashboard0_table .custom-driver-table thead th.sort-active .sort-icon {
+    color: #032671;
+    font-weight: 700;
+}
+
+.sr_dashboard0_table .custom-driver-table tbody tr {
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 160ms;
+}
+
+.sr_dashboard0_table .custom-driver-table tbody tr:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(16,24,40,0.08);
+    background-color: #f9fafb;
+}
+
+.sr_dashboard0_table .custom-driver-table tbody td {
+    padding: 10px 8px;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    font-size: 12px;
+    color: #344054;
+}
+
+.sr_dashboard0_table .custom-driver-table tbody tr td:first-child {
+    border-left: 1px solid #f0f0f0;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.sr_dashboard0_table .custom-driver-table tbody tr td:last-child {
+    border-right: 1px solid #f0f0f0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.sr_dashboard0_table .badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 5px 10px;
+    color: #fff !important;
+}
+
+/* Sort icon */
+.sort-icon {
+    display: inline-block;
+    font-size: 11px;
+    color: #8a9ab5;
+    margin-left: 3px;
+    vertical-align: middle;
+}
+
+/* Serial number link */
+.text-primary-custom {
+    color: #032671 !important;
+    text-decoration: none;
+    font-weight: 600;
+}
+.text-primary-custom:hover {
+    text-decoration: underline;
+    color: #0547c3 !important;
+}
+
+/* ── Status / Location Badges — solid Bootstrap-style (matches tyre) ─────── */
+.bat-badge-ready     { background: #198754 !important; color: #fff !important; }
+.bat-badge-warranty  { background: #fd7e14 !important; color: #fff !important; }
+.bat-badge-repair    { background: #0d6efd !important; color: #fff !important; }
+.bat-badge-scrap     { background: #dc3545 !important; color: #fff !important; }
+.bat-badge-allocated { background: #0d6efd !important; color: #fff !important; }
+.bat-badge-fitment   { background: #6f42c1 !important; color: #fff !important; }
+.bat-badge-ytd       { background: #6c757d !important; color: #fff !important; }
+
+/* ── RAG Status Badges — solid (matches tyre dashboard) ─────────────────── */
+.rag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.rag-badge.rag-green  { background: #198754; }
+.rag-badge.rag-yellow { background: #ffc107; color: #212529; }
+.rag-badge.rag-red    { background: #dc3545; }
+
+/* ── Closure Alert (overdue date in Warranty / Repair tabs) ─────────────── */
+.closure-alert {
+    animation: blink-danger 1.2s step-start infinite;
+    background: #dc3545;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+@keyframes blink-danger {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
+
+/* ── Image View Button ───────────────────────────────────────────────────── */
+.btn-img-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #e8eef7;
+    color: #032671;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid #c5d4ee;
+}
+
+.btn-img-view:hover {
+    background: #032671;
+    color: #fff;
+    border-color: #032671;
+}
+
+/* ── Change Status Button (Yet to Decide tab) ───────────────────────────── */
+.bat-btn-change-status {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fdba74;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.bat-btn-change-status:hover {
+    background: #ea580c;
+    color: #fff;
+    border-color: #ea580c;
+}
+
+/* ── Change Status Modal Option Buttons ─────────────────────────────────── */
+.bat-btn-change-status-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    background: #f8f9fa;
+    color: #485D6B;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.bat-btn-change-status-opt:hover {
+    border-color: #032671;
+    background: #e8eef7;
+    color: #032671;
+}
+
+.bat-btn-change-status-opt.active {
+    border-color: #032671;
+    background: #032671;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ── Table Pagination Footer ─────────────────────────────────────────────── */
+.sr_dashboard0_table .border-top {
+    border-top: 1px solid #f0f2f5 !important;
+}
+
+/* ── Responsive table scroll ─────────────────────────────────────────────── */
+.sr_dashboard0_table .table-responsive {
+    border-radius: 0;
+}
+
+@media (max-width: 768px) {
+    .bat-tab-btn {
+        font-size: 11.5px;
+        padding: 4px 10px;
+    }
+
+    .sr_dashboard0_table .custom-driver-table thead th,
+    .sr_dashboard0_table .custom-driver-table tbody td {
+        font-size: 11.5px;
+        padding: 6px 8px;
+    }
+}

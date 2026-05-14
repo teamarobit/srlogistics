@@ -634,23 +634,185 @@ class WorkshopController extends Controller
         return view('ws.battery-inventory');
     }
 
-    public function batteryDashboard()
+    public function batteryDashboard(\Illuminate\Http\Request $request)
     {
-        $org_id = \Illuminate\Support\Facades\Auth::user()->organisation_id ?? 1;
+        $org_id = Auth::user()->organisation_id ?? 1;
 
+        // ── Sort / direction ─────────────────────────────────────────────
+        $allowedSorts = [
+            'battery_serial', 'battery_brand', 'battery_model',
+            'battery_capacity', 'battery_voltage', 'battery_condition',
+            'battery_purchase_cost', 'battery_purchase_date',
+            'warranty_claim_date', 'warranty_expected_closure_date',
+            'repair_sent_date', 'repair_expected_closure_date',
+            'scrap_sent_date', 'created_at',
+        ];
+        $sort      = $request->input('sort', 'created_at');
+        $direction = $request->input('direction', 'desc');
+        if (! in_array($sort, $allowedSorts)) { $sort = 'created_at'; }
+        $direction = ($direction === 'asc') ? 'asc' : 'desc';
+
+        // ── Eager-load relationships ──────────────────────────────────────
+        $with = ['vendor', 'scrapVendor', 'repairVendor', 'allocatedVehicle.basicinfo', 'allocatedVehicle.group', 'images'];
+
+        // ── Counter queries (for summary cards) ───────────────────────────
         $all_count            = \App\Models\Battery::where('organisation_id', $org_id)->count();
-        $allocated_count      = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Installed')->count();
-        $direct_fitment_count = \App\Models\Battery::where('organisation_id', $org_id)->where('stock_location_type', 'Fitment')->count();
-        $yet_to_decide_count  = \App\Models\Battery::where('organisation_id', $org_id)->where('stock_location_type', 'Unassigned')->count();
+        $allocated_count      = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Allocated')->count();
+        $direct_fitment_count = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Direct Fitment')->count();
+        $yet_to_decide_count  = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Yet to Decide')->count();
+        $ready_to_use_count   = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Ready to Use')->count();
+        $warranty_claim_count = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Warranty Claim')->count();
+        $repair_count         = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Repair')->count();
+        $scrap_count          = \App\Models\Battery::where('organisation_id', $org_id)->where('battery_status', 'Scrap')->count();
 
-        $ready_to_use_count   = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'In Stock')->count();
-        $warranty_claim_count = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Condemned')->count();
-        $repair_count         = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'In Repair')->count();
-        $scrap_count          = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Disposed')->count();
+        // ── Tab 1: All Batteries ──────────────────────────────────────────
+        $q1 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)->orderBy($sort, $direction);
+        if ($request->filled('f1_location'))       { $q1->where('battery_location', $request->f1_location); }
+        if ($request->filled('f1_status'))         { $q1->where('battery_status', $request->f1_status); }
+        if ($request->filled('f1_capacity'))       { $q1->where('battery_capacity', $request->f1_capacity); }
+        if ($request->filled('f1_voltage'))        { $q1->where('battery_voltage', $request->f1_voltage); }
+        if ($request->filled('f1_condition'))      { $q1->where('battery_condition', $request->f1_condition); }
+        if ($request->filled('f1_rag'))            { $q1->where('rag_status', $request->f1_rag); }
+        if ($request->filled('f1_brand'))          { $q1->where('battery_brand', $request->f1_brand); }
+        if ($request->filled('f1_tracking_group')) { $q1->where('tracking_group_id', $request->f1_tracking_group); }
+        if ($request->filled('f1_vendor'))         { $q1->where('vendor_id', $request->f1_vendor); }
+        if ($request->filled('f1_vehicle'))        { $q1->whereHas('allocatedVehicle.basicinfo', fn($q) => $q->where('vehicle_number', 'like', '%'.$request->f1_vehicle.'%')); }
+        if ($request->filled('f1_serial'))         { $q1->where('battery_serial', 'like', '%'.$request->f1_serial.'%'); }
+        $all_batteries = $q1->paginate(15, ['*'], 'tab1_page');
+
+        // ── Tab 2: Ready to Use ───────────────────────────────────────────
+        $q2 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Ready to Use')->orderBy($sort, $direction);
+        if ($request->filled('f2_capacity'))  { $q2->where('battery_capacity', $request->f2_capacity); }
+        if ($request->filled('f2_voltage'))   { $q2->where('battery_voltage', $request->f2_voltage); }
+        if ($request->filled('f2_condition')) { $q2->where('battery_condition', $request->f2_condition); }
+        if ($request->filled('f2_rag'))       { $q2->where('rag_status', $request->f2_rag); }
+        if ($request->filled('f2_brand'))     { $q2->where('battery_brand', $request->f2_brand); }
+        if ($request->filled('f2_vendor'))    { $q2->where('vendor_id', $request->f2_vendor); }
+        if ($request->filled('f2_serial'))    { $q2->where('battery_serial', 'like', '%'.$request->f2_serial.'%'); }
+        if ($request->filled('f2_warranty')) {
+            if ($request->f2_warranty === 'In Warranty') {
+                $q2->whereNotNull('battery_warranty_expiry_date')->where('battery_warranty_expiry_date', '>=', now()->toDateString());
+            } elseif ($request->f2_warranty === 'Out of Warranty') {
+                $q2->where(fn($q) => $q->whereNull('battery_warranty_expiry_date')->orWhere('battery_warranty_expiry_date', '<', now()->toDateString()));
+            }
+        }
+        $ready_batteries = $q2->paginate(15, ['*'], 'tab2_page');
+
+        // ── Tab 3: Warranty Claim ─────────────────────────────────────────
+        $q3 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Warranty Claim')->orderBy($sort, $direction);
+        if ($request->filled('f3_capacity'))         { $q3->where('battery_capacity', $request->f3_capacity); }
+        if ($request->filled('f3_voltage'))          { $q3->where('battery_voltage', $request->f3_voltage); }
+        if ($request->filled('f3_location'))         { $q3->where('warranty_claim_location', $request->f3_location); }
+        if ($request->filled('f3_rag'))              { $q3->where('rag_status', $request->f3_rag); }
+        if ($request->filled('f3_claim_reason'))     { $q3->where('warranty_claim_reason', 'like', '%'.$request->f3_claim_reason.'%'); }
+        if ($request->filled('f3_brand'))            { $q3->where('battery_brand', $request->f3_brand); }
+        if ($request->filled('f3_vendor'))           { $q3->where('vendor_id', $request->f3_vendor); }
+        if ($request->filled('f3_serial'))           { $q3->where('battery_serial', 'like', '%'.$request->f3_serial.'%'); }
+        if ($request->filled('f3_new_serial'))       { $q3->where('warranty_new_battery_serial', 'like', '%'.$request->f3_new_serial.'%'); }
+        $warranty_batteries = $q3->paginate(15, ['*'], 'tab3_page');
+
+        // ── Tab 4: Repair ─────────────────────────────────────────────────
+        $q4 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Repair')->orderBy($sort, $direction);
+        if ($request->filled('f4_capacity'))      { $q4->where('battery_capacity', $request->f4_capacity); }
+        if ($request->filled('f4_voltage'))       { $q4->where('battery_voltage', $request->f4_voltage); }
+        if ($request->filled('f4_location'))      { $q4->where('repair_location', $request->f4_location); }
+        if ($request->filled('f4_rag'))           { $q4->where('rag_status', $request->f4_rag); }
+        if ($request->filled('f4_brand'))         { $q4->where('battery_brand', $request->f4_brand); }
+        if ($request->filled('f4_repair_vendor')) { $q4->where('repair_vendor_id', $request->f4_repair_vendor); }
+        if ($request->filled('f4_serial'))        { $q4->where('battery_serial', 'like', '%'.$request->f4_serial.'%'); }
+        $repair_batteries = $q4->paginate(15, ['*'], 'tab4_page');
+
+        // ── Tab 5: Scrap ──────────────────────────────────────────────────
+        $q5 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Scrap')->orderBy($sort, $direction);
+        if ($request->filled('f5_capacity'))      { $q5->where('battery_capacity', $request->f5_capacity); }
+        if ($request->filled('f5_voltage'))       { $q5->where('battery_voltage', $request->f5_voltage); }
+        if ($request->filled('f5_location'))      { $q5->where('scrap_location', $request->f5_location); }
+        if ($request->filled('f5_rag'))           { $q5->where('rag_status', $request->f5_rag); }
+        if ($request->filled('f5_scrap_reason'))  { $q5->where('scrap_reason', 'like', '%'.$request->f5_scrap_reason.'%'); }
+        if ($request->filled('f5_income_received')) {
+            if ($request->f5_income_received === 'Yes') { $q5->whereNotNull('scrap_income_utr'); }
+            else                                         { $q5->whereNull('scrap_income_utr'); }
+        }
+        if ($request->filled('f5_brand'))         { $q5->where('battery_brand', $request->f5_brand); }
+        if ($request->filled('f5_scrap_vendor'))  { $q5->where('scrap_vendor_id', $request->f5_scrap_vendor); }
+        if ($request->filled('f5_serial'))        { $q5->where('battery_serial', 'like', '%'.$request->f5_serial.'%'); }
+        if ($request->filled('f5_vehicle'))       { $q5->whereHas('scrapLastVehicle.basicinfo', fn($q) => $q->where('vehicle_number', 'like', '%'.$request->f5_vehicle.'%')); }
+        $scrap_batteries = $q5->paginate(15, ['*'], 'tab5_page');
+
+        // ── Tab 6: Allocated ──────────────────────────────────────────────
+        $q6 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Allocated')->orderBy($sort, $direction);
+        if ($request->filled('f6_capacity'))  { $q6->where('battery_capacity', $request->f6_capacity); }
+        if ($request->filled('f6_voltage'))   { $q6->where('battery_voltage', $request->f6_voltage); }
+        if ($request->filled('f6_condition')) { $q6->where('battery_condition', $request->f6_condition); }
+        if ($request->filled('f6_rag'))       { $q6->where('rag_status', $request->f6_rag); }
+        if ($request->filled('f6_brand'))     { $q6->where('battery_brand', $request->f6_brand); }
+        if ($request->filled('f6_vendor'))    { $q6->where('vendor_id', $request->f6_vendor); }
+        if ($request->filled('f6_serial'))    { $q6->where('battery_serial', 'like', '%'.$request->f6_serial.'%'); }
+        if ($request->filled('f6_vehicle'))   { $q6->whereHas('allocatedVehicle.basicinfo', fn($q) => $q->where('vehicle_number', 'like', '%'.$request->f6_vehicle.'%')); }
+        if ($request->filled('f6_warranty')) {
+            if ($request->f6_warranty === 'Active') {
+                $q6->whereNotNull('battery_warranty_expiry_date')->where('battery_warranty_expiry_date', '>=', now()->toDateString());
+            } elseif ($request->f6_warranty === 'Expired') {
+                $q6->where(fn($q) => $q->whereNull('battery_warranty_expiry_date')->orWhere('battery_warranty_expiry_date', '<', now()->toDateString()));
+            }
+        }
+        $allocated_batteries = $q6->paginate(15, ['*'], 'tab6_page');
+
+        // ── Tab 7: Direct Fitment ─────────────────────────────────────────
+        $q7 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Direct Fitment')->orderBy($sort, $direction);
+        if ($request->filled('f7_capacity'))  { $q7->where('battery_capacity', $request->f7_capacity); }
+        if ($request->filled('f7_voltage'))   { $q7->where('battery_voltage', $request->f7_voltage); }
+        if ($request->filled('f7_condition')) { $q7->where('battery_condition', $request->f7_condition); }
+        if ($request->filled('f7_rag'))       { $q7->where('rag_status', $request->f7_rag); }
+        if ($request->filled('f7_brand'))     { $q7->where('battery_brand', $request->f7_brand); }
+        if ($request->filled('f7_vendor'))    { $q7->where('vendor_id', $request->f7_vendor); }
+        if ($request->filled('f7_serial'))    { $q7->where('battery_serial', 'like', '%'.$request->f7_serial.'%'); }
+        $direct_fitment_batteries = $q7->paginate(15, ['*'], 'tab7_page');
+
+        // ── Tab 8: Yet to Decide ──────────────────────────────────────────
+        $q8 = \App\Models\Battery::with($with)->where('organisation_id', $org_id)
+              ->where('battery_status', 'Yet to Decide')->orderBy($sort, $direction);
+        if ($request->filled('f8_capacity'))      { $q8->where('battery_capacity', $request->f8_capacity); }
+        if ($request->filled('f8_voltage'))       { $q8->where('battery_voltage', $request->f8_voltage); }
+        if ($request->filled('f8_condition'))     { $q8->where('battery_condition', $request->f8_condition); }
+        if ($request->filled('f8_rag'))           { $q8->where('rag_status', $request->f8_rag); }
+        if ($request->filled('f8_location'))      { $q8->where('battery_location', $request->f8_location); }
+        if ($request->filled('f8_damage_reason')) { $q8->where('damage_reason', 'like', '%'.$request->f8_damage_reason.'%'); }
+        if ($request->filled('f8_brand'))         { $q8->where('battery_brand', $request->f8_brand); }
+        if ($request->filled('f8_vendor'))        { $q8->where('vendor_id', $request->f8_vendor); }
+        if ($request->filled('f8_serial'))        { $q8->where('battery_serial', 'like', '%'.$request->f8_serial.'%'); }
+        if ($request->filled('f8_vehicle'))       { $q8->whereHas('ytdLastVehicle.basicinfo', fn($q) => $q->where('vehicle_number', 'like', '%'.$request->f8_vehicle.'%')); }
+        $ytd_batteries = $q8->paginate(15, ['*'], 'tab8_page');
+
+        // ── Filter dropdown data ──────────────────────────────────────────
+        $batteryBrands   = \App\Models\Battery::where('organisation_id', $org_id)
+                           ->whereNotNull('battery_brand')->distinct()->orderBy('battery_brand')
+                           ->pluck('battery_brand');
+        $batteryCapacities = \App\Models\Battery::where('organisation_id', $org_id)
+                           ->whereNotNull('battery_capacity')->distinct()->orderBy('battery_capacity')
+                           ->pluck('battery_capacity');
+        $batteryVoltages = \App\Models\Battery::where('organisation_id', $org_id)
+                           ->whereNotNull('battery_voltage')->distinct()->orderBy('battery_voltage')
+                           ->pluck('battery_voltage');
+        $batteryVendors  = \App\Models\Contact::where('cotype_id', 7)->where('status', 'Active')
+                           ->orderBy('contact_name')->get(['id', 'contact_name']);
+        $vehicleGroups   = \App\Models\Vehiclegroup::orderBy('name')->get(['id', 'name']);
+
+        $active_tab = $request->input('active_tab', 'tab-all');
 
         return view('inventory.battery-dashboard', compact(
             'all_count', 'allocated_count', 'direct_fitment_count', 'yet_to_decide_count',
-            'ready_to_use_count', 'warranty_claim_count', 'repair_count', 'scrap_count'
+            'ready_to_use_count', 'warranty_claim_count', 'repair_count', 'scrap_count',
+            'all_batteries', 'ready_batteries', 'warranty_batteries', 'repair_batteries',
+            'scrap_batteries', 'allocated_batteries', 'direct_fitment_batteries', 'ytd_batteries',
+            'batteryBrands', 'batteryCapacities', 'batteryVoltages', 'batteryVendors', 'vehicleGroups',
+            'sort', 'direction', 'active_tab'
         ));
     }
 
@@ -919,6 +1081,49 @@ class WorkshopController extends Controller
     public function batteryReplace($id)
     {
         return view('inventory.battery-replace', compact('id'));
+    }
+
+    /**
+     * AJAX POST — change battery_status for a Yet to Decide battery.
+     * Allowed targets: Warranty Claim, Repair, Scrap
+     * SD-3: AJAX / SD-5: DB::transaction + try-catch / SD-8: find() / SD-9: HTTP codes
+     */
+    public function batteryChangeStatus(\Illuminate\Http\Request $request, $id)
+    {
+        $allowed = ['Warranty Claim', 'Repair', 'Scrap'];
+
+        $request->validate([
+            'new_status' => 'required|in:Warranty Claim,Repair,Scrap',
+        ]);
+
+        $battery = \App\Models\Battery::find($id);
+        if (! $battery) {
+            return response()->json(['success' => false, 'message' => 'Battery not found.'], 422);
+        }
+
+        if ($battery->battery_status !== 'Yet to Decide') {
+            return response()->json(['success' => false, 'message' => 'Only Yet to Decide batteries can be moved.'], 422);
+        }
+
+        try {
+            $result = \Illuminate\Support\Facades\DB::transaction(function () use ($battery, $request) {
+                $battery->battery_status = $request->new_status;
+                $battery->updated_by     = auth()->id();
+                $battery->save();
+                return $battery;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Battery moved to ' . $request->new_status . '.',
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function batteryAction()

@@ -767,7 +767,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
         Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
         Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
-        Route::get('/battery/{id}/replace', [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
+        Route::get('/battery/{id}/replace',     [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
+        Route::post('/battery/{id}/change-status', [App\Http\Controllers\WorkshopController::class, 'batteryChangeStatus'])->name('battery.change-status');
         Route::get('/purchase-orders',      [App\Http\Controllers\WorkshopController::class, 'poList'])->name('purchase-orders');
         Route::get('/purchase-orders/{id}', [App\Http\Controllers\WorkshopController::class, 'poDetail'])->name('po-detail');
         Route::get('/goods-receipt',        [App\Http\Controllers\WorkshopController::class, 'grn'])->name('goods-receipt');
@@ -776,5 +777,12 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
 
-}); 
-    
+});
+
+// TEMP: dev cache clear — remove after use
+Route::get('/dev-cache-clear-xyz', function () {
+    \Artisan::call('view:clear');
+    \Artisan::call('cache:clear');
+    if (function_exists('opcache_reset')) { opcache_reset(); }
+    return 'Views cleared, cache cleared, opcache reset. <a href="/inventory/battery-dashboard">Go to Battery Dashboard</a>';
+});

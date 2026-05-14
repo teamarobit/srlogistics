@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.4') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-dashboard.css?v=3.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -192,554 +192,910 @@
                 </span>
             </div>
 
-            {{-- Tabs + Table Container --}}
-            <div class="sc-tab-container">
-                {{-- Tab Bar --}}
-                <div class="sc-tab-bar" id="batTabBar">
-                    <a href="javascript:void(0)" class="sc-tab active" data-tab="all">
-                        All Batteries <span class="badge bg-secondary ms-1" style="font-size:10px;">52</span>
-                    </a>
-                    <a href="javascript:void(0)" class="sc-tab" data-tab="warehouse">
-                        Warehouse <span class="badge bg-secondary ms-1" style="font-size:10px;">10</span>
-                    </a>
-                    <a href="javascript:void(0)" class="sc-tab" data-tab="workshop">
-                        Workshop <span class="badge bg-secondary ms-1" style="font-size:10px;">5</span>
-                    </a>
-                    <a href="javascript:void(0)" class="sc-tab" data-tab="allocated">
-                        Allocated Vehicle <span class="badge bg-secondary ms-1" style="font-size:10px;">30</span>
-                    </a>
-                    <a href="javascript:void(0)" class="sc-tab" data-tab="discarded">
-                        Discarded <span class="badge bg-secondary ms-1" style="font-size:10px;">7</span>
-                    </a>
-                </div>
+            {{-- ══════════════════════════════════════════════════
+                 8-TAB DASHBOARD — All Batteries, Ready, Warranty, Repair,
+                 Scrap, Allocated, Direct Fitment, Yet to Decide
+            ══════════════════════════════════════════════════ --}}
+            <div class="right-side-wrap mt-0">
+                <ul class="nav nav-pills mb-3 bat-tab-nav" id="bat-pills-tab" role="tablist">
+                    @php
+                        $batTabs = [
+                            ['id' => 'bat-tab-all',      'label' => 'All Batteries',       'count' => $all_count],
+                            ['id' => 'bat-tab-ready',    'label' => 'Ready to Use',         'count' => $ready_to_use_count],
+                            ['id' => 'bat-tab-warranty', 'label' => 'Warranty Claim',       'count' => $warranty_claim_count],
+                            ['id' => 'bat-tab-repair',   'label' => 'Repair Batteries',     'count' => $repair_count],
+                            ['id' => 'bat-tab-scrap',    'label' => 'Scrap Batteries',      'count' => $scrap_count],
+                            ['id' => 'bat-tab-allocated','label' => 'Allocated Batteries',  'count' => $allocated_count],
+                            ['id' => 'bat-tab-direct',   'label' => 'Direct Fitment',       'count' => $direct_fitment_count],
+                            ['id' => 'bat-tab-ytd',      'label' => 'Yet to Decide',        'count' => $yet_to_decide_count],
+                        ];
+                        $activeTab = $active_tab ?? 'bat-tab-all';
+                    @endphp
+                    @foreach($batTabs as $i => $tab)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link nav_click fleetTab {{ $tab['id'] === $activeTab ? 'active' : '' }}"
+                                id="{{ $tab['id'] }}-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#{{ $tab['id'] }}"
+                                type="button" role="tab"
+                                aria-controls="{{ $tab['id'] }}"
+                                aria-selected="{{ $tab['id'] === $activeTab ? 'true' : 'false' }}">
+                            {{ $tab['label'] }}
+                        </button>
+                    </li>
+                    @endforeach
+                </ul>
 
-                <div class="sc-tab-panel-wrap p-3">
+                <div class="tab-content" id="bat-pills-tabContent">
 
-                    {{-- Filters --}}
-                    <div class="btd-filter-card">
-                        <div class="row g-2 align-items-end">
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">Start Date</label>
-                                <input type="date" class="form-control form-control-sm" id="batFilterDateFrom">
+                    {{-- ══ TAB 1: ALL BATTERIES ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-all' ? 'show active' : '' }}" id="bat-tab-all" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab1">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab1">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab1" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-1" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-all">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Location</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_location">
+                                                        <option value="">All</option>
+                                                        <option value="SR Garage" {{ request('f1_location') == 'SR Garage' ? 'selected' : '' }}>SR Garage</option>
+                                                        <option value="Vehicle"   {{ request('f1_location') == 'Vehicle'   ? 'selected' : '' }}>Vehicle</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_status">
+                                                        <option value="">All</option>
+                                                        @foreach(['Ready to Use','Warranty Claim','Repair','Scrap','Allocated','Direct Fitment','Yet to Decide'] as $s)
+                                                            <option value="{{ $s }}" {{ request('f1_status') == $s ? 'selected' : '' }}>{{ $s }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f1_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f1_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Condition</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_condition">
+                                                        <option value="">All</option>
+                                                        <option value="New"                      {{ request('f1_condition') == 'New'                      ? 'selected' : '' }}>New</option>
+                                                        <option value="Used"                     {{ request('f1_condition') == 'Used'                     ? 'selected' : '' }}>Used</option>
+                                                        <option value="Replaced Under Warranty"  {{ request('f1_condition') == 'Replaced Under Warranty'  ? 'selected' : '' }}>Replaced Under Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f1_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f1_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f1_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f1_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Tracking Group</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_tracking_group">
+                                                        <option value="">All</option>
+                                                        @foreach($vehicleGroups as $grp)
+                                                            <option value="{{ $grp->id }}" {{ request('f1_tracking_group') == $grp->id ? 'selected' : '' }}>{{ $grp->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f1_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f1_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f1_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f1_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f1_vehicle" class="form-control" placeholder="Search Vehicle Number" value="{{ request('f1_vehicle') }}">
+                                                        <span class="input-group-text"><i class="uil uil-truck"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">End Date</label>
-                                <input type="date" class="form-control form-control-sm" id="batFilterDateTo">
-                            </div>
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">Battery Type</label>
-                                <select class="form-select form-select-sm" id="batFilterType">
-                                    <option value="">All Types</option>
-                                    <option>Lead Acid</option>
-                                    <option>Lithium-ion</option>
-                                    <option>AGM</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">Status</label>
-                                <select class="form-select form-select-sm" id="batFilterStatus">
-                                    <option value="">All Status</option>
-                                    <option>Active</option>
-                                    <option>In Use</option>
-                                    <option>Faulty</option>
-                                    <option>Discarded</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">Warranty Expiry</label>
-                                <input type="date" class="form-control form-control-sm" id="batFilterWarranty">
-                            </div>
-                            <div class="col-lg-2 col-md-4">
-                                <label class="btd-filter-label">Search</label>
-                                <input type="text" class="form-control form-control-sm" id="batSearch" placeholder="Serial No. / Battery No.">
-                            </div>
-                            <div class="col-12 d-flex gap-2 justify-content-end mt-1">
-                                <button class="btn sc-btn-navy btn-sm" id="btnBatSearch">
-                                    <i class="uil uil-search me-1"></i>Search
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm" id="btnBatReset">
-                                    <i class="uil uil-times me-1"></i>Reset
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm" id="btnBatExport">
-                                    <i class="uil uil-export me-1"></i>Export
-                                </button>
-                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-all')
                         </div>
                     </div>
 
-                    {{-- Battery Table --}}
-                    <div class="sc-table-card">
-                        <div class="table-responsive">
-                            <table class="table mb-0" id="batDashTable">
-                                <thead>
-                                    <tr>
-                                        <th style="width:32px;"></th>
-                                        <th>Serial No.</th>
-                                        <th>Brand</th>
-                                        <th>Model</th>
-                                        <th>Battery Type</th>
-                                        <th>Capacity</th>
-                                        <th>Voltage</th>
-                                        <th>Vendor</th>
-                                        <th>Condition</th>
-                                        <th>Status</th>
-                                        <th>Price</th>
-                                        <th>Install Date</th>
-                                        <th>Warranty Expiry</th>
-                                        <th>Allocated Vehicle</th>
-                                        <th>Created By</th>
-                                        <th class="text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    {{-- Row 1 — Warehouse / Good --}}
-                                    <tr data-status="warehouse">
-                                        <td><i class="uil uil-circle" style="color:#10863f;font-size:10px;"></i></td>
-                                        <td><a href="{{ route('inventory.battery.details', 1) }}" class="btd-serial-link">BAT-2026-00081</a></td>
-                                        <td>Amaron</td>
-                                        <td>Hi-Life 150</td>
-                                        <td>Lead Acid</td>
-                                        <td class="text-center">150 AH</td>
-                                        <td class="text-center">12V</td>
-                                        <td><span class="loc-badge loc-badge-wh"><i class="uil uil-warehouse"></i> WH-BLR</span></td>
-                                        <td><span class="btd-cond btd-cond-new">New</span></td>
-                                        <td><span class="btd-st btd-st-warehouse">In Stock</span></td>
-                                        <td>₹7,500</td>
-                                        <td>—</td>
-                                        <td>Jan-2028</td>
-                                        <td>—</td>
-                                        <td style="font-size:11px;">Admin</td>
-                                        <td class="text-center">
-                                            <div class="btd-row-actions">
-                                                <button class="btd-action-btn btd-action-btn-history btn-bat-history"
-                                                    title="View Movement History"
-                                                    data-serial="BAT-2026-00081"
-                                                    data-brand="Amaron Hi-Life 150"
-                                                    data-spec="150 AH / 12V · Lead Acid"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#batHistoryOffcanvas">
-                                                    <i class="uil uil-history"></i>
-                                                </button>
-                                                <button class="btd-action-btn" title="Fit to Vehicle"
-                                                    data-serial="BAT-2026-00081"
-                                                    data-bs-toggle="modal" data-bs-target="#fitBatteryModal">
-                                                    <i class="uil uil-truck"></i>
-                                                </button>
+                    {{-- ══ TAB 2: READY TO USE ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-ready' ? 'show active' : '' }}" id="bat-tab-ready" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab2">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab2">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab2" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-2" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-ready">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f2_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f2_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Condition</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_condition">
+                                                        <option value="">All</option>
+                                                        <option value="New"                     {{ request('f2_condition') == 'New'                     ? 'selected' : '' }}>New</option>
+                                                        <option value="Used"                    {{ request('f2_condition') == 'Used'                    ? 'selected' : '' }}>Used</option>
+                                                        <option value="Replaced Under Warranty" {{ request('f2_condition') == 'Replaced Under Warranty' ? 'selected' : '' }}>Replaced Under Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f2_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f2_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f2_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Warranty</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_warranty">
+                                                        <option value="">All</option>
+                                                        <option value="In Warranty"      {{ request('f2_warranty') == 'In Warranty'      ? 'selected' : '' }}>In Warranty</option>
+                                                        <option value="Out of Warranty"  {{ request('f2_warranty') == 'Out of Warranty'  ? 'selected' : '' }}>Out of Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f2_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f2_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f2_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </td>
-                                    </tr>
-
-                                    {{-- Row 2 — Workshop / Used --}}
-                                    <tr data-status="workshop">
-                                        <td><i class="uil uil-circle" style="color:#7b1fa2;font-size:10px;"></i></td>
-                                        <td><a href="{{ route('inventory.battery.details', 2) }}" class="btd-serial-link">BAT-2024-00044</a></td>
-                                        <td>Exide</td>
-                                        <td>Matrix 180</td>
-                                        <td>AGM</td>
-                                        <td class="text-center">180 AH</td>
-                                        <td class="text-center">12V</td>
-                                        <td><span class="loc-badge loc-badge-sc"><i class="uil uil-wrench"></i> WS-HYD</span></td>
-                                        <td><span class="btd-cond btd-cond-used">Used</span></td>
-                                        <td><span class="btd-st btd-st-workshop">Workshop</span></td>
-                                        <td>₹9,200</td>
-                                        <td>Apr-2024</td>
-                                        <td>Apr-2026 <span class="badge bg-warning text-dark ms-1" style="font-size:10px;">Expiring</span></td>
-                                        <td>—</td>
-                                        <td style="font-size:11px;">Ravi K.</td>
-                                        <td class="text-center">
-                                            <div class="btd-row-actions">
-                                                <button class="btd-action-btn btd-action-btn-history btn-bat-history"
-                                                    title="View Movement History"
-                                                    data-serial="BAT-2024-00044"
-                                                    data-brand="Exide Matrix 180"
-                                                    data-spec="180 AH / 12V · AGM"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#batHistoryOffcanvas">
-                                                    <i class="uil uil-history"></i>
-                                                </button>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f2_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f2_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-ready" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
                                             </div>
-                                        </td>
-                                    </tr>
-
-                                    {{-- Row 3 — Allocated / Used --}}
-                                    <tr data-status="allocated">
-                                        <td><i class="uil uil-circle" style="color:#d97706;font-size:10px;"></i></td>
-                                        <td><a href="{{ route('inventory.battery.details', 3) }}" class="btd-serial-link">BAT-2025-00063</a></td>
-                                        <td>Exide</td>
-                                        <td>Mileage 150</td>
-                                        <td>Lead Acid</td>
-                                        <td class="text-center">150 AH</td>
-                                        <td class="text-center">12V</td>
-                                        <td><a href="{{ route('inventory.purchase-orders') }}" class="btd-doc-link">PO-2025-0041</a></td>
-                                        <td><span class="btd-cond btd-cond-used">Used</span></td>
-                                        <td><span class="btd-st btd-st-allocated">Allocated</span></td>
-                                        <td>₹8,000</td>
-                                        <td>Jun-2025</td>
-                                        <td>Jun-2027</td>
-                                        <td><span class="loc-badge loc-badge-veh"><i class="uil uil-truck"></i> TN01 AB1234</span></td>
-                                        <td style="font-size:11px;">Suresh P.</td>
-                                        <td class="text-center">
-                                            <div class="btd-row-actions">
-                                                <button class="btd-action-btn btd-action-btn-history btn-bat-history"
-                                                    title="View Movement History"
-                                                    data-serial="BAT-2025-00063"
-                                                    data-brand="Exide Mileage 150"
-                                                    data-spec="150 AH / 12V · Lead Acid"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#batHistoryOffcanvas">
-                                                    <i class="uil uil-history"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    {{-- Row 4 — Faulty / Weak --}}
-                                    <tr data-status="workshop">
-                                        <td><i class="uil uil-circle" style="color:#ea0027;font-size:10px;"></i></td>
-                                        <td><a href="{{ route('inventory.battery.details', 4) }}" class="btd-serial-link">BAT-2023-00027</a></td>
-                                        <td>Amaron</td>
-                                        <td>Pro 165</td>
-                                        <td>Lithium-ion</td>
-                                        <td class="text-center">165 AH</td>
-                                        <td class="text-center">24V</td>
-                                        <td>—</td>
-                                        <td><span class="btd-cond btd-cond-weak">Weak</span></td>
-                                        <td><span class="btd-st btd-st-faulty">Faulty</span></td>
-                                        <td>₹14,500</td>
-                                        <td>Mar-2023</td>
-                                        <td>Mar-2025 <span class="badge bg-danger ms-1" style="font-size:10px;">Expired</span></td>
-                                        <td>—</td>
-                                        <td style="font-size:11px;">Admin</td>
-                                        <td class="text-center">
-                                            <div class="btd-row-actions">
-                                                <button class="btd-action-btn btd-action-btn-history btn-bat-history"
-                                                    title="View Movement History"
-                                                    data-serial="BAT-2023-00027"
-                                                    data-brand="Amaron Pro 165"
-                                                    data-spec="165 AH / 24V · Lithium-ion"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#batHistoryOffcanvas">
-                                                    <i class="uil uil-history"></i>
-                                                </button>
-                                                <a href="{{ route('inventory.purchase-orders') }}" class="btd-action-btn" title="Raise Replacement PO">
-                                                    <i class="uil uil-shopping-cart"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    {{-- Row 5 — Discarded / Dead --}}
-                                    <tr data-status="discarded" class="btd-row-discarded">
-                                        <td><i class="uil uil-circle" style="color:#adb5bd;font-size:10px;"></i></td>
-                                        <td><a href="{{ route('inventory.battery.details', 5) }}" class="btd-serial-link">BAT-2022-00019</a></td>
-                                        <td>Amaron</td>
-                                        <td>Hi-Life 150</td>
-                                        <td>Lead Acid</td>
-                                        <td class="text-center">150 AH</td>
-                                        <td class="text-center">12V</td>
-                                        <td>—</td>
-                                        <td><span class="btd-cond btd-cond-dead">Dead</span></td>
-                                        <td><span class="btd-st btd-st-discarded">Discarded</span></td>
-                                        <td>₹7,200</td>
-                                        <td>Mar-2022</td>
-                                        <td>Mar-2024 <span class="badge bg-danger ms-1" style="font-size:10px;">Expired</span></td>
-                                        <td>—</td>
-                                        <td style="font-size:11px;">Admin</td>
-                                        <td class="text-center">
-                                            <div class="btd-row-actions">
-                                                <button class="btd-action-btn btd-action-btn-history btn-bat-history"
-                                                    title="View Movement History"
-                                                    data-serial="BAT-2022-00019"
-                                                    data-brand="Amaron Hi-Life 150"
-                                                    data-spec="150 AH / 12V · Lead Acid"
-                                                    data-bs-toggle="offcanvas"
-                                                    data-bs-target="#batHistoryOffcanvas">
-                                                    <i class="uil uil-history"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-top">
-                            <small class="text-muted">Showing 5 of 52 batteries</small>
-                            <nav><ul class="pagination pagination-sm mb-0">
-                                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                            </ul></nav>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-ready')
                         </div>
-                    </div>{{-- /sc-table-card --}}
+                    </div>
 
-                </div>{{-- /sc-tab-panel-wrap --}}
-            </div>{{-- /sc-tab-container --}}
+                    {{-- ══ TAB 3: WARRANTY CLAIM ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-warranty' ? 'show active' : '' }}" id="bat-tab-warranty" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab3">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab3">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab3" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-3" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-warranty">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f3_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f3_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Location</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_location">
+                                                        <option value="">All</option>
+                                                        <option value="SR Garage"        {{ request('f3_location') == 'SR Garage'        ? 'selected' : '' }}>SR Garage</option>
+                                                        <option value="Sent for Warranty" {{ request('f3_location') == 'Sent for Warranty' ? 'selected' : '' }}>Sent for Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f3_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f3_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f3_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f3_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f3_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f3_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f3_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f3_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f3_new_serial" class="form-control" placeholder="New Replaced Battery Serial" value="{{ request('f3_new_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:200px;">
+                                                    <input type="text" name="f3_claim_reason" class="form-control" placeholder="Claim Reason" value="{{ request('f3_claim_reason') }}">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-warranty" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-warranty')
+                        </div>
+                    </div>
+
+                    {{-- ══ TAB 4: REPAIR BATTERIES ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-repair' ? 'show active' : '' }}" id="bat-tab-repair" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab4">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab4">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab4" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-4" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-repair">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f4_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f4_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Location</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_location">
+                                                        <option value="">All</option>
+                                                        <option value="SR Garage"      {{ request('f4_location') == 'SR Garage'      ? 'selected' : '' }}>SR Garage</option>
+                                                        <option value="Sent for Repair" {{ request('f4_location') == 'Sent for Repair' ? 'selected' : '' }}>Sent for Repair</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f4_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f4_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f4_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f4_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Repair Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f4_repair_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f4_repair_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:230px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f4_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f4_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-repair" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-repair')
+                        </div>
+                    </div>
+
+                    {{-- ══ TAB 5: SCRAP BATTERIES ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-scrap' ? 'show active' : '' }}" id="bat-tab-scrap" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab5">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab5">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab5" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-5" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-scrap">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f5_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f5_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Location</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_location">
+                                                        <option value="">All</option>
+                                                        <option value="SR Garage"      {{ request('f5_location') == 'SR Garage'      ? 'selected' : '' }}>SR Garage</option>
+                                                        <option value="Sent for Scrap" {{ request('f5_location') == 'Sent for Scrap' ? 'selected' : '' }}>Sent for Scrap</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f5_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f5_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f5_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Scrap Reason</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_scrap_reason">
+                                                        <option value="">All</option>
+                                                        @foreach(['Dead Cell','Swollen','Physical Damage','Beyond Repair','End of Life'] as $r)
+                                                            <option value="{{ $r }}" {{ request('f5_scrap_reason') == $r ? 'selected' : '' }}>{{ $r }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Scrap Income Received</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_income_received">
+                                                        <option value="">All</option>
+                                                        <option value="Yes" {{ request('f5_income_received') == 'Yes' ? 'selected' : '' }}>Yes</option>
+                                                        <option value="No"  {{ request('f5_income_received') == 'No'  ? 'selected' : '' }}>No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f5_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Scrap Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f5_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f5_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f5_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f5_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f5_vehicle" class="form-control" placeholder="Search Vehicle Number" value="{{ request('f5_vehicle') }}">
+                                                        <span class="input-group-text"><i class="uil uil-truck"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-scrap" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-scrap')
+                        </div>
+                    </div>
+
+                    {{-- ══ TAB 6: ALLOCATED BATTERIES ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-allocated' ? 'show active' : '' }}" id="bat-tab-allocated" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab6">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab6">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab6" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-6" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-allocated">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f6_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f6_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Condition</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_condition">
+                                                        <option value="">All</option>
+                                                        <option value="New"                     {{ request('f6_condition') == 'New'                     ? 'selected' : '' }}>New</option>
+                                                        <option value="Used"                    {{ request('f6_condition') == 'Used'                    ? 'selected' : '' }}>Used</option>
+                                                        <option value="Replaced Under Warranty" {{ request('f6_condition') == 'Replaced Under Warranty' ? 'selected' : '' }}>Replaced Under Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f6_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f6_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f6_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Warranty</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_warranty">
+                                                        <option value="">All</option>
+                                                        <option value="Active"  {{ request('f6_warranty') == 'Active'  ? 'selected' : '' }}>Active</option>
+                                                        <option value="Expired" {{ request('f6_warranty') == 'Expired' ? 'selected' : '' }}>Expired</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f6_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f6_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f6_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f6_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f6_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f6_vehicle" class="form-control" placeholder="Search Vehicle Number" value="{{ request('f6_vehicle') }}">
+                                                        <span class="input-group-text"><i class="uil uil-truck"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-allocated" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-allocated')
+                        </div>
+                    </div>
+
+                    {{-- ══ TAB 7: DIRECT FITMENT ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-direct' ? 'show active' : '' }}" id="bat-tab-direct" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab7">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab7">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab7" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-7" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-direct">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f7_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f7_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Condition</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_condition">
+                                                        <option value="">All</option>
+                                                        <option value="New"                     {{ request('f7_condition') == 'New'                     ? 'selected' : '' }}>New</option>
+                                                        <option value="Used"                    {{ request('f7_condition') == 'Used'                    ? 'selected' : '' }}>Used</option>
+                                                        <option value="Replaced Under Warranty" {{ request('f7_condition') == 'Replaced Under Warranty' ? 'selected' : '' }}>Replaced Under Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f7_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f7_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f7_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f7_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f7_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f7_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f7_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f7_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-direct" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-direct-fitment')
+                        </div>
+                    </div>
+
+                    {{-- ══ TAB 8: YET TO DECIDE ══ --}}
+                    <div class="tab-pane fade {{ $activeTab === 'bat-tab-ytd' ? 'show active' : '' }}" id="bat-tab-ytd" role="tabpanel">
+                        <div class="accordion mt-2" id="acc-bat-tab8">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bat-tab8">
+                                        <div class="item-filter"><div class="filter"><span class="filter-icon"><img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon"></span></div><p class="mb-0">Filter Options</p></div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-bat-tab8" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <form method="GET" action="{{ route('inventory.battery-dashboard') }}" id="bat-filter-form-8" class="bat-filter-form">
+                                            <input type="hidden" name="active_tab" value="bat-tab-ytd">
+                                            <input type="hidden" name="sort" value="{{ $sort }}">
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <div class="filtersearch-bd flex-wrap">
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Capacity</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_capacity">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryCapacities as $cap)
+                                                            <option value="{{ $cap }}" {{ request('f8_capacity') == $cap ? 'selected' : '' }}>{{ number_format($cap, 0) }} Ah</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Voltage</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_voltage">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVoltages as $v)
+                                                            <option value="{{ $v }}" {{ request('f8_voltage') == $v ? 'selected' : '' }}>{{ $v }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Condition</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_condition">
+                                                        <option value="">All</option>
+                                                        <option value="New"                     {{ request('f8_condition') == 'New'                     ? 'selected' : '' }}>New</option>
+                                                        <option value="Used"                    {{ request('f8_condition') == 'Used'                    ? 'selected' : '' }}>Used</option>
+                                                        <option value="Replaced Under Warranty" {{ request('f8_condition') == 'Replaced Under Warranty' ? 'selected' : '' }}>Replaced Under Warranty</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>RAG Status</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_rag">
+                                                        <option value="">All</option>
+                                                        <option value="Green"  {{ request('f8_rag') == 'Green'  ? 'selected' : '' }}>🟢 Green</option>
+                                                        <option value="Yellow" {{ request('f8_rag') == 'Yellow' ? 'selected' : '' }}>🟡 Yellow</option>
+                                                        <option value="Red"    {{ request('f8_rag') == 'Red'    ? 'selected' : '' }}>🔴 Red</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Battery Location</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_location">
+                                                        <option value="">All</option>
+                                                        <option value="SR Garage" {{ request('f8_location') == 'SR Garage' ? 'selected' : '' }}>SR Garage</option>
+                                                        <option value="Vehicle"   {{ request('f8_location') == 'Vehicle'   ? 'selected' : '' }}>Vehicle</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Damage Reason</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_damage_reason">
+                                                        <option value="">All</option>
+                                                        @foreach(['Dead Cell','Swollen','Physical Damage','Leaking','Corroded Terminal','Unknown'] as $r)
+                                                            <option value="{{ $r }}" {{ request('f8_damage_reason') == $r ? 'selected' : '' }}>{{ $r }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Brand</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_brand">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryBrands as $brand)
+                                                            <option value="{{ $brand }}" {{ request('f8_brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Vendor</label>
+                                                    <select class="form-select bat-filter-onchange" name="f8_vendor">
+                                                        <option value="">All</option>
+                                                        @foreach($batteryVendors as $v)
+                                                            <option value="{{ $v->id }}" {{ request('f8_vendor') == $v->id ? 'selected' : '' }}>{{ $v->contact_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filtersearch-bd justify-content-start mt-2">
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f8_serial" class="form-control" placeholder="Search Serial Number" value="{{ request('f8_serial') }}">
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-1" style="width:220px;">
+                                                    <div class="input-group">
+                                                        <input type="text" name="f8_last_vehicle" class="form-control" placeholder="Search Last Vehicle Number" value="{{ request('f8_last_vehicle') }}">
+                                                        <span class="input-group-text"><i class="uil uil-truck"></i></span>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary ms-1"><i class="uil uil-filter me-1"></i>Filter</button>
+                                                <a href="{{ route('inventory.battery-dashboard') }}?active_tab=bat-tab-ytd" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sr_dashboard0_table mt-2">
+                            @include('inventory.partials.battery-tab-ytd')
+                        </div>
+                    </div>
+
+                </div>{{-- /tab-content --}}
+            </div>{{-- /right-side-wrap --}}
 
         </div>{{-- /main-wrap --}}
-    </div>
-</div>
+    </div>{{-- /wrapper --}}
+</div>{{-- /layout-wrapper --}}
 
-{{-- =====================================================================
-     OFFCANVAS — Battery Movement History (Bootstrap 5 offcanvas)
-     ===================================================================== --}}
-<div class="offcanvas offcanvas-end" tabindex="-1" id="batHistoryOffcanvas" style="width:420px;">
-    <div class="offcanvas-header border-bottom">
-        <div>
-            <h6 class="offcanvas-title mb-0"><i class="uil uil-history me-2 text-primary"></i>Battery Movement History</h6>
-            <small class="text-muted">Complete lifecycle log for this battery</small>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
-
-        {{-- Battery info bar --}}
-        <div class="btd-bat-info-bar">
-            <div class="btd-bat-info-icon"><i class="uil uil-bolt-alt"></i></div>
-            <div>
-                <div class="btd-bat-serial" id="histBatSerial">—</div>
-                <div class="btd-bat-desc" id="histBatDesc">—</div>
-            </div>
-        </div>
-
-        {{-- Timeline — rendered by JS per battery (see @section('js')) --}}
-        {{-- TODO (backend): replace batLoadHistory() dummy data with:       --}}
-        {{--   $.get('/inventory/battery/' + serial + '/history', function(events) { batRenderTimeline(events); }); --}}
-        <div id="batHistoryTimeline">
-            <div class="text-center py-4 text-muted" id="batHistoryLoading" style="display:none;">
-                <div class="spinner-border spinner-border-sm me-2"></div> Loading history…
-            </div>
-        </div>
-
-    </div>{{-- /offcanvas-body --}}
-</div>
-
-{{-- =====================================================================
-     MODAL — Add Battery (Two-Path: Manual Entry / PO GRN)
-     ===================================================================== --}}
-<div class="modal fade" id="addBatteryModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title"><i class="uil uil-bolt-alt me-2"></i>Add Battery</h6>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-
-                {{-- Step 1 — Choose Path --}}
-                <div id="batPathStep1">
-                    <p class="text-muted mb-3" style="font-size:12px;">How are you adding this battery?</p>
-                    <div class="btd-path-choose">
-                        <div class="btd-path-card" id="batPathManual" onclick="batSelectPath('manual')">
-                            <i class="uil uil-edit btd-path-icon"></i>
-                            <div class="btd-path-title">Manual Entry</div>
-                            <div class="btd-path-desc">Battery already purchased. Enter details manually.</div>
-                        </div>
-                        <div class="btd-path-card" id="batPathPO" onclick="batSelectPath('po')">
-                            <i class="uil uil-file-check-alt btd-path-icon"></i>
-                            <div class="btd-path-title">PO GRN Route</div>
-                            <div class="btd-path-desc">Going through procurement. Select PO &amp; GRN to auto-fill specs.</div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-3">
-                        <button class="btn sc-btn-navy btn-sm" onclick="batNextStep()" id="btnBatPathNext" disabled>
-                            Next <i class="uil uil-arrow-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Step 2A — Manual Entry Form --}}
-                <div id="batFormManual" style="display:none;">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <button class="btn btn-sm btn-outline-secondary" onclick="batBackToPath()"><i class="uil uil-arrow-left"></i></button>
-                        <span style="font-size:12px;font-weight:600;color:#032671;"><i class="uil uil-edit me-1"></i>Manual Entry</span>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Brand / Make <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" placeholder="e.g. Amaron, Exide">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Model</label>
-                            <input type="text" class="form-control form-control-sm" placeholder="e.g. Hi-Life 150">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Serial No. <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" placeholder="BAT-2026-XXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Battery Type <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm select2-bat-type-manual">
-                                <option value="">— Select —</option>
-                                <option>Lead Acid</option>
-                                <option>Lithium-ion</option>
-                                <option>AGM</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="btd-filter-label">Capacity (AH) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control form-control-sm" placeholder="150">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="btd-filter-label">Voltage <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm">
-                                <option>12V</option>
-                                <option>24V</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="btd-filter-label">Month Life</label>
-                            <input type="number" class="form-control form-control-sm" placeholder="24">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Purchase Date</label>
-                            <input type="date" class="form-control form-control-sm">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Warranty Until</label>
-                            <input type="date" class="form-control form-control-sm">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Purchase Cost (₹)</label>
-                            <input type="number" class="form-control form-control-sm" min="0" step="0.01">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Location <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm">
-                                <option value="">— Select —</option>
-                                <optgroup label="Warehouses">
-                                    <option>WH-BLR</option><option>WH-HYD</option><option>WH-PNE</option>
-                                </optgroup>
-                                <optgroup label="Workshops">
-                                    <option>WS-BLR</option><option>WS-HYD</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="btd-filter-label">Vendor <span class="text-muted">(optional)</span></label>
-                            <select class="form-select form-select-sm select2-bat-vendor">
-                                <option value="">— Search vendor —</option>
-                                <option>Amaron Dealer - Hyderabad</option>
-                                <option>Exide Industries Ltd.</option>
-                                <option>Bosch Auto Parts</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Step 2B — PO GRN Route --}}
-                <div id="batFormPO" style="display:none;">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <button class="btn btn-sm btn-outline-secondary" onclick="batBackToPath()"><i class="uil uil-arrow-left"></i></button>
-                        <span style="font-size:12px;font-weight:600;color:#032671;"><i class="uil uil-file-check-alt me-1"></i>PO GRN Route</span>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="btd-filter-label">Select Purchase Order <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm select2-bat-po" id="batPOSelect">
-                                <option value="">— Search PO —</option>
-                                <option value="PO-2026-0016">PO-2026-0016 — Amaron Dealer (Battery)</option>
-                                <option value="PO-2026-0018">PO-2026-0018 — Bosch Auto Parts</option>
-                                <option value="PO-2026-0022">PO-2026-0022 — Exide Industries</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="btd-filter-label">Select GRN Line Item <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm select2-bat-grn" id="batGRNSelect">
-                                <option value="">— Select PO first —</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <div class="alert alert-info py-2 mb-0" style="font-size:12px;" id="batGRNAutoFill" style="display:none;">
-                                <i class="uil uil-info-circle me-1"></i>
-                                Brand, Model, Battery Type, Capacity, Voltage and Warranty will be auto-filled from the selected GRN line item.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Serial No. <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" placeholder="BAT-2026-XXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="btd-filter-label">Quantity</label>
-                            <input type="number" class="form-control form-control-sm" value="1" min="1">
-                        </div>
-                        <div class="col-12">
-                            <label class="btd-filter-label">Location <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm">
-                                <option value="">— Select —</option>
-                                <optgroup label="Warehouses">
-                                    <option>WH-BLR</option><option>WH-HYD</option><option>WH-PNE</option>
-                                </optgroup>
-                                <optgroup label="Workshops">
-                                    <option>WS-BLR</option><option>WS-HYD</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-            </div>{{-- /modal-body --}}
-            <div class="modal-footer" id="batModalFooter" style="display:none;">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn sc-btn-navy btn-sm" id="btnAddBatteryConfirm">
-                    <i class="uil uil-bolt-alt me-1"></i>Add Battery
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Fit Battery Modal --}}
-<div class="modal fade" id="fitBatteryModal" tabindex="-1">
+{{-- ══ CHANGE STATUS MODAL (Yet to Decide → Warranty / Repair / Scrap) ══ --}}
+<div class="modal fade" id="batChangeStatusModal" tabindex="-1" aria-labelledby="batChangeStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title"><i class="uil uil-truck me-2"></i>Fit Battery to Vehicle</h6>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="batChangeStatusModalLabel">
+                    <i class="uil uil-exchange me-2"></i>Move Battery
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="btd-bat-info-bar mb-3">
-                    <div class="btd-bat-info-icon"><i class="uil uil-bolt-alt"></i></div>
-                    <div>
-                        <div class="btd-bat-serial" id="fitBatSerial">—</div>
-                        <div class="btd-bat-desc" id="fitBatDesc">—</div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="btd-filter-label">Select Vehicle <span class="text-danger">*</span></label>
-                        <select class="form-select form-select-sm select2-fit-vehicle" id="fitBatVeh">
-                            <option value="">Search vehicle number…</option>
-                            <option value="v1">TN01 AB1234 — Tata Prima 4928</option>
-                            <option value="v2">TN02 CD5678 — Ashok Leyland 1916</option>
-                            <option value="v3">TN03 EF9012 — Bharat Benz 2523</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label class="btd-filter-label">Battery Position</label>
-                        <select class="form-select form-select-sm">
-                            <option>Primary</option>
-                            <option>Auxiliary</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label class="btd-filter-label">Fitting Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control form-control-sm" value="{{ now()->format('Y-m-d') }}">
-                    </div>
-                    <div class="col-12">
-                        <label class="btd-filter-label">Fitted By (Technician)</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="Technician name">
-                    </div>
+                <p class="mb-1 text-muted" style="font-size:13px;">Serial: <strong id="batChangeSerial">—</strong></p>
+                <p class="mb-3" style="font-size:13px;">Select the new status for this battery:</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn bat-btn-change-status-opt" data-new-status="Warranty Claim">
+                        <i class="uil uil-shield-check me-1"></i>Warranty Claim
+                    </button>
+                    <button class="btn bat-btn-change-status-opt" data-new-status="Repair">
+                        <i class="uil uil-wrench me-1"></i>Repair
+                    </button>
+                    <button class="btn bat-btn-change-status-opt" data-new-status="Scrap">
+                        <i class="uil uil-trash me-1"></i>Scrap
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn sc-btn-navy btn-sm" id="btnConfirmFit">
-                    <i class="uil uil-check me-1"></i>Confirm Fitting
-                </button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
@@ -748,216 +1104,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/inventory/battery-dashboard.js') }}"></script>
-<script>
-/* ============================================================
-   Battery Dashboard JS
-   Movement history: Option A — dummy data per battery.
-   When backend is ready, replace batLoadHistory() with:
-     $.get('/inventory/battery/' + serial + '/history', batRenderTimeline);
-   ============================================================ */
-
-/* ---- Event type config — icon, CSS class, label ---- */
-var BAT_EVENT_TYPES = {
-    purchase  : { cls: 'btd-tl-purchase',  icon: 'uil-shopping-cart', label: 'Purchased'            },
-    install   : { cls: 'btd-tl-install',   icon: 'uil-bolt-alt',      label: 'Installed'             },
-    remove    : { cls: 'btd-tl-remove',    icon: 'uil-arrow-down',    label: 'Removed from Vehicle'  },
-    workshop  : { cls: 'btd-tl-workshop',  icon: 'uil-wrench',        label: 'Sent to Workshop'      },
-    reuse     : { cls: 'btd-tl-reuse',     icon: 'uil-sync',          label: 'Reinstalled'           },
-    weak      : { cls: 'btd-tl-weak',      icon: 'uil-exclamation-triangle', label: 'Marked Weak / Faulty' },
-    discard   : { cls: 'btd-tl-discard',   icon: 'uil-trash-alt',     label: 'Discarded'             }
-};
-
-/* ---- Dummy history data per battery serial ---- */
-/* TODO (backend): replace this object lookup with an AJAX call:
-   $.get('/inventory/battery/' + serial + '/history', batRenderTimeline); */
-var BAT_DUMMY_HISTORY = {
-    'BAT-2026-00081': [
-        { type: 'purchase', detail: 'From Amaron Dealer · PO-2026-0016',          date: '15 Jan 2026' },
-        { type: 'install',  detail: 'Fitted to TN01 AB1234 — Tata Prima (Primary)', date: '18 Jan 2026' }
-        /* Battery still in warehouse — only 2 events so far */
-    ],
-    'BAT-2024-00044': [
-        { type: 'purchase', detail: 'From Exide Dealer · Direct Purchase',           date: '02 Apr 2024' },
-        { type: 'install',  detail: 'Fitted to TN03 EF9012 — Bharat Benz (Primary)', date: '05 Apr 2024' },
-        { type: 'remove',   detail: 'Removed from TN03 EF9012 — Scheduled service',  date: '10 Feb 2026' },
-        { type: 'workshop', detail: 'WS-HYD — Battery health check',                 date: '12 Feb 2026' }
-        /* Currently in workshop */
-    ],
-    'BAT-2025-00063': [
-        { type: 'purchase', detail: 'Via PO-2025-0041 — Exide Industries',           date: '14 Jun 2025' },
-        { type: 'install',  detail: 'Fitted to TN01 AB1234 — Tata Prima (Auxiliary)',date: '17 Jun 2025' }
-        /* Currently allocated */
-    ],
-    'BAT-2023-00027': [
-        { type: 'purchase', detail: 'From Amaron Dealer · Direct',                   date: '08 Mar 2023' },
-        { type: 'install',  detail: 'Fitted to TN04 GH3456 — Tata LPT (Primary)',    date: '10 Mar 2023' },
-        { type: 'remove',   detail: 'Removed from TN04 GH3456 — Voltage drop issue', date: '20 Jan 2026' },
-        { type: 'workshop', detail: 'WS-BLR — Fault diagnosis',                      date: '22 Jan 2026' },
-        { type: 'weak',     detail: 'Marked Faulty — capacity below 60%',             date: '25 Jan 2026' }
-        /* Currently faulty in workshop */
-    ],
-    'BAT-2022-00019': [
-        { type: 'purchase', detail: 'From Amaron Dealer · Direct Purchase',           date: '05 Mar 2022' },
-        { type: 'install',  detail: 'Fitted to TN02 CD5678 — Ashok Leyland (Primary)',date: '07 Mar 2022' },
-        { type: 'remove',   detail: 'Removed from TN02 CD5678 — Warranty expired',    date: '10 Mar 2024' },
-        { type: 'workshop', detail: 'WS-HYD — Sent for assessment',                   date: '12 Mar 2024' },
-        { type: 'reuse',    detail: 'Fitted to TN05 IJ7890 — secondary use',          date: '18 Mar 2024' },
-        { type: 'remove',   detail: 'Removed from TN05 IJ7890 — dead cell',           date: '02 Sep 2024' },
-        { type: 'weak',     detail: 'Marked Dead — failed load test',                  date: '04 Sep 2024' },
-        { type: 'discard',  detail: 'Scrapped at WH-BLR',                             date: '06 Sep 2024' }
-        /* Full lifecycle — Discarded */
-    ]
-};
-
-/* ---- Renderer: builds timeline HTML from event array ---- */
-function batRenderTimeline(events) {
-    if (!events || events.length === 0) {
-        $('#batHistoryTimeline').html(
-            '<div class="text-center py-4 text-muted" style="font-size:12px;">' +
-            '<i class="uil uil-history" style="font-size:24px;display:block;margin-bottom:8px;"></i>' +
-            'No movement history recorded yet.</div>'
-        );
-        return;
-    }
-
-    var html = '<div class="btd-timeline">';
-    $.each(events, function (i, ev) {
-        var cfg  = BAT_EVENT_TYPES[ev.type] || BAT_EVENT_TYPES['purchase'];
-        var isLast = (i === events.length - 1);
-        html += '<div class="btd-tl-item ' + cfg.cls + '">'
-              +   '<div class="btd-tl-left">'
-              +     '<div class="btd-tl-dot"><i class="uil ' + cfg.icon + '"></i></div>'
-              +     (isLast ? '' : '<div class="btd-tl-line"></div>')
-              +   '</div>'
-              +   '<div class="btd-tl-content">'
-              +     '<div class="btd-tl-event">' + cfg.label + '</div>'
-              +     '<div class="btd-tl-detail">' + ev.detail + '</div>'
-              +     '<div class="btd-tl-date">' + ev.date + '</div>'
-              +   '</div>'
-              + '</div>';
-    });
-    html += '</div>';
-
-    $('#batHistoryTimeline').html(html);
-}
-
-/* ---- Load history for a given serial ---- */
-function batLoadHistory(serial) {
-    $('#batHistoryTimeline').html(
-        '<div class="text-center py-3 text-muted" id="batHistoryLoading">' +
-        '<div class="spinner-border spinner-border-sm me-2"></div> Loading…</div>'
-    );
-
-    /* ── OPTION A: dummy data (no backend) ──────────────────────────────
-       Replace the two lines below with this AJAX call when backend ready:
-       $.get('/inventory/battery/' + serial + '/history', batRenderTimeline)
-         .fail(function(){ batRenderTimeline([]); });
-       ─────────────────────────────────────────────────────────────────── */
-    var events = BAT_DUMMY_HISTORY[serial] || [];
-    setTimeout(function () { batRenderTimeline(events); }, 250); /* 250ms simulated load */
-}
-
-/* ============================================================ */
-
-$(function () {
-
-    /* ---- Tab Filter ---- */
-    $('#batTabBar').on('click', '.sc-tab', function () {
-        $('#batTabBar .sc-tab').removeClass('active');
-        $(this).addClass('active');
-        var tab = $(this).data('tab');
-        if (tab === 'all') {
-            $('#batDashTable tbody tr').show();
-        } else {
-            $('#batDashTable tbody tr').hide();
-            $('#batDashTable tbody tr[data-status="' + tab + '"]').show();
-        }
-    });
-
-    /* ---- Search/Reset ---- */
-    $('#btnBatReset').on('click', function () {
-        $('#batFilterDateFrom,#batFilterDateTo,#batFilterWarranty,#batSearch').val('');
-        $('#batFilterType,#batFilterStatus').val('');
-        $('#batDashTable tbody tr').show();
-        $('#batTabBar .sc-tab').first().trigger('click');
-    });
-
-    /* ---- Movement History Offcanvas ---- */
-    $(document).on('click', '.btn-bat-history', function () {
-        var serial = $(this).data('serial');
-        $('#histBatSerial').text(serial);
-        $('#histBatDesc').text($(this).data('brand') + ' · ' + $(this).data('spec'));
-        batLoadHistory(serial);
-    });
-
-    /* ---- Fit Battery Modal ---- */
-    $(document).on('click', '[data-bs-target="#fitBatteryModal"]', function () {
-        var $row = $(this).closest('tr');
-        $('#fitBatSerial').text($row.find('.btd-serial').text());
-        $('#fitBatDesc').text($row.find('td:eq(2)').text() + ' ' + $row.find('td:eq(3)').text()
-            + ' · ' + $row.find('td:eq(5)').text() + ' / ' + $row.find('td:eq(6)').text());
-    });
-
-    $('#btnConfirmFit').on('click', function () {
-        if (!$('#fitBatVeh').val()) {
-            Swal.fire({ icon: 'warning', title: 'Select Vehicle', text: 'Please select a vehicle first.', confirmButtonColor: '#032671' });
-            return;
-        }
-        Swal.fire({
-            icon: 'question', title: 'Confirm Fitting?',
-            text: 'Battery will be marked as Fitted and fleet record updated.',
-            showCancelButton: true, confirmButtonColor: '#10863f', cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, Fit'
-        }).then(function (r) {
-            if (r.isConfirmed) {
-                $('#fitBatteryModal').modal('hide');
-                Swal.fire({ icon: 'success', title: 'Battery Fitted', confirmButtonColor: '#032671' });
-            }
-        });
-    });
-
-    /* ---- Add Battery Modal ---- */
-    $('#addBatteryModal').on('hidden.bs.modal', function () { batResetModal(); });
-
-    /* ---- Select2 init ---- */
-    $('.select2-bat-type-manual, .select2-bat-vendor').select2({ width: '100%', dropdownParent: $('#addBatteryModal') });
-    $('.select2-bat-po').select2({ width: '100%', dropdownParent: $('#addBatteryModal') });
-    $('.select2-bat-grn').select2({ width: '100%', dropdownParent: $('#addBatteryModal') });
-    $('.select2-fit-vehicle').select2({ width: '100%', dropdownParent: $('#fitBatteryModal') });
-
-});
-
-/* ---- Add Battery Path Chooser ---- */
-var batChosenPath = null;
-
-function batSelectPath(path) {
-    batChosenPath = path;
-    $('.btd-path-card').removeClass('selected');
-    $('#batPath' + (path === 'manual' ? 'Manual' : 'PO')).addClass('selected');
-    $('#btnBatPathNext').prop('disabled', false);
-}
-
-function batNextStep() {
-    if (!batChosenPath) return;
-    $('#batPathStep1').hide();
-    $('#batFormManual, #batFormPO').hide();
-    if (batChosenPath === 'manual') { $('#batFormManual').show(); }
-    else                            { $('#batFormPO').show(); }
-    $('#batModalFooter').show();
-}
-
-function batBackToPath() {
-    $('#batFormManual, #batFormPO').hide();
-    $('#batModalFooter').hide();
-    $('#batPathStep1').show();
-}
-
-function batResetModal() {
-    batChosenPath = null;
-    $('#btnBatPathNext').prop('disabled', true);
-    $('.btd-path-card').removeClass('selected');
-    batBackToPath();
-}
-</script>
+<script src="{{ asset('js/inventory/battery-dashboard.js?v=3.1') }}"></script>
 @endsection
