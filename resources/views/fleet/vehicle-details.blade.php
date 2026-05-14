@@ -1,12 +1,12 @@
 @extends('layouts.app')
-
+{{-- v4.6 battery recompile --}}
 @section('css')
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.5') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.6') }}">
 
 @endsection
 
@@ -14,7 +14,7 @@
 
     
 <div class="layout-wrapper">
-
+<!-- DEBUG-RECOMPILE-CHECK-V46 -->
     @include('includes.header')
 
     @php
@@ -1414,10 +1414,9 @@
 
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Battery Details</span>
-                                    <div class="ms-auto d-flex align-items-center gap-2">
-                                        <a href="{{ route('inventory.battery-dashboard') }}" class="alert-link small fw-semibold">Manage Battery →</a>
-                                        <a href="javascript:void(0)" class="badge badge-primary" data-bs-toggle="modal" data-bs-target="#addBattery"><i class="uil uil-plus me-1"></i>Add Battery Details</a>
-                                    </div>
+                                    <a href="{{ route('batterymanage.vehicle.battery.tagging', $vehicle->id) }}" class="badge badge-primary ms-2">
+                                        <i class="uil uil-plus me-1"></i>Manage Batteries
+                                    </a>
                                 </div>
 
                                 <div class="col-12 col-md-1">
@@ -1450,45 +1449,47 @@
                                         @foreach($leftBatteries as $battery)
                                         @php
                                             $batIdx = $batteryCollection->search(fn($b) => $b->id === $battery->id) + 1;
-                                            // Warranty calc
-                                            $batWarrantyRemaining = null;
-                                            if ($battery->issue_date && $battery->warranty_months) {
-                                                $batIssue = \Carbon\Carbon::parse($battery->issue_date);
-                                                $batWarrantyEnd = $batIssue->copy()->addMonths((int)$battery->warranty_months);
-                                                $batWarrantyRemaining = \Carbon\Carbon::today()->greaterThan($batWarrantyEnd)
-                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batWarrantyEnd);
-                                            }
-                                            // Life calc
-                                            $batLifeRemaining = null;
-                                            if ($battery->issue_date && $battery->fixed_life_months) {
-                                                $batIssue2 = \Carbon\Carbon::parse($battery->issue_date);
-                                                $batLifeEnd = $batIssue2->copy()->addMonths((int)$battery->fixed_life_months);
-                                                $batLifeRemaining = \Carbon\Carbon::today()->greaterThan($batLifeEnd)
-                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batLifeEnd);
-                                            }
+                                            $batWarrantyRemaining = $battery->warranty_remaining_months;
+                                            $batLifeRemaining     = $battery->life_remaining_months;
+                                            $batCondition  = $battery->battery_condition ?? 'New';
+                                            $batCondClass  = match($batCondition) {
+                                                'New'                     => 'bat-cond-new',
+                                                'Used'                    => 'bat-cond-used',
+                                                'Replaced Under Warranty' => 'bat-cond-replaced',
+                                                default                   => 'bat-cond-new',
+                                            };
+                                            $batRag      = $battery->rag_status ?? 'Green';
+                                            $batRagClass = match($batRag) {
+                                                'Green'  => 'bat-rag-green',
+                                                'Yellow' => 'bat-rag-yellow',
+                                                'Red'    => 'bat-rag-red',
+                                                default  => 'bat-rag-green',
+                                            };
                                         @endphp
                                         <div class="bat-card">
                                             <div class="bat-card-header">
                                                 <span class="bat-card-label"><i class="uil uil-bolt-alt me-1"></i>Battery #{{ $batIdx }}</span>
                                                 <div class="bat-card-actions">
-                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="editBattery" title="Edit"><i class="uil uil-pen"></i></a>
-                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="deleteBattery text-danger" title="Delete"><i class="uil uil-trash-alt"></i></a>
+                                                    <span class="bat-condition-badge {{ $batCondClass }}">{{ $batCondition }}</span>
+                                                    <span class="bat-rag-dot {{ $batRagClass }}" title="RAG: {{ $batRag }}"></span>
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="viewBatteryAttachment bat-eye-icon" title="View Attachments"><i class="uil uil-eye"></i></a>
                                                 </div>
                                             </div>
                                             <div class="bat-card-grid">
-                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Serial Number</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
                                                 <div class="bat-field"><p>Brand</p><span>{{ $battery->battery_brand ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Price</p><span>{{ $battery->battery_price ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Serial No.</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Voltage</p><span>{{ $battery->battery_voltage ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Condition</p><span>{{ $battery->battery_condition ?? '-' }}</span></div>
                                                 <div class="bat-field"><p>Purchase Date</p><span>{{ $battery->purchase_date ? \Carbon\Carbon::parse($battery->purchase_date)->format('d/m/Y') : '-' }}</span></div>
-                                                <div class="bat-field"><p>Issue Date</p><span>{{ $battery->issue_date ? \Carbon\Carbon::parse($battery->issue_date)->format('d/m/Y') : '-' }}</span></div>
-                                                <div class="bat-field"><p>Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
-                                                <div class="bat-field"><p>Warranty Left</p>
+                                                <div class="bat-field"><p>Battery Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty Remaining</p>
                                                     <span>@if($batWarrantyRemaining === null)-@elseif($batWarrantyRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batWarrantyRemaining <= 3)<span class="text-warning fw-bold">{{ $batWarrantyRemaining }} mo left</span>@else<span class="text-success">{{ $batWarrantyRemaining }} mo</span>@endif</span>
                                                 </div>
-                                                <div class="bat-field"><p>Fixed Life</p><span>{{ $battery->fixed_life_months ? $battery->fixed_life_months.' mo' : '-' }}</span></div>
-                                                <div class="bat-field"><p>Life Left</p>
+                                                <div class="bat-field"><p>Fitment Date</p><span>{{ $battery->fitment_date ? \Carbon\Carbon::parse($battery->fitment_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Life Fixed</p><span>{{ $battery->battery_life_fixed ? $battery->battery_life_fixed.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Life Remaining</p>
                                                     <span>@if($batLifeRemaining === null)-@elseif($batLifeRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batLifeRemaining <= 3)<span class="text-warning fw-bold">{{ $batLifeRemaining }} mo left</span>@else<span class="text-success">{{ $batLifeRemaining }} mo</span>@endif</span>
                                                 </div>
                                             </div>
@@ -1513,48 +1514,52 @@
                                         </div>
                                     </div>
 
-                                    {{-- RIGHT COLUMN: odd-indexed batteries --}}
+                                    {{-- RIGHT COLUMN: odd-indexed batteries — v4.6 --}}
                                     <div class="bat-col-side bat-col-right">
                                         @foreach($rightBatteries as $battery)
                                         @php
                                             $batIdx = $batteryCollection->search(fn($b) => $b->id === $battery->id) + 1;
-                                            $batWarrantyRemaining = null;
-                                            if ($battery->issue_date && $battery->warranty_months) {
-                                                $batIssue = \Carbon\Carbon::parse($battery->issue_date);
-                                                $batWarrantyEnd = $batIssue->copy()->addMonths((int)$battery->warranty_months);
-                                                $batWarrantyRemaining = \Carbon\Carbon::today()->greaterThan($batWarrantyEnd)
-                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batWarrantyEnd);
-                                            }
-                                            $batLifeRemaining = null;
-                                            if ($battery->issue_date && $battery->fixed_life_months) {
-                                                $batIssue2 = \Carbon\Carbon::parse($battery->issue_date);
-                                                $batLifeEnd = $batIssue2->copy()->addMonths((int)$battery->fixed_life_months);
-                                                $batLifeRemaining = \Carbon\Carbon::today()->greaterThan($batLifeEnd)
-                                                    ? 0 : (int)\Carbon\Carbon::today()->diffInMonths($batLifeEnd);
-                                            }
+                                            $batWarrantyRemaining = $battery->warranty_remaining_months;
+                                            $batLifeRemaining     = $battery->life_remaining_months;
+                                            $batCondition  = $battery->battery_condition ?? 'New';
+                                            $batCondClass  = match($batCondition) {
+                                                'New'                     => 'bat-cond-new',
+                                                'Used'                    => 'bat-cond-used',
+                                                'Replaced Under Warranty' => 'bat-cond-replaced',
+                                                default                   => 'bat-cond-new',
+                                            };
+                                            $batRag      = $battery->rag_status ?? 'Green';
+                                            $batRagClass = match($batRag) {
+                                                'Green'  => 'bat-rag-green',
+                                                'Yellow' => 'bat-rag-yellow',
+                                                'Red'    => 'bat-rag-red',
+                                                default  => 'bat-rag-green',
+                                            };
                                         @endphp
                                         <div class="bat-card bat-card-right">
                                             <div class="bat-card-header">
                                                 <span class="bat-card-label bat-card-label-blue"><i class="uil uil-bolt-alt me-1"></i>Battery #{{ $batIdx }}</span>
                                                 <div class="bat-card-actions">
-                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="editBattery" title="Edit"><i class="uil uil-pen"></i></a>
-                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="deleteBattery text-danger" title="Delete"><i class="uil uil-trash-alt"></i></a>
+                                                    <span class="bat-condition-badge {{ $batCondClass }}">{{ $batCondition }}</span>
+                                                    <span class="bat-rag-dot {{ $batRagClass }}" title="RAG: {{ $batRag }}"></span>
+                                                    <a href="javascript:void(0)" data-id="{{ $battery->id }}" class="viewBatteryAttachment bat-eye-icon" title="View Attachments"><i class="uil uil-eye"></i></a>
                                                 </div>
                                             </div>
                                             <div class="bat-card-grid">
-                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Serial Number</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
                                                 <div class="bat-field"><p>Brand</p><span>{{ $battery->battery_brand ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Price</p><span>{{ $battery->battery_price ?? '-' }}</span></div>
-                                                <div class="bat-field"><p>Serial No.</p><span>{{ $battery->battery_serial_number ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Model</p><span>{{ $battery->battery_model_name ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Capacity</p><span>{{ $battery->battery_capacity ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Voltage</p><span>{{ $battery->battery_voltage ?? '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Condition</p><span>{{ $battery->battery_condition ?? '-' }}</span></div>
                                                 <div class="bat-field"><p>Purchase Date</p><span>{{ $battery->purchase_date ? \Carbon\Carbon::parse($battery->purchase_date)->format('d/m/Y') : '-' }}</span></div>
-                                                <div class="bat-field"><p>Issue Date</p><span>{{ $battery->issue_date ? \Carbon\Carbon::parse($battery->issue_date)->format('d/m/Y') : '-' }}</span></div>
-                                                <div class="bat-field"><p>Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
-                                                <div class="bat-field"><p>Warranty Left</p>
+                                                <div class="bat-field"><p>Battery Warranty</p><span>{{ $battery->warranty_months ? $battery->warranty_months.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Warranty Remaining</p>
                                                     <span>@if($batWarrantyRemaining === null)-@elseif($batWarrantyRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batWarrantyRemaining <= 3)<span class="text-warning fw-bold">{{ $batWarrantyRemaining }} mo left</span>@else<span class="text-success">{{ $batWarrantyRemaining }} mo</span>@endif</span>
                                                 </div>
-                                                <div class="bat-field"><p>Fixed Life</p><span>{{ $battery->fixed_life_months ? $battery->fixed_life_months.' mo' : '-' }}</span></div>
-                                                <div class="bat-field"><p>Life Left</p>
+                                                <div class="bat-field"><p>Fitment Date</p><span>{{ $battery->fitment_date ? \Carbon\Carbon::parse($battery->fitment_date)->format('d/m/Y') : '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Life Fixed</p><span>{{ $battery->battery_life_fixed ? $battery->battery_life_fixed.' mo' : '-' }}</span></div>
+                                                <div class="bat-field"><p>Battery Life Remaining</p>
                                                     <span>@if($batLifeRemaining === null)-@elseif($batLifeRemaining == 0)<span class="text-danger fw-bold">Expired</span>@elseif($batLifeRemaining <= 3)<span class="text-warning fw-bold">{{ $batLifeRemaining }} mo left</span>@else<span class="text-success">{{ $batLifeRemaining }} mo</span>@endif</span>
                                                 </div>
                                             </div>

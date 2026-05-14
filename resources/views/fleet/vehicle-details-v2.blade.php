@@ -1740,9 +1740,9 @@
                     <div class="accordion-item mt-3">
                         
                         <div class="accordion-header vehicleinfor_head" id="bat_det">
-                            
+
                             <div class="row vehicleinfo_toprow align-items-center">
-                             
+
                                 <div class="col-12 col-md-11 d-flex align-items-center">
                                     <span class="titletext">Battery Details</span>
                                     <a href="javascript:void(0)" class="badge badge-primary" data-bs-toggle="modal" data-bs-target="#addBattery"><i class="uil uil-plus me-1"></i>Add Battery Details</a>
