@@ -636,7 +636,22 @@ class WorkshopController extends Controller
 
     public function batteryDashboard()
     {
-        return view('inventory.battery-dashboard');
+        $org_id = \Illuminate\Support\Facades\Auth::user()->organisation_id ?? 1;
+
+        $all_count            = \App\Models\Battery::where('organisation_id', $org_id)->count();
+        $allocated_count      = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Installed')->count();
+        $direct_fitment_count = \App\Models\Battery::where('organisation_id', $org_id)->where('stock_location_type', 'Fitment')->count();
+        $yet_to_decide_count  = \App\Models\Battery::where('organisation_id', $org_id)->where('stock_location_type', 'Unassigned')->count();
+
+        $ready_to_use_count   = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'In Stock')->count();
+        $warranty_claim_count = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Condemned')->count();
+        $repair_count         = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'In Repair')->count();
+        $scrap_count          = \App\Models\Battery::where('organisation_id', $org_id)->where('current_status', 'Disposed')->count();
+
+        return view('inventory.battery-dashboard', compact(
+            'all_count', 'allocated_count', 'direct_fitment_count', 'yet_to_decide_count',
+            'ready_to_use_count', 'warranty_claim_count', 'repair_count', 'scrap_count'
+        ));
     }
 
     public function createBattery()

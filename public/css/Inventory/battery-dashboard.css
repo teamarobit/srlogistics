@@ -681,6 +681,90 @@
 .tyre-counter-card.tc-red::after    { background: rgba(220, 38, 38, 0.06); }
 .tyre-counter-card.tc-red::before   { background: rgba(220, 38, 38, 0.04); }
 
+.tyre-counter-card.tc-purple {
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    border-left: 4px solid #7c3aed;
+    border-top: 1px solid #c4b5fd;
+    border-right: 1px solid #c4b5fd;
+    border-bottom: 1px solid #c4b5fd;
+}
+.tyre-counter-card.tc-purple .tc-count { color: #6d28d9; }
+.tyre-counter-card.tc-purple .tc-label { color: #7c3aed; }
+.tyre-counter-card.tc-purple .tc-pct   { color: #6d28d9; background: #e9d8fb; }
+.tyre-counter-card.tc-purple::after    { background: rgba(124, 58, 237, 0.06); }
+.tyre-counter-card.tc-purple::before   { background: rgba(124, 58, 237, 0.04); }
+
+.tyre-counter-card.tc-orange {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
+    border-left: 4px solid #ea580c;
+    border-top: 1px solid #fdba74;
+    border-right: 1px solid #fdba74;
+    border-bottom: 1px solid #fdba74;
+}
+.tyre-counter-card.tc-orange .tc-count { color: #9a3412; }
+.tyre-counter-card.tc-orange .tc-label { color: #c2410c; }
+.tyre-counter-card.tc-orange .tc-pct   { color: #9a3412; background: #fed7aa; }
+.tyre-counter-card.tc-orange::after    { background: rgba(234, 88, 12, 0.06); }
+.tyre-counter-card.tc-orange::before   { background: rgba(234, 88, 12, 0.04); }
+
+.tyre-counter-card.tc-cyan {
+    background: linear-gradient(135deg, #ecfeff 0%, #e0f9fb 100%);
+    border-left: 4px solid #0891b2;
+    border-top: 1px solid #7dd3e8;
+    border-right: 1px solid #7dd3e8;
+    border-bottom: 1px solid #7dd3e8;
+}
+.tyre-counter-card.tc-cyan .tc-count { color: #164e63; }
+.tyre-counter-card.tc-cyan .tc-label { color: #0e7490; }
+.tyre-counter-card.tc-cyan .tc-pct   { color: #164e63; background: #bae6fd; }
+.tyre-counter-card.tc-cyan::after    { background: rgba(8, 145, 178, 0.06); }
+.tyre-counter-card.tc-cyan::before   { background: rgba(8, 145, 178, 0.04); }
+
+/* ── SR Garage section separator ─────────────────────────────────────────── */
+.tyre-counters-section {
+    margin-top: 10px;
+}
+
+.tc-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.tc-section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #032671;
+    background: #e8eef7;
+    padding: 4px 13px;
+    border-radius: 20px;
+    white-space: nowrap;
+    border: 1px solid #c5d4ee;
+}
+
+.tc-section-badge i {
+    font-size: 13px;
+    color: #032671;
+}
+
+.tc-section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #c5d4ee 0%, transparent 100%);
+}
+
+.tyre-counters-row--garage .tyre-counter-card {
+    flex: 0 0 calc(25% - 9px);
+    max-width: calc(25% - 9px);
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 
 @media (max-width: 1200px) {
@@ -689,10 +773,15 @@
         flex: 0 0 calc(33.33% - 8px);
         max-width: calc(33.33% - 8px);
     }
+    .tyre-counters-row--garage .tyre-counter-card {
+        flex: 0 0 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+    }
 }
 
 @media (max-width: 768px) {
-    .tyre-counters-row .tyre-counter-card {
+    .tyre-counters-row .tyre-counter-card,
+    .tyre-counters-row--garage .tyre-counter-card {
         flex: 0 0 calc(50% - 6px);
         max-width: calc(50% - 6px);
     }
