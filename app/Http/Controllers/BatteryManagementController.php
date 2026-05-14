@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 use App\Models\Vehicle;
@@ -727,5 +728,66 @@ class BatteryManagementController extends Controller
                 'message' => 'Failed to replace battery: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // GET  /batterymanage/vehicle/{vehicle}/battery/{battery}/logs  (AJAX)
+    // Returns all vehiclebatterylogs for this battery+vehicle, plus medias.
+    // SD-8: find() + manual 422 — no findOrFail().
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function getBatteryLogs(Vehicle $vehicle, int $battery): JsonResponse
+    {
+        $vb = Vehiclebattery::with('medias')->find($battery);
+
+        if (! $vb || $vb->vehicle_id !== $vehicle->id) {
+            return response()->json(['success' => false, 'message' => 'Battery not found for this vehicle.'], 422);
+        }
+
+        $logs = Vehiclebatterylog::where('vehiclebattery_id', $vb->id)
+            ->where('vehicle_id', $vehicle->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id'                        => $log->id,
+                    'action'                    => $log->action ?? 'Tagged',
+                    'battery_brand'             => $log->battery_brand ?? null,
+                    'battery_model'             => $log->battery_model ?? $log->battery_model_name ?? null,
+                    'battery_condition'         => $log->battery_condition ?? null,
+                    'rag_status'                => $log->rag_status ?? null,
+                    'fitment_date'              => $log->fitment_date
+                        ? Carbon::parse($log->fitment_date)->format('d M Y') : null,
+                    'km_at_fitment'             => $log->km_at_fitment ?? null,
+                    'battery_actual_run_months' => $log->battery_actual_run_months ?? null,
+                    'battery_source'            => $log->battery_source ?? null,
+                    'notes'                     => $log->notes ?? null,
+                    'created_at_formatted'      => $log->created_at
+                        ? $log->created_at->format('d M Y, h:i A') : '—',
+                ];
+            });
+
+        $attachments = $vb->medias->map(function ($media) {
+            $url = $media->file_path
+                ? (Str::startsWith($media->file_path, ['http://', 'https://'])
+                    ? $media->file_path
+                    : asset('medias/' . ltrim($media->file_path, '/')))
+                : null;
+            return [
+                'url'  => $url,
+                'name' => $media->file_name ?? $media->original_name ?? 'Attachment',
+                'type' => $media->type ?? 'Image',
+            ];
+        })->values()->toArray();
+
+        return response()->json([
+            'success'        => true,
+            'vehicle_no'     => $vehicle->vehicle_no ?? '—',
+            'battery_serial' => $vb->battery_serial_number ?? '—',
+            'battery_brand'  => $vb->battery_brand ?? null,
+            'battery_model'  => $vb->battery_model_name ?? null,
+            'logs'           => $logs,
+            'attachments'    => $attachments,
+        ], 200);
     }
 }

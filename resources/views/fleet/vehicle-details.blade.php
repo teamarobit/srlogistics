@@ -6026,6 +6026,36 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════
+     BATTERY LOG MODAL — bat-detail-modal
+     Populated via vehicle-details.js
+═══════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="batDetailModal" tabindex="-1" aria-labelledby="batDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+        <div class="modal-content vtd-modal-content">
+            <div class="modal-header vtd-modal-header" id="batModalHeader">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="vtd-modal-pos-dot" id="batModalDot"></span>
+                    <div>
+                        <div class="vtd-modal-title" id="batDetailModalLabel">Battery Logs</div>
+                        <div class="vtd-modal-subtitle" id="batModalSubtitle"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vtd-modal-body vtd-modal-body-scroll" id="batModalBody">
+                {{-- Populated by JS --}}
+            </div>
+            <div class="modal-footer vtd-modal-footer">
+                <a href="{{ route('batterymanage.vehicle.battery.tagging', $vehicle->id) }}" class="btn btn-sm vtd-modal-manage-btn">
+                    <i class="uil uil-plus me-1"></i>Manage Batteries
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
      TYRE DETAIL MODAL — vtd-detail-modal
      Populated via vehicle-details-tyre.js
 ═══════════════════════════════════════════════════════ --}}
@@ -6063,7 +6093,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.1') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 
@@ -6082,6 +6112,7 @@
 
     var EDIT_BATTERY = "{{ route('fleetdashboard.editBatteryDetail', ':id') }}";
     var DELETE_BATTERY = "{{ route('fleetdashboard.deleteBattery') }}";
+    var BATTERY_LOGS_URL = "{{ route('batterymanage.vehicle.battery.logs', [$vehicle->id, ':battery']) }}";
 
     var EDIT_DIGITAL_LOCK = "{{ route('fleetdashboard.editDigiLockDetail', ':id') }}";
     var DELETE_DIGITAL_LOCK = "{{ route('fleetdashboard.deleteDigiLock') }}";
