@@ -161,11 +161,57 @@
     height: 100%;
     border-radius: 10px 0 0 10px;
 }
-.tod-kpi-card.card-cost::before   { background: #3b82f6; }
-.tod-kpi-card.card-income::before { background: #10b981; }
-.tod-kpi-card.card-rethread::before { background: #f59e0b; }
-.tod-kpi-card.card-maint::before  { background: #8b5cf6; }
-.tod-kpi-card.card-repair::before { background: #ef4444; }
+/* ── KPI Card — Dashboard-style Color Themes v2.0 (matches tyre counter cards) ─ */
+
+/* card-cost: New Tyres, Old Tyres — Navy Blue */
+.tod-kpi-card.card-cost {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border: 1px solid #c5d4ee;
+}
+.tod-kpi-card.card-cost::before           { background: #032671; }
+.tod-kpi-card.card-cost .tod-kpi-label    { color: #2d4a8a; }
+.tod-kpi-card.card-cost .qty-number       { color: #032671; }
+.tod-kpi-card.card-cost .tod-kpi-divider  { background: #c5d4ee; }
+
+/* card-rethread: Re-thread Tyres — Amber */
+.tod-kpi-card.card-rethread {
+    background: linear-gradient(135deg, #fffbf0 0%, #fef8e7 100%);
+    border: 1px solid #f5dfa0;
+}
+.tod-kpi-card.card-rethread::before           { background: #d97706; }
+.tod-kpi-card.card-rethread .tod-kpi-label    { color: #b45309; }
+.tod-kpi-card.card-rethread .qty-number       { color: #92400e; }
+.tod-kpi-card.card-rethread .tod-kpi-divider  { background: #f5dfa0; }
+
+/* card-income: Warranty Claims, Scrap Tyres — Green */
+.tod-kpi-card.card-income {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border: 1px solid #a7ddb8;
+}
+.tod-kpi-card.card-income::before           { background: #16a34a; }
+.tod-kpi-card.card-income .tod-kpi-label    { color: #15803d; }
+.tod-kpi-card.card-income .qty-number       { color: #14532d; }
+.tod-kpi-card.card-income .tod-kpi-divider  { background: #a7ddb8; }
+
+/* card-maint: Scheduled Maintenance — Purple */
+.tod-kpi-card.card-maint {
+    background: linear-gradient(135deg, #f8f0ff 0%, #f3eefb 100%);
+    border: 1px solid #d8c4f5;
+}
+.tod-kpi-card.card-maint::before           { background: #7c3aed; }
+.tod-kpi-card.card-maint .tod-kpi-label    { color: #7c3aed; }
+.tod-kpi-card.card-maint .qty-number       { color: #6d28d9; }
+.tod-kpi-card.card-maint .tod-kpi-divider  { background: #d8c4f5; }
+
+/* card-repair: Repair Tyres — Red */
+.tod-kpi-card.card-repair {
+    background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+    border: 1px solid #f5b8b8;
+}
+.tod-kpi-card.card-repair::before           { background: #dc2626; }
+.tod-kpi-card.card-repair .tod-kpi-label    { color: #b91c1c; }
+.tod-kpi-card.card-repair .qty-number       { color: #7f1d1d; }
+.tod-kpi-card.card-repair .tod-kpi-divider  { background: #f5b8b8; }
 
 .tod-kpi-card .tod-kpi-label {
     font-family: 'Inter', sans-serif;
