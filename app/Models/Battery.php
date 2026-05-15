@@ -103,6 +103,11 @@ class Battery extends Model
         return $this->hasMany(Batterylog::class, 'battery_id');
     }
 
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
     // ── Computed: warranty remaining months ──────────────────────────────
 
     public function getWarrantyRemainingMonthsAttribute(): ?int

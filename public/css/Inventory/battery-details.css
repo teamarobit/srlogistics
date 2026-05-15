@@ -1,5 +1,5 @@
 /* =========================================================
-   Battery Details Page — battery-details.css  v1.0
+   Battery Details Page — battery-details.css  v2.2
    Prefix: bdet-
    ========================================================= */
 
@@ -397,3 +397,329 @@
     .bdet-tl-dot { width: 28px; height: 28px; font-size: 13px; }
     .bdet-tl-card-header { flex-direction: column; gap: 4px; }
 }
+
+/* ── Comment tab ─────────────────────────────────────────────────────────── */
+.note-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.1);
+    max-width: 100%;
+}
+
+.note-input-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.note-avatar {
+    background: #5c768d;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.note-input-area { flex: 1; }
+
+.note-input-area .form-control {
+    border-color: #d4d6db;
+    min-height: 40px;
+    color: #485D6B;
+    font-weight: 500;
+    font-size: 12px;
+    padding: 5px 15px;
+}
+
+.note-send-btn {
+    background: transparent;
+    border: 1px solid #032671;
+    color: #032671;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.note-send-btn:hover { background: #032671; color: #fff; }
+
+.vdtl_comment1sec .text_bdwrapper {
+    width: 94%;
+    margin: 0 auto;
+    background: transparent;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.vdtl_comment1sec .text_bdwrapper .item_row {
+    margin: 6px 0;
+    padding: 12px;
+    display: flex;
+    background: #F9F9F9;
+    border-radius: 4px;
+    border: 1px solid #f2f2f2;
+    width: 100%;
+}
+
+.vdtl_comment1sec .text_bdwrapper .item_row .name_fw {
+    margin: 0;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    background: #a2b0bd;
+    border-radius: 50px;
+    font-size: 18px;
+    line-height: 26px;
+    color: #051944;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vdtl_comment1sec .text_bdwrapper .text_bd {
+    margin: 0;
+    padding: 0 12px;
+    width: 80%;
+}
+
+.vdtl_comment1sec .text_bdwrapper .text_bd span {
+    margin: 0;
+    padding: 0;
+    display: block;
+    font-size: 14px;
+    color: #000;
+    line-height: 20px;
+}
+
+.vdtl_comment1sec .text_bdwrapper .text_bd p {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 19px;
+    font-weight: 400;
+    color: #606060;
+}
+
+.vdtl_comment1sec .text_bdwrapper .time_sec {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    line-height: 19px;
+    color: #6f6f6f;
+    width: 12%;
+    margin-left: auto;
+    text-align: right;
+}
+
+/* ── Comments Tab ──────────────────────────────────────── */
+#bdet-tab-comments.note-box,
+#bdet-tab-comments .note-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+}
+#bdet-tab-comments .note-input-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+#bdet-tab-comments .note-avatar {
+    background: #5c768d;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+#bdet-tab-comments .note-input-area {
+    flex: 1;
+}
+#bdet-tab-comments .note-input-area .form-control {
+    border-color: #d4d6db;
+    min-height: 40px;
+    color: #485D6B;
+}
+#bdet-tab-comments .note-send-btn {
+    background: transparent;
+    border: 1px solid #032671;
+    color: #032671;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+#bdet-tab-comments .note-send-btn:hover {
+    background: #032671;
+    color: #fff;
+}
+#bdet-tab-comments .text_bdwrapper {
+    width: 94%;
+    margin: 10px auto 0;
+    background: transparent;
+    padding: 10px;
+    border-radius: 5px;
+}
+#bdet-tab-comments .text_bdwrapper .item_row {
+    margin: 6px 0;
+    padding: 12px;
+    display: flex;
+    background: #F9F9F9;
+    border-radius: 4px;
+    border: 1px solid #f2f2f2;
+    width: 100%;
+}
+#bdet-tab-comments .text_bdwrapper .item_row .name_fw {
+    margin: 0;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #5c768d;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+#bdet-tab-comments .text_bdwrapper .text_bd {
+    margin: 0;
+    padding: 0 12px;
+    flex: 1;
+}
+#bdet-tab-comments .text_bdwrapper .text_bd span {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #032671;
+    line-height: 20px;
+}
+#bdet-tab-comments .text_bdwrapper .text_bd p {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 19px;
+    color: #485D6B;
+}
+#bdet-tab-comments .text_bdwrapper .time_sec {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    line-height: 19px;
+    color: #6f6f6f;
+    width: 12%;
+    margin-left: auto;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Documents Tab ─────────────────────────────────────── */
+
+/* Stat cards */
+#bdet-tab-docs .totalrevenue { margin-bottom: 0; }
+#bdet-tab-docs .totalrevenue .item-row .itemcol .number.c-01 { color: #56CA00; }
+#bdet-tab-docs .totalrevenue .item-row .itemcol .number.c-02 { color: #E59E04; }
+#bdet-tab-docs .totalrevenue .item-row .itemcol .number.c-03 { color: #E039E9; }
+#bdet-tab-docs .totalrevenue .item-row .itemcol .number.c-04 { color: #EE2B2B; }
+
+/* Table wrapper */
+#bdet-tab-docs .vehiclestable {
+    margin: 0 -19px;
+    padding: 26px 19px;
+    background: #f5f5f5;
+    overflow: hidden;
+    margin-top: 19px;
+}
+#bdet-tab-docs .vehiclestable .itemtop {
+    margin: 0;
+    padding: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#bdet-tab-docs .vehiclestable .itemtop .addtripbtn {
+    margin: 0;
+    padding: 11px 20px;
+    font-family: Inter, sans-serif;
+    font-weight: 500;
+    color: #fff;
+    font-size: 13px;
+    background: #032671;
+    border-radius: 4px;
+    text-decoration: none;
+}
+#bdet-tab-docs .vehiclestable .sec-title {
+    font-family: Inter, sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    color: #21263C;
+}
+#bdet-tab-docs .vehiclestable .value {
+    font-family: Inter, sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 100%;
+}
+
+/* Document table */
+#bdet-tab-docs .custom-driver-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    vertical-align: middle;
+}
+#bdet-tab-docs .custom-driver-table thead th {
+    font-family: 'Inter', sans-serif;
+    color: #2a303c;
+    border: none;
+    padding: 12px 20px !important;
+    background-color: #e8eef7;
+}
+#bdet-tab-docs .custom-driver-table tbody td {
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+#bdet-tab-docs .custom-driver-table tbody tr td:first-child {
+    border-left: 1px solid #f0f0f0;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+#bdet-tab-docs .custom-driver-table tbody tr td:last-child {
+    border-right: 1px solid #f0f0f0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Badge variants */
+#bdet-tab-docs .badge-success  { background-color: #d4edda; color: #155724; }
+#bdet-tab-docs .badge-danger   { background-color: #f8d7da; color: #721c24; }
+#bdet-tab-docs .badge-warning  { background-color: #fff3cd; color: #856404; }
+#bdet-tab-docs .badge-secondary{ background-color: #e2e3e5; color: #383d41; }
+
+/* Modal tweaks */
+.expenses_wrapperModal .input-group select { height: 35px; }

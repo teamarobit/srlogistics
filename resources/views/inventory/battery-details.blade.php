@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
-<link href="{{ asset('css/Inventory/battery-details.css?v=2.0') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-details.css?v=2.2') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('inventory.dashboard') }}">Inventory</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('inventory.battery-dashboard') }}">Battery Dashboard</a></li>
-                    <li class="breadcrumb-item active" id="bdet-breadcrumb-serial">BAT-2026-00081</li>
+                    <li class="breadcrumb-item active" id="bdet-breadcrumb-serial">{{ $battery->battery_serial }}</li>
                 </ol>
             </nav>
 
@@ -29,11 +29,11 @@
                     </a>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h5 class="mb-0 bdet-title" id="bdet-serial-title">BAT-2026-00081</h5>
-                            <span class="btd-st-active" id="bdet-status-badge">Active</span>
-                            <span class="bdet-type-chip" id="bdet-type-chip">Lead-Acid · 12V · 150Ah</span>
+                            <h5 class="mb-0 bdet-title" id="bdet-serial-title">{{ $battery->battery_serial }}</h5>
+                            <span class="btd-st-active" id="bdet-status-badge">{{ $battery->current_status ?? 'Active' }}</span>
+                            <span class="bdet-type-chip" id="bdet-type-chip">{{ $battery->battery_condition ?? '' }}{{ $battery->battery_voltage ? ' · ' . $battery->battery_voltage : '' }}{{ $battery->battery_capacity ? ' · ' . $battery->battery_capacity . 'Ah' : '' }}</span>
                         </div>
-                        <span class="text-muted" style="font-size:12px;" id="bdet-brand-subtitle">Amaron · Pro Truck 150 · Purchased Feb 2024</span>
+                        <span class="text-muted" style="font-size:12px;" id="bdet-brand-subtitle">{{ $battery->battery_brand }}{{ $battery->battery_model ? ' · ' . $battery->battery_model : '' }}{{ $battery->battery_purchase_date ? ' · Purchased ' . $battery->battery_purchase_date->format('M Y') : '' }}</span>
                     </div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
@@ -150,9 +150,9 @@
                             </button>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-notes">
-                                <span class="icon"><i class="uil uil-notes" style="font-size:16px;vertical-align:middle;"></i></span>
-                                Notes
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-comments">
+                                <span class="icon"><img src="{{ asset('images/icons/comments-0123.png') }}" alt="" style="width:16px;vertical-align:middle;" /></span>
+                                Comments
                             </button>
                         </li>
                     </ul>
@@ -452,48 +452,166 @@
 
             {{-- ══════════════ TAB: DOCUMENTS ══════════════ --}}
             <div class="tab-pane fade" id="bdet-tab-docs">
-                <div class="sc-card">
-                    <div class="sc-card-head d-flex align-items-center justify-content-between">
-                        <span class="sc-card-title"><i class="uil uil-paperclip me-2"></i>Documents</span>
-                        <button class="btn sc-btn-navy btn-sm"><i class="uil uil-upload me-1"></i>Upload</button>
-                    </div>
-                    <div class="p-4 text-center text-muted">
-                        <i class="uil uil-file-blank" style="font-size:36px;opacity:0.3;"></i>
-                        <p class="mt-2 mb-0">Purchase invoice, warranty card, test reports</p>
-                        <p class="mb-0" style="font-size:12px;">No documents uploaded yet</p>
-                    </div>
-                </div>
-            </div>
 
-            {{-- ══════════════ TAB: NOTES ══════════════ --}}
-            <div class="tab-pane fade" id="bdet-tab-notes">
-                <div class="sc-card">
-                    <div class="sc-card-head d-flex align-items-center justify-content-between">
-                        <span class="sc-card-title"><i class="uil uil-notes me-2"></i>Notes</span>
-                        <button class="btn sc-btn-navy btn-sm"><i class="uil uil-plus me-1"></i>Add Note</button>
-                    </div>
-                    <div class="p-3">
-                        <div class="bdet-note-item">
-                            <div class="bdet-note-meta">Rajesh Kumar · 10 Apr 2026 · 09:15 AM</div>
-                            <div class="bdet-note-text">Battery performing well. Voltage steady at 12.6V under load. No issues flagged. Recommend check at 18 months mark (Sep 2025).</div>
+                {{-- Stat Cards --}}
+                <div class="totalrevenue mt-3">
+                    <div class="item-row">
+                        <div class="itemcol">
+                            <p>Total Document</p>
+                            <span class="number c-01">{{ $total_doc_count }}</span>
                         </div>
-                        <div class="bdet-note-item">
-                            <div class="bdet-note-meta">Amit (SC Manager) · 08 Mar 2024 · 12:00 PM</div>
-                            <div class="bdet-note-text">Installed on KA-05-AB-1234 as OEM replacement. Previous Exide battery was 42 months old. New Amaron Pro Truck 150Ah fitted as primary.</div>
+                        <div class="itemcol">
+                            <p>Expired</p>
+                            <span class="number c-02">{{ $expired_doc_count }}</span>
+                        </div>
+                        <div class="itemcol">
+                            <p>Expiring Soon</p>
+                            <span class="number c-03">{{ $expiring_doc_count }}</span>
+                        </div>
+                        <div class="itemcol">
+                            <p>Valid</p>
+                            <span class="number c-04">{{ $total_doc_count - $expired_doc_count }}</span>
                         </div>
                     </div>
                 </div>
+
+                {{-- Document Table --}}
+                <div class="vehiclestable">
+                    <div class="itemtop">
+                        <span class="sec-title">Battery Documents</span>
+                        <a href="#" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#bdet-add-document">
+                            <i class="uil uil-plus me-1"></i>Documents
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-driver-table">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:120px">Document Type</th>
+                                    <th style="min-width:120px">Document Number</th>
+                                    <th>Issue Date</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($mediadocuments as $mediadocument)
+                                    @php
+                                        $medias = $mediadocument->medias;
+                                        $files  = $medias->map(function ($media) {
+                                            $media->url = asset('medias/' . $media->file_path);
+                                            return $media;
+                                        });
+                                    @endphp
+                                    <tr>
+                                        <td><span class="value">{{ $mediadocument->attachmenttype->name }}</span></td>
+                                        <td><span class="value">{{ $mediadocument->document_number }}</span></td>
+                                        <td><span class="value">{{ date('d/m/Y', strtotime($mediadocument->issue_date)) }}</span></td>
+                                        <td><span class="value">{{ $mediadocument->expiry_date ? date('d/m/Y', strtotime($mediadocument->expiry_date)) : '-' }}</span></td>
+                                        <td>
+                                            @if($mediadocument->expiry_date)
+                                                @if(date('Y-m-d', strtotime($mediadocument->expiry_date)) > date('Y-m-d', strtotime('+10days')))
+                                                    <span class="badge badge-success">Active</span>
+                                                @elseif(date('Y-m-d', strtotime($mediadocument->expiry_date)) >= date('Y-m-d'))
+                                                    <span class="badge badge-warning">Expiring Soon</span>
+                                                @else
+                                                    <span class="badge badge-danger">Expired</span>
+                                                @endif
+                                            @else
+                                                <span class="badge badge-secondary">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="value">
+                                                @if(!empty($mediadocument->notes))
+                                                    {{ \Illuminate\Support\Str::limit($mediadocument->notes, 20, '...') }}
+                                                    @if(strlen($mediadocument->notes) > 20)
+                                                        <a href="javascript:void(0)" class="bdet-showMore"
+                                                           data-bs-toggle="modal" data-bs-target="#bdet-modal-notes"
+                                                           data-notes="{{ $mediadocument->notes }}">
+                                                            <i class="uil uil-eye"></i>
+                                                        </a>
+                                                    @endif
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0)" class="text-info bdet-view-files"
+                                               data-files='@json($files)'><i class="uil uil-document-info"></i></a>
+                                            <a href="javascript:void(0)" class="bdet-item-edit text-success"
+                                               data-url="{{ route('inventory.battery.document.update', $mediadocument->id) }}"
+                                               data-attachment_type="{{ $mediadocument->attachmenttype->name }}"
+                                               data-document_number="{{ $mediadocument->document_number }}"
+                                               data-issue_date="{{ \Carbon\Carbon::parse($mediadocument->issue_date)->format('d/m/Y') }}"
+                                               data-expiry_date="{{ $mediadocument->expiry_date ? \Carbon\Carbon::parse($mediadocument->expiry_date)->format('d/m/Y') : '' }}"
+                                               data-notes="{{ $mediadocument->notes }}"
+                                               data-reminder_days="{{ $mediadocument->reminder_days ?? '' }}"
+                                               data-has_reminder="{{ $mediadocument->set_reminder }}"
+                                               data-bs-toggle="modal" data-bs-target="#bdet-edit-document">
+                                                <i class="uil uil-pen me-2"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-3">No documents found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>{{-- end table-responsive --}}
+                </div>{{-- end vehiclestable --}}
+
+            </div>{{-- end #bdet-tab-docs --}}
+
+            {{-- ══════════════ TAB: COMMENTS ══════════════ --}}
+            <div class="tab-pane fade vdtl_comment1sec" id="bdet-tab-comments">
+                <div class="note-box">
+                    <label for="bdet-noteInput" class="form-label">Comments<i class="bi bi-info-circle"></i></label>
+
+                    <form action="{{ route('inventory.battery.comment.store', $battery->id) }}" id="bdet-commentForm">
+                        <div class="note-input-wrapper">
+                            @csrf
+                            <div class="note-avatar">{{ strtoupper(Auth::user()->name[0]) }}</div>
+                            <div class="note-input-area">
+                                <input type="text" id="bdet-noteInput" class="form-control" placeholder="Comments" name="comment" />
+                                <span class="text-danger error" id="bdet-comment_error"></span>
+                            </div>
+                            <button type="submit" class="note-send-btn submitBtn"><i class="bi bi-send"></i></button>
+                        </div>
+                    </form>
+
+                    <div class="text_bdwrapper">
+                        @forelse($comments as $comment)
+                            <div class="item_row">
+                                <div class="name_fw">{{ strtoupper($comment->createdBy->name[0]) }}</div>
+                                <div class="text_bd">
+                                    <span>{{ $comment->createdBy->name }}</span>
+                                    <p>{{ $comment->comment }}</p>
+                                </div>
+                                <div class="time_sec">{{ $comment->created_at->diffForHumans() }}</div>
+                            </div>
+                        @empty
+                        @endforelse
+                    </div>
+                </div>
             </div>
+            {{-- ══════════════ END TAB: COMMENTS ══════════════ --}}
 
                     </div>{{-- end tab-content --}}
                 </div>{{-- end container-fluid --}}
             </div>{{-- end vehicle-itemtab --}}
 
         </div>{{-- end main-wrap --}}
-    </div>
-</div>
+    </div>{{-- end wrapper --}}
+</div>{{-- end layout-wrapper --}}
 @endsection
 
 @section('js')
-<script src="{{ asset('js/inventory/battery-details.js?v=1.0') }}"></script>
+<script src="{{ asset('js/inventory/battery-details.js?v=1.4') }}"></script>
 @endsection
+                                 

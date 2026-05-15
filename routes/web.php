@@ -766,6 +766,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/battery/save',        [App\Http\Controllers\WorkshopController::class, 'storeBattery'])->name('battery.save');
         Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
         Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
+        Route::post('/battery/{id}/comment/save',               [App\Http\Controllers\WorkshopController::class, 'batteryStoreComment'])->name('battery.comment.store');
+        Route::post('/battery/{id}/document/save',              [App\Http\Controllers\WorkshopController::class, 'batteryStoreDocument'])->name('battery.document.store');
+        Route::post('/battery/document/{mediadocument}/update', [App\Http\Controllers\WorkshopController::class, 'batteryUpdateDocument'])->name('battery.document.update');
+        Route::delete('/battery/document/media/{media}',        [App\Http\Controllers\WorkshopController::class, 'batteryDestroyDocument'])->name('battery.document.destroy');
         Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
         Route::get('/battery/{id}/replace',     [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
         Route::post('/battery/{id}/change-status', [App\Http\Controllers\WorkshopController::class, 'batteryChangeStatus'])->name('battery.change-status');
