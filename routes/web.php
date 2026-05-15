@@ -440,6 +440,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/batteries/available', [App\Http\Controllers\BatteryManagementController::class, 'getAvailableWarehouseBatteries'])->name('batteries.available');
     });
 
+    // Battery Owner Dashboard
+    Route::prefix('batteries')->name('battery.')->group(function () {
+        Route::get('/owner-dashboard', [App\Http\Controllers\BatteryOwnerDashboardController::class, 'index'])->name('owner-dashboard');
+    });
+
     /******************************** Vehicle Master **********************************************************/
 
 
