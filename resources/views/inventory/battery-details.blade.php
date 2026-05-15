@@ -2,7 +2,8 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
-<link href="{{ asset('css/Inventory/battery-details.css?v=2.2') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-details.css?v=2.3') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 @endsection
 
 @section('content')
@@ -501,7 +502,8 @@
                                     @php
                                         $medias = $mediadocument->medias;
                                         $files  = $medias->map(function ($media) {
-                                            $media->url = asset('medias/' . $media->file_path);
+                                            $media->url        = asset('medias/' . $media->file_path);
+                                            $media->delete_url = route('inventory.battery.document.destroy', $media->id);
                                             return $media;
                                         });
                                     @endphp
@@ -528,7 +530,7 @@
                                                 @if(!empty($mediadocument->notes))
                                                     {{ \Illuminate\Support\Str::limit($mediadocument->notes, 20, '...') }}
                                                     @if(strlen($mediadocument->notes) > 20)
-                                                        <a href="javascript:void(0)" class="bdet-showMore"
+                                                        <a href="javascript:void(0)" class="showMore"
                                                            data-bs-toggle="modal" data-bs-target="#bdet-modal-notes"
                                                            data-notes="{{ $mediadocument->notes }}">
                                                             <i class="uil uil-eye"></i>
@@ -540,9 +542,9 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a href="javascript:void(0)" class="text-info bdet-view-files"
+                                            <a href="javascript:void(0)" class="text-info view-files"
                                                data-files='@json($files)'><i class="uil uil-document-info"></i></a>
-                                            <a href="javascript:void(0)" class="bdet-item-edit text-success"
+                                            <a href="javascript:void(0)" class="item-edit text-success"
                                                data-url="{{ route('inventory.battery.document.update', $mediadocument->id) }}"
                                                data-attachment_type="{{ $mediadocument->attachmenttype->name }}"
                                                data-document_number="{{ $mediadocument->document_number }}"
@@ -611,7 +613,258 @@
 </div>{{-- end layout-wrapper --}}
 @endsection
 
+{{-- ══════════════════════════════════════════════════════════════════════
+     ADD DOCUMENT MODAL  #bdet-add-document
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-add-document" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="uil uil-file-plus me-2"></i>Add Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('inventory.battery.document.store', $battery->id) }}" id="documentForm">
+                    @csrf
+                    <div class="row">
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Battery<span class="text-danger ms-1">*</span></label>
+                            <input type="text" class="form-control bg-light" readonly value="{{ $battery->battery_serial }}" />
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Type<span class="text-danger ms-1">*</span></label>
+                            <select name="attachment_type" class="form-select" id="attachmenttype_dd">
+                                <option value="">Search Document Type...</option>
+                                @forelse($attachmenttypes as $attachmenttype)
+                                    <option value="{{ $attachmenttype->name }}">{{ $attachmenttype->name }}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                            <div class="error text-danger" id="document_attachment_type_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Number</label>
+                            <input type="text" class="form-control" name="document_number" placeholder="" />
+                            <div class="error text-danger" id="document_document_number_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Issue Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="doc_issue_date" name="issue_date" readonly />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <div class="error text-danger" id="document_issue_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Expiry Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="doc_expiry_date" name="expiry_date" readonly />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <div class="error text-danger" id="document_expiry_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Upload File(s)<span class="text-danger ms-1">*</span></label>
+                            <div class="dropzone" id="myDropzone">
+                                <div class="dz-message needsclick">
+                                    <i class="uil uil-upload me-2"></i>
+                                    Drop files here or click to upload (Max 2 files)
+                                </div>
+                            </div>
+                            <div class="error text-danger" id="document_files_error"></div>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <div class="d-flex align-items-center gap-2">
+                                <input class="form-check-input clickto-adclass" name="set_reminder" type="checkbox" id="setReminder" />
+                                <label class="mb-0">Set Reminder</label>
+                            </div>
+                            <div class="days-beforeexpiry mt-2" style="display:none;">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <label>Remind Before Days <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="reminder_days">
+                                            <option value="">Choose...</option>
+                                            <option value="7">7 Days</option>
+                                            <option value="10">10 Days</option>
+                                            <option value="20">20 Days</option>
+                                        </select>
+                                        <div class="error text-danger" id="document_reminder_days_error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label>Notes</label>
+                            <textarea class="form-control" rows="3" name="notes"></textarea>
+                            <div class="error text-danger" id="document_notes_error"></div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary docSubmitForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════════════
+     EDIT DOCUMENT MODAL  #bdet-edit-document
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-edit-document" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="uil uil-file-edit-alt me-2"></i>Edit Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="" id="editDocumentForm">
+                    @csrf
+                    <div class="row">
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Battery<span class="text-danger ms-1">*</span></label>
+                            <input type="text" class="form-control bg-light" readonly value="{{ $battery->battery_serial }}" />
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Type<span class="text-danger ms-1">*</span></label>
+                            <select name="attachment_type" class="form-select" id="edit_attachmenttype_dd">
+                                <option value="">Search Document Type...</option>
+                                @forelse($attachmenttypes as $attachmenttype)
+                                    <option value="{{ $attachmenttype->name }}">{{ $attachmenttype->name }}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                            <div class="error text-danger" id="edit_document_attachment_type_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Document Number</label>
+                            <input type="text" class="form-control" name="document_number" placeholder="" />
+                            <div class="error text-danger" id="edit_document_document_number_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Issue Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="edit_doc_issue_date" name="issue_date" readonly />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <div class="error text-danger" id="edit_document_issue_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Expiry Date</label>
+                            <div class="input-group">
+                                <input class="date form-control" type="text" id="edit_doc_expiry_date" name="expiry_date" readonly />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <div class="error text-danger" id="edit_document_expiry_date_error"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6 form-group">
+                            <label>Upload File(s) <span class="text-muted small">(optional — add more files)</span></label>
+                            <div class="dropzone" id="edit_myDropzone">
+                                <div class="dz-message needsclick">
+                                    <i class="uil uil-upload me-2"></i>
+                                    Drop files here or click to upload (Max 2 files)
+                                </div>
+                            </div>
+                            <div class="error text-danger" id="edit_document_files_error"></div>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <div class="d-flex align-items-center gap-2">
+                                <input class="form-check-input" name="set_reminder" type="checkbox" id="edit_setReminder" />
+                                <label class="mb-0">Set Reminder</label>
+                            </div>
+                            <div class="days-beforeexpiry mt-2" id="edit_reminder_wrap" style="display:none;">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <label>Remind Before Days <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="edit_reminder_days" name="reminder_days">
+                                            <option value="">Choose...</option>
+                                            <option value="7">7 Days</option>
+                                            <option value="10">10 Days</option>
+                                            <option value="20">20 Days</option>
+                                        </select>
+                                        <div class="error text-danger" id="edit_document_reminder_days_error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label>Notes</label>
+                            <textarea class="form-control" rows="3" name="notes" id="edit_document_notes"></textarea>
+                            <div class="error text-danger" id="edit_document_notes_error"></div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary editDocSubmitForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Notes modal --}}
+<div class="modal fade" id="bdet-modal-notes" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="bdet-modal-notes-content"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- File preview modal --}}
+<div class="modal fade" id="filePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Uploaded Documents</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mt-2 attachment-container" id="filePreviewContainer1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('js')
-<script src="{{ asset('js/inventory/battery-details.js?v=1.4') }}"></script>
+{{-- Config injected via data-* (SD-1 compliant) --}}
+<div id="batteryDetailsConfig"
+     data-pdf-logo="{{ asset('images/pdf_file.png') }}"
+     data-other-logo="{{ asset('images/other_file.svg') }}"
+     data-csrf="{{ csrf_token() }}"
+     style="display:none;"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+<script src="{{ asset('js/inventory/battery-details.js?v=2.0') }}"></script>
 @endsection
                                  

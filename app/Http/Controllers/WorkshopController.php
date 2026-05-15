@@ -1131,6 +1131,15 @@ class WorkshopController extends Controller
             return response()->json(['success' => false, 'message' => 'Battery not found.'], 422);
         }
 
+        $request->merge([
+            'issue_date'  => $request->issue_date
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->issue_date)->format('Y-m-d')
+                : null,
+            'expiry_date' => $request->expiry_date
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->expiry_date)->format('Y-m-d')
+                : null,
+        ]);
+
         $rules = [
             'files'           => 'required|array|min:1',
             'files.*'         => 'required|file|max:2048|mimes:jpg,jpeg,png,webp,pdf',
@@ -1171,10 +1180,10 @@ class WorkshopController extends Controller
     {
         $request->merge([
             'issue_date'  => $request->issue_date
-                ? Carbon::createFromFormat('d/m/Y', $request->issue_date)->format('Y-m-d')
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->issue_date)->format('Y-m-d')
                 : null,
             'expiry_date' => $request->expiry_date
-                ? Carbon::createFromFormat('d/m/Y', $request->expiry_date)->format('Y-m-d')
+                ? \Carbon\Carbon::createFromFormat('d/m/Y', $request->expiry_date)->format('Y-m-d')
                 : null,
         ]);
 
@@ -1243,15 +1252,8 @@ class WorkshopController extends Controller
         return view('inventory.battery-replace', compact('id'));
     }
 
-    /**
-     * AJAX POST — change battery_status for a Yet to Decide battery.
-     * Allowed targets: Warranty Claim, Repair, Scrap
-     * SD-3: AJAX / SD-5: DB::transaction + try-catch / SD-8: find() / SD-9: HTTP codes
-     */
     public function batteryChangeStatus(\Illuminate\Http\Request $request, $id)
     {
-        $allowed = ['Warranty Claim', 'Repair', 'Scrap'];
-
         $request->validate([
             'new_status' => 'required|in:Warranty Claim,Repair,Scrap',
         ]);
