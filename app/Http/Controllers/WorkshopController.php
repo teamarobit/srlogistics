@@ -15,9 +15,11 @@ use App\Models\SparePart;
 use App\Models\WsSparePartCategory;
 use App\Models\Attachmenttype;
 use App\Models\Battery;
+use App\Models\BatteryMaintenanceSchedule;
 use App\Models\Comment;
 use App\Models\Media;
 use App\Models\Mediadocument;
+use App\Models\Vehiclebattery;
 use App\Services\MediaDocumentService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -1078,7 +1080,12 @@ class WorkshopController extends Controller
 
     public function batteryDetails($id)
     {
-        $battery  = Battery::findOrFail($id);
+        $battery  = Battery::find($id);
+        if (! $battery) {
+            abort(404);
+        }
+        $battery->load(['allocatedVehicle.basicinfo']);
+
         $comments = $battery->comments()->with('createdBy')->latest()->get();
 
         $today        = Carbon::today();
@@ -1091,11 +1098,120 @@ class WorkshopController extends Controller
         $expired_doc_count  = $mediadocuments->where('expiry_date', '<', $today)->count();
         $expiring_doc_count = $mediadocuments->where('expiry_date', '>=', $today)->where('expiry_date', '<=', $tenDaysLater)->count();
 
+        // Allocated Vehicles — full history from vehiclebatteries (incl. soft-deleted = removed)
+        $vehicleAllocations = Vehiclebattery::withTrashed()
+            ->where('warehouse_battery_id', $battery->id)
+            ->with(['vehicle.basicinfo', 'vehicle.driverAllocation.contact'])
+            ->orderBy('fitment_date', 'desc')
+            ->get();
+
+        // Maintenance Schedules
+        $maintenanceSchedules = $battery->maintenanceSchedules()
+            ->with(['vehicle.basicinfo'])
+            ->orderByRaw("FIELD(status,'Missed','Overdue','Pending','Upcoming','Scheduled','Completed','Done')")
+            ->orderBy('next_due_date')
+            ->get();
+
         return view('inventory.battery-details', compact(
             'battery', 'comments',
             'attachmenttypes', 'mediadocuments',
-            'total_doc_count', 'expired_doc_count', 'expiring_doc_count'
+            'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
+            'vehicleAllocations', 'maintenanceSchedules'
         ));
+    }
+
+    public function batteryStoreMaintenance(Request $request, $id): JsonResponse
+    {
+        $battery = Battery::find($id);
+        if (! $battery) {
+            return response()->json(['success' => false, 'message' => 'Battery not found.'], 422);
+        }
+
+        $request->validate([
+            'maintenance_item' => 'nullable|string|max:255',
+            'maintenance_type' => 'nullable|string|in:Inspection,Charging,Replacement,Other',
+            'vehicle_id'       => 'nullable|integer',
+            'last_done_date'   => 'nullable|date',
+            'next_due_date'    => 'nullable|date',
+            'odometer_km'      => 'nullable|integer|min:0',
+            'scheduled_km'     => 'nullable|integer|min:0',
+            'actual_km'        => 'nullable|integer|min:0',
+            'cost'             => 'nullable|numeric|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue,Completed,Missed,Upcoming',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $result = DB::transaction(function () use ($request, $battery) {
+                return BatteryMaintenanceSchedule::create([
+                    'battery_id'       => $battery->id,
+                    'organisation_id'  => Auth::user()->organisation_id ?? 1,
+                    'maintenance_item' => $request->maintenance_item,
+                    'maintenance_type' => $request->maintenance_type,
+                    'vehicle_id'       => $request->vehicle_id ?: null,
+                    'last_done_date'   => $request->last_done_date ?: null,
+                    'next_due_date'    => $request->next_due_date ?: null,
+                    'odometer_km'      => $request->odometer_km ?: null,
+                    'scheduled_km'     => $request->scheduled_km ?: null,
+                    'actual_km'        => $request->actual_km ?: null,
+                    'cost'             => $request->cost ?: null,
+                    'status'           => $request->status,
+                    'notes'            => $request->notes,
+                    'created_by'       => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['success' => true, 'message' => 'Maintenance schedule saved successfully.', 'id' => $result->id], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batteryUpdateMaintenance(Request $request, $maintId): JsonResponse
+    {
+        $schedule = BatteryMaintenanceSchedule::find($maintId);
+        if (! $schedule) {
+            return response()->json(['success' => false, 'message' => 'Record not found.'], 422);
+        }
+
+        $request->validate([
+            'maintenance_item' => 'nullable|string|max:255',
+            'maintenance_type' => 'nullable|string|in:Inspection,Charging,Replacement,Other',
+            'vehicle_id'       => 'nullable|integer',
+            'last_done_date'   => 'nullable|date',
+            'next_due_date'    => 'nullable|date',
+            'odometer_km'      => 'nullable|integer|min:0',
+            'scheduled_km'     => 'nullable|integer|min:0',
+            'actual_km'        => 'nullable|integer|min:0',
+            'cost'             => 'nullable|numeric|min:0',
+            'status'           => 'required|in:Scheduled,Pending,Done,Overdue,Completed,Missed,Upcoming',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $schedule) {
+                $schedule->update([
+                    'maintenance_item' => $request->maintenance_item,
+                    'maintenance_type' => $request->maintenance_type,
+                    'vehicle_id'       => $request->vehicle_id ?: null,
+                    'last_done_date'   => $request->last_done_date ?: null,
+                    'next_due_date'    => $request->next_due_date ?: null,
+                    'odometer_km'      => $request->odometer_km ?: null,
+                    'scheduled_km'     => $request->scheduled_km ?: null,
+                    'actual_km'        => $request->actual_km ?: null,
+                    'cost'             => $request->cost ?: null,
+                    'status'           => $request->status,
+                    'notes'            => $request->notes,
+                    'updated_by'       => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['success' => true, 'message' => 'Maintenance schedule updated successfully.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function batteryStoreComment(Request $request, $id)

@@ -1,13 +1,14 @@
 /* =========================================================
-   Battery Details Page — battery-details.js  v2.0
+   Battery Details Page — battery-details.js  v3.0
    ========================================================= */
 
 // ── Read config injected by blade via data-* (SD-1 compliant) ──────────────
-var _cfg       = document.getElementById('batteryDetailsConfig') || {};
-var PDF_LOGO   = (_cfg.dataset && _cfg.dataset.pdfLogo)   || '';
-var OTHER_LOGO = (_cfg.dataset && _cfg.dataset.otherLogo) || '';
-var CSRF_TOKEN = (_cfg.dataset && _cfg.dataset.csrf)
-                   || ($('meta[name="csrf-token"]').attr('content') || '');
+var _cfg           = document.getElementById('batteryDetailsConfig') || {};
+var PDF_LOGO       = (_cfg.dataset && _cfg.dataset.pdfLogo)        || '';
+var OTHER_LOGO     = (_cfg.dataset && _cfg.dataset.otherLogo)      || '';
+var CSRF_TOKEN     = (_cfg.dataset && _cfg.dataset.csrf)
+                       || ($('meta[name="csrf-token"]').attr('content') || '');
+var MAINT_STORE_URL = (_cfg.dataset && _cfg.dataset.maintStoreUrl) || '';
 
 // ── Toast mixin (SD-7) ───────────────────────────────────────────────────────
 const Toast = Swal.mixin({
@@ -421,5 +422,166 @@ $(document).ready(function () {
         var tab = new bootstrap.Tab(targetEl);
         tab.show();
     }
+
+    // ── Allocated Vehicles — date pickers ─────────────────────────────────
+    $('#bdet-veh-daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale         : { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
+    });
+    $('#bdet-veh-daterange').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        filterAllocatedVehicles();
+    });
+    $('#bdet-veh-daterange').on('cancel.daterangepicker', function () {
+        $(this).val('');
+        filterAllocatedVehicles();
+    });
+
+    // ── Allocated Vehicles — search filter ───────────────────────────────
+    $('#bdet-veh-search').on('input', filterAllocatedVehicles);
+
+    $('#bdet-veh-reset').on('click', function () {
+        $('#bdet-veh-daterange').val('');
+        $('#bdet-veh-search').val('');
+        filterAllocatedVehicles();
+    });
+
+    function filterAllocatedVehicles() {
+        var searchVal  = $('#bdet-veh-search').val().toLowerCase().trim();
+        var dateRange  = $('#bdet-veh-daterange').val().trim();
+        var startDate  = null, endDate = null;
+
+        if (dateRange) {
+            var parts  = dateRange.split(' - ');
+            startDate  = parts[0] ? moment(parts[0], 'DD/MM/YYYY') : null;
+            endDate    = parts[1] ? moment(parts[1], 'DD/MM/YYYY') : null;
+        }
+
+        var rows    = $('#bdet-alloc-table tbody tr').not('#bdet-veh-empty-row');
+        var visible = 0;
+
+        rows.each(function () {
+            var veh     = $(this).data('vehicle') || '';
+            var fitment = $(this).data('fitment') || '';
+            var matchVeh   = !searchVal  || veh.includes(searchVal);
+            var matchDate  = true;
+            if (startDate && fitment) {
+                var fDate = moment(fitment, 'YYYY-MM-DD');
+                matchDate = fDate.isSameOrAfter(startDate) && (!endDate || fDate.isSameOrBefore(endDate));
+            }
+            if (matchVeh && matchDate) { $(this).show(); visible++; }
+            else { $(this).hide(); }
+        });
+
+        $('#bdet-veh-empty-row').toggle(visible === 0 && rows.length > 0);
+    }
+
+    // ── Maintenance date pickers ──────────────────────────────────────────
+    var maintDateOpts = { singleDatePicker: true, showDropdowns: true, autoApply: true, locale: { format: 'DD/MM/YYYY' } };
+    $('#maint_last_done, #maint_next_due').daterangepicker(maintDateOpts);
+    $('#edit_maint_last_done, #edit_maint_next_due').daterangepicker(maintDateOpts);
+
+    // ── Maintenance — Save Schedule ───────────────────────────────────────
+    $('#bdet-maint-save-btn').on('click', function () {
+        var $btn    = $(this);
+        var $txt    = $('#bdet-maint-save-txt');
+        var $form   = $('#bdet-maint-form');
+
+        // Validate
+        var item    = $('#maint_item').val().trim();
+        var status  = $('#maint_status').val();
+        var valid   = true;
+
+        $('#maint_item_err, #maint_status_err').text('');
+
+        if (!item) {
+            $('#maint_item_err').text('Maintenance item is required.');
+            valid = false;
+        }
+        if (!status) {
+            $('#maint_status_err').text('Status is required.');
+            valid = false;
+        }
+        if (!valid) { return; }
+
+        $btn.prop('disabled', true);
+        $txt.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…');
+
+        $.ajax({
+            method     : 'POST',
+            url        : MAINT_STORE_URL,
+            data       : $form.serialize(),
+            dataType   : 'json',
+            success    : function (res) {
+                Toast.fire({ icon: 'success', title: res.message, didClose: function () { location.reload(true); } });
+                $btn.prop('disabled', false);
+                $txt.text('Save Schedule');
+            },
+            error      : function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                Toast.fire({ icon: 'error', title: msg });
+                $btn.prop('disabled', false);
+                $txt.text('Save Schedule');
+            }
+        });
+    });
+
+    // ── Maintenance — Populate Edit modal ─────────────────────────────────
+    $(document).on('click', '.bdet-maint-edit', function () {
+        var btn = $(this);
+        $('#bdet-maint-edit-form').attr('action', btn.data('update-url'));
+        $('#edit_maint_item').val(btn.data('item'));
+        $('#edit_maint_type').val(btn.data('type'));
+        $('#edit_maint_status').val(btn.data('status'));
+        $('#edit_maint_odometer').val(btn.data('odometer'));
+        $('#edit_maint_scheduled_km').val(btn.data('scheduled-km'));
+        $('#edit_maint_cost').val(btn.data('cost'));
+        $('#edit_maint_notes').val(btn.data('notes'));
+
+        var setDP = function (sel, val) {
+            var picker = $(sel).data('daterangepicker');
+            if (!val) { $(sel).val(''); return; }
+            var d = moment(val, 'DD/MM/YYYY');
+            if (picker) { picker.setStartDate(d); picker.setEndDate(d); }
+            $(sel).val(d.format('DD/MM/YYYY'));
+        };
+        setDP('#edit_maint_last_done', btn.data('last-done'));
+        setDP('#edit_maint_next_due',  btn.data('next-due'));
+    });
+
+    // ── Maintenance — Update Schedule ─────────────────────────────────────
+    $('#bdet-maint-update-btn').on('click', function () {
+        var $btn  = $(this);
+        var $txt  = $('#bdet-maint-update-txt');
+        var $form = $('#bdet-maint-edit-form');
+
+        var status = $('#edit_maint_status').val();
+        $('#edit_maint_status_err').text('');
+        if (!status) {
+            $('#edit_maint_status_err').text('Status is required.');
+            return;
+        }
+
+        $btn.prop('disabled', true);
+        $txt.html('<span class="spinner-border spinner-border-sm me-1"></span>Updating…');
+
+        $.ajax({
+            method   : 'POST',
+            url      : $form.attr('action'),
+            data     : $form.serialize(),
+            dataType : 'json',
+            success  : function (res) {
+                Toast.fire({ icon: 'success', title: res.message, didClose: function () { location.reload(true); } });
+                $btn.prop('disabled', false);
+                $txt.text('Update Schedule');
+            },
+            error    : function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                Toast.fire({ icon: 'error', title: msg });
+                $btn.prop('disabled', false);
+                $txt.text('Update Schedule');
+            }
+        });
+    });
 
 });

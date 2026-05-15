@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
-<link href="{{ asset('css/Inventory/battery-details.css?v=2.3') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-details.css?v=2.5') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 @endsection
 
@@ -139,9 +139,21 @@
                             </button>
                         </li>
                         <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-vehicles">
+                                <span class="icon"><i class="uil uil-car" style="font-size:16px;vertical-align:middle;"></i></span>
+                                Allocated Vehicles
+                            </button>
+                        </li>
+                        <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-log">
                                 <span class="icon"><i class="uil uil-history" style="font-size:16px;vertical-align:middle;"></i></span>
                                 Movement Log
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-maintenance">
+                                <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" style="width:16px;vertical-align:middle;" /></span>
+                                Maintenance
                             </button>
                         </li>
                         <li class="nav-item">
@@ -295,6 +307,139 @@
                     </div>
                 </div>
             </div>
+
+            {{-- ══════════════ TAB: ALLOCATED VEHICLES ══════════════ --}}
+            <div class="tab-pane fade" id="bdet-tab-vehicles">
+
+                {{-- Filter --}}
+                <div class="accordion mt-3" id="bdet-accord-vehicle">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="bdet-head-vehicle">
+                            <button class="accordion-button filter-options" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#bdet-collapse-vehicle"
+                                aria-expanded="true" aria-controls="bdet-collapse-vehicle">
+                                <div class="item-filter">
+                                    <span class="filter-icon">
+                                        <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                    </span>
+                                    <p>Filter Options</p>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="bdet-collapse-vehicle" class="accordion-collapse collapse show"
+                             aria-labelledby="bdet-head-vehicle" data-bs-parent="#bdet-accord-vehicle">
+                            <div class="accordion-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-4">
+                                        <label class="form-label mb-1" style="font-size:13px;font-weight:500;color:#495057;">Date Range</label>
+                                        <input type="text" class="form-control" id="bdet-veh-daterange"
+                                               placeholder="Select date range..." />
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label mb-1" style="font-size:13px;font-weight:500;color:#495057;">Vehicle Number</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="bdet-veh-search"
+                                                   placeholder="Search vehicle number..." />
+                                            <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary" type="button" id="bdet-veh-reset">
+                                            <i class="uil uil-sync me-1"></i>Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Allocated Vehicle List --}}
+                <div class="vehiclestable mt-3">
+                    <div class="itemtop">
+                        <span class="sec-title">Allocated Vehicle List</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-driver-table" id="bdet-alloc-table">
+                            <thead>
+                                <tr>
+                                    <th>Vehicle Number</th>
+                                    <th>Battery Position</th>
+                                    <th>Driver Name &amp; Code</th>
+                                    <th>Start &amp; End Date</th>
+                                    <th>Allocated Period</th>
+                                    <th>Allocated KM Driven</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($vehicleAllocations as $va)
+                                @php
+                                    $vehNo       = $va->vehicle->basicinfo->vehicle_number ?? '—';
+                                    $battPos     = $va->battery_position ?? '—';
+                                    $driver      = $va->vehicle->driverAllocation->contact ?? null;
+                                    $driverName  = $driver ? $driver->contact_name : '—';
+                                    $driverCode  = $driver ? ($driver->contact_code ?? '') : '';
+
+                                    $start = $va->fitment_date ? \Carbon\Carbon::parse($va->fitment_date) : null;
+                                    $end   = $va->deleted_at   ? \Carbon\Carbon::parse($va->deleted_at)   : null;
+
+                                    if ($start) {
+                                        $endRef    = $end ?? \Carbon\Carbon::today();
+                                        $days      = $start->diffInDays($endRef);
+                                        $months    = (int) $start->diffInMonths($endRef);
+                                        $years     = (int) $start->diffInYears($endRef);
+                                        $periodStr = $days . ' Days';
+                                        if ($months >= 1) $periodStr .= ' / ' . $months . ' Months';
+                                        if ($years  >= 1) $periodStr .= ' / ' . $years  . ' Years';
+                                    } else {
+                                        $periodStr = '—';
+                                    }
+
+                                    // Allocated KM Driven
+                                    if ($va->km_at_fitment !== null && $va->km_at_removal !== null) {
+                                        $kmDriven = number_format($va->km_at_removal - $va->km_at_fitment) . ' KM';
+                                    } elseif ($va->km_at_fitment !== null && is_null($va->deleted_at)) {
+                                        $kmDriven = 'Active (from ' . number_format($va->km_at_fitment) . ' KM)';
+                                    } else {
+                                        $kmDriven = '—';
+                                    }
+
+                                    $startStr = $start ? $start->format('d-m-Y') : '—';
+                                    $endStr   = $end   ? $end->format('d-m-Y')   : 'Active';
+                                @endphp
+                                <tr data-vehicle="{{ strtolower($vehNo) }}"
+                                    data-fitment="{{ $start ? $start->format('Y-m-d') : '' }}"
+                                    data-removal="{{ $end   ? $end->format('Y-m-d')   : '' }}">
+                                    <td><span class="fw-semibold">{{ $vehNo }}</span></td>
+                                    <td>{{ $battPos }}</td>
+                                    <td>
+                                        <span class="d-block">{{ $driverName }}</span>
+                                        @if($driverCode)
+                                            <small class="text-muted">{{ $driverCode }}</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="d-block">{{ $startStr }}</span>
+                                        <small class="text-muted">to {{ $endStr }}</small>
+                                    </td>
+                                    <td>{{ $periodStr }}</td>
+                                    <td>{{ $kmDriven }}</td>
+                                </tr>
+                                @empty
+                                <tr id="bdet-veh-empty-row">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="uil uil-truck fs-4 d-block mb-1"></i>
+                                        No vehicle allocation history found for this battery.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            {{-- ══════════════ END TAB: ALLOCATED VEHICLES ══════════════ --}}
 
             {{-- ══════════════ TAB: MOVEMENT LOG ══════════════ --}}
             <div class="tab-pane fade" id="bdet-tab-log">
@@ -450,6 +595,109 @@
 
                 </div>{{-- end sc-card --}}
             </div>
+            {{-- ══════════════ END TAB: MOVEMENT LOG ══════════════ --}}
+
+            {{-- ══════════════ TAB: MAINTENANCE ══════════════ --}}
+            <div class="tab-pane fade" id="bdet-tab-maintenance">
+                <div class="totalrevenue mt-3">
+                    <div class="item-row">
+                        <div class="itemcol">
+                            <p>Total Schedules</p>
+                            <span class="number c-01">{{ $maintenanceSchedules->count() }}</span>
+                        </div>
+                        <div class="itemcol">
+                            <p>Pending / Overdue</p>
+                            <span class="number c-02">{{ $maintenanceSchedules->whereIn('status', ['Pending', 'Overdue', 'Missed'])->count() }}</span>
+                        </div>
+                        <div class="itemcol">
+                            <p>Upcoming</p>
+                            <span class="number c-03">{{ $maintenanceSchedules->whereIn('status', ['Scheduled', 'Upcoming'])->count() }}</span>
+                        </div>
+                        <div class="itemcol">
+                            <p>Completed</p>
+                            <span class="number c-04">{{ $maintenanceSchedules->whereIn('status', ['Done', 'Completed'])->count() }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vehiclestable">
+                    <div class="itemtop">
+                        <span class="sec-title">Scheduled Maintenance List</span>
+                        <a href="javascript:void(0)" class="addtripbtn"
+                           data-bs-toggle="modal" data-bs-target="#bdet-add-maintenance">
+                            <i class="uil uil-plus me-1"></i>Schedule Maintenance
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-driver-table" id="bdet-maint-table">
+                            <thead>
+                                <tr>
+                                    <th>Maintenance Item</th>
+                                    <th>Type</th>
+                                    <th>Vehicle</th>
+                                    <th>Last Done &amp; Next Due</th>
+                                    <th>Cost</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bdet-maint-tbody">
+                                @forelse($maintenanceSchedules as $ms)
+                                @php
+                                    $vehNo   = $ms->vehicle->basicinfo->vehicle_number ?? '—';
+                                    $lastDone = $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—';
+                                    $nextDue  = $ms->next_due_date  ? $ms->next_due_date->format('d-m-Y')  : '—';
+                                    $statusClass = match($ms->status) {
+                                        'Done', 'Completed' => 'badge-success',
+                                        'Overdue', 'Missed' => 'badge-danger',
+                                        'Pending'           => 'badge-warning',
+                                        default             => 'badge-secondary',
+                                    };
+                                @endphp
+                                <tr id="bdet-maint-row-{{ $ms->id }}">
+                                    <td>{{ $ms->maintenance_item ?? '—' }}</td>
+                                    <td>{{ $ms->maintenance_type ?? '—' }}</td>
+                                    <td>{{ $vehNo }}</td>
+                                    <td>
+                                        <span class="d-block">{{ $lastDone }}</span>
+                                        <small class="text-muted">Next: {{ $nextDue }}</small>
+                                    </td>
+                                    <td>{{ $ms->cost ? '₹ ' . number_format($ms->cost, 2) : '—' }}</td>
+                                    <td><span class="badge {{ $statusClass }}">{{ $ms->status }}</span></td>
+                                    <td class="text-center">
+                                        <a href="javascript:void(0)" class="text-success bdet-maint-edit"
+                                           data-id="{{ $ms->id }}"
+                                           data-item="{{ $ms->maintenance_item }}"
+                                           data-type="{{ $ms->maintenance_type }}"
+                                           data-vehicle="{{ $ms->vehicle_id }}"
+                                           data-last-done="{{ $ms->last_done_date ? $ms->last_done_date->format('d/m/Y') : '' }}"
+                                           data-next-due="{{ $ms->next_due_date ? $ms->next_due_date->format('d/m/Y') : '' }}"
+                                           data-odometer="{{ $ms->odometer_km }}"
+                                           data-scheduled-km="{{ $ms->scheduled_km }}"
+                                           data-actual-km="{{ $ms->actual_km }}"
+                                           data-cost="{{ $ms->cost }}"
+                                           data-status="{{ $ms->status }}"
+                                           data-notes="{{ $ms->notes }}"
+                                           data-update-url="{{ route('inventory.battery.maintenance.update', $ms->id) }}"
+                                           data-bs-toggle="modal" data-bs-target="#bdet-edit-maintenance">
+                                            <i class="uil uil-pen me-1"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr id="bdet-maint-empty-row">
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>
+                                        No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {{-- ══════════════ END TAB: MAINTENANCE ══════════════ --}}
 
             {{-- ══════════════ TAB: DOCUMENTS ══════════════ --}}
             <div class="tab-pane fade" id="bdet-tab-docs">
@@ -827,6 +1075,193 @@
     </div>
 </div>
 
+{{-- ══════════════════════════════════════════════════════════════════════
+     ADD MAINTENANCE MODAL  #bdet-add-maintenance
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-add-maintenance" tabindex="-1" aria-labelledby="bdetMaintModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bdetMaintModalLabel">
+                    <i class="uil uil-wrench me-2"></i>Schedule Maintenance &mdash;
+                    <span class="text-muted fw-normal fs-6">{{ $battery->battery_serial }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bdet-maint-form" action="{{ route('inventory.battery.maintenance.store', $battery->id) }}">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Maintenance Item <span class="text-danger">*</span></label>
+                            <input type="text" id="maint_item" name="maintenance_item" class="form-control"
+                                   placeholder="e.g. Voltage Check, Charging, Terminal Cleaning" />
+                            <span class="text-danger small d-block mt-1" id="maint_item_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Maintenance Type</label>
+                            <select class="form-select" id="maint_type" name="maintenance_type">
+                                <option value="">Select Type...</option>
+                                <option value="Inspection">Inspection</option>
+                                <option value="Charging">Charging</option>
+                                <option value="Replacement">Replacement</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="maint_type_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Last Done Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="maint_last_done" name="last_done_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <span class="text-danger small d-block mt-1" id="maint_last_done_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Next Due Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="maint_next_due" name="next_due_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                            <span class="text-danger small d-block mt-1" id="maint_next_due_err"></span>
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Odometer (KM)</label>
+                            <input type="number" class="form-control" name="odometer_km" placeholder="e.g. 50000" min="0" />
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Scheduled KM</label>
+                            <input type="number" class="form-control" name="scheduled_km" placeholder="e.g. 60000" min="0" />
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Cost (₹)</label>
+                            <input type="number" class="form-control" name="cost" placeholder="e.g. 500" min="0" step="0.01" />
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="maint_status" name="status">
+                                <option value="">Select Status...</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Done">Done</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Overdue">Overdue</option>
+                                <option value="Missed">Missed</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="maint_status_err"></span>
+                        </div>
+                        <div class="col-12 form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Optional notes..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="bdet-maint-save-btn">
+                    <span id="bdet-maint-save-txt">Save Schedule</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════════════
+     EDIT MAINTENANCE MODAL  #bdet-edit-maintenance
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-edit-maintenance" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="uil uil-pen me-2"></i>Edit Maintenance &mdash;
+                    <span class="text-muted fw-normal fs-6">{{ $battery->battery_serial }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bdet-maint-edit-form" action="">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Maintenance Item <span class="text-danger">*</span></label>
+                            <input type="text" id="edit_maint_item" name="maintenance_item" class="form-control"
+                                   placeholder="e.g. Voltage Check, Charging, Terminal Cleaning" />
+                            <span class="text-danger small d-block mt-1" id="edit_maint_item_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Maintenance Type</label>
+                            <select class="form-select" id="edit_maint_type" name="maintenance_type">
+                                <option value="">Select Type...</option>
+                                <option value="Inspection">Inspection</option>
+                                <option value="Charging">Charging</option>
+                                <option value="Replacement">Replacement</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Last Done Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="edit_maint_last_done" name="last_done_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Next Due Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="edit_maint_next_due" name="next_due_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Odometer (KM)</label>
+                            <input type="number" class="form-control" id="edit_maint_odometer" name="odometer_km" min="0" />
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Scheduled KM</label>
+                            <input type="number" class="form-control" id="edit_maint_scheduled_km" name="scheduled_km" min="0" />
+                        </div>
+                        <div class="col-12 col-md-4 form-group">
+                            <label class="form-label">Cost (₹)</label>
+                            <input type="number" class="form-control" id="edit_maint_cost" name="cost" min="0" step="0.01" />
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_maint_status" name="status">
+                                <option value="">Select Status...</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Done">Done</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Overdue">Overdue</option>
+                                <option value="Missed">Missed</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="edit_maint_status_err"></span>
+                        </div>
+                        <div class="col-12 form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="edit_maint_notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="bdet-maint-update-btn">
+                    <span id="bdet-maint-update-txt">Update Schedule</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Notes modal --}}
 <div class="modal fade" id="bdet-modal-notes" tabindex="-1">
     <div class="modal-dialog">
@@ -863,8 +1298,9 @@
      data-pdf-logo="{{ asset('images/pdf_file.png') }}"
      data-other-logo="{{ asset('images/other_file.svg') }}"
      data-csrf="{{ csrf_token() }}"
+     data-maint-store-url="{{ route('inventory.battery.maintenance.store', $battery->id) }}"
      style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('js/inventory/battery-details.js?v=2.0') }}"></script>
+<script src="{{ asset('js/inventory/battery-details.js?v=3.0') }}"></script>
 @endsection
                                  

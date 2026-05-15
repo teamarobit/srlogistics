@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+
 /* ── DEV: patch IP logos — remove after use ──────────────────────── */
 Route::get('/dev/patch-ip-logos', function () {
     $logos = ['INS-001'=>'logo_new_india.svg','INS-002'=>'logo_united_india.svg','INS-003'=>'logo_icici_lombard.svg','INS-004'=>'logo_bajaj_allianz.svg','INS-005'=>'logo_hdfc_ergo.svg'];
@@ -772,6 +773,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
         Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
         Route::post('/battery/{id}/comment/save',               [App\Http\Controllers\WorkshopController::class, 'batteryStoreComment'])->name('battery.comment.store');
+        Route::post('/battery/{id}/maintenance/save',           [App\Http\Controllers\WorkshopController::class, 'batteryStoreMaintenance'])->name('battery.maintenance.store');
+        Route::post('/battery/maintenance/{maintId}/update',    [App\Http\Controllers\WorkshopController::class, 'batteryUpdateMaintenance'])->name('battery.maintenance.update');
         Route::post('/battery/{id}/document/save',              [App\Http\Controllers\WorkshopController::class, 'batteryStoreDocument'])->name('battery.document.store');
         Route::post('/battery/document/{mediadocument}/update', [App\Http\Controllers\WorkshopController::class, 'batteryUpdateDocument'])->name('battery.document.update');
         Route::delete('/battery/document/media/{media}',        [App\Http\Controllers\WorkshopController::class, 'batteryDestroyDocument'])->name('battery.document.destroy');
