@@ -778,11 +778,3 @@ Route::group(['middleware' => ['auth']], function() {
 
 
 });
-
-// TEMP: dev cache clear — remove after use
-Route::get('/dev-cache-clear-xyz', function () {
-    \Artisan::call('view:clear');
-    \Artisan::call('cache:clear');
-    if (function_exists('opcache_reset')) { opcache_reset(); }
-    return 'Views cleared, cache cleared, opcache reset. <a href="/inventory/battery-dashboard">Go to Battery Dashboard</a>';
-});

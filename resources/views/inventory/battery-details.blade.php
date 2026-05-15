@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
-<link href="{{ asset('css/Inventory/battery-details.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-details.css?v=2.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -99,6 +99,7 @@
             </div>
 
             {{-- Lifecycle Strip --}}
+            {{--
             <div class="bdet-lifecycle mb-3">
                 <div class="btd-lifecycle">
                     @php
@@ -124,17 +125,43 @@
                     @endforeach
                 </div>
             </div>
+            --}}
 
             {{-- Tab Bar --}}
-            <div class="sc-tab-bar mb-3">
-                <button class="sc-tab active" data-tab="bdet-tab-overview">Overview</button>
-                <button class="sc-tab" data-tab="bdet-tab-log">Movement Log</button>
-                <button class="sc-tab" data-tab="bdet-tab-docs">Documents</button>
-                <button class="sc-tab" data-tab="bdet-tab-notes">Notes</button>
-            </div>
+            <div class="vehicle-itemtab pt-3">
+                <div class="container-fluid">
+                    <ul class="nav nav-tabs item-box">
+                        <li class="nav-item">
+                            <button class="nav-link nav_click active" data-bs-toggle="tab" data-bs-target="#bdet-tab-overview">
+                                <span class="icon"><i class="uil uil-info-circle" style="font-size:16px;vertical-align:middle;"></i></span>
+                                Overview
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-log">
+                                <span class="icon"><i class="uil uil-history" style="font-size:16px;vertical-align:middle;"></i></span>
+                                Movement Log
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-docs">
+                                <span class="icon"><i class="uil uil-paperclip" style="font-size:16px;vertical-align:middle;"></i></span>
+                                Documents
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#bdet-tab-notes">
+                                <span class="icon"><i class="uil uil-notes" style="font-size:16px;vertical-align:middle;"></i></span>
+                                Notes
+                            </button>
+                        </li>
+                    </ul>
+
+                    {{-- Tab Content --}}
+                    <div class="tab-content mt-3">
 
             {{-- ══════════════ TAB: OVERVIEW ══════════════ --}}
-            <div id="bdet-tab-overview" class="bdet-tab-panel">
+            <div class="tab-pane fade show active" id="bdet-tab-overview">
                 <div class="row g-3">
                     {{-- Identification --}}
                     <div class="col-12 col-lg-6">
@@ -269,7 +296,7 @@
             </div>
 
             {{-- ══════════════ TAB: MOVEMENT LOG ══════════════ --}}
-            <div id="bdet-tab-log" class="bdet-tab-panel" style="display:none;">
+            <div class="tab-pane fade" id="bdet-tab-log">
                 <div class="sc-card">
                     <div class="sc-card-head d-flex align-items-center justify-content-between">
                         <span class="sc-card-title"><i class="uil uil-history me-2"></i>Movement Log</span>
@@ -424,7 +451,7 @@
             </div>
 
             {{-- ══════════════ TAB: DOCUMENTS ══════════════ --}}
-            <div id="bdet-tab-docs" class="bdet-tab-panel" style="display:none;">
+            <div class="tab-pane fade" id="bdet-tab-docs">
                 <div class="sc-card">
                     <div class="sc-card-head d-flex align-items-center justify-content-between">
                         <span class="sc-card-title"><i class="uil uil-paperclip me-2"></i>Documents</span>
@@ -439,7 +466,7 @@
             </div>
 
             {{-- ══════════════ TAB: NOTES ══════════════ --}}
-            <div id="bdet-tab-notes" class="bdet-tab-panel" style="display:none;">
+            <div class="tab-pane fade" id="bdet-tab-notes">
                 <div class="sc-card">
                     <div class="sc-card-head d-flex align-items-center justify-content-between">
                         <span class="sc-card-title"><i class="uil uil-notes me-2"></i>Notes</span>
@@ -458,47 +485,15 @@
                 </div>
             </div>
 
+                    </div>{{-- end tab-content --}}
+                </div>{{-- end container-fluid --}}
+            </div>{{-- end vehicle-itemtab --}}
+
         </div>{{-- end main-wrap --}}
     </div>
 </div>
 @endsection
 
 @section('js')
-<script>
-$(document).ready(function () {
-
-    // ── Tab switching ────────────────────────────────────────────────────
-    $('.sc-tab').on('click', function () {
-        var target = $(this).data('tab');
-        $('.sc-tab').removeClass('active');
-        $(this).addClass('active');
-        $('.bdet-tab-panel').hide();
-        $('#' + target).show();
-    });
-
-    // ── Movement log filter ──────────────────────────────────────────────
-    $('#bdet-log-type-filter').on('change', function () {
-        var val = $(this).val();
-        var events = $('.bdet-tl-event');
-        if (!val) {
-            events.show();
-            $('#bdet-log-empty').hide();
-            return;
-        }
-        var visible = 0;
-        events.each(function () {
-            if ($(this).data('event-type') === val) {
-                $(this).show();
-                visible++;
-            } else {
-                $(this).hide();
-            }
-        });
-        $('#bdet-log-empty').toggle(visible === 0);
-    });
-
-    // Fit to Vehicle button is now a proper route() link in the blade — no JS needed
-
-});
-</script>
+<script src="{{ asset('js/inventory/battery-details.js?v=1.0') }}"></script>
 @endsection

@@ -80,46 +80,47 @@
 .bdet-stat-red   { border-left-color: #ea0027; }
 .bdet-stat-red   .bdet-stat-icon { background: #fdecea; color: #ea0027; }
 
-/* ── Lifecycle Strip (overrides for details page) ──────── */
-.bdet-lifecycle {
-    /* btd-lifecycle base comes from battery-dashboard.css */
-    margin-bottom: 0 !important; /* bdet-lifecycle mb-3 handled by Bootstrap */
+/* ── Tab Bar (matches vehicle-details-v2 pill style) ───── */
+.vehicle-itemtab .nav-tabs.item-box {
+    background: #fff;
+    border: 1px solid #e4e7ef;
+    border-radius: 10px;
+    padding: 6px 8px;
+    gap: 2px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.06);
 }
-
-/* Done step: filled navy circle */
-.btd-lc-done .btd-lc-icon {
-    background: #032671 !important;
-    border-color: #032671 !important;
-    color: #fff !important;
+.vehicle-itemtab .nav-tabs.item-box::-webkit-scrollbar { display: none; }
+.vehicle-itemtab .nav-tabs.item-box .nav-link {
+    border: none !important;
+    border-radius: 7px !important;
+    padding: 7px 16px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #6b7a99 !important;
+    background: transparent !important;
+    transition: all .18s ease !important;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
-.btd-lc-done .btd-lc-label {
+.vehicle-itemtab .nav-tabs.item-box .nav-link:hover {
+    background: #f0f3fb !important;
     color: #032671 !important;
-    font-weight: 700;
 }
-
-/* Current active step: highlighted with ring */
-.btd-lc-current .btd-lc-icon {
-    background: #032671 !important;
-    border-color: #032671 !important;
+.vehicle-itemtab .nav-tabs.item-box .nav-link.active {
+    background: linear-gradient(135deg, #032671, #0a3d9e) !important;
     color: #fff !important;
-    box-shadow: 0 0 0 4px rgba(3,38,113,0.2) !important;
+    box-shadow: 0 3px 10px rgba(3,38,113,0.25) !important;
 }
-.btd-lc-current .btd-lc-label {
-    color: #032671 !important;
-    font-weight: 700;
+.vehicle-itemtab .nav-tabs.item-box .nav-link .icon {
+    opacity: .7;
+    transition: opacity .18s;
 }
-
-/* Arrow: done = navy */
-.btd-lc-arrow-done { color: #032671 !important; }
-
-/* Date below each step */
-.btd-lc-date {
-    font-size: 10px;
-    color: #adb5bd;
-    margin-top: 1px;
-    text-align: center;
-    min-height: 14px;
-}
+.vehicle-itemtab .nav-tabs.item-box .nav-link.active .icon { opacity: 1; }
 
 /* ── Specs Grid ────────────────────────────────────────── */
 .bdet-specs-grid {
