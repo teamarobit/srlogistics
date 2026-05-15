@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-dashboard.css?v=2.0') }}" rel="stylesheet">
-<link href="{{ asset('css/Inventory/battery-details.css?v=2.5') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-details.css?v=2.8') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 @endsection
 
@@ -599,103 +599,363 @@
 
             {{-- ══════════════ TAB: MAINTENANCE ══════════════ --}}
             <div class="tab-pane fade" id="bdet-tab-maintenance">
+
+                {{-- Summary strip --}}
                 <div class="totalrevenue mt-3">
                     <div class="item-row">
                         <div class="itemcol">
-                            <p>Total Schedules</p>
+                            <p>Total Scheduled</p>
                             <span class="number c-01">{{ $maintenanceSchedules->count() }}</span>
                         </div>
                         <div class="itemcol">
-                            <p>Pending / Overdue</p>
-                            <span class="number c-02">{{ $maintenanceSchedules->whereIn('status', ['Pending', 'Overdue', 'Missed'])->count() }}</span>
+                            <p>Overdue</p>
+                            <span class="number c-02">{{ $maintenanceSchedules->whereIn('status', ['Overdue', 'Missed'])->count() }}</span>
                         </div>
                         <div class="itemcol">
-                            <p>Upcoming</p>
-                            <span class="number c-03">{{ $maintenanceSchedules->whereIn('status', ['Scheduled', 'Upcoming'])->count() }}</span>
+                            <p>Due Next Month</p>
+                            @php
+                                $dueNextMonth = $maintenanceSchedules->filter(function($ms) {
+                                    return $ms->next_due_date &&
+                                           $ms->next_due_date->greaterThanOrEqualTo(\Carbon\Carbon::today()) &&
+                                           $ms->next_due_date->lessThanOrEqualTo(\Carbon\Carbon::today()->addMonth());
+                                })->sum('cost');
+                            @endphp
+                            <span class="number c-03">₹{{ number_format($dueNextMonth, 0) }}</span>
                         </div>
                         <div class="itemcol">
-                            <p>Completed</p>
-                            <span class="number c-04">{{ $maintenanceSchedules->whereIn('status', ['Done', 'Completed'])->count() }}</span>
+                            <p>Up to Date</p>
+                            @php
+                                $upToDate = $maintenanceSchedules->whereIn('status', ['Done', 'Completed'])->sum('cost');
+                            @endphp
+                            <span class="number c-04">₹{{ number_format($upToDate, 0) }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="vehiclestable">
-                    <div class="itemtop">
-                        <span class="sec-title">Scheduled Maintenance List</span>
-                        <a href="javascript:void(0)" class="addtripbtn"
+                {{-- Sub-tab nav + action button --}}
+                <div class="row mt-4">
+                    <div class="col-12 col-md-8">
+                        <ul class="nav nav-pills" id="bdet-maint-pills" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active mb-0" id="bdet-pills-maint-tab"
+                                        data-bs-toggle="pill" data-bs-target="#bdet-pills-maint"
+                                        type="button" role="tab"
+                                        aria-controls="bdet-pills-maint" aria-selected="true">
+                                    Scheduled Maintenance
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link mb-0" id="bdet-pills-repair-tab"
+                                        data-bs-toggle="pill" data-bs-target="#bdet-pills-repair"
+                                        type="button" role="tab"
+                                        aria-controls="bdet-pills-repair" aria-selected="false">
+                                    Repair
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-md-4 text-end">
+                        {{-- Button label swaps with active sub-tab (SD-1: done via JS) --}}
+                        <a href="javascript:void(0)" class="btn btn-primary" id="bdet-maint-action-btn"
                            data-bs-toggle="modal" data-bs-target="#bdet-add-maintenance">
                             <i class="uil uil-plus me-1"></i>Schedule Maintenance
                         </a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table custom-driver-table" id="bdet-maint-table">
-                            <thead>
-                                <tr>
-                                    <th>Maintenance Item</th>
-                                    <th>Type</th>
-                                    <th>Vehicle</th>
-                                    <th>Last Done &amp; Next Due</th>
-                                    <th>Cost</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bdet-maint-tbody">
-                                @forelse($maintenanceSchedules as $ms)
-                                @php
-                                    $vehNo   = $ms->vehicle->basicinfo->vehicle_number ?? '—';
-                                    $lastDone = $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—';
-                                    $nextDue  = $ms->next_due_date  ? $ms->next_due_date->format('d-m-Y')  : '—';
-                                    $statusClass = match($ms->status) {
-                                        'Done', 'Completed' => 'badge-success',
-                                        'Overdue', 'Missed' => 'badge-danger',
-                                        'Pending'           => 'badge-warning',
-                                        default             => 'badge-secondary',
-                                    };
-                                @endphp
-                                <tr id="bdet-maint-row-{{ $ms->id }}">
-                                    <td>{{ $ms->maintenance_item ?? '—' }}</td>
-                                    <td>{{ $ms->maintenance_type ?? '—' }}</td>
-                                    <td>{{ $vehNo }}</td>
-                                    <td>
-                                        <span class="d-block">{{ $lastDone }}</span>
-                                        <small class="text-muted">Next: {{ $nextDue }}</small>
-                                    </td>
-                                    <td>{{ $ms->cost ? '₹ ' . number_format($ms->cost, 2) : '—' }}</td>
-                                    <td><span class="badge {{ $statusClass }}">{{ $ms->status }}</span></td>
-                                    <td class="text-center">
-                                        <a href="javascript:void(0)" class="text-success bdet-maint-edit"
-                                           data-id="{{ $ms->id }}"
-                                           data-item="{{ $ms->maintenance_item }}"
-                                           data-type="{{ $ms->maintenance_type }}"
-                                           data-vehicle="{{ $ms->vehicle_id }}"
-                                           data-last-done="{{ $ms->last_done_date ? $ms->last_done_date->format('d/m/Y') : '' }}"
-                                           data-next-due="{{ $ms->next_due_date ? $ms->next_due_date->format('d/m/Y') : '' }}"
-                                           data-odometer="{{ $ms->odometer_km }}"
-                                           data-scheduled-km="{{ $ms->scheduled_km }}"
-                                           data-actual-km="{{ $ms->actual_km }}"
-                                           data-cost="{{ $ms->cost }}"
-                                           data-status="{{ $ms->status }}"
-                                           data-notes="{{ $ms->notes }}"
-                                           data-update-url="{{ route('inventory.battery.maintenance.update', $ms->id) }}"
-                                           data-bs-toggle="modal" data-bs-target="#bdet-edit-maintenance">
-                                            <i class="uil uil-pen me-1"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr id="bdet-maint-empty-row">
-                                    <td colspan="7" class="text-center text-muted py-4">
-                                        <i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>
-                                        No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
+
+                <div class="tab-content" id="bdet-maint-pillsContent">
+
+                    {{-- ── Sub-tab: Scheduled Maintenance ── --}}
+                    <div class="tab-pane fade show active" id="bdet-pills-maint" role="tabpanel" aria-labelledby="bdet-pills-maint-tab">
+
+                        {{-- Filter --}}
+                        <div class="accordion mt-3" id="bdet-accord-maint">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="bdet-head-maint">
+                                    <button class="accordion-button filter-options" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#bdet-collapse-maint"
+                                            aria-expanded="true" aria-controls="bdet-collapse-maint">
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="bdet-collapse-maint" class="accordion-collapse collapse show"
+                                     aria-labelledby="bdet-head-maint" data-bs-parent="#bdet-accord-maint">
+                                    <div class="accordion-body">
+                                        <form id="bdet-maint-filter-form">
+                                            <div class="filtersearch-bd justify-content-between flex-wrap gap-2">
+                                                <div class="vehicletype">
+                                                    <label>Date Range</label>
+                                                    <input type="text" class="form-control" id="bdet-maint-filter-daterange" placeholder="Select date range..." />
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Maintenance Type</label>
+                                                    <select class="form-select" id="bdet-maint-filter-type">
+                                                        <option value="">All Types</option>
+                                                        <option value="Inspection">Inspection</option>
+                                                        <option value="Charging">Charging</option>
+                                                        <option value="Replacement">Replacement</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Status</label>
+                                                    <select class="form-select" id="bdet-maint-filter-status">
+                                                        <option value="">All Status</option>
+                                                        <option value="Completed">Completed</option>
+                                                        <option value="Done">Done</option>
+                                                        <option value="Missed">Missed</option>
+                                                        <option value="Overdue">Overdue</option>
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Scheduled">Scheduled</option>
+                                                        <option value="Upcoming">Upcoming</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1" style="width:200px;">
+                                                    <label>Vehicle Number</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="bdet-maint-filter-vehicle" placeholder="Vehicle number..." />
+                                                        <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                    </div>
+                                                </div>
+                                                <div class="vehicletype ms-1 d-flex align-items-end">
+                                                    <button class="btn btn-primary" type="button" id="bdet-maint-filter-reset">
+                                                        <i class="uil uil-sync me-1"></i>Reset
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Scheduled Maintenance List --}}
+                        <div class="vehiclestable">
+                            <div class="itemtop">
+                                <span class="sec-title">Scheduled Maintenance List</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table custom-driver-table" id="bdet-maint-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Vehicle Number &amp; Driver</th>
+                                            <th>Maintenance Type</th>
+                                            <th>Scheduled KM &amp; Date</th>
+                                            <th>Status</th>
+                                            <th>Actual KM &amp; Date</th>
+                                            <th>Cost</th>
+                                            <th>Attachments</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bdet-maint-tbody">
+                                        @forelse($maintenanceSchedules as $ms)
+                                        @php
+                                            $msVehNo  = $ms->vehicle->basicinfo->vehicle_number ?? '—';
+                                            $msDriver = $ms->vehicle->driverAllocation->contact->contact_name ?? '—';
+                                            $msBadgeMap = [
+                                                'Completed' => 'badge-success',
+                                                'Done'      => 'badge-success',
+                                                'Missed'    => 'badge-danger',
+                                                'Overdue'   => 'badge-danger',
+                                                'Pending'   => 'badge-warning',
+                                                'Upcoming'  => 'badge-info',
+                                                'Scheduled' => 'badge-primary',
+                                            ];
+                                        @endphp
+                                        <tr id="bdet-maint-row-{{ $ms->id }}"
+                                            data-vehicle="{{ strtolower($msVehNo) }}"
+                                            data-type="{{ strtolower($ms->maintenance_type ?? '') }}"
+                                            data-status="{{ strtolower($ms->status) }}"
+                                            data-date="{{ $ms->next_due_date ? $ms->next_due_date->format('Y-m-d') : '' }}">
+                                            <td>
+                                                <span class="fw-semibold d-block">{{ $msVehNo }}</span>
+                                                <small class="text-muted">{{ $msDriver }}</small>
+                                            </td>
+                                            <td>
+                                                @if($ms->maintenance_type)
+                                                    <span class="badge badge-secondary">{{ $ms->maintenance_type }}</span>
+                                                @else
+                                                    <span class="text-muted">{{ $ms->maintenance_item ?? '—' }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="d-block">{{ $ms->scheduled_km ? number_format($ms->scheduled_km) . ' KM' : '—' }}</span>
+                                                <small class="text-muted">{{ $ms->next_due_date ? $ms->next_due_date->format('d-m-Y') : '—' }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ $msBadgeMap[$ms->status] ?? 'badge-secondary' }}">{{ $ms->status }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="d-block">{{ $ms->actual_km ? number_format($ms->actual_km) . ' KM' : '—' }}</span>
+                                                <small class="text-muted">{{ $ms->last_done_date ? $ms->last_done_date->format('d-m-Y') : '—' }}</small>
+                                            </td>
+                                            <td>{{ $ms->cost ? '₹' . number_format($ms->cost, 2) : '—' }}</td>
+                                            <td><span class="text-muted small">—</span></td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)" class="text-success bdet-maint-edit"
+                                                   data-id="{{ $ms->id }}"
+                                                   data-item="{{ $ms->maintenance_item }}"
+                                                   data-type="{{ $ms->maintenance_type }}"
+                                                   data-vehicle="{{ $ms->vehicle_id }}"
+                                                   data-last-done="{{ $ms->last_done_date ? $ms->last_done_date->format('d/m/Y') : '' }}"
+                                                   data-next-due="{{ $ms->next_due_date ? $ms->next_due_date->format('d/m/Y') : '' }}"
+                                                   data-odometer="{{ $ms->odometer_km }}"
+                                                   data-scheduled-km="{{ $ms->scheduled_km }}"
+                                                   data-actual-km="{{ $ms->actual_km }}"
+                                                   data-cost="{{ $ms->cost }}"
+                                                   data-status="{{ $ms->status }}"
+                                                   data-notes="{{ $ms->notes }}"
+                                                   data-update-url="{{ route('inventory.battery.maintenance.update', $ms->id) }}"
+                                                   data-bs-toggle="modal" data-bs-target="#bdet-edit-maintenance">
+                                                    <i class="uil uil-pen me-2"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr id="bdet-maint-empty-row">
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>
+                                                No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>{{-- end #bdet-pills-maint --}}
+
+                    {{-- ── Sub-tab: Repair ── --}}
+                    <div class="tab-pane fade" id="bdet-pills-repair" role="tabpanel" aria-labelledby="bdet-pills-repair-tab">
+
+                        {{-- Filter --}}
+                        <div class="accordion mt-3" id="bdet-accord-repair">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="bdet-head-repair">
+                                    <button class="accordion-button filter-options" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#bdet-collapse-repair"
+                                            aria-expanded="true" aria-controls="bdet-collapse-repair">
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="bdet-collapse-repair" class="accordion-collapse collapse show"
+                                     aria-labelledby="bdet-head-repair" data-bs-parent="#bdet-accord-repair">
+                                    <div class="accordion-body">
+                                        <form id="bdet-repair-filter-form">
+                                            <div class="filtersearch-bd justify-content-between flex-wrap gap-2">
+                                                <div class="vehicletype">
+                                                    <label>Date Range</label>
+                                                    <input type="text" class="form-control" id="bdet-rep-filter-daterange" placeholder="Select date range..." />
+                                                </div>
+                                                <div class="vehicletype ms-1">
+                                                    <label>Repair Category</label>
+                                                    <select class="form-select" id="bdet-rep-filter-category">
+                                                        <option value="">All</option>
+                                                        <option value="Major">Major</option>
+                                                        <option value="Minor">Minor</option>
+                                                    </select>
+                                                </div>
+                                                <div class="vehicletype ms-1 d-flex align-items-end">
+                                                    <button class="btn btn-primary" type="button" id="bdet-rep-filter-reset">
+                                                        <i class="uil uil-sync me-1"></i>Reset
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Repair List --}}
+                        <div class="vehiclestable">
+                            <div class="itemtop">
+                                <span class="sec-title">Repair List</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table custom-driver-table" id="bdet-repair-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Vehicle</th>
+                                            <th>Repair Category</th>
+                                            <th>Repair Type</th>
+                                            <th>Cost</th>
+                                            <th>Vendor</th>
+                                            <th>Repair Date</th>
+                                            <th>Repair KM</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bdet-repair-tbody">
+                                        @forelse($batteryRepairs as $rep)
+                                        @php
+                                            $repVehNo  = $rep->vehicle->basicinfo->vehicle_number ?? '—';
+                                            $repVendor = $rep->vendor->contact_name ?? '—';
+                                            $repCatBadge = $rep->repair_category === 'Major' ? 'badge-danger' : 'badge-warning';
+                                        @endphp
+                                        <tr id="bdet-repair-row-{{ $rep->id }}"
+                                            data-category="{{ strtolower($rep->repair_category) }}"
+                                            data-date="{{ $rep->repair_date ? $rep->repair_date->format('Y-m-d') : '' }}">
+                                            <td><span class="fw-semibold">{{ $repVehNo }}</span></td>
+                                            <td><span class="badge {{ $repCatBadge }}">{{ $rep->repair_category }}</span></td>
+                                            <td>{{ $rep->repair_type }}</td>
+                                            <td>{{ $rep->cost ? '₹ ' . number_format($rep->cost, 2) : '—' }}</td>
+                                            <td>{{ $repVendor }}</td>
+                                            <td>{{ $rep->repair_date ? $rep->repair_date->format('d-m-Y') : '—' }}</td>
+                                            <td>{{ $rep->repair_km ? number_format($rep->repair_km) . ' KM' : '—' }}</td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)"
+                                                   class="text-success bdet-repair-edit-btn"
+                                                   data-id="{{ $rep->id }}"
+                                                   data-vehicle="{{ $rep->vehicle_id }}"
+                                                   data-category="{{ $rep->repair_category }}"
+                                                   data-type="{{ $rep->repair_type }}"
+                                                   data-cost="{{ $rep->cost }}"
+                                                   data-vendor="{{ $rep->vendor_id }}"
+                                                   data-date="{{ $rep->repair_date ? $rep->repair_date->format('Y-m-d') : '' }}"
+                                                   data-km="{{ $rep->repair_km }}"
+                                                   data-notes="{{ $rep->notes }}"
+                                                   data-update-url="{{ route('inventory.battery.repair.update', $rep->id) }}"
+                                                   data-bs-toggle="modal" data-bs-target="#bdet-edit-repair">
+                                                    <i class="uil uil-pen me-2"></i>
+                                                </a>
+                                                <a href="javascript:void(0)"
+                                                   class="text-danger bdet-repair-delete-btn"
+                                                   data-id="{{ $rep->id }}"
+                                                   data-delete-url="{{ route('inventory.battery.repair.destroy', $rep->id) }}">
+                                                    <i class="uil uil-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr id="bdet-repair-empty-row">
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="uil uil-wrench fs-4 d-block mb-1"></i>
+                                                No repair records found. Click <strong>Add Repair</strong> to add one.
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>{{-- end #bdet-pills-repair --}}
+
+                </div>{{-- end tab-content --}}
+
             </div>
             {{-- ══════════════ END TAB: MAINTENANCE ══════════════ --}}
 
@@ -1262,6 +1522,150 @@
     </div>
 </div>
 
+{{-- ══════════════════════════════════════════════════════════════════════
+     ADD REPAIR MODAL  #bdet-add-repair
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-add-repair" tabindex="-1" aria-labelledby="bdetRepairModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bdetRepairModalLabel">
+                    <i class="uil uil-wrench me-2"></i>Add Repair &mdash;
+                    <span class="text-muted fw-normal fs-6">{{ $battery->battery_serial }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bdet-repair-form" action="{{ route('inventory.battery.repair.store', $battery->id) }}">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rep_category" name="repair_category">
+                                <option value="">Select Category...</option>
+                                <option value="Major">Major</option>
+                                <option value="Minor">Minor</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="rep_category_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rep_type" name="repair_type">
+                                <option value="">Select Type...</option>
+                                <option value="Terminal Cleaning">Terminal Cleaning</option>
+                                <option value="Electrolyte Top-up">Electrolyte Top-up</option>
+                                <option value="Cell Replacement">Cell Replacement</option>
+                                <option value="Reconditioning">Reconditioning</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="rep_type_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="rep_date" name="repair_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair KM</label>
+                            <input type="number" class="form-control" name="repair_km" placeholder="e.g. 50000" min="0" />
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Cost (₹)</label>
+                            <input type="number" class="form-control" name="cost" placeholder="e.g. 500" min="0" step="0.01" />
+                        </div>
+                        <div class="col-12 form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Optional notes..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="bdet-repair-save-btn">
+                    <span id="bdet-repair-save-txt">Save Repair</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════════════════
+     EDIT REPAIR MODAL  #bdet-edit-repair
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade expenses_wrapperModal" id="bdet-edit-repair" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="uil uil-pen me-2"></i>Edit Repair &mdash;
+                    <span class="text-muted fw-normal fs-6">{{ $battery->battery_serial }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bdet-repair-edit-form" action="">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_rep_category" name="repair_category">
+                                <option value="">Select Category...</option>
+                                <option value="Major">Major</option>
+                                <option value="Minor">Minor</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="edit_rep_category_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_rep_type" name="repair_type">
+                                <option value="">Select Type...</option>
+                                <option value="Terminal Cleaning">Terminal Cleaning</option>
+                                <option value="Electrolyte Top-up">Electrolyte Top-up</option>
+                                <option value="Cell Replacement">Cell Replacement</option>
+                                <option value="Reconditioning">Reconditioning</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1" id="edit_rep_type_err"></span>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair Date</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="edit_rep_date" name="repair_date" readonly placeholder="DD/MM/YYYY" />
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Repair KM</label>
+                            <input type="number" class="form-control" id="edit_rep_km" name="repair_km" min="0" />
+                        </div>
+                        <div class="col-12 col-md-6 form-group">
+                            <label class="form-label">Cost (₹)</label>
+                            <input type="number" class="form-control" id="edit_rep_cost" name="cost" min="0" step="0.01" />
+                        </div>
+                        <div class="col-12 form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="edit_rep_notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="bdet-repair-update-btn">
+                    <span id="bdet-repair-update-txt">Update Repair</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Notes modal --}}
 <div class="modal fade" id="bdet-modal-notes" tabindex="-1">
     <div class="modal-dialog">
@@ -1299,8 +1703,9 @@
      data-other-logo="{{ asset('images/other_file.svg') }}"
      data-csrf="{{ csrf_token() }}"
      data-maint-store-url="{{ route('inventory.battery.maintenance.store', $battery->id) }}"
+     data-repair-store-url="{{ route('inventory.battery.repair.store', $battery->id) }}"
      style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('js/inventory/battery-details.js?v=3.0') }}"></script>
+<script src="{{ asset('js/inventory/battery-details.js?v=4.1') }}"></script>
 @endsection
                                  

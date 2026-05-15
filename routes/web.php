@@ -781,6 +781,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
         Route::get('/battery/{id}/replace',     [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
         Route::post('/battery/{id}/change-status', [App\Http\Controllers\WorkshopController::class, 'batteryChangeStatus'])->name('battery.change-status');
+        Route::post('/battery/{id}/repair/store',         [App\Http\Controllers\WorkshopController::class, 'batteryStoreRepair'])->name('battery.repair.store');
+        Route::post('/battery/repair/{repair}/update',    [App\Http\Controllers\WorkshopController::class, 'batteryUpdateRepair'])->name('battery.repair.update');
+        Route::post('/battery/repair/{repair}/delete',    [App\Http\Controllers\WorkshopController::class, 'batteryDestroyRepair'])->name('battery.repair.destroy');
         Route::get('/purchase-orders',      [App\Http\Controllers\WorkshopController::class, 'poList'])->name('purchase-orders');
         Route::get('/purchase-orders/{id}', [App\Http\Controllers\WorkshopController::class, 'poDetail'])->name('po-detail');
         Route::get('/goods-receipt',        [App\Http\Controllers\WorkshopController::class, 'grn'])->name('goods-receipt');

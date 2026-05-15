@@ -16,6 +16,7 @@ use App\Models\WsSparePartCategory;
 use App\Models\Attachmenttype;
 use App\Models\Battery;
 use App\Models\BatteryMaintenanceSchedule;
+use App\Models\BatteryRepair;
 use App\Models\Comment;
 use App\Models\Media;
 use App\Models\Mediadocument;
@@ -1112,11 +1113,17 @@ class WorkshopController extends Controller
             ->orderBy('next_due_date')
             ->get();
 
+        // Repair Records
+        $batteryRepairs = BatteryRepair::where('battery_id', $battery->id)
+            ->with(['vehicle.basicinfo', 'vendor'])
+            ->orderBy('repair_date', 'desc')
+            ->get();
+
         return view('inventory.battery-details', compact(
             'battery', 'comments',
             'attachmenttypes', 'mediadocuments',
             'total_doc_count', 'expired_doc_count', 'expiring_doc_count',
-            'vehicleAllocations', 'maintenanceSchedules'
+            'vehicleAllocations', 'maintenanceSchedules', 'batteryRepairs'
         ));
     }
 
@@ -1209,6 +1216,104 @@ class WorkshopController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Maintenance schedule updated successfully.'], 200);
 
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batteryStoreRepair(Request $request, $id): JsonResponse
+    {
+        $battery = Battery::find($id);
+        if (! $battery) {
+            return response()->json(['success' => false, 'message' => 'Battery not found.'], 422);
+        }
+
+        $request->validate([
+            'vehicle_id'      => 'nullable|integer',
+            'repair_category' => 'required|in:Major,Minor',
+            'repair_type'     => 'required|in:Terminal Cleaning,Electrolyte Top-up,Cell Replacement,Reconditioning,Other',
+            'cost'            => 'nullable|numeric|min:0',
+            'vendor_id'       => 'nullable|integer',
+            'repair_date'     => 'nullable|date',
+            'repair_km'       => 'nullable|integer|min:0',
+            'notes'           => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $result = DB::transaction(function () use ($request, $battery) {
+                return BatteryRepair::create([
+                    'battery_id'      => $battery->id,
+                    'vehicle_id'      => $request->vehicle_id ?: null,
+                    'repair_category' => $request->repair_category,
+                    'repair_type'     => $request->repair_type,
+                    'cost'            => $request->cost ?: null,
+                    'vendor_id'       => $request->vendor_id ?: null,
+                    'repair_date'     => $request->repair_date ?: null,
+                    'repair_km'       => $request->repair_km ?: null,
+                    'notes'           => $request->notes,
+                    'organisation_id' => Auth::user()->organisation_id ?? 1,
+                    'created_by'      => Auth::id(),
+                    'updated_by'      => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['success' => true, 'message' => 'Repair record added successfully.', 'id' => $result->id], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batteryUpdateRepair(Request $request, $repair): JsonResponse
+    {
+        $record = BatteryRepair::find($repair);
+        if (! $record) {
+            return response()->json(['success' => false, 'message' => 'Repair record not found.'], 422);
+        }
+
+        $request->validate([
+            'vehicle_id'      => 'nullable|integer',
+            'repair_category' => 'required|in:Major,Minor',
+            'repair_type'     => 'required|in:Terminal Cleaning,Electrolyte Top-up,Cell Replacement,Reconditioning,Other',
+            'cost'            => 'nullable|numeric|min:0',
+            'vendor_id'       => 'nullable|integer',
+            'repair_date'     => 'nullable|date',
+            'repair_km'       => 'nullable|integer|min:0',
+            'notes'           => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $record) {
+                $record->update([
+                    'vehicle_id'      => $request->vehicle_id ?: null,
+                    'repair_category' => $request->repair_category,
+                    'repair_type'     => $request->repair_type,
+                    'cost'            => $request->cost ?: null,
+                    'vendor_id'       => $request->vendor_id ?: null,
+                    'repair_date'     => $request->repair_date ?: null,
+                    'repair_km'       => $request->repair_km ?: null,
+                    'notes'           => $request->notes,
+                    'updated_by'      => Auth::id(),
+                ]);
+            });
+
+            return response()->json(['success' => true, 'message' => 'Repair record updated successfully.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batteryDestroyRepair($repair): JsonResponse
+    {
+        $record = BatteryRepair::find($repair);
+        if (! $record) {
+            return response()->json(['success' => false, 'message' => 'Repair record not found.'], 422);
+        }
+
+        try {
+            $record->delete();
+            return response()->json(['success' => true, 'message' => 'Repair record deleted successfully.'], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }

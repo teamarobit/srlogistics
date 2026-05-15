@@ -1,14 +1,15 @@
 /* =========================================================
-   Battery Details Page — battery-details.js  v3.0
+   Battery Details Page — battery-details.js  v4.0
    ========================================================= */
 
 // ── Read config injected by blade via data-* (SD-1 compliant) ──────────────
-var _cfg           = document.getElementById('batteryDetailsConfig') || {};
-var PDF_LOGO       = (_cfg.dataset && _cfg.dataset.pdfLogo)        || '';
-var OTHER_LOGO     = (_cfg.dataset && _cfg.dataset.otherLogo)      || '';
-var CSRF_TOKEN     = (_cfg.dataset && _cfg.dataset.csrf)
-                       || ($('meta[name="csrf-token"]').attr('content') || '');
-var MAINT_STORE_URL = (_cfg.dataset && _cfg.dataset.maintStoreUrl) || '';
+var _cfg             = document.getElementById('batteryDetailsConfig') || {};
+var PDF_LOGO         = (_cfg.dataset && _cfg.dataset.pdfLogo)         || '';
+var OTHER_LOGO       = (_cfg.dataset && _cfg.dataset.otherLogo)       || '';
+var CSRF_TOKEN       = (_cfg.dataset && _cfg.dataset.csrf)
+                         || ($('meta[name="csrf-token"]').attr('content') || '');
+var MAINT_STORE_URL  = (_cfg.dataset && _cfg.dataset.maintStoreUrl)   || '';
+var REPAIR_STORE_URL = (_cfg.dataset && _cfg.dataset.repairStoreUrl)  || '';
 
 // ── Toast mixin (SD-7) ───────────────────────────────────────────────────────
 const Toast = Swal.mixin({
@@ -86,6 +87,15 @@ function setDateRangePicker(selector, date) {
     $(selector).val(formatted.format('DD/MM/YYYY'));
 }
 
+// ── Set date picker from Y-m-d string ────────────────────────────────────────
+function setDatePickerFromYmd(selector, ymdStr) {
+    var picker = $(selector).data('daterangepicker');
+    if (!ymdStr) { $(selector).val(''); return; }
+    var d = moment(ymdStr, 'YYYY-MM-DD');
+    if (picker) { picker.setStartDate(d); picker.setEndDate(d); }
+    $(selector).val(d.format('DD/MM/YYYY'));
+}
+
 // ── Document ready ───────────────────────────────────────────────────────────
 $(document).ready(function () {
 
@@ -102,6 +112,15 @@ $(document).ready(function () {
     };
     $('#doc_issue_date, #doc_expiry_date').daterangepicker(datePickerOptions);
     $('#edit_doc_issue_date, #edit_doc_expiry_date').daterangepicker(datePickerOptions);
+
+    // Maintenance date pickers
+    var maintDateOpts = { singleDatePicker: true, showDropdowns: true, autoApply: true, locale: { format: 'DD/MM/YYYY' } };
+    $('#maint_last_done, #maint_next_due').daterangepicker(maintDateOpts);
+    $('#edit_maint_last_done, #edit_maint_next_due').daterangepicker(maintDateOpts);
+
+    // Repair date pickers
+    $('#rep_date').daterangepicker(maintDateOpts);
+    $('#edit_rep_date').daterangepicker(maintDateOpts);
 
     // ── Select2 for document type ─────────────────────────────────────────
     $('#attachmenttype_dd').select2({
@@ -132,7 +151,7 @@ $(document).ready(function () {
         $('#bdet-modal-notes-content').text($(this).data('notes'));
     });
 
-    // ── Populate Edit modal ───────────────────────────────────────────────
+    // ── Populate Edit Document modal ──────────────────────────────────────
     $(document).on('click', '.item-edit', function () {
         var btn = $(this);
 
@@ -476,18 +495,12 @@ $(document).ready(function () {
         $('#bdet-veh-empty-row').toggle(visible === 0 && rows.length > 0);
     }
 
-    // ── Maintenance date pickers ──────────────────────────────────────────
-    var maintDateOpts = { singleDatePicker: true, showDropdowns: true, autoApply: true, locale: { format: 'DD/MM/YYYY' } };
-    $('#maint_last_done, #maint_next_due').daterangepicker(maintDateOpts);
-    $('#edit_maint_last_done, #edit_maint_next_due').daterangepicker(maintDateOpts);
-
     // ── Maintenance — Save Schedule ───────────────────────────────────────
     $('#bdet-maint-save-btn').on('click', function () {
         var $btn    = $(this);
         var $txt    = $('#bdet-maint-save-txt');
         var $form   = $('#bdet-maint-form');
 
-        // Validate
         var item    = $('#maint_item').val().trim();
         var status  = $('#maint_status').val();
         var valid   = true;
@@ -582,6 +595,250 @@ $(document).ready(function () {
                 $txt.text('Update Schedule');
             }
         });
+    });
+
+    // ── Maintenance sub-tab filter ────────────────────────────────────────
+    $('#bdet-maint-filter-type, #bdet-maint-filter-status').on('change', filterMaintSchedules);
+    $('#bdet-maint-filter-vehicle').on('input', filterMaintSchedules);
+    $('#bdet-maint-filter-reset').on('click', function () {
+        $('#bdet-maint-filter-type').val('');
+        $('#bdet-maint-filter-status').val('');
+        $('#bdet-maint-filter-vehicle').val('');
+        $('#bdet-maint-filter-daterange').val('');
+        filterMaintSchedules();
+    });
+
+    function filterMaintSchedules() {
+        var typeVal    = $('#bdet-maint-filter-type').val().toLowerCase();
+        var statusVal  = $('#bdet-maint-filter-status').val().toLowerCase();
+        var vehicleVal = $('#bdet-maint-filter-vehicle').val().toLowerCase().trim();
+        var rows       = $('#bdet-maint-tbody tr').not('#bdet-maint-empty-row');
+        var visible    = 0;
+
+        rows.each(function () {
+            var rowType    = $(this).data('type')    || '';
+            var rowStatus  = $(this).data('status')  || '';
+            var rowVehicle = $(this).data('vehicle') || '';
+            var matchType    = !typeVal    || rowType    === typeVal;
+            var matchStatus  = !statusVal  || rowStatus  === statusVal;
+            var matchVehicle = !vehicleVal || rowVehicle.includes(vehicleVal);
+            if (matchType && matchStatus && matchVehicle) { $(this).show(); visible++; }
+            else { $(this).hide(); }
+        });
+        $('#bdet-maint-empty-row').toggle(visible === 0 && rows.length > 0);
+    }
+
+    // ── Repair sub-tab — Action button swap ───────────────────────────────
+    $('#bdet-pills-repair-tab').on('shown.bs.tab', function () {
+        $('#bdet-maint-action-btn')
+            .attr('data-bs-target', '#bdet-add-repair')
+            .html('<i class="uil uil-plus me-1"></i>Add Repair');
+    });
+    $('#bdet-pills-maint-tab').on('shown.bs.tab', function () {
+        $('#bdet-maint-action-btn')
+            .attr('data-bs-target', '#bdet-add-maintenance')
+            .html('<i class="uil uil-plus me-1"></i>Schedule Maintenance');
+    });
+
+    // ── Repair — Save ─────────────────────────────────────────────────────
+    $('#bdet-repair-save-btn').on('click', function () {
+        var $btn  = $(this);
+        var $txt  = $('#bdet-repair-save-txt');
+        var $form = $('#bdet-repair-form');
+
+        var category = $('#rep_category').val();
+        var type     = $('#rep_type').val();
+        var valid    = true;
+
+        $('#rep_category_err, #rep_type_err').text('');
+
+        if (!category) {
+            $('#rep_category_err').text('Repair category is required.');
+            valid = false;
+        }
+        if (!type) {
+            $('#rep_type_err').text('Repair type is required.');
+            valid = false;
+        }
+        if (!valid) { return; }
+
+        $btn.prop('disabled', true);
+        $txt.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…');
+
+        $.ajax({
+            method   : 'POST',
+            url      : REPAIR_STORE_URL,
+            data     : $form.serialize(),
+            dataType : 'json',
+            success  : function (res) {
+                Toast.fire({ icon: 'success', title: res.message, didClose: function () { location.reload(true); } });
+                $btn.prop('disabled', false);
+                $txt.text('Save Repair');
+            },
+            error    : function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                Toast.fire({ icon: 'error', title: msg });
+                $btn.prop('disabled', false);
+                $txt.text('Save Repair');
+            }
+        });
+    });
+
+    // ── Repair — Populate Edit modal ──────────────────────────────────────
+    $(document).on('click', '.bdet-repair-edit-btn', function () {
+        var btn = $(this);
+        $('#bdet-repair-edit-form').attr('action', btn.data('update-url'));
+        $('#edit_rep_category').val(btn.data('category'));
+        $('#edit_rep_type').val(btn.data('type'));
+        $('#edit_rep_km').val(btn.data('km'));
+        $('#edit_rep_cost').val(btn.data('cost'));
+        $('#edit_rep_notes').val(btn.data('notes'));
+        setDatePickerFromYmd('#edit_rep_date', btn.data('date'));
+    });
+
+    // ── Repair — Update ───────────────────────────────────────────────────
+    $('#bdet-repair-update-btn').on('click', function () {
+        var $btn  = $(this);
+        var $txt  = $('#bdet-repair-update-txt');
+        var $form = $('#bdet-repair-edit-form');
+
+        var category = $('#edit_rep_category').val();
+        var type     = $('#edit_rep_type').val();
+        var valid    = true;
+
+        $('#edit_rep_category_err, #edit_rep_type_err').text('');
+
+        if (!category) {
+            $('#edit_rep_category_err').text('Repair category is required.');
+            valid = false;
+        }
+        if (!type) {
+            $('#edit_rep_type_err').text('Repair type is required.');
+            valid = false;
+        }
+        if (!valid) { return; }
+
+        $btn.prop('disabled', true);
+        $txt.html('<span class="spinner-border spinner-border-sm me-1"></span>Updating…');
+
+        $.ajax({
+            method   : 'POST',
+            url      : $form.attr('action'),
+            data     : $form.serialize(),
+            dataType : 'json',
+            success  : function (res) {
+                Toast.fire({ icon: 'success', title: res.message, didClose: function () { location.reload(true); } });
+                $btn.prop('disabled', false);
+                $txt.text('Update Repair');
+            },
+            error    : function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                Toast.fire({ icon: 'error', title: msg });
+                $btn.prop('disabled', false);
+                $txt.text('Update Repair');
+            }
+        });
+    });
+
+    // ── Repair — Delete ───────────────────────────────────────────────────
+    $(document).on('click', '.bdet-repair-delete-btn', function () {
+        var url = $(this).data('delete-url');
+        var id  = $(this).data('id');
+
+        Swal.fire({
+            position          : 'center',
+            icon              : 'warning',
+            title             : 'Delete this repair record?',
+            showConfirmButton : true,
+            showCancelButton  : true,
+            confirmButtonText : 'Yes, Delete',
+            cancelButtonText  : 'Cancel',
+            confirmButtonColor: '#dc3545',
+            reverseButtons    : true
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    method  : 'POST',
+                    url     : url,
+                    data    : { _token: CSRF_TOKEN },
+                    dataType: 'json',
+                    success : function (res) {
+                        Toast.fire({ icon: 'success', title: res.message });
+                        $('#bdet-repair-row-' + id).remove();
+                        var remaining = $('#bdet-repair-tbody tr').not('#bdet-repair-empty-row').length;
+                        if (remaining === 0) { $('#bdet-repair-empty-row').show(); }
+                    },
+                    error   : function (xhr) {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Something went wrong.';
+                        Toast.fire({ icon: 'error', title: msg });
+                    }
+                });
+            }
+        });
+    });
+
+    // ── Repair filter ─────────────────────────────────────────────────────
+    $('#bdet-rep-filter-category').on('change', filterRepairs);
+    $('#bdet-rep-filter-reset').on('click', function () {
+        $('#bdet-rep-filter-category').val('');
+        $('#bdet-rep-filter-daterange').val('');
+        filterRepairs();
+    });
+
+    $('#bdet-rep-filter-daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale         : { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
+    });
+    $('#bdet-rep-filter-daterange').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        filterRepairs();
+    });
+    $('#bdet-rep-filter-daterange').on('cancel.daterangepicker', function () {
+        $(this).val('');
+        filterRepairs();
+    });
+
+    function filterRepairs() {
+        var categoryVal = $('#bdet-rep-filter-category').val().toLowerCase();
+        var dateRange   = $('#bdet-rep-filter-daterange').val().trim();
+        var startDate   = null, endDate = null;
+
+        if (dateRange) {
+            var parts = dateRange.split(' - ');
+            startDate = parts[0] ? moment(parts[0], 'DD/MM/YYYY') : null;
+            endDate   = parts[1] ? moment(parts[1], 'DD/MM/YYYY') : null;
+        }
+
+        var rows    = $('#bdet-repair-tbody tr').not('#bdet-repair-empty-row');
+        var visible = 0;
+
+        rows.each(function () {
+            var rowCat  = $(this).data('category') || '';
+            var rowDate = $(this).data('date') || '';
+            var matchCat  = !categoryVal || rowCat === categoryVal;
+            var matchDate = true;
+            if (startDate && rowDate) {
+                var d = moment(rowDate, 'YYYY-MM-DD');
+                matchDate = d.isSameOrAfter(startDate) && (!endDate || d.isSameOrBefore(endDate));
+            }
+            if (matchCat && matchDate) { $(this).show(); visible++; }
+            else { $(this).hide(); }
+        });
+        $('#bdet-repair-empty-row').toggle(visible === 0 && rows.length > 0);
+    }
+
+    // ── Maintenance date-range filter (filter by next_due_date) ──────────
+    $('#bdet-maint-filter-daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale         : { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
+    });
+    $('#bdet-maint-filter-daterange').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        filterMaintSchedules();
+    });
+    $('#bdet-maint-filter-daterange').on('cancel.daterangepicker', function () {
+        $(this).val('');
+        filterMaintSchedules();
     });
 
 });

@@ -772,5 +772,18 @@
     border-bottom-right-radius: 8px;
 }
 
+/* ── Maintenance Tab ─────────────────────────────────────── */
+
+/* Summary strip layout */
+#bdet-tab-maintenance .totalrevenue { margin-bottom: 0; margin-top: 12px; padding: 6px 8px; }
+#bdet-tab-maintenance .totalrevenue .item-row { padding: 4px 4px; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol { padding: 3px 10px; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol p { margin-bottom: 0; font-size: 12px; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol .number { font-size: 14px; line-height: 1.4; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol .number.c-01 { color: #56CA00; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol .number.c-02 { color: #E59E04; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol .number.c-03 { color: #E039E9; }
+#bdet-tab-maintenance .totalrevenue .item-row .itemcol .number.c-04 { color: #EE2B2B; }
+
 /* Modal tweaks */
 .expenses_wrapperModal .input-group select { height: 35px; }
