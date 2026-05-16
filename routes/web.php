@@ -411,6 +411,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
         // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
         Route::get('/get-tyre-list', [App\Http\Controllers\TyreManagementController::class, 'getTyreList'])->name('get.tyre.list');
+        // AJAX: fetch unallocated Direct Fitment tyres (tyre_source_mode=Fitment, not Active in vehicletyremappings)
+        Route::get('/get-direct-fitment-tyres', [App\Http\Controllers\TyreManagementController::class, 'getDirectFitmentTyres'])->name('get.direct.fitment.tyres');
         // POST: tag a tyre to a specific mapping position
         Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
         // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)

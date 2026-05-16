@@ -2,7 +2,7 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/tyre/tagging.css') }}?v={{ filemtime(public_path('css/tyre/tagging.css')) }}">
-    <link rel="stylesheet" href="{{ asset('css/tyre/tagging-v2.css') }}?v={{ filemtime(public_path('css/tyre/tagging-v2.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/tyre/tagging-v2.css') }}?v={{ filemtime(public_path('css/tyre/tagging-v2.css')) }}&r=df1">
 @endsection
 
 @section('content')
@@ -44,7 +44,8 @@
             };
             const sixWheelTruckPath   = "{{ asset('arobittyre_management/6-wheel-new.svg') }}";
             const tenWheelTruckPath   = "{{ asset('arobittyre_management/10-wheel-new.svg') }}";
-            const getTyreListUrl      = "{{ route('tyremanage.get.tyre.list') }}";
+            const getTyreListUrl             = "{{ route('tyremanage.get.tyre.list') }}";
+            const getDirectFitmentTyresUrl   = "{{ route('tyremanage.get.direct.fitment.tyres') }}";
             const addTyreBaseUrl      = "{{ url('tyremanage/vehicle/'.$vehicle->id.'/mapping') }}";
             const addSpareUrl         = "{{ route('tyremanage.vehicle.add.spare', $vehicle->id) }}";
             const csrfToken           = "{{ csrf_token() }}";
@@ -628,16 +629,40 @@
                 </div>
             </div>
             <div id="srcDirectSection" class="d-none">
+                <div class="mb-2" id="directTyreSelectorWrap">
+                    <label class="form-label fw-semibold">Select Direct Fitment Tyre <span class="text-danger">*</span></label>
+                    <div id="directTyreDropdownState" class="text-muted small mb-1">
+                        — Loading available Direct Fitment tyres… —
+                    </div>
+                    <select class="form-select" name="tyre_id" id="directTyreIdSelect" disabled>
+                        <option value="">— Loading… —</option>
+                    </select>
+                    <div class="invalid-feedback d-block" id="err_tyre_id"></div>
+                    <div id="dfTyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                        <span class="health-label">Health:</span>
+                        <div class="health-bar-track">
+                            <div class="health-bar-fill" id="dfHealthBarFill"></div>
+                        </div>
+                        <span class="health-pct-text" id="dfHealthPctText"></span>
+                        <span class="health-rag-badge ms-2" id="dfHealthRagBadge"></span>
+                    </div>
+                </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tyre Brand <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="tyre_brand" id="directTyreBrand" placeholder="e.g. Apollo, MRF, Bridgestone" maxlength="100" />
-                        <div class="invalid-feedback" id="err_tyre_brand"></div>
+                        <label class="form-label fw-semibold text-muted">Tyre Brand <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="df_tyreBrand" readonly placeholder="Auto-filled on tyre selection" />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tyre Serial Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="tyre_serial_number" id="directTyreSerial" placeholder="e.g. SN-12345" maxlength="100" />
-                        <div class="invalid-feedback" id="err_tyre_serial_number"></div>
+                        <label class="form-label fw-semibold text-muted">Tyre Serial Number <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="df_tyreSerial" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Model <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="df_tyreModel" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Size <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="df_tyreSize" readonly placeholder="Auto-filled on tyre selection" />
                     </div>
                 </div>
             </div>

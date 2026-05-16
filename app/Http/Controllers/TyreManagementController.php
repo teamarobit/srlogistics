@@ -304,6 +304,56 @@ class TyreManagementController extends Controller
     }
 
     /**
+     * AJAX — Return unallocated Direct Fitment tyres.
+     * Condition: tyre_source_mode = 'Fitment' AND not currently Active in vehicletyremappings.
+     */
+    public function getDirectFitmentTyres(Request $request)
+    {
+        $assignedTyreIds = Vehicletyremapping::where('status', 'Active')
+            ->whereNotNull('tyre_id')
+            ->pluck('tyre_id');
+
+        $query = Tyre::where('tyre_source_mode', 'Fitment')
+            ->whereNotIn('id', $assignedTyreIds);
+
+        if ($request->filled('condition')) {
+            $query->where('tyre_condition', $request->condition);
+        }
+        if ($request->filled('type')) {
+            $query->where('tyre_type', $request->type);
+        }
+
+        $rawTyres = $query->get(['id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
+                   'tyre_size', 'fixed_run_km', 'actual_run_km']);
+
+        $tyres = [];
+        foreach ($rawTyres as $tyre) {
+            $healthPct = null;
+            $ragStatus = 'grey';
+            if ($tyre->fixed_run_km > 0) {
+                $healthPct = max(0, round(
+                    (($tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) / $tyre->fixed_run_km) * 100,
+                    1
+                ));
+                if ($healthPct >= 50)     $ragStatus = 'green';
+                elseif ($healthPct >= 20) $ragStatus = 'amber';
+                else                      $ragStatus = 'red';
+            }
+            $tyres[] = [
+                'id'                 => $tyre->id,
+                'tyre_serial_number' => $tyre->tyre_serial_number,
+                'tyre_brand'         => $tyre->tyre_brand,
+                'tyre_model'         => $tyre->tyre_model,
+                'tyre_size'          => $tyre->tyre_size,
+                'health_pct'         => $healthPct,
+                'rag_status'         => $ragStatus,
+            ];
+        }
+
+        return response()->json(['tyres' => $tyres, 'message' => 'Direct Fitment tyres fetched successfully.'], 200);
+    }
+
+    /**
      * POST — Allocate a tyre to a vehicle position.
      * Supports two sources:
      *   SR Warehouse  — pick an existing warehouse tyre (tyre_id required)
@@ -341,8 +391,17 @@ class TyreManagementController extends Controller
                 },
             ];
         } else {
-            $rules['tyre_brand']         = 'required|string|max:100';
-            $rules['tyre_serial_number'] = 'required|string|max:100';
+            // Direct Fitment — select an existing Fitment-source tyre not yet allocated
+            $assignedIds = Vehicletyremapping::where('status', 'Active')->whereNotNull('tyre_id')->pluck('tyre_id');
+            $rules['tyre_id'] = [
+                'required',
+                'integer',
+                function ($attr, $value, $fail) use ($assignedIds) {
+                    if (!Tyre::where('id', $value)->where('tyre_source_mode', 'Fitment')->whereNotIn('id', $assignedIds)->exists()) {
+                        $fail('Selected tyre is not available for Direct Fitment.');
+                    }
+                },
+            ];
         }
 
         $validator = Validator::make($request->all(), $rules, [
@@ -408,26 +467,11 @@ class TyreManagementController extends Controller
                 $fitmentDate = date('Y-m-d', strtotime($request->fitment_date));
                 $kmAtFitment = $request->km_at_fitment ?? null;
 
-                // 1. Resolve / create the Tyre record
-                if ($source === 'SR Warehouse') {
-                    $tyreId = (int) $request->tyre_id;
-                    $tyreForMedia = Tyre::find($tyreId);
-                    // Move tyre out of Warehouse
-                    Tyre::where('id', $tyreId)->update(['location' => 'Vehicle']);
-                } else {
-                    // Direct Fitment — create a minimal Tyre record (no vendor/warehouse)
-                    $tyreForMedia = Tyre::create([
-                        'contact_id'         => null,
-                        'location'           => 'Vehicle',
-                        'tyre_condition'     => $request->tyre_condition,
-                        'tyre_type'          => $request->tyre_type,
-                        'tyre_brand'         => $request->tyre_brand,
-                        'tyre_model'         => $request->tyre_brand,   // model = brand as placeholder
-                        'tyre_serial_number' => $request->tyre_serial_number,
-                        'created_by'         => $userId,
-                    ]);
-                    $tyreId = $tyreForMedia->id;
-                }
+                // 1. Resolve the Tyre record (both SR Warehouse and Direct Fitment use existing tyre_id)
+                $tyreId = (int) $request->tyre_id;
+                $tyreForMedia = Tyre::find($tyreId);
+                // Move tyre location to Vehicle
+                Tyre::where('id', $tyreId)->update(['location' => 'Vehicle']);
 
                 // 2. Attach photo files to the tyre record (common for both sources)
                 $photoSlots = [
@@ -461,7 +505,7 @@ class TyreManagementController extends Controller
 
                 // 3. Update the mapping row
                 $notes = $source === 'Direct Fitment'
-                    ? 'Direct Fitment | Brand: ' . $request->tyre_brand . ' | Serial: ' . $request->tyre_serial_number
+                    ? 'Direct Fitment | Tyre ID: ' . $tyreId
                     : null;
 
                 $mapping->update([
