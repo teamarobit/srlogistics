@@ -71,6 +71,63 @@ class BatteryManagementController extends Controller
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // GET  /batterymanage/batteries/direct-fitment  (AJAX)
+    // Returns batteries where battery_source_mode = 'Fitment' AND not currently
+    // allocated to any vehicle (not in vehiclebatteries with status = 'Active').
+    // SD-8: no findOrFail. SD-9: status code on every response.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function getDirectFitmentBatteries(Request $request): JsonResponse
+    {
+        $allocatedIds = Vehiclebattery::where('status', 'Active')
+            ->whereNotNull('warehouse_battery_id')
+            ->pluck('warehouse_battery_id');
+
+        $query = Battery::where('battery_source_mode', 'Fitment')
+            ->whereNotIn('id', $allocatedIds);
+
+        if ($request->filled('condition')) {
+            $query->where('battery_condition', $request->condition);
+        }
+
+        $batteries = $query->orderBy('battery_brand')
+                           ->orderBy('battery_serial')
+                           ->get([
+                               'id', 'battery_serial', 'battery_brand', 'battery_model',
+                               'battery_capacity', 'battery_fixed_life_months', 'battery_actual_usage_months',
+                           ]);
+
+        $result = $batteries->map(function ($b) {
+            $lifeFixed   = (int) ($b->battery_fixed_life_months ?? 0);
+            $actualUsage = (int) ($b->battery_actual_usage_months ?? 0);
+            $lifePct     = null;
+            $ragStatus   = 'grey';
+
+            if ($lifeFixed > 0) {
+                $lifePct   = max(0, round((($lifeFixed - $actualUsage) / $lifeFixed) * 100, 1));
+                $ragStatus = $lifePct >= 50 ? 'green' : ($lifePct >= 20 ? 'amber' : 'red');
+            }
+
+            return [
+                'id'       => $b->id,
+                'label'    => trim(($b->battery_brand ?? '') . ' — ' . ($b->battery_serial ?? '')),
+                'brand'    => $b->battery_brand ?? '',
+                'serial'   => $b->battery_serial ?? '',
+                'model'    => $b->battery_model ?? '',
+                'capacity' => (string) ($b->battery_capacity ?? ''),
+                'life_pct' => $lifePct,
+                'rag'      => $ragStatus,
+            ];
+        });
+
+        return response()->json([
+            'success'   => true,
+            'batteries' => $result,
+            'message'   => 'Direct Fitment batteries fetched successfully.',
+        ], 200);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // GET  /batterymanage/batteries/available  (AJAX)
     // Returns all batteries from inventory (batteries table) that are In Stock.
     // ─────────────────────────────────────────────────────────────────────────
@@ -136,20 +193,30 @@ class BatteryManagementController extends Controller
         if ($source === 'SR Warehouse') {
             $rules['warehouse_battery_id'] = 'required|integer';
         } else {
-            // Direct Fitment — must supply brand + serial
-            $rules['battery_brand']         = 'required|string|max:100';
-            $rules['battery_serial_number'] = 'required|string|max:100';
-            $rules['battery_model']         = 'nullable|string|max:100';
-            $rules['battery_capacity']      = 'nullable|string|max:50';
-            $rules['battery_voltage']       = 'nullable|in:6V,12V,24V,48V';
-            $rules['purchase_date']         = 'nullable|date';
-            $rules['warranty_months']       = 'nullable|integer|min:0';
+            // Direct Fitment — must select an existing Fitment-source, unallocated battery
+            $assignedIds = Vehiclebattery::where('status', 'Active')
+                ->whereNotNull('warehouse_battery_id')
+                ->pluck('warehouse_battery_id');
+
+            $rules['battery_id'] = [
+                'required',
+                'integer',
+                function ($attr, $value, $fail) use ($assignedIds) {
+                    if (! Battery::where('id', $value)
+                            ->where('battery_source_mode', 'Fitment')
+                            ->whereNotIn('id', $assignedIds)
+                            ->exists()) {
+                        $fail('Selected battery is not available for Direct Fitment.');
+                    }
+                },
+            ];
         }
 
         $validator = Validator::make($request->all(), $rules, [
             'required'            => 'This field is required.',
             'in'                  => 'Invalid selection.',
             'warehouse_battery_id.required' => 'Please select a battery from the warehouse.',
+            'battery_id.required'           => 'Please select a Direct Fitment battery.',
         ]);
 
         if ($validator->fails()) {
@@ -189,14 +256,22 @@ class BatteryManagementController extends Controller
             $warrantyMonths     = $warehouseBattery->battery_warranty_months ?? 0;
             $warehouseBatteryId = $warehouseBattery->id;
         } else {
-            // Direct Fitment
-            $batteryBrand    = $request->battery_brand;
-            $batterySerial   = $request->battery_serial_number;
-            $batteryModel    = $request->battery_model;
-            $batteryCapacity = $request->battery_capacity;
-            $batteryVoltage  = $request->battery_voltage;
-            $purchaseDate    = $request->purchase_date;
-            $warrantyMonths  = (int) ($request->warranty_months ?? 0);
+            // Direct Fitment — resolve from existing Battery record in inventory
+            $warehouseBattery = Battery::find($request->battery_id);
+            if (! $warehouseBattery) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected Direct Fitment battery not found.',
+                ], 422);
+            }
+            $batteryBrand       = $warehouseBattery->battery_brand;
+            $batterySerial      = $warehouseBattery->battery_serial;
+            $batteryModel       = $warehouseBattery->battery_model;
+            $batteryCapacity    = $warehouseBattery->battery_capacity;
+            $batteryVoltage     = $warehouseBattery->battery_voltage;
+            $purchaseDate       = $warehouseBattery->battery_purchase_date?->toDateString();
+            $warrantyMonths     = $warehouseBattery->battery_warranty_months ?? 0;
+            $warehouseBatteryId = $warehouseBattery->id;
         }
 
         // ── Write to DB in transaction ────────────────────────────────────
@@ -233,26 +308,14 @@ class BatteryManagementController extends Controller
                         'updated_by'          => Auth::id(),
                     ]);
                 } else {
-                    // Direct Fitment — create a Battery record in batteries inventory
-                    $warehouseBattery = Battery::create([
-                        'organisation_id'      => Auth::user()->organisation_id ?? 1,
-                        'battery_source_mode'  => 'Fitment',
-                        'battery_serial'       => $batterySerial,
-                        'battery_brand'        => $batteryBrand,
-                        'battery_model'        => $batteryModel,
-                        'battery_capacity'     => $batteryCapacity ?? 0,
-                        'battery_voltage'      => $batteryVoltage ?? '12V',
-                        'battery_condition'    => $batteryCondition,
-                        'battery_purchase_date'=> $purchaseDate,
-                        'battery_warranty_months' => $warrantyMonths,
+                    // Direct Fitment — update existing Battery record to Installed
+                    $warehouseBattery->update([
                         'current_status'       => 'Installed',
                         'allocated_vehicle_id' => $vehicle->id,
                         'installation_date'    => $request->fitment_date,
                         'current_odometer_km'  => $request->km_at_fitment ?? 0,
-                        'fitment_source_origin_note' => 'Tagged via Battery Management',
-                        'created_by'           => Auth::id(),
+                        'updated_by'           => Auth::id(),
                     ]);
-                    $warehouseBatteryId = $warehouseBattery->id;
                 }
 
                 // ── Create vehiclebatteries record ────────────────────────

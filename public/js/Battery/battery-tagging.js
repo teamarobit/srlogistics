@@ -6,7 +6,7 @@
  * SD-7:  Toast mixin for all notifications
  * SD-8:  No findOrFail() in AJAX (backend)
  * SD-9:  HTTP status codes on every response (backend)
- * v2.4  — Take Action modal (Replace Battery); History btn commented out
+ * v2.7  — Direct Fitment battery picker (dropdown + life health preview + condition filter)
  */
 
 /* ── Toast mixin (SD-7) ─────────────────────────────────────────────── */
@@ -26,20 +26,17 @@ const Toast = Swal.mixin({
 function showValidationErrors(errors) {
     clearValidationErrors();
     $.each(errors, function (field, messages) {
-        // Try named error span first (e.g. #err_battery_brand)
         var $errSpan = $('#err_' + field);
         if ($errSpan.length) {
             $errSpan.text(messages[0]);
             return;
         }
-        // Fallback: insert after input
         var $input = $('#tagBatteryModal [name="' + field + '"]');
         if ($input.length) {
             $('<span class="text-danger small d-block mt-1 field-error">'
                 + messages[0] + '</span>').insertAfter($input);
         }
     });
-    // Scroll to first error
     var $firstErr = $('#tagBatteryModal .field-error:visible').first();
     if ($firstErr.length) {
         $('#tagBatteryModal .modal-body').animate({
@@ -49,11 +46,115 @@ function showValidationErrors(errors) {
 }
 
 function clearValidationErrors() {
-    // Remove dynamically inserted spans
     $('.field-error').not('[id]').remove();
-    // Clear named error spans
     $('[id^="err_"]').text('');
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   DIRECT FITMENT — Battery picker helpers
+   ══════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Reset the Direct Fitment dropdown + health preview + auto-fill fields.
+ */
+function resetDirectFitmentBatteries() {
+    $('#directBatterySelect')
+        .prop('disabled', true)
+        .html('<option value="">— Loading… —</option>');
+    $('#dfBatteryDropdownState')
+        .text('— Loading available Direct Fitment batteries… —')
+        .removeClass('text-danger text-success text-warning')
+        .addClass('text-muted');
+    $('#dfBatteryHealthPreview').addClass('d-none');
+    $('#df_batteryBrand, #df_batterySerial, #df_batteryModel, #df_batteryCapacity').val('');
+}
+
+/**
+ * Fetch batteries where battery_source_mode = 'Fitment' AND not in vehiclebatteries (Active).
+ * Passes optional condition filter. Populates #directBatterySelect.
+ */
+function fetchDirectFitmentBatteries() {
+    var condition  = $('#batteryConditionSelect').val();
+    var dfUrl      = $('#tagBatteryForm').data('direct-fitment-url');
+    var $select    = $('#directBatterySelect');
+    var $stateMsg  = $('#dfBatteryDropdownState');
+
+    resetDirectFitmentBatteries();
+
+    var params = {};
+    if (condition) { params.condition = condition; }
+
+    $.ajax({
+        url    : dfUrl,
+        method : 'GET',
+        data   : params,
+        headers: { 'Accept': 'application/json' },
+        success: function (res) {
+            if (!res.batteries || res.batteries.length === 0) {
+                $select.html('<option value="">— No Direct Fitment batteries available —</option>');
+                $stateMsg.text('No Direct Fitment batteries available for the selected condition.')
+                         .removeClass('text-muted text-success text-warning')
+                         .addClass('text-danger');
+                return;
+            }
+            var opts = '<option value="">— Select a battery —</option>';
+            $.each(res.batteries, function (i, b) {
+                opts += '<option value="' + b.id + '"'
+                      + ' data-brand="'    + $('<div>').text(b.brand).html()    + '"'
+                      + ' data-serial="'   + $('<div>').text(b.serial).html()   + '"'
+                      + ' data-model="'    + $('<div>').text(b.model).html()    + '"'
+                      + ' data-capacity="' + $('<div>').text(b.capacity).html() + '"'
+                      + ' data-life="'     + (b.life_pct !== null ? b.life_pct : '') + '"'
+                      + ' data-rag="'      + $('<div>').text(b.rag).html()      + '"'
+                      + '>' + $('<div>').text(b.label).html() + '</option>';
+            });
+            $select.prop('disabled', false).html(opts);
+            $stateMsg.text(res.batteries.length + ' batter' + (res.batteries.length === 1 ? 'y' : 'ies') + ' available.')
+                     .removeClass('text-muted text-danger text-warning')
+                     .addClass('text-success');
+        },
+        error: function () {
+            $select.html('<option value="">— Failed to load —</option>');
+            $stateMsg.text('Could not load Direct Fitment batteries. Please try again.')
+                     .removeClass('text-muted text-success text-warning')
+                     .addClass('text-danger');
+        }
+    });
+}
+
+/* ── Direct Fitment battery selection — auto-fill + health preview ───── */
+$(document).on('change', '#directBatterySelect', function () {
+    var $opt     = $(this).find('option:selected');
+    var lifePct  = $opt.data('life');
+    var rag      = $opt.data('rag') || 'grey';
+
+    $('#df_batteryBrand').val($opt.data('brand')    || '');
+    $('#df_batterySerial').val($opt.data('serial')  || '');
+    $('#df_batteryModel').val($opt.data('model')    || '');
+    $('#df_batteryCapacity').val($opt.data('capacity') ? $opt.data('capacity') + ' Ah' : '');
+
+    var $preview = $('#dfBatteryHealthPreview');
+
+    if (!$(this).val() || lifePct === '' || lifePct === undefined || lifePct === null) {
+        $preview.addClass('d-none');
+        return;
+    }
+
+    var ragColours = {
+        green : { bar: '#22c55e', badge: 'bat-rag-green', label: '🟢 Good'     },
+        amber : { bar: '#f59e0b', badge: 'bat-rag-amber', label: '🟡 Monitor'  },
+        red   : { bar: '#ef4444', badge: 'bat-rag-red',   label: '🔴 Critical' },
+        grey  : { bar: '#94a3b8', badge: 'bat-rag-grey',  label: '⚫ No data'  },
+    };
+    var colours = ragColours[rag] || ragColours.grey;
+
+    $('#dfBatHealthBarFill').css('width', lifePct + '%').css('background-color', colours.bar);
+    $('#dfBatHealthPctText').text(lifePct + '%');
+    $('#dfBatHealthRagBadge')
+        .text(colours.label)
+        .attr('class', 'bat-health-rag-badge ms-2 ' + colours.badge);
+    $preview.removeClass('d-none');
+});
 
 /* ── Source Toggle ──────────────────────────────────────────────────── */
 function applySourceToggle() {
@@ -61,20 +162,21 @@ function applySourceToggle() {
     if (src === 'SR Warehouse') {
         $('#srcWarehouseSection').removeClass('d-none');
         $('#srcDirectSection').addClass('d-none');
-        // Direct fields are disabled so they won't serialize
         $('#srcDirectSection input, #srcDirectSection select').prop('disabled', true);
         $('#srcWarehouseSection select, #srcWarehouseSection input').prop('disabled', false);
-        // Warehouse battery select stays disabled until condition chosen
         reloadWarehouseBatteries();
     } else {
         $('#srcDirectSection').removeClass('d-none');
         $('#srcWarehouseSection').addClass('d-none');
         $('#srcWarehouseSection input, #srcWarehouseSection select').prop('disabled', true);
         $('#srcDirectSection input, #srcDirectSection select').prop('disabled', false);
-        // Clear warehouse select
+        // Clear warehouse fields
         $('#warehouseBatterySelect').val('').prop('disabled', true);
         $('#wh_batteryBrand').val('');
         $('#wh_batterySerial').val('');
+        // Reset DF + fetch
+        resetDirectFitmentBatteries();
+        fetchDirectFitmentBatteries();
     }
 }
 
@@ -89,7 +191,6 @@ function reloadWarehouseBatteries() {
     var $stateMsg = $('#batteryDropdownState');
     var availUrl  = $('#tagBatteryForm').data('available-url');
 
-    // Reset auto-fill
     $('#wh_batteryBrand').val('');
     $('#wh_batterySerial').val('');
 
@@ -128,17 +229,21 @@ function reloadWarehouseBatteries() {
             $select.prop('disabled', false).html(opts);
             $stateMsg.text(res.batteries.length + ' batter' + (res.batteries.length === 1 ? 'y' : 'ies') + ' available.');
         },
-        error  : function () {
+        error: function () {
             $select.html('<option value="">— Failed to load —</option>');
             $stateMsg.text('Could not load batteries. Please try again.');
         }
     });
 }
 
-/* Reload warehouse list whenever condition changes (SR Warehouse mode only) */
+/* Condition change — re-fetch for whichever source is active */
 $(document).on('change', '#batteryConditionSelect', function () {
-    if ($('input[name="battery_source"]:checked').val() === 'SR Warehouse') {
+    var src = $('input[name="battery_source"]:checked').val();
+    if (src === 'SR Warehouse') {
         reloadWarehouseBatteries();
+    } else {
+        resetDirectFitmentBatteries();
+        fetchDirectFitmentBatteries();
     }
 });
 
@@ -216,85 +321,22 @@ $(document).on('submit', '#tagBatteryForm', function (e) {
     });
 });
 
-/* ── Remove Battery — disabled (button replaced by Take Action) ─────── */
-/* $(document).on('click', '.btn-vbt-remove-confirm', function () { ... }); */
-
-/* ── View Battery Logs (AJAX) ───────────────────────────────────────── */
-$(document).on('click', '.btn-vbt-view-logs', function () {
-    var logsUrl = $(this).data('logs-url');
-    var serial  = $(this).data('serial') || 'Battery';
-    var $modal  = $('#batteryLogsModal');
-
-    $modal.find('#batteryLogsTitle').text('Log History — ' + serial);
-    $modal.find('#batteryLogsBody').html(
-        '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div> Loading…</div>'
-    );
-    $modal.modal('show');
-
-    $.ajax({
-        url    : logsUrl,
-        method : 'GET',
-        headers: { 'Accept': 'application/json' },
-        success: function (res) {
-            if (!res.logs || res.logs.length === 0) {
-                $modal.find('#batteryLogsBody').html(
-                    '<p class="text-muted text-center py-3">No log entries found.</p>'
-                );
-                return;
-            }
-            var html = '';
-            $.each(res.logs, function (i, log) {
-                var iconClass = 'vbt-log-tagged';
-                var iconChar  = 'T';
-                if (log.action === 'Removed') { iconClass = 'vbt-log-removed'; iconChar = 'R'; }
-                if (log.action === 'Updated') { iconClass = 'vbt-log-updated'; iconChar = 'U'; }
-
-                html += '<div class="vbt-log-row">';
-                html += '  <div class="vbt-log-icon ' + iconClass + '">' + iconChar + '</div>';
-                html += '  <div class="vbt-log-meta">';
-                html += '    <div class="vbt-log-action">' + log.action + '</div>';
-                if (log.source && log.source !== '—') {
-                    html += '    <div class="vbt-log-notes" style="font-size:0.72rem;color:#6b7280;">Source: ' + log.source + '</div>';
-                }
-                if (log.notes) {
-                    html += '    <div class="vbt-log-notes">' + log.notes + '</div>';
-                }
-                html += '    <div class="vbt-log-date">' + log.created_at;
-                if (log.fitment_date && log.fitment_date !== '—') {
-                    html += ' · Fitment: ' + log.fitment_date;
-                }
-                if (log.actual_km && log.actual_km !== '—') {
-                    html += ' · KM: ' + log.actual_km;
-                }
-                html += '</div>';
-                html += '  </div>';
-                html += '</div>';
-            });
-            $modal.find('#batteryLogsBody').html(html);
-        },
-        error: function () {
-            $modal.find('#batteryLogsBody').html(
-                '<p class="text-danger text-center py-3">Failed to load logs.</p>'
-            );
-        }
-    });
-});
-
 /* ── Reset tag modal on close ───────────────────────────────────────── */
 $('#tagBatteryModal').on('hidden.bs.modal', function () {
     var $form = $(this).find('form')[0];
     if ($form) $form.reset();
     clearValidationErrors();
 
-    // Reset button state
     $('#btnTagBattery').prop('disabled', false);
     $('#btnTagBatteryText').html('<i class="uil uil-battery-bolt me-1"></i>Tag Battery');
     $('#btnTagBatterySpinner').addClass('d-none');
 
-    // Reset attachment previews
     $('#previewSerial, #previewFitment, #previewOdometer').addClass('d-none').find('img').attr('src', '');
 
-    // Reset source toggle to default
+    // Reset Direct Fitment section
+    resetDirectFitmentBatteries();
+
+    // Reset source toggle to default (SR Warehouse)
     $('#srcSRWarehouse').prop('checked', true);
     applySourceToggle();
 });
@@ -334,7 +376,6 @@ function bamShowErrors(errors) {
             $(errorMap[field]).text(messages[0]);
         }
     });
-    // Scroll to first visible error
     var $first = $('#batteryTakeActionModal .bam-field-error:visible').filter(function () {
         return $(this).text().trim() !== '';
     }).first();
@@ -348,10 +389,8 @@ function bamShowErrors(errors) {
 /* ── BAM: Source card active toggle ─────────────────────────────────── */
 $(document).on('change', 'input[name="battery_source"]', function () {
     var src = $(this).val();
-    // Update card active state
     $('#bamSourceGrid .bam-source-card').removeClass('active');
     $(this).closest('.bam-source-card').addClass('active');
-    // Show/hide panels
     $('#bamPanelWarehouse').removeClass('active');
     $('#bamPanelDirect').removeClass('active');
     if (src === 'SR Warehouse') {
@@ -458,12 +497,10 @@ $(document).on('click', '.btn-vbt-take-action', function () {
     var availUrl   = $btn.data('available-url');
     var replaceUrl = $btn.data('replace-url');
 
-    // Set header info
     $('#bamSlotLabel').text(slot);
     $('#bamSerialText').text(serial);
     $('#bamBrandText').text(brand ? '· ' + brand : '');
 
-    // RAG badge
     var ragMap = {
         green  : { cls: 'rag-green',  txt: '🟢 Green'  },
         yellow : { cls: 'rag-yellow', txt: '🟡 Yellow' },
@@ -475,7 +512,6 @@ $(document).on('click', '.btn-vbt-take-action', function () {
         .addClass(ragInfo.cls)
         .text(ragInfo.txt);
 
-    // Life % and KM left
     var lifePct   = $btn.data('life-pct');
     var actualKm  = $btn.data('actual-km');
     var lifeStr   = '';
@@ -487,11 +523,9 @@ $(document).on('click', '.btn-vbt-take-action', function () {
     }
     $('#bamLifeText').text(lifeStr);
 
-    // Store URLs on modal element
     $('#batteryTakeActionModal').data('available-url', availUrl);
     $('#batteryTakeActionModal').data('replace-url', replaceUrl);
 
-    // Populate old dest dropdowns from data store
     bamPopulateOldDestDropdowns();
 });
 
@@ -547,12 +581,10 @@ $('#batteryTakeActionModal').on('hidden.bs.modal', function () {
     if ($form) $form.reset();
     bamClearErrors();
 
-    // Reset button state
     $('#bamRplSubmitBtn').prop('disabled', false);
     $('#bamRplSubmitText').html('<i class="uil uil-exchange me-1"></i>Replace Battery');
     $('#bamRplSubmitSpinner').addClass('d-none');
 
-    // Reset source cards
     $('#bamSourceGrid .bam-source-card').removeClass('active');
     $('#bamPanelWarehouse, #bamPanelDirect').removeClass('active');
     $('#bamWarehouseBatterySelect').prop('disabled', true)
@@ -561,24 +593,20 @@ $('#batteryTakeActionModal').on('hidden.bs.modal', function () {
     $('#bamWhSerial').val('');
     $('#bamBatteryDropdownState').text('Select a Battery Condition above to load available stock.');
 
-    // Reset photo thumbs
     $('#bamThumbDamage, #bamThumbSerial, #bamThumbOdometer').hide().attr('src', '');
 
-    // Reset header
     $('#bamSlotLabel').text('—');
     $('#bamSerialText').text('—');
     $('#bamBrandText').text('');
     $('#bamLifeText').text('');
     $('#bamRagBadge').removeClass('rag-green rag-yellow rag-red').addClass('rag-grey').text('⚫ Not Set');
 
-    // Reset old battery destination
     $('#bamOldDestGrid .bam-old-dest-pill').removeClass('active');
     $('input[name="old_battery_destination"]').prop('checked', false);
     $('#bamOldDestWarehouseWrap, #bamOldDestWorkshopWrap').addClass('d-none');
     $('#bamOldDestWarehouseId, #bamOldDestWorkshopId').val('');
     $('#bamErrOldDest, #bamErrOldDestWarehouse, #bamErrOldDestWorkshop').text('');
 
-    // Reset notes
     $('#bamNotes').val('').attr('placeholder', 'Add any notes or remarks…');
     $('#bamNotesScrapHint').addClass('d-none');
     $('#bamErrNotes').text('');
@@ -611,20 +639,16 @@ function bamPopulateOldDestDropdowns() {
 $(document).on('change', 'input[name="old_battery_destination"]', function () {
     var val = $(this).val();
 
-    // Update active pill
     $('#bamOldDestGrid .bam-old-dest-pill').removeClass('active');
     $(this).closest('.bam-old-dest-pill').addClass('active');
 
-    // Show/hide sub-panels
     $('#bamOldDestWarehouseWrap').toggleClass('d-none', val !== 'SR Garage');
     $('#bamOldDestWorkshopWrap').toggleClass('d-none',  val !== 'Workshop');
 
-    // Clear sub-panel errors + values when switching
     if (val !== 'SR Garage') { $('#bamOldDestWarehouseId').val(''); $('#bamErrOldDestWarehouse').text(''); }
     if (val !== 'Workshop')  { $('#bamOldDestWorkshopId').val('');  $('#bamErrOldDestWorkshop').text(''); }
     $('#bamErrOldDest').text('');
 
-    // Notes: show "(Required for Scrap)" hint when Scrap is selected
     var isScrap = val === 'Scrap';
     $('#bamNotesScrapHint').toggleClass('d-none', !isScrap);
     $('#bamNotes').attr('placeholder', isScrap

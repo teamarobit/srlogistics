@@ -441,6 +441,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/vehicle/{vehicle}/battery/{battery}/logs', [App\Http\Controllers\BatteryManagementController::class, 'getBatteryLogs'])->name('vehicle.battery.logs');
         // GET: AJAX — fetch available batteries from inventory by condition
         Route::get('/batteries/available', [App\Http\Controllers\BatteryManagementController::class, 'getAvailableWarehouseBatteries'])->name('batteries.available');
+        // GET: AJAX — fetch Direct Fitment batteries (battery_source_mode = 'Fitment', unallocated)
+        Route::get('/batteries/direct-fitment', [App\Http\Controllers\BatteryManagementController::class, 'getDirectFitmentBatteries'])->name('batteries.direct.fitment');
     });
 
     // Battery Owner Dashboard

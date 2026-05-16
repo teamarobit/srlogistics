@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <link href="{{ asset('css/Battery/battery-tagging.css?v=3.0') }}" rel="stylesheet">
+    <link href="{{ asset('css/Battery/battery-tagging.css?v=4.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -414,7 +414,8 @@
                       action="{{ route('batterymanage.vehicle.battery.tag.store', $vehicle->id) }}"
                       method="POST"
                       enctype="multipart/form-data"
-                      data-available-url="{{ route('batterymanage.batteries.available') }}">
+                      data-available-url="{{ route('batterymanage.batteries.available') }}"
+                      data-direct-fitment-url="{{ route('batterymanage.batteries.direct.fitment') }}">
                 @csrf
 
                     {{-- ── SECTION: Battery Source ─────────────────────────── --}}
@@ -495,51 +496,61 @@
                     ════════════════════════════════════════════════════════ --}}
                     <div id="srcDirectSection" class="d-none">
                         <div class="vbt-modal-section-title mt-1">
-                            <i class="uil uil-truck"></i> Battery Details
+                            <i class="uil uil-truck"></i> Select Direct Fitment Battery
+                        </div>
+                        <div class="mb-2" id="directBatterySelectorWrap">
+                            <label class="form-label fw-semibold small">
+                                Direct Fitment Battery <span class="text-danger">*</span>
+                            </label>
+                            <div id="dfBatteryDropdownState" class="text-muted small mb-1">
+                                — Loading available Direct Fitment batteries… —
+                            </div>
+                            <select class="form-select form-select-sm" name="battery_id"
+                                    id="directBatterySelect" disabled>
+                                <option value="">— Loading… —</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 field-error" id="err_battery_id"></span>
+                            <div id="dfBatteryHealthPreview" class="bat-health-preview d-none mt-2">
+                                <span class="bat-health-label">Life:</span>
+                                <div class="bat-health-bar-track">
+                                    <div class="bat-health-bar-fill" id="dfBatHealthBarFill"></div>
+                                </div>
+                                <span class="bat-health-pct-text" id="dfBatHealthPctText"></span>
+                                <span class="bat-health-rag-badge ms-2" id="dfBatHealthRagBadge"></span>
+                            </div>
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Battery Brand <span class="text-danger">*</span></label>
-                                <input type="text" name="battery_brand" id="directBatteryBrand"
-                                       class="form-control form-control-sm"
-                                       placeholder="e.g. Exide, Amara Raja" maxlength="100">
-                                <span class="text-danger small d-block mt-1 field-error" id="err_battery_brand"></span>
+                                <label class="form-label fw-semibold small text-muted">
+                                    Battery Brand
+                                    <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                </label>
+                                <input type="text" class="form-control form-control-sm bg-light"
+                                       id="df_batteryBrand" readonly placeholder="Auto-filled on selection">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Battery Serial Number <span class="text-danger">*</span></label>
-                                <input type="text" name="battery_serial_number" id="directBatterySerial"
-                                       class="form-control form-control-sm"
-                                       placeholder="e.g. BT-2024-0001" maxlength="100">
-                                <span class="text-danger small d-block mt-1 field-error" id="err_battery_serial_number"></span>
+                                <label class="form-label fw-semibold small text-muted">
+                                    Serial Number
+                                    <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                </label>
+                                <input type="text" class="form-control form-control-sm bg-light"
+                                       id="df_batterySerial" readonly placeholder="Auto-filled on selection">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Battery Model</label>
-                                <input type="text" name="battery_model" class="form-control form-control-sm"
-                                       placeholder="e.g. FEO-TBTZ0" maxlength="100">
+                                <label class="form-label fw-semibold small text-muted">
+                                    Battery Model
+                                    <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                </label>
+                                <input type="text" class="form-control form-control-sm bg-light"
+                                       id="df_batteryModel" readonly placeholder="Auto-filled on selection">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Battery Capacity (Ah)</label>
-                                <input type="text" name="battery_capacity" class="form-control form-control-sm"
-                                       placeholder="e.g. 88" maxlength="50">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Battery Voltage</label>
-                                <select name="battery_voltage" class="form-select form-select-sm">
-                                    <option value="">— Select Voltage —</option>
-                                    <option value="6V">6V</option>
-                                    <option value="12V" selected>12V</option>
-                                    <option value="24V">24V</option>
-                                    <option value="48V">48V</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Purchase Date</label>
-                                <input type="date" name="purchase_date" class="form-control form-control-sm">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold small">Warranty Period (Months)</label>
-                                <input type="number" name="warranty_months" class="form-control form-control-sm"
-                                       min="0" placeholder="e.g. 12">
+                                <label class="form-label fw-semibold small text-muted">
+                                    Capacity (Ah)
+                                    <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span>
+                                </label>
+                                <input type="text" class="form-control form-control-sm bg-light"
+                                       id="df_batteryCapacity" readonly placeholder="Auto-filled on selection">
                             </div>
                         </div>
                     </div>
@@ -1016,5 +1027,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Battery/battery-tagging.js?v=2.6') }}"></script>
+<script src="{{ asset('js/Battery/battery-tagging.js?v=2.7') }}"></script>
 @endsection
