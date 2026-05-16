@@ -562,7 +562,7 @@
                         <i class="uil uil-archive me-1"></i>SR Warehouse
                     </label>
                     <input type="radio" class="btn-check" name="tyre_source" id="srcDirect" value="Direct Fitment">
-                    <label class="btn btn-outline-secondary btn-sm px-3" for="srcDirect">
+                    <label class="btn btn-outline-primary btn-sm px-3" for="srcDirect">
                         <i class="uil uil-truck me-1"></i>Direct Fitment
                     </label>
                 </div>
@@ -732,7 +732,7 @@
                         <i class="uil uil-archive me-1"></i>SR Warehouse
                     </label>
                     <input type="radio" class="btn-check" name="spare_tyre_source" id="spareSrcDirect" value="Direct Fitment">
-                    <label class="btn btn-outline-secondary btn-sm px-3" for="spareSrcDirect">
+                    <label class="btn btn-outline-primary btn-sm px-3" for="spareSrcDirect">
                         <i class="uil uil-truck me-1"></i>Direct Fitment
                     </label>
                 </div>

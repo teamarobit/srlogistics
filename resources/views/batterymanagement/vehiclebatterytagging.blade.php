@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <link href="{{ asset('css/Battery/battery-tagging.css?v=2.9') }}" rel="stylesheet">
+    <link href="{{ asset('css/Battery/battery-tagging.css?v=3.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -431,7 +431,7 @@
                             </label>
                             <input type="radio" class="btn-check" name="battery_source"
                                    id="srcDirectFitment" value="Direct Fitment">
-                            <label class="btn btn-outline-secondary btn-sm px-3" for="srcDirectFitment">
+                            <label class="btn btn-outline-primary btn-sm px-3" for="srcDirectFitment">
                                 <i class="uil uil-truck me-1"></i>Direct Fitment
                             </label>
                         </div>

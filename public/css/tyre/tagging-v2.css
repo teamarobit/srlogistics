@@ -1,8 +1,24 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SR Logistics — Tyre Tagging v2  |  tagging-v2.css  v1.0
+   SR Logistics — Tyre Tagging v2  |  tagging-v2.css  v1.1
    Take Action Modal — Tyre Replacement, Rotation, Alignment
    Prefix: tam- (Take Action Modal)
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── TYRE SOURCE TOGGLE BUTTONS (Allocate Tyre + Add Spare modals) ───────────
+   Checked  = solid primary fill  (dark navy + white text)
+   Unchecked = white bg + neutral grey border + grey text
+   ─────────────────────────────────────────────────────────────────────────── */
+#tyreSourceBtns    .btn-check:not(:checked) + .btn,
+#spareTyreSourceBtns .btn-check:not(:checked) + .btn {
+    background-color: #fff;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+#tyreSourceBtns    .btn-check:not(:checked) + .btn:hover,
+#spareTyreSourceBtns .btn-check:not(:checked) + .btn:hover {
+    border-color: #adb5bd;
+    color: #495057;
+}
 
 /* ── TAKE ACTION MODAL HEADER INFO BAR ──────────────────────────────────── */
 .tam-header-info {

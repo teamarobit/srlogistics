@@ -1,8 +1,22 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Battery Tagging Page — SR Logistics
    Prefix: vbt-   (Vehicle Battery Tagging)
-   v2.5  — Take Action button matches tyre tagging green style
+   v3.0  — Source toggle: clear selected/unselected visual distinction
 ════════════════════════════════════════════════════════════════════════ */
+
+/* ── BATTERY SOURCE TOGGLE BUTTONS (Tag Battery modal) ──────────────────
+   Checked   = solid primary fill (dark navy + white text)
+   Unchecked = white bg + neutral grey border + grey text
+   ─────────────────────────────────────────────────────────────────────── */
+#batterySourceBtns .btn-check:not(:checked) + .btn {
+    background-color: #fff;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+#batterySourceBtns .btn-check:not(:checked) + .btn:hover {
+    border-color: #adb5bd;
+    color: #495057;
+}
 
 /* ── Page wrapper ─────────────────────────────────────────────────── */
 .srlog-bdwrapper {
