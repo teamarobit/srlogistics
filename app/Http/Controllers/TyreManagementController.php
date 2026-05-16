@@ -269,7 +269,7 @@ class TyreManagementController extends Controller
                 ->where('tyre_type', $type)
                 ->where('tyre_condition', $condition)
                 ->get(['id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
-                        'fixed_run_km', 'actual_run_km']);
+                        'tyre_size', 'fixed_run_km', 'actual_run_km']);
 
             foreach ($rawTyres as $tyre) {
                 // Compute life remaining %
@@ -290,6 +290,7 @@ class TyreManagementController extends Controller
                     'tyre_serial_number'=> $tyre->tyre_serial_number,
                     'tyre_brand'        => $tyre->tyre_brand,
                     'tyre_model'        => $tyre->tyre_model,
+                    'tyre_size'         => $tyre->tyre_size,
                     'health_pct'        => $healthPct,
                     'rag_status'        => $ragStatus,
                     'label'             => ($tyre->tyre_serial_number ?? 'N/A')

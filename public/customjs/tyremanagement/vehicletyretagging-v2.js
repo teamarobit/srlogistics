@@ -108,6 +108,8 @@ $(document).ready(function () {
 
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
         $('#directTyreBrand').val('');
         $('#directTyreSerial').val('');
 
@@ -144,6 +146,8 @@ $(document).ready(function () {
         resetTyreDropdown();
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
     }
 
     function resetTyreDropdown() {
@@ -157,6 +161,8 @@ $(document).ready(function () {
         $('#tyreHealthPreview').addClass('d-none');
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
     }
 
     // ── A5. SOURCE TOGGLE ────────────────────────────────────────────────────
@@ -196,7 +202,7 @@ $(document).ready(function () {
                 tyres.forEach(function (t) {
                     const healthLabel = t.health_pct !== null ? ` [${t.health_pct}% health]` : ' [health N/A]';
                     const ragEmoji = t.rag_status === 'green' ? '🟢' : t.rag_status === 'amber' ? '🟡' : t.rag_status === 'red' ? '🔴' : '⚫';
-                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
+                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}" data-model="${t.tyre_model ?? ''}" data-size="${t.tyre_size ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
                 });
                 $('#tyreIdSelect').prop('disabled', false).html(options);
                 $('#tyreDropdownState').text(`${tyres.length} tyre(s) available.`).removeClass('text-muted text-danger text-warning').addClass('text-success');
@@ -216,6 +222,8 @@ $(document).ready(function () {
         const rag       = $opt.data('rag') || 'grey';
         $('#wh_tyreBrand').val($opt.data('brand') || '');
         $('#wh_tyreSerial').val($opt.data('serial') || '');
+        $('#wh_tyreModel').val($opt.data('model') || '');
+        $('#wh_tyreSize').val($opt.data('size') || '');
 
         if (!$(this).val() || healthPct === '') { $('#tyreHealthPreview').addClass('d-none'); return; }
         const pct = parseFloat(healthPct);

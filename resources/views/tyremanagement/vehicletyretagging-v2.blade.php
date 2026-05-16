@@ -617,6 +617,14 @@
                         <label class="form-label fw-semibold text-muted">Tyre Serial Number <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
                         <input type="text" class="form-control bg-light" id="wh_tyreSerial" readonly placeholder="Auto-filled on tyre selection" />
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Model <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="wh_tyreModel" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-muted">Tyre Size <span class="badge bg-light text-secondary border ms-1" style="font-size:10px;">Auto-filled</span></label>
+                        <input type="text" class="form-control bg-light" id="wh_tyreSize" readonly placeholder="Auto-filled on tyre selection" />
+                    </div>
                 </div>
             </div>
             <div id="srcDirectSection" class="d-none">
