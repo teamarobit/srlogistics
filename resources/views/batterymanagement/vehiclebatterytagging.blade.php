@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <link href="{{ asset('css/Battery/battery-tagging.css?v=4.0') }}" rel="stylesheet">
+    <link href="{{ asset('css/Battery/battery-tagging.css?v=4.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
