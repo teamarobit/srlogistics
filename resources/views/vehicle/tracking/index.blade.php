@@ -20,7 +20,7 @@
                 <div class="container-fluid page-head">
                     <div class="row align-items-end">
                         <div class="col-12">
-                            <h5 class="d-inline-block mb-0">Vehicle Group</h5>
+                            <h5 class="d-inline-block mb-0">Vehicle Tracking Group</h5>
                             <a href="{{ route('vehicletracking.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Vehicle Group Tracking</a>
                             
                         </div>
