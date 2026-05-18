@@ -41,9 +41,11 @@ $(document).ready(function() {
                 Toast.fire({
                     icon: 'success',
                     title: response.message || 'Saved successfully!'
+                }).then(() => {
+                    window.location.href = VEHILE_STATUS;
                 });
+                
                 $('#editBtn').html('Save').attr('disabled', false);
-                window.location.href = VEHILE_STATUS;
             },
             error: function (xhr) {
                     $('#editBtn').html('Save').prop('disabled', false);
