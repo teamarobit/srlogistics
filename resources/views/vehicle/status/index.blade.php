@@ -174,7 +174,7 @@
 var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Vehicle/Status/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/status/index.js')}}"></script>
 
 @endsection
 
