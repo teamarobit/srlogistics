@@ -55,34 +55,34 @@ $(document).ready(function() {
                 </div>
     
                 <div class="col-12 col-md-6">
-                    <input type="text" name="vehiclesize_name[]" class="form-control">
-                    <small class="error text-danger" id="vehiclesize_name_${index}_error"></small>
+                    <input type="text" name="vehiclesize_name[${index}]" class="form-control">
+                    <small class="error text-danger" id="add_vehiclesize_name_${index}_error"></small>
     
                     <div class="mt-3">
                         <div class="row">
 
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
+                                    <input type="text" name="vehiclesize_length[${index}]" class="form-control decimalonly">
                                     <label>Length (ft)</label>
                                 </div>
-                                <small class="error text-danger" id="vehiclesize_length_${index}_error"></small>
+                                <small class="error text-danger" id="add_vehiclesize_length_${index}_error"></small>
                             </div>
     
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="text" name="vehiclesize_height[]" class="form-control decimalonly">
+                                    <input type="text" name="vehiclesize_height[${index}]" class="form-control decimalonly">
                                     <label>Height (ft)</label>
                                 </div>
-                                <small class="error text-danger" id="vehiclesize_height_${index}_error"></small>
+                                <small class="error text-danger" id="add_vehiclesize_height_${index}_error"></small>
                             </div>
     
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="text" name="vehiclesize_width[]" class="form-control decimalonly">
+                                    <input type="text" name="vehiclesize_width[${index}]" class="form-control decimalonly">
                                     <label>Width (ft)</label>
                                 </div>
-                                <small class="error text-danger" id="vehiclesize_width_${index}_error"></small>
+                                <small class="error text-danger" id="add_vehiclesize_width_${index}_error"></small>
                             </div>
     
                         </div>
@@ -171,13 +171,13 @@ $(document).ready(function() {
                     const msg = messages[0];
     
                     /* Dynamic array fields */
-                    if (field.includes('.')) {
+                    // if (field.includes('.')) {
     
-                        const errorId = field.replace('.', '_') + '_error';
-                        $('#' + errorId).text(msg);
+                    //     const errorId = field.replace('.', '_') + '_error';
+                    //     $('#' + errorId).text(msg);
     
-                        return;
-                    }
+                    //     return;
+                    // }
     
                     /* Normal fields / radio / select */
                     $('#add_' + field + '_error').text(msg);

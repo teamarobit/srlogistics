@@ -65,34 +65,6 @@ class VehicletypeController extends Controller
     
     public function store(Request $request)
     {   
-        // \Log::info('Vehicle Size Names:', [
-        //     'vehiclesize_name' => $request->vehiclesize_name
-        // ]);
-        
-        // Clean & sync dynamic arrays (remove null rows safely)
-        $names   = $request->vehiclesize_name ?? [];
-        $heights = $request->vehiclesize_height ?? [];
-        $widths  = $request->vehiclesize_width ?? [];
-        $lengths = $request->vehiclesize_length ?? [];
-    
-        $filtered = [
-            'vehiclesize_name'   => [],
-            'vehiclesize_height' => [],
-            'vehiclesize_width'  => [],
-            'vehiclesize_length' => [],
-        ];
-    
-        foreach ($names as $i => $name) {
-            if (!empty($name)) {
-                $filtered['vehiclesize_name'][]   = $name;
-                $filtered['vehiclesize_height'][] = $heights[$i] ?? null;
-                $filtered['vehiclesize_width'][]  = $widths[$i] ?? null;
-                $filtered['vehiclesize_length'][] = $lengths[$i] ?? null;
-            }
-        }
-        // Merge cleaned data back
-        $request->merge($filtered);
-    
 
         // Step 1: Validate main fields and dynamic rows
         $validator = Validator::make($request->all(), [
@@ -128,18 +100,15 @@ class VehicletypeController extends Controller
             'in'       => 'Invalid selection.',
         ]);
     
-    
         if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-                //'input' => request()->all(), // optional: log the input data for context
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
+            $validator_error_msg = $validator->getMessageBag()->toArray();
+            $errors = [];
+            foreach ($validator_error_msg as $attribute => $validator_error) {
+                $attribute = str_replace('.', '_', $attribute);
+                $errors[$attribute] = $validator_error;
+            }
+            
+            return response()->json(['success' => false, 'data' => $errors, 'message' => 'Please fill with valid data.'], 422);
         }
         
     
@@ -292,15 +261,14 @@ class VehicletypeController extends Controller
     
         
         if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
+            $validator_error_msg = $validator->getMessageBag()->toArray();
+            $errors = [];
+            foreach ($validator_error_msg as $attribute => $validator_error) {
+                $attribute = str_replace('.', '_', $attribute);
+                $errors[$attribute] = $validator_error;
+            }
+            
+            return response()->json(['success' => false, 'data' => $errors, 'message' => 'Please fill with valid data.'], 422);
         }
         
         

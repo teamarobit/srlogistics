@@ -55,34 +55,34 @@
                                         </div>
                         
                                         <div class="col-12 col-md-6">
-                                            <input type="text" name="vehiclesize_name[]" class="form-control">
-                                            <small class="error text-danger" id="vehiclesize_name_0_error"></small>
+                                            <input type="text" name="vehiclesize_name[0]" class="form-control">
+                                            <small class="error text-danger" id="add_vehiclesize_name_0_error"></small>
                         
                                             <div class="mt-3">
                                                 <div class="row">
 
                                                     <div class="col-md-4">
                                                         <div class="form-floating">
-                                                            <input type="text" name="vehiclesize_length[]" class="form-control decimalonly">
+                                                            <input type="text" name="vehiclesize_length[0]" class="form-control decimalonly">
                                                             <label>Length (ft)</label>
                                                         </div>
-                                                        <small class="error text-danger" id="vehiclesize_length_0_error"></small>
+                                                        <small class="error text-danger" id="add_vehiclesize_length_0_error"></small>
                                                     </div>
                         
                                                     <div class="col-md-4">
                                                         <div class="form-floating">
-                                                            <input type="text" name="vehiclesize_height[]" class="form-control decimalonly">
+                                                            <input type="text" name="vehiclesize_height[0]" class="form-control decimalonly">
                                                             <label>Height (ft)</label>
                                                         </div>
-                                                        <small class="error text-danger" id="vehiclesize_height_0_error"></small>
+                                                        <small class="error text-danger" id="add_vehiclesize_height_0_error"></small>
                                                     </div>
                         
                                                     <div class="col-md-4">
                                                         <div class="form-floating">
-                                                            <input type="text" name="vehiclesize_width[]" class="form-control decimalonly">
+                                                            <input type="text" name="vehiclesize_width[0]" class="form-control decimalonly">
                                                             <label>Width (ft)</label>
                                                         </div>
-                                                        <small class="error text-danger" id="vehiclesize_width_0_error"></small>
+                                                        <small class="error text-danger" id="add_vehiclesize_width_0_error"></small>
                                                     </div>
                         
                                                 </div>

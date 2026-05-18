@@ -39,10 +39,10 @@ $(document).ready(function() {
                 <div class="col-12 col-md-6">
                     <input type="text"
                            class="form-control"
-                           name="vehiclesize_name[]" />
+                           name="vehiclesize_name[${counter}]" />
     
                     <small class="error text-danger"
-                           id="vehiclesize_name_${counter}_error"></small>
+                           id="edit_vehiclesize_name_${counter}_error"></small>
     
                     <div class="mt-3">
                         <div class="row form-group">
@@ -51,11 +51,11 @@ $(document).ready(function() {
                                     <input type="text"
                                            id="length-${counter}"
                                            class="form-control decimalonly"
-                                           name="vehiclesize_length[]" />
+                                           name="vehiclesize_length[${counter}]" />
                                     <label for="length-${counter}">Length (ft)</label>
                                 </div>
                                 <small class="error text-danger"
-                                       id="vehiclesize_length_${counter}_error"></small>
+                                       id="edit_vehiclesize_length_${counter}_error"></small>
                             </div>
     
                             <div class="col-12 col-md-4">
@@ -63,11 +63,11 @@ $(document).ready(function() {
                                     <input type="text"
                                            id="height-${counter}"
                                            class="form-control decimalonly"
-                                           name="vehiclesize_height[]" />
+                                           name="vehiclesize_height[${counter}]" />
                                     <label for="height-${counter}">Height (ft)</label>
                                 </div>
                                 <small class="error text-danger"
-                                       id="vehiclesize_height_${counter}_error"></small>
+                                       id="edit_vehiclesize_height_${counter}_error"></small>
                             </div>
     
                             <div class="col-12 col-md-4">
@@ -75,11 +75,11 @@ $(document).ready(function() {
                                     <input type="text"
                                            id="width-${counter}"
                                            class="form-control decimalonly"
-                                           name="vehiclesize_width[]" />
+                                           name="vehiclesize_width[${counter}]" />
                                     <label for="width-${counter}">Width (ft)</label>
                                 </div>
                                 <small class="error text-danger"
-                                       id="vehiclesize_width_${counter}_error"></small>
+                                       id="edit_vehiclesize_width_${counter}_error"></small>
                             </div>
     
                         </div>
@@ -158,14 +158,14 @@ $(document).ready(function() {
                          Dynamic ARRAY fields (vehiclesize_*)
                         ----------------------------- */
         
-                        if (field.includes('.')) {
-                            const errorId = field.replace('.', '_') + '_error';
-                            $('#' + errorId).text(msg);
+                        // if (field.includes('.')) {
+                        //     const errorId = field.replace('.', '_') + '_error';
+                        //     $('#' + errorId).text(msg);
         
-                            const nameAttr = field.replace(/\.(\d+)/g, '[$1]');
-                            $(`[name="${nameAttr}"]`).addClass('is-invalid');
-                            return;
-                        }
+                        //     const nameAttr = field.replace(/\.(\d+)/g, '[$1]');
+                        //     $(`[name="${nameAttr}"]`).addClass('is-invalid');
+                        //     return;
+                        // }
         
                         /* -----------------------------
                          Radio / Checkbox
