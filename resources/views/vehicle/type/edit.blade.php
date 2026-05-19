@@ -49,8 +49,8 @@
                                 <div class="vehicle-size-wrapper">
                             
                                     @forelse($vehicletype->sizes as $index => $size)
-                                        <div class="card p-3 mb-3 vehicle-size-row position-relative">
-                                            <input type="hidden" name="vehiclesize_id[]" value="{{ $size->id ?? '' }}">
+                                        <div class="card p-3 mb-3 vehicle-size-row position-relative" data-vehiclesize-id="{{ $size->id }}">
+                                            <input type="hidden" name="vehiclesize_id[{{ $index }}]" value="{{ $size->id }}">
 
                                             @if($index > 0)
                                                 <a href="javascript:void(0)"

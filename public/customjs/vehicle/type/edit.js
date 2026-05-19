@@ -24,18 +24,19 @@ $(document).ready(function() {
         counter++;
         
         let newRow = `
-        <div class="card p-3 mb-3 vehicle-size-row position-relative">
+        <div class="card p-3 mb-3 vehicle-size-row position-relative" data-vehiclesize-id="">
+            <input type="hidden" name="vehiclesize_id[${counter}]" value="">
             <a href="javascript:void(0)"
                class="text-secondary dell-vs position-absolute"
                style="top:10px; right:10px;">
                 <i class="uil uil-times-circle"></i>
             </a>
-    
+
             <div class="row">
                 <div class="col-12 col-md-3">
                     <label>Vehicle Size <span class="text-danger">*</span></label>
                 </div>
-    
+
                 <div class="col-12 col-md-6">
                     <input type="text"
                            class="form-control"
@@ -147,6 +148,10 @@ $(document).ready(function() {
                     Toast.fire({
                         icon: 'error',
                         title: response.message || 'Please check validation errors.'
+                    }).then((resp) => {
+                        if(response.should_reload){
+                            location.reload(true);
+                        }
                     });
 
                     const errors = response.data || {};
@@ -154,33 +159,12 @@ $(document).ready(function() {
                     Object.entries(errors).forEach(([field, messages]) => {
                         const msg = messages[0];
         
-                        /* -----------------------------
-                         Dynamic ARRAY fields (vehiclesize_*)
-                        ----------------------------- */
-        
-                        // if (field.includes('.')) {
-                        //     const errorId = field.replace('.', '_') + '_error';
-                        //     $('#' + errorId).text(msg);
-        
-                        //     const nameAttr = field.replace(/\.(\d+)/g, '[$1]');
-                        //     $(`[name="${nameAttr}"]`).addClass('is-invalid');
-                        //     return;
-                        // }
-        
-                        /* -----------------------------
-                         Radio / Checkbox
-                        ----------------------------- */
-        
                         const $radio = $(`[name="${field}"]`);
                         if ($radio.length && ['radio', 'checkbox'].includes($radio.attr('type'))) {
                             $radio.addClass('is-invalid');
                             $(`#edit_${field}_error`).text(msg);
                             return;
                         }
-        
-                        /* -----------------------------
-                         Normal inputs / selects
-                        ----------------------------- */
         
                         const $input = $(`[name="${field}"]`);
                         if ($input.length) {
