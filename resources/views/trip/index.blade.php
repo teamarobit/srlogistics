@@ -1355,7 +1355,7 @@
                         </div>
                     </div>
 
-                    {{-- Row 4: Customer | Vehicle Type --}}
+                    {{-- Row 4: Customer | Internal Trip ID --}}
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Customer</label>
@@ -1370,6 +1370,14 @@
                             </div>
                         </div>
                         <div class="col-md-6 form-group">
+                            <label class="form-label">Internal Trip ID</label>
+                            <input type="text" class="form-control" name="internal_trip_id" id="internal_trip_id"/>
+                        </div>
+                    </div>
+
+                    {{-- Row 5: Vehicle Type | Vehicle Size --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
                             <label class="form-label">Vehicle Type</label>
                             <select class="form-select" name="vehicletype_id" id="vehicletype_id"
                                     data-sizes-url="{{ route('trip.vehicle.sizes', ['vehicletype_id' => '__ID__']) }}">
@@ -1379,19 +1387,11 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-
-                    {{-- Row 5: Vehicle Size | Internal Trip ID --}}
-                    <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Vehicle Size</label>
                             <select class="form-select" name="vehicletypesize_id" id="vehicletypesize_id" disabled>
                                 <option value="">Select vehicle type first</option>
                             </select>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label class="form-label">Internal Trip ID</label>
-                            <input type="text" class="form-control"/>
                         </div>
                     </div>
 
