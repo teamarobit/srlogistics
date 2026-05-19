@@ -87,9 +87,7 @@ class RouteController extends Controller
                         ->paginate(10)
                         ->withQueryString();
         
-        //dd($routes->toArray());
-        
-        return view('route.index', compact('routes','search_route_name','search_source','search_destination','search_status'));
+        return view('route.index', compact('routes','search_route_name','search_source','search_destination','search_status', 'search_route_type'));
         
     }
     
