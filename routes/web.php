@@ -795,5 +795,13 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/stock-transfer',       [App\Http\Controllers\WorkshopController::class, 'stockTransfer'])->name('stock-transfer');
     });
 
+    /******************************** Trips Module ******************************************/
+
+    Route::prefix('trips')->name('trip.')->group(function () {
+        Route::get  ('/',        [App\Http\Controllers\TripController::class, 'index'])->name('index');
+        Route::post ('/',        [App\Http\Controllers\TripController::class, 'store'])->name('store');
+        Route::delete('/{id}',   [App\Http\Controllers\TripController::class, 'destroy'])->name('destroy');
+    });
+
 
 });
