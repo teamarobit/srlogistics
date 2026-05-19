@@ -1,5 +1,5 @@
 /* ============================================================
-   Trip Module — trip.js v1.4
+   Trip Module — trip.js v1.5
    Scope: resources/views/trip/index.blade.php
    SD-1: All JS in external file — no inline scripts in blade.
    SD-7: Toast.fire() for all success/error notifications.
@@ -59,7 +59,7 @@ $(document).ready(function () {
         $('#createTripForm')[0].reset();
         $('.rag-btn').removeClass('rag-selected');
         $('#ragStatusInput').val('');
-        $('#midpointRow').hide();
+        $('#midpointContainer').empty();
         $('#tripModal_id').val('Auto Generated');
         $('#vehicletypesize_id').html('<option value="">Select vehicle type first</option>').prop('disabled', true);
         $('#createTripModal').modal('show');
@@ -103,10 +103,44 @@ $(document).ready(function () {
         });
     });
 
-    /* ── Midpoint toggle ─────────────────────────────────────────── */
+    /* ── Midpoint — dynamic add/remove rows ─────────────────────── */
+    var _mpIdx = 0;
+
     $('#btnAddMidpoint').on('click', function () {
-        $('#midpointRow').slideDown(150);
-        $(this).hide();
+        _mpIdx++;
+        var idx = _mpIdx;
+        var row =
+            '<div class="row mb-2 midpoint-entry" id="mpEntry_' + idx + '">' +
+                '<div class="col-md-6 form-group">' +
+                    '<label class="form-label">Mid Point</label>' +
+                    '<input type="text" class="form-control" name="midpoints[' + idx + '][location]" placeholder="Midpoint location" />' +
+                '</div>' +
+                '<div class="col-md-6 form-group">' +
+                    '<div class="d-flex align-items-end" style="gap:10px;">' +
+                        '<div class="flex-grow-1">' +
+                            '<label class="form-label">Midpoint Type</label>' +
+                            '<div class="d-flex align-items-center" style="min-height:38px; gap:8px;">' +
+                                '<div class="form-check form-check-inline radio-chip me-2">' +
+                                    '<input class="form-check-input" type="radio" name="midpoints[' + idx + '][type]" id="mp_l_' + idx + '" value="Loading">' +
+                                    '<label class="form-check-label" for="mp_l_' + idx + '"><i class="uil uil-check-circle me-1"></i>Loading</label>' +
+                                '</div>' +
+                                '<div class="form-check form-check-inline radio-chip">' +
+                                    '<input class="form-check-input" type="radio" name="midpoints[' + idx + '][type]" id="mp_u_' + idx + '" value="Unloading">' +
+                                    '<label class="form-check-label" for="mp_u_' + idx + '"><i class="uil uil-check-circle me-1"></i>Unloading</label>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="padding-bottom:6px;">' +
+                            '<i class="uil uil-trash-alt text-danger remove-midpoint" style="cursor:pointer; font-size:18px;" data-idx="' + idx + '"></i>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        $('#midpointContainer').append(row);
+    });
+
+    $(document).on('click', '.remove-midpoint', function () {
+        $('#mpEntry_' + $(this).data('idx')).remove();
     });
 
     /* ── Create Trip Form Submit (SD-3: $.ajax) ──────────────────── */
@@ -210,7 +244,7 @@ $(document).ready(function () {
         $('#createTripForm')[0].reset();
         $('.rag-btn').removeClass('rag-selected');
         $('#ragStatusInput').val('');
-        $('#midpointRow').hide();
+        $('#midpointContainer').empty();
         $('#tripModal_id').val('Auto Generated');
         $('#createTripModal').modal('show');
     }

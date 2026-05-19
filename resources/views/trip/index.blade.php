@@ -1395,70 +1395,49 @@
                         </div>
                     </div>
 
-                    {{-- Row 6: Route | Source --}}
-                    <div class="row mb-3">
-                        <div class="col-md-6 form-group">
-                            <label class="form-label">Route</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>Chennai - Kolkata</option>
-                                <option>Chennai - Hydrabad</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label class="form-label">Source</label>
-                            <input type="text" class="form-control bg-light" value="Chennai" />
-                        </div>
-                    </div>
+                    {{-- Route Card: Route, Source, Midpoint, Destination, Distance --}}
+                    <div class="card mb-3 border">
+                        <div class="card-body pb-1">
 
-                    {{-- Midpoint section — full width (complex) --}}
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="add-stop">
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-3">
-                                        <label>Midpoint 1</label>
-                                    </div>
-                                    <div class="col-10 col-md-8">
-                                        <select class="form-select">
-                                            <option>Choose...</option>
-                                            <option>Kolkata</option>
-                                            <option>Bihar</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-2 col-md-1">
-                                        <i class="uil uil-trash-alt text-danger removeStop"></i>
-                                    </div>
+                            {{-- Route | Source --}}
+                            <div class="row mb-3">
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Route</label>
+                                    <select class="form-select" name="route_id" id="route_id">
+                                        <option value="">Choose..</option>
+                                        @foreach($routes as $route)
+                                            <option value="{{ $route->id }}">{{ $route->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-3">
-                                        <label>Midpoint Type</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <div class="form-check form-check-inline radio-chip">
-                                            <input class="form-check-input" type="radio" name="midpoint_type" id="loading" value="Loading">
-                                            <label class="form-check-label if-loading" for="loading"><i class="uil uil-check-circle me-1"></i>Loading</label>
-                                        </div>
-                                        <div class="form-check form-check-inline radio-chip">
-                                            <input class="form-check-input" type="radio" name="midpoint_type" id="unloading" value="Unloading">
-                                            <label class="form-check-label if-unloading" for="unloading"><i class="uil uil-check-circle me-1"></i>Unloading</label>
-                                        </div>
-                                    </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Source</label>
+                                    <input type="text" class="form-control" name="source" id="source" placeholder="Source location" />
                                 </div>
                             </div>
-                            <a href="javascript:void(0)" class="btn btn-secondary add-stop-btn"><i class="uil uil-plus me-1"></i>Midpoint</a>
-                        </div>
-                    </div>
 
-                    {{-- Row 7: Destination | Distance --}}
-                    <div class="row mb-3">
-                        <div class="col-md-6 form-group">
-                            <label class="form-label">Destination</label>
-                            <input type="text" class="form-control bg-light" readonly value="Kolkata" />
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label class="form-label">Distance</label>
-                            <input type="text" class="form-control bg-light" readonly value="10 KM" />
+                            {{-- Midpoint entries (dynamic) --}}
+                            <div id="midpointContainer"></div>
+
+                            {{-- Add Midpoint button --}}
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnAddMidpoint">
+                                    <i class="uil uil-plus me-1"></i>Mid Point
+                                </button>
+                            </div>
+
+                            {{-- Destination | Distance --}}
+                            <div class="row mb-3">
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Destination</label>
+                                    <input type="text" class="form-control" name="destination" id="destination" placeholder="Destination location" />
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="form-label">Distance</label>
+                                    <input type="text" class="form-control" name="distance" id="distance" placeholder="e.g. 150 KM" />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -1513,5 +1492,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/trip.js?v=1.4') }}"></script>
+<script src="{{ asset('customjs/trip/trip.js?v=1.5') }}"></script>
 @endsection
