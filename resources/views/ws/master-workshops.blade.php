@@ -362,11 +362,16 @@
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Workshop Type</label>
                             <select class="form-select" name="workshop_type" id="editWsType">
-                                <option>Workshop</option><option>Mobile Unit</option><option>Hybrid</option>
-                                <option>Brand ASC</option><option>Third Party</option><option>Warranty</option><option>Multi-Brand</option>
+                                <option value="">— Select —</option>
+                                <optgroup label="Own" class="opt-edit-own">
+                                    <option>Workshop</option><option>Mobile Unit</option><option>Hybrid</option>
+                                </optgroup>
+                                <optgroup label="External" class="opt-edit-external">
+                                    <option>Brand ASC</option><option>Third Party</option><option>Warranty</option><option>Multi-Brand</option>
+                                </optgroup>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 ws-edit-external-only">
                             <label class="form-label fw-semibold">Brand</label>
                             <input type="text" class="form-control" name="brand" id="editWsBrand">
                         </div>
@@ -411,7 +416,7 @@
                             <label class="form-label fw-semibold">Email</label>
                             <input type="email" class="form-control" name="contact_email" id="editWsEmail">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 ws-edit-own-only">
                             <label class="form-label fw-semibold">Technicians</label>
                             <input type="number" class="form-control" name="technician_count" id="editWsTechs" min="0">
                         </div>
@@ -438,5 +443,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.2') }}"></script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.3') }}"></script>
 @endsection
