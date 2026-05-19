@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/trip/trip.css?v=2.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/trip.css?v=2.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1304,7 +1304,7 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label class="form-label">Trip Date</label>
-                            <input type="text" id="daterange" class="form-control" placeholder="DD/MM/YYYY">
+                            <input type="text" id="trip_date" name="trip_date" class="form-control" placeholder="DD/MM/YYYY" autocomplete="off">
                         </div>
                     </div>
 
@@ -1337,20 +1337,21 @@
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Load Vendor</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>DHL</option>
-                                <option>Blue Dart</option>
-                                <option>Fed Ex</option>
+                            <select class="form-select" name="load_vendor_id" id="load_vendor_id">
+                                <option value="">Choose..</option>
+                                @foreach($loadVendors as $vendor)
+                                    <option value="{{ $vendor->id }}">{{ $vendor->contact_name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
                             <label class="form-label">RAG Status</label>
                             <div class="d-flex align-items-center gap-2" style="min-height:38px;">
-                                <span class="badge bg-danger">Red</span>
-                                <span class="badge bg-warning">Yellow</span>
-                                <span class="badge bg-success">Green</span>
+                                <span class="badge bg-danger rag-btn" data-value="Red">Red</span>
+                                <span class="badge bg-warning rag-btn" data-value="Yellow">Yellow</span>
+                                <span class="badge bg-success rag-btn" data-value="Green">Green</span>
                             </div>
+                            <input type="hidden" id="ragStatusInput" name="rag_status">
                         </div>
                     </div>
 
@@ -1358,22 +1359,24 @@
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Customer</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>Nestle</option>
-                                <option>Britania</option>
-                                <option>Samsung</option>
+                            <select class="form-select" name="customer_id" id="customer_id">
+                                <option value="">Choose..</option>
+                                @foreach($customers as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->contact_name }}</option>
+                                @endforeach
                             </select>
                             <div class="text-end mt-1">
-                                <a href="add-customer.php" style="font-size: 13px;"><i class="uil uil-plus me-1"></i> Add Customer</a>
+                                <a href="{{ route('contact.customer.create') }}" target="_blank" style="font-size: 13px;"><i class="uil uil-plus me-1"></i> Add Customer</a>
                             </div>
                         </div>
                         <div class="col-md-6 form-group">
                             <label class="form-label">Vehicle Type</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>Large Container</option>
-                                <option>Truck</option>
+                            <select class="form-select" name="vehicletype_id" id="vehicletype_id"
+                                    data-sizes-url="{{ route('trip.vehicle.sizes', ['vehicletype_id' => '__ID__']) }}">
+                                <option value="">Choose..</option>
+                                @foreach($vehicleTypes as $vt)
+                                    <option value="{{ $vt->id }}">{{ $vt->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -1382,10 +1385,8 @@
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Vehicle Size</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>14 FT - XXM 14M * 9M * 12M</option>
-                                <option>28 FT - XXL 28M * 12M * 17M</option>
+                            <select class="form-select" name="vehicletypesize_id" id="vehicletypesize_id" disabled>
+                                <option value="">Select vehicle type first</option>
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
@@ -1512,5 +1513,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/trip.js?v=1.1') }}"></script>
+<script src="{{ asset('customjs/trip/trip.js?v=1.4') }}"></script>
 @endsection

@@ -636,3 +636,14 @@ letter-spacing: 0%; display:block; }
     justify-content: space-between;
     width: 100%;
 }
+/* ── RAG Status radio-style badges ───────────────────────────── */
+.rag-btn {
+    cursor: pointer;
+    user-select: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+    font-size: 13px !important;
+    padding: 6px 14px !important;
+}
+.rag-btn.rag-selected.bg-danger  { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc3545; transform: scale(1.08); }
+.rag-btn.rag-selected.bg-warning { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e0a000; transform: scale(1.08); }
+.rag-btn.rag-selected.bg-success { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #198754; transform: scale(1.08); }

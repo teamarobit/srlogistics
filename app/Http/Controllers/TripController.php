@@ -6,7 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Models\Trip;
-use App\Models\Route;
+use App\Models\Contact;
+use App\Models\Route as RouteModel;
 use App\Models\Vehicletype;
 use App\Models\Vehicletypesize;
 use Illuminate\Support\Facades\Auth;
@@ -20,11 +21,13 @@ class TripController extends Controller
      */
     public function index(): View
     {
-        $routes       = Route::orderBy('id')->get();
+        $routes       = RouteModel::orderBy('id')->get();
         $vehicleTypes = Vehicletype::orderBy('name')->get();
         $vehicleSizes = Vehicletypesize::orderBy('name')->get();
+        $loadVendors  = Contact::where('cotype_id', 2)->orderBy('contact_name')->get();
+        $customers    = Contact::where('cotype_id', 1)->orderBy('contact_name')->get();
 
-        return view('trip.index', compact('routes', 'vehicleTypes', 'vehicleSizes'));
+        return view('trip.index', compact('routes', 'vehicleTypes', 'vehicleSizes', 'loadVendors', 'customers'));
     }
 
     /**
@@ -79,6 +82,20 @@ class TripController extends Controller
                 'message' => 'Failed to create trip: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Return vehicle sizes for a given vehicle type (AJAX).
+     * SD-8: manual 422 if type not found.
+     * SD-9: explicit HTTP status on every response.
+     */
+    public function getVehicleSizes(int $vehicletype_id): JsonResponse
+    {
+        $sizes = Vehicletypesize::where('vehicletype_id', $vehicletype_id)
+            ->orderBy('name')
+            ->get(['id', 'name', 'length', 'height', 'width']);
+
+        return response()->json(['success' => true, 'sizes' => $sizes], 200);
     }
 
     /**

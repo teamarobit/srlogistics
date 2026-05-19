@@ -1,5 +1,5 @@
 /* ============================================================
-   Trip Module — trip.js v1.0
+   Trip Module — trip.js v1.4
    Scope: resources/views/trip/index.blade.php
    SD-1: All JS in external file — no inline scripts in blade.
    SD-7: Toast.fire() for all success/error notifications.
@@ -34,6 +34,26 @@ $(document).ready(function () {
         $('#ragStatusInput').val($(this).data('value'));
     });
 
+    /* ── Trip Date — singleDatePicker (init once on modal shown) ───── */
+    $('#createTripModal').on('shown.bs.modal', function () {
+        if (!$('#trip_date').data('daterangepicker')) {
+            $('#trip_date').daterangepicker({
+                singleDatePicker: true,
+                autoUpdateInput: false,
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    cancelLabel: 'Clear'
+                }
+            });
+            $('#trip_date').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY'));
+            });
+            $('#trip_date').on('cancel.daterangepicker', function () {
+                $(this).val('');
+            });
+        }
+    });
+
     /* ── Open Create Trip Modal ──────────────────────────────────── */
     $('#btnAddTrip').on('click', function () {
         $('#createTripForm')[0].reset();
@@ -41,7 +61,46 @@ $(document).ready(function () {
         $('#ragStatusInput').val('');
         $('#midpointRow').hide();
         $('#tripModal_id').val('Auto Generated');
+        $('#vehicletypesize_id').html('<option value="">Select vehicle type first</option>').prop('disabled', true);
         $('#createTripModal').modal('show');
+    });
+
+    /* ── Vehicle Type → Vehicle Size (cascading AJAX) ───────────── */
+    $('#vehicletype_id').on('change', function () {
+        var typeId   = $(this).val();
+        var $sizeEl  = $('#vehicletypesize_id');
+
+        $sizeEl.html('<option value="">Loading...</option>').prop('disabled', true);
+
+        if (!typeId) {
+            $sizeEl.html('<option value="">Select vehicle type first</option>').prop('disabled', true);
+            return;
+        }
+
+        var url = $('#vehicletype_id').data('sizes-url').replace('__ID__', typeId);
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function (res) {
+                if (res.success && res.sizes.length) {
+                    var opts = '<option value="">Choose..</option>';
+                    $.each(res.sizes, function (i, s) {
+                        var dims = (s.length && s.height && s.width)
+                            ? ' (' + s.length + ' × ' + s.height + ' × ' + s.width + ')'
+                            : '';
+                        opts += '<option value="' + s.id + '">' + s.name + dims + '</option>';
+                    });
+                    $sizeEl.html(opts).prop('disabled', false);
+                } else {
+                    $sizeEl.html('<option value="">No sizes available</option>').prop('disabled', true);
+                }
+            },
+            error: function () {
+                $sizeEl.html('<option value="">Failed to load sizes</option>').prop('disabled', true);
+                Toast.fire({ icon: 'error', title: 'Could not load vehicle sizes.' });
+            }
+        });
     });
 
     /* ── Midpoint toggle ─────────────────────────────────────────── */
