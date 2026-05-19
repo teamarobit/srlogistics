@@ -3,7 +3,6 @@
 @section('css')
 
 <link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
-<link rel="stylesheet" href="{{  }}">
 
 
 @endsection
