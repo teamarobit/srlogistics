@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Assets/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Assets/create.css?v=1.1') }}">
 
 /*body { background-color: #fff; }*/
 /*.table thead tr th { padding: 8px 10px; }*/
@@ -281,10 +281,21 @@
                                     <textarea name="comment" class="form-control" rows="3" placeholder="">{{ $data->comment ?? '' }}</textarea>
                                     <small class="error text-danger" id="edit_comment_error"></small>
                                 </div>
-                              </div> 
-                              
-                           
-    
+                              </div>
+
+                              <div class="form-group row pb-1">
+                                <div class="col-12 col-md-3">
+                                    <label>Status <span class="text-danger">*</span></label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select name="status" class="form-select">
+                                        <option value="Active" {{ ($data->status ?? 'Active') == 'Active' ? 'selected' : '' }}>Active</option>
+                                        <option value="Inactive" {{ ($data->status ?? '') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    <small class="error text-danger" id="edit_status_error"></small>
+                                </div>
+                              </div>
+
                               <div class="text-right">
                                   <button id="editBtn" class="btn btn-dark mb-4">Save</button>
                                   
