@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/trip/trip.css') }}?v={{ uniqid() }}" rel="stylesheet">
+<link href="{{ asset('css/trip/trip.css?v=2.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1284,71 +1284,59 @@
 </div>{{-- /layout-wrapper --}}
 
 {{-- ═══════════════════════════════════════════════════════════════
-     CREATE TRIP MODAL — wide (860px), two fields per row
+     CREATE TRIP MODAL — modal-xl, two fields per row
 ═══════════════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="createTripModal" tabindex="-1" aria-labelledby="createTripModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Create Trip</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="uil uil-times"></i></button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Trip ID</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                <form id="createTripForm">
+
+                    {{-- Row 1: Trip ID | Trip Date --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Trip ID</label>
                             <input type="text" class="form-control bg-light" readonly placeholder="Will be auto generated"/>
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Trip Date</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Trip Date</label>
                             <input type="text" id="daterange" class="form-control" placeholder="DD/MM/YYYY">
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Trip Type</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 2: Trip Type | Trip Category --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Trip Type</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>Own Booking</option>
                                 <option>Outside Booking</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Trip Category</label>
-                        </div>
-                        <div class="col-12 col-md-9">
-                            <div class="d-flex">
-                                <div class="form-check">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Trip Category</label>
+                            <div class="d-flex align-items-center" style="min-height:38px;">
+                                <div class="form-check me-3">
                                     <input class="form-check-input" type="radio" name="tripCategory" id="line" value="Line">
-                                    <label class="form-check-label" for="line">
-                                    Line
-                                    </label>
+                                    <label class="form-check-label" for="line">Line</label>
                                 </div>
-                                <div class="form-check mx-2">
+                                <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tripCategory" id="local" value="Local">
-                                    <label class="form-check-label" for="local">
-                                    Local
-                                    </label>
+                                    <label class="form-check-label" for="local">Local</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Load Vendor</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 3: Load Vendor | RAG Status --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Load Vendor</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>DHL</option>
@@ -1356,39 +1344,32 @@
                                 <option>Fed Ex</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>RAG Status</label>
-                        </div>
-                        <div class="col-12 col-md-9">
-                            <!--<input type="text" class="form-control bg-light" readonly />-->
-                            <span class="badge bg-danger">Red</span>
-                            <span class="badge bg-warning">Yellow</span>
-                            <span class="badge bg-success">Green</span>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">RAG Status</label>
+                            <div class="d-flex align-items-center gap-2" style="min-height:38px;">
+                                <span class="badge bg-danger">Red</span>
+                                <span class="badge bg-warning">Yellow</span>
+                                <span class="badge bg-success">Green</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Customer</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 4: Customer | Vehicle Type --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Customer</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>Nestle</option>
                                 <option>Britania</option>
                                 <option>Samsung</option>
                             </select>
+                            <div class="text-end mt-1">
+                                <a href="add-customer.php" style="font-size: 13px;"><i class="uil uil-plus me-1"></i> Add Customer</a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-end mb-4">
-                        <a href="add-customer.php" style="font-size: 13px;"><i class="uil uil-plus me-2"></i> Add Customer</a>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Vehicle Type</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Vehicle Type</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>Large Container</option>
@@ -1396,47 +1377,41 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Vehicle Size</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 5: Vehicle Size | Internal Trip ID --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Vehicle Size</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>14 FT - XXM 14M * 9M * 12M</option>
                                 <option>28 FT - XXL 28M * 12M * 17M</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Internal Trip ID</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Internal Trip ID</label>
                             <input type="text" class="form-control"/>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Route</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 6: Route | Source --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Route</label>
                             <select class="form-select">
                                 <option>Choose..</option>
                                 <option>Chennai - Kolkata</option>
                                 <option>Chennai - Hydrabad</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Source</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Source</label>
                             <input type="text" class="form-control bg-light" value="Chennai" />
                         </div>
                     </div>
-                    <div class="row form-group">
+
+                    {{-- Midpoint section — full width (complex) --}}
+                    <div class="row mb-3">
                         <div class="col-12">
                             <div class="add-stop">
                                 <div class="row form-group">
@@ -1455,10 +1430,10 @@
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col-12 col-md-3 ">
+                                    <div class="col-12 col-md-3">
                                         <label>Midpoint Type</label>
                                     </div>
-                                    <div class="col-12 col-md-9 ">
+                                    <div class="col-12 col-md-9">
                                         <div class="form-check form-check-inline radio-chip">
                                             <input class="form-check-input" type="radio" name="midpoint_type" id="loading" value="Loading">
                                             <label class="form-check-label if-loading" for="loading"><i class="uil uil-check-circle me-1"></i>Loading</label>
@@ -1468,105 +1443,62 @@
                                             <label class="form-check-label if-unloading" for="unloading"><i class="uil uil-check-circle me-1"></i>Unloading</label>
                                         </div>
                                     </div>
-                                    <!--<div class="col-12 col-md-6 form-group loading-wrap">-->
-                                    <!--    <label>Loading Midpoint</label>-->
-                                    <!--    <select class="form-select select2">-->
-                                    <!--        <option>Choose...</option>-->
-                                    <!--        <option>Kolkata</option>-->
-                                    <!--        <option>Bihar</option>-->
-                                    <!--    </select>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-12 col-md-6 form-group unloading-wrap">-->
-                                    <!--    <label>Unloading Midpoint</label>-->
-                                    <!--    <select class="form-select select2">-->
-                                    <!--        <option>Choose...</option>-->
-                                    <!--        <option>Kolkata</option>-->
-                                    <!--        <option>Bihar</option>-->
-                                    <!--    </select>-->
-                                    <!--</div>-->
                                 </div>
                             </div>
                             <a href="javascript:void(0)" class="btn btn-secondary add-stop-btn"><i class="uil uil-plus me-1"></i>Midpoint</a>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Destination</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Row 7: Destination | Distance --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Destination</label>
                             <input type="text" class="form-control bg-light" readonly value="Kolkata" />
                         </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Distance</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Distance</label>
                             <input type="text" class="form-control bg-light" readonly value="10 KM" />
                         </div>
                     </div>
-                    <!--<div class="row form-group">-->
-                    <!--    <div class="col-12 col-md-3">-->
-                    <!--        <label>Consigner</label>-->
-                    <!--    </div>-->
-                    <!--    <div class="col-12 col-md-9">-->
-                    <!--        <select class="form-select select2-modal">-->
-                    <!--            <option>Choose..</option>-->
-                    <!--            <option>Samsung India Hydrabad</option>-->
-                    <!--            <option>Britania Kolkata</option>-->
-                    <!--        </select>-->
-                    <!--    </div>-->
-                    <!--</div>-->
-                    <!--<div class="row form-group">-->
-                    <!--    <div class="col-12 col-md-3">-->
-                    <!--        <label>Consignee</label>-->
-                    <!--    </div>-->
-                    <!--    <div class="col-12 col-md-9">-->
-                    <!--        <select class="form-select select2-modal">-->
-                    <!--            <option>Choose..</option>-->
-                    <!--            <option>Samsung India Hydrabad</option>-->
-                    <!--            <option>Britania Kolkata</option>-->
-                    <!--        </select>-->
-                    <!--    </div>-->
-                    <!--</div>-->
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Priority</label>
-                        </div>
-                        <div class="col-12 col-md-9">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="priority" id="priority_normal" value="Normal">
-                                <label class="form-check-label" for="priority_normal">Normal</label>
+
+                    {{-- Row 8: Priority | Tarpaulin --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Priority</label>
+                            <div class="d-flex align-items-center" style="min-height:38px;">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="priority" id="priority_normal" value="Normal">
+                                    <label class="form-check-label" for="priority_normal">Normal</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="priority" id="priority_urgent" value="Urgent">
+                                    <label class="form-check-label" for="priority_urgent">Urgent</label>
+                                </div>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="priority" id="priority_urgent" value="Urgent">
-                                <label class="form-check-label" for="priority_urgent">Urgent</label>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="form-label">Tarpaulin</label>
+                            <div class="d-flex align-items-center" style="min-height:38px;">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tirpal" id="tirpal_yes" value="Yes">
+                                    <label class="form-check-label" for="tirpal_yes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tirpal" id="tirpal_no" value="No">
+                                    <label class="form-check-label" for="tirpal_no">No</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Tarpaulin</label>
-                        </div>
-                        <div class="col-12 col-md-9">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="tirpal" id="tirpal_yes" value="Yes">
-                                <label class="form-check-label" for="tirpal_yes">Yes</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="tirpal" id="tirpal_no" value="No">
-                                <label class="form-check-label" for="tirpal_no">No</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-12 col-md-3">
-                            <label>Comment</label>
-                        </div>
-                        <div class="col-12 col-md-9">
+
+                    {{-- Comment — full width --}}
+                    <div class="row mb-3">
+                        <div class="col-12 form-group">
+                            <label class="form-label">Comment</label>
                             <textarea class="form-control" rows="4"></textarea>
                         </div>
                     </div>
+
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
