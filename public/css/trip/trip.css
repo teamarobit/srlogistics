@@ -647,3 +647,29 @@ letter-spacing: 0%; display:block; }
 .rag-btn.rag-selected.bg-danger  { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc3545; transform: scale(1.08); }
 .rag-btn.rag-selected.bg-warning { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e0a000; transform: scale(1.08); }
 .rag-btn.rag-selected.bg-success { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #198754; transform: scale(1.08); }
+
+/* Route Details card background */
+.route-details-card {
+    background-color: #f5f8ff !important;
+}
+
+/* Route Details card header */
+.route-details-card .card-header {
+    background-color: #e7edfb !important;
+    border-bottom: 1px solid #c5d4f5;
+}
+
+/* Mid Point button inside Route Details card */
+.route-details-card #btnAddMidpoint {
+    border: 1px solid #4a6cf7;
+    color: #4a6cf7;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+.route-details-card #btnAddMidpoint:hover {
+    background: #d0dcf9;
+    color: #3358d4;
+    border-color: #3358d4;
+}

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/trip/trip.css?v=2.1') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/trip.css?v=2.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1397,8 +1397,8 @@
                     </div>
 
                     {{-- Route Card: Route, Source, Midpoint, Destination, Distance --}}
-                    <div class="card mb-3 border">
-                        <div class="card-header py-2 px-3" style="background:#f8f9fa; font-size:13px; font-weight:600; color:#344767;">
+                    <div class="card mb-3 border route-details-card">
+                        <div class="card-header py-2 px-3" style="font-size:13px; font-weight:600; color:#344767;">
                             <i class="uil uil-map-marker me-1"></i> Route Details
                         </div>
                         <div class="card-body pb-1">
