@@ -275,7 +275,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.1') }}"></script>
 
 @endsection
 
