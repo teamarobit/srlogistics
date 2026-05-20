@@ -1312,10 +1312,11 @@
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label">Trip Type</label>
-                            <select class="form-select">
-                                <option>Choose..</option>
-                                <option>Own Booking</option>
-                                <option>Outside Booking</option>
+                            <select class="form-select" name="trip_type" id="trip_type">
+                                <option value="">Choose..</option>
+                                <option value="Own">Own Booking</option>
+                                <option value="Rental">Rental</option>
+                                <option value="External">External</option>
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
@@ -1397,6 +1398,9 @@
 
                     {{-- Route Card: Route, Source, Midpoint, Destination, Distance --}}
                     <div class="card mb-3 border">
+                        <div class="card-header py-2 px-3" style="background:#f8f9fa; font-size:13px; font-weight:600; color:#344767;">
+                            <i class="uil uil-map-marker me-1"></i> Route Details
+                        </div>
                         <div class="card-body pb-1">
 
                             {{-- Route | Source --}}
@@ -1414,6 +1418,13 @@
                                     <label class="form-label">Source</label>
                                     <input type="text" class="form-control" name="source" id="source" placeholder="Source location" />
                                 </div>
+                            </div>
+
+                            {{-- No Midpoint notice --}}
+                            <div id="noMidpointNotice" class="mb-3 d-flex align-items-center justify-content-center gap-2" style="font-size:13px; color:#6c757d;">
+                                <i class="uil uil-info-circle"></i>
+                                <span>No Midpoint is found.</span>
+                                <a href="#" id="linkAddMidpoint" style="font-size:13px;">Add Midpoint</a>
                             </div>
 
                             {{-- Midpoint entries (dynamic) --}}
@@ -1492,5 +1503,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/trip.js?v=1.5') }}"></script>
+<script src="{{ asset('customjs/trip/trip.js?v=1.7') }}"></script>
 @endsection

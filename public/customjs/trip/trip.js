@@ -1,5 +1,5 @@
 /* ============================================================
-   Trip Module — trip.js v1.5
+   Trip Module — trip.js v1.7
    Scope: resources/views/trip/index.blade.php
    SD-1: All JS in external file — no inline scripts in blade.
    SD-7: Toast.fire() for all success/error notifications.
@@ -34,16 +34,23 @@ $(document).ready(function () {
         $('#ragStatusInput').val($(this).data('value'));
     });
 
-    /* ── Trip Date — singleDatePicker (init once on modal shown) ───── */
+    /* ── Helper: init Select2 on a single element (modal-safe) ──────── */
+    function initSelect2(el) {
+        $(el).select2({
+            dropdownParent: $('#createTripModal'),
+            width: '100%'
+        });
+    }
+
+    /* ── Trip Date + Select2 — init once on modal shown ─────────────── */
     $('#createTripModal').on('shown.bs.modal', function () {
+
+        /* daterangepicker */
         if (!$('#trip_date').data('daterangepicker')) {
             $('#trip_date').daterangepicker({
                 singleDatePicker: true,
                 autoUpdateInput: false,
-                locale: {
-                    format: 'DD/MM/YYYY',
-                    cancelLabel: 'Clear'
-                }
+                locale: { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
             });
             $('#trip_date').on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('DD/MM/YYYY'));
@@ -52,6 +59,15 @@ $(document).ready(function () {
                 $(this).val('');
             });
         }
+
+        /* Select2 — all static dropdowns in the modal */
+        ['#trip_type', '#load_vendor_id', '#customer_id',
+         '#vehicletype_id', '#vehicletypesize_id', '#route_id'
+        ].forEach(function (sel) {
+            if (!$(sel).hasClass('select2-hidden-accessible')) {
+                initSelect2(sel);
+            }
+        });
     });
 
     /* ── Open Create Trip Modal ──────────────────────────────────── */
@@ -91,8 +107,11 @@ $(document).ready(function () {
                             : '';
                         opts += '<option value="' + s.id + '">' + s.name + dims + '</option>';
                     });
+                    if ($sizeEl.hasClass('select2-hidden-accessible')) { $sizeEl.select2('destroy'); }
                     $sizeEl.html(opts).prop('disabled', false);
+                    initSelect2($sizeEl);
                 } else {
+                    if ($sizeEl.hasClass('select2-hidden-accessible')) { $sizeEl.select2('destroy'); }
                     $sizeEl.html('<option value="">No sizes available</option>').prop('disabled', true);
                 }
             },
@@ -113,7 +132,7 @@ $(document).ready(function () {
             '<div class="row mb-2 midpoint-entry" id="mpEntry_' + idx + '">' +
                 '<div class="col-md-6 form-group">' +
                     '<label class="form-label">Mid Point</label>' +
-                    '<input type="text" class="form-control" name="midpoints[' + idx + '][location]" placeholder="Midpoint location" />' +
+                    '<select class="form-select mp-select" id="mp_loc_' + idx + '" name="midpoints[' + idx + '][location]" style="width:100%;"></select>' +
                 '</div>' +
                 '<div class="col-md-6 form-group">' +
                     '<div class="d-flex align-items-end" style="gap:10px;">' +
@@ -137,6 +156,13 @@ $(document).ready(function () {
                 '</div>' +
             '</div>';
         $('#midpointContainer').append(row);
+
+        /* Init Select2 on the newly added midpoint select */
+        $('#mp_loc_' + idx).select2({
+            dropdownParent: $('#createTripModal'),
+            width: '100%',
+            placeholder: 'Select midpoint'
+        });
     });
 
     $(document).on('click', '.remove-midpoint', function () {
