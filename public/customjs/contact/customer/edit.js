@@ -858,8 +858,8 @@ $(document).ready(function(){
     }
 
     $(document).on('input', '.locationCappingAmount', validateCapping);
-    $(document).on('input', '.locationLoadingCharge', validateCapping);
-    $(document).on('input', '.locationUnloadingCharge', validateCapping);
+    $(document).on('blur', '.locationLoadingCharge', validateCapping);
+    $(document).on('blur', '.locationUnloadingCharge', validateCapping);
     
 
 
