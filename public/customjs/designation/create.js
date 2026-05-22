@@ -62,43 +62,9 @@ $(document).ready(function() {
             
                 // Clear old errors
                 $('.error').text('');
-                $('.is-invalid').removeClass('is-invalid');
-                $('.select2-container').removeClass('is-invalid');
-            
+
                 $.each(errors, function (field, messages) {
-            
-                    let msg = messages[0];
-            
-                    // Handle array fields: items.0.name → items[0][name]
-                    let nameAttr = field.replace(/\.(\d+)/g, '[$1]');
-            
-                    let $input = $(`[name="${nameAttr}"]`);
-            
-                    // RADIO / CHECKBOX
-                    if ($input.length && ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox')) {
-            
-                        $input.addClass('is-invalid');
-                        $(`#add_${field}_error`).text(msg);
-                        return;
-                    }
-            
-                    // SELECT2
-                    if ($input.length && $input.hasClass('select2')) {
-            
-                        $input.next('.select2-container').addClass('is-invalid');
-                        $(`#add_${field}_error`).text(msg);
-                        return;
-                    }
-            
-                    // NORMAL INPUT
-                    if ($input.length) {
-                        $input.addClass('is-invalid');
-                        $(`#add_${field}_error`).text(msg);
-                        return;
-                    }
-            
-                    // FINAL FALLBACK
-                    $(`#add_${field}_error`).text(msg);
+                    $(`#add_${field}_error`).text(messages[0]);
                 });
             }
 

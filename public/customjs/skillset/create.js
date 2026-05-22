@@ -24,8 +24,7 @@ $(document).ready(function() {
         var formData = new FormData(this);
     
         // Clear previous errors
-        $('.is-invalid').removeClass('is-invalid');
-        $('.invalid-feedback').remove();
+        $('.error_msg').text('');
     
         $('#addBtn')
             .html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>')
@@ -59,31 +58,7 @@ $(document).ready(function() {
     
                 const errors = response.data || {};
                 Object.entries(errors).forEach(([field, messages]) => {
-                    const nameAttr = field.replace(/\.(\d+)/g, '[$1]'); // quantity.0 → quantity[0]
-                    const $input = $(`[name="${nameAttr}"]`);
-                    
-                    if ($input.length) {
-
-                        // If radio or checkbox group
-                        if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
-                    
-                            // Add invalid class to all radios in the group
-                            $input.addClass('is-invalid');
-                    
-                            // Show only ONE message in your custom span
-                            $(`#add_${field}_error`).text(messages[0]);
-                    
-                        } else {
-                            // Normal inputs
-                            $input.addClass('is-invalid');
-                            $input.after(`<div class="invalid-feedback d-block">${messages[0]}</div>`);
-                        }
-                    
-                    } else {
-                        // Fallback
-                        $(`#add_${field}_error`).text(messages[0]);
-                    }
-
+                    $(`#add_${field}_error`).text(messages[0]);
                 });
             }
         });

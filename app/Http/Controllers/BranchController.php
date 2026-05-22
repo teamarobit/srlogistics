@@ -101,7 +101,7 @@ class BranchController extends Controller
             'branch_code'                   => 'required', 
             'branch_head_name'              => 'required', 
             //'ph_code'                     => 'nullable',
-            'phone'                         => 'required|digits:10',
+            'phone'                         => 'required|string|max:20',
             'no_of_employee'                => 'required|integer|min:0', 
             'address'                       => 'required|string|max:1000',
             'state_id'                      => 'required|exists:states,id',
@@ -115,7 +115,7 @@ class BranchController extends Controller
             // Conditional: required when branch_ownership == Rental
             'branch_owner_name'             => 'exclude_unless:branch_ownership,Rental|required|string|max:255',
             'branch_owner_phone_code'       => 'nullable', 
-            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
+            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|string|max:20',
             'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
             'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
 
@@ -313,7 +313,7 @@ class BranchController extends Controller
             'branch_code'                   => 'required', 
             'branch_head_name'              => 'required', 
             //'ph_code'                     => 'nullable',
-            'phone'                         => 'required|digits:10',
+            'phone'                         => 'required|string|max:20',
             'no_of_employee'                => 'required|integer|min:0', 
             'address'                       => 'required|string|max:1000',
             'state_id'                      => 'required|exists:states,id',
@@ -327,7 +327,7 @@ class BranchController extends Controller
             // Conditional: required when branch_ownership == Rental
             'branch_owner_name'             => 'exclude_unless:branch_ownership,Rental|required|string|max:255',
             'branch_owner_phone_code'       => 'nullable', 
-            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
+            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|string|max:20',
             'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
             'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
 

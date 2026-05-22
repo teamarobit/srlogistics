@@ -52,12 +52,6 @@ class ExpenseController extends Controller
     }
     
     
-    public function create(): View
-    {   
-        return view('expense.create');
-    }
-    
-    
     public function store(Request $request)
     {
         // Step 1: Validate main fields and dynamic rows

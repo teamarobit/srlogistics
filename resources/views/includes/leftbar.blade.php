@@ -258,7 +258,7 @@
                 <!--<p><a href="#" style="color: #261f35; font-size: 13px;">Operational Overheads</a></p>-->
                 
                 @if(Route::has('expense.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('expense.index') }}" style="color: #261f35; font-size: 13px;">Expense Type Master</a></p>
+                <p style="background-color: #ffe0e0;"><a href="{{ route('expense.index') }}" style="color: #dc3545; font-size: 13px; font-weight: 600;">Expense Type Master</a></p>
                 @endif
                 
                 

@@ -135,7 +135,7 @@ var JOBRANKS = "{{ route('jobrank.index') }}";
 var DESIGNATION_URL = "{{ route('designation.getDepartmentWiseDesignations', '__ID__') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/jobrank/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/jobrank/create.js?v=1.1')}}"></script>
 
 @endsection
 

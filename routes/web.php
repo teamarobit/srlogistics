@@ -530,7 +530,6 @@ Route::group(['middleware' => ['auth']], function() {
     // Expense Master
     Route::prefix('expense-master')->name('expense.')->group(function () {
         Route::get('/', [App\Http\Controllers\ExpenseController::class, 'index'])->name('index');
-        Route::get('/create', [App\Http\Controllers\ExpenseController::class, 'create'])->name('create');
         Route::post('/save', [App\Http\Controllers\ExpenseController::class, 'store'])->name('save');
         Route::get('/{id}/edit', [App\Http\Controllers\ExpenseController::class, 'edit'])->name('edit');
         Route::post('/update', [App\Http\Controllers\ExpenseController::class, 'update'])->name('update');

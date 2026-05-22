@@ -86,8 +86,7 @@ $(document).ready(function() {
         var formData = new FormData(this);
     
         // Clear previous errors
-        $('.is-invalid').removeClass('is-invalid');
-        $('.invalid-feedback').remove();
+        $('.error_msg').text('');
     
         $('#addBtn')
             .html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>')
@@ -128,41 +127,8 @@ $(document).ready(function() {
                     // Clear any previous small.error for this field first, if you prefer:
                     // $(`#add_${field}_error`).text('');
             
-                    if ($input.length) {
-            
-                        // If radio or checkbox group
-                        if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
-            
-                            // Add invalid styling if needed
-                            $input.addClass('is-invalid');
-            
-                            // Put the message into your existing small.error span
-                            $(`#add_${field}_error`).text(messages[0]);
-            
-                        } else {
-                            // Normal inputs
-            
-                            $input.addClass('is-invalid');
-            
-                            // Try to find existing small.error span
-                            let $small = $(`#add_${field}_error`);
-            
-                            if ($small.length) {
-                                // set text
-                                $small.text(messages[0]);
-                            } else {
-                                // fallback: create the small.error right after the input
-                                $input.after(
-                                    `<small class="error text-danger" id="add_${field}_error">${messages[0]}</small>`
-                                );
-                            }
-                        }
-            
-                    } else {
-                        // Fallback if input not found
-                        $(`#add_${field}_error`).text(messages[0]);
-                    }
-            
+                    $(`#add_${field}_error`).text(messages[0]);
+
                 });
             }
 
