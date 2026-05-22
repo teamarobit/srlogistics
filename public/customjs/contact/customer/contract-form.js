@@ -17,115 +17,53 @@ $(document).ready(function () {
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
 
-    // Get today in Y-m-d format
-    function formatDate(date) {
-        let d = new Date(date);
-        let month = String(d.getMonth() + 1).padStart(2, '0');
-        let day   = String(d.getDate()).padStart(2, '0');
-        let year  = d.getFullYear();
-        return year + '-' + month + '-' + day;
-    }
+    // === BUG-019: daterangepicker for Start Date and End Date ===
 
-    let today = formatDate(new Date());
-
-    // Start date cannot be before today
-    $('.start_date').attr('min', today);
-    
-    
-
-    // When start date changes
-    $(document).on('change', '.start_date', function () {
-
-        let startDate = $(this).val();   // already in Y-m-d
-        let $endDate  = $('.end_date');
-
-        if (startDate !== '') {
-
-            // Clear invalid end date
-            let currentEnd = $endDate.val();
-            if (currentEnd !== '' && currentEnd < startDate) {
-                $endDate.val('');
-            }
-
-            // End date cannot be before start date
-            $endDate.attr('min', startDate);
-
-        } else {
-            // Remove restriction if start date cleared
-            $endDate.removeAttr('min');
-        }
-
+    // Init start_date daterangepicker
+    $('.start_date').daterangepicker({
+        singleDatePicker : true,
+        autoUpdateInput  : false,
+        minDate          : moment(),
+        locale           : { format: 'DD/MM/YYYY' }
     });
-    
-    
-    // When start date OR contract type changes
-    $(document).on('change', '.start_date, #contract_type_id', function () {
-    
-        let startDate = $('.start_date').val();
+
+    // Init end_date daterangepicker
+    $('.end_date').daterangepicker({
+        singleDatePicker : true,
+        autoUpdateInput  : false,
+        locale           : { format: 'DD/MM/YYYY' }
+    });
+
+    $('.start_date').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        $('#start_date_hidden').val(picker.startDate.format('YYYY-MM-DD'));
+        calcEndDate();
+    });
+
+    $('.end_date').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        $('#end_date_hidden').val(picker.startDate.format('YYYY-MM-DD'));
+    });
+
+    function calcEndDate() {
+        let startVal     = $('.start_date').val();
         let contractType = $('#contract_type_id option:selected').text().trim();
-        let $endDate = $('.end_date');
-        
-        if (startDate !== '') {
 
-            let start = new Date(startDate);
-            let calculatedEnd = new Date(start);
-    
-            if (contractType === 'Monthly') {
-                calculatedEnd.setMonth(calculatedEnd.getMonth() + 1);
-                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
-            }
+        if (!startVal) return;
 
-            if (contractType === 'Quarterly') {
-                calculatedEnd.setMonth(calculatedEnd.getMonth() + 3);
-                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
-            }
+        let start = moment(startVal, 'DD/MM/YYYY');
+        let end   = start.clone();
 
-            if (contractType === 'Half Yearly') {
-                calculatedEnd.setMonth(calculatedEnd.getMonth() + 6);
-                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
-            }
+        if (contractType === 'Monthly')     end.add(1, 'months').subtract(1, 'days');
+        if (contractType === 'Quarterly')   end.add(3, 'months').subtract(1, 'days');
+        if (contractType === 'Half Yearly') end.add(6, 'months').subtract(1, 'days');
+        if (contractType === 'Yearly')      end.add(1, 'years').subtract(1, 'days');
 
-            if (contractType === 'Yearly') {
-                calculatedEnd.setFullYear(calculatedEnd.getFullYear() + 1);
-                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
-            }
-            
-            // AUTO SET end date
-            $endDate.val(formatDate(calculatedEnd));
-    
-            // Set min end date (always >= start date)
-            $endDate.attr('min', formatDate(start));
-    
-        } else {
-            $endDate.val('');
-            $endDate.removeAttr('min');
+        if (['Monthly', 'Quarterly', 'Half Yearly', 'Yearly'].includes(contractType)) {
+            $('.end_date').val(end.format('DD/MM/YYYY'));
+            $('#end_date_hidden').val(end.format('YYYY-MM-DD'));
         }
-    
-        // if (startDate !== '') {
-    
-        //     let minEndDate = new Date(startDate);
-    
-        //     // If Monthly -> add 30 days
-        //     if (contractType === 'Monthly') {
-        //         minEndDate.setDate(minEndDate.getDate() + 30);
-        //     }
-    
-        //     let formattedMinEndDate = formatDate(minEndDate);
-    
-        //     // Clear invalid end date
-        //     let currentEnd = $endDate.val();
-        //     if (currentEnd !== '' && currentEnd < formattedMinEndDate) {
-        //         $endDate.val('');
-        //     }
-    
-        //     // Set new min
-        //     $endDate.attr('min', formattedMinEndDate);
-    
-        // } else {
-        //     $endDate.removeAttr('min');
-        // }
-    
-    });
+    }
     
     
     
@@ -145,13 +83,14 @@ $(document).ready(function () {
         }
     });
     
-    $('#contract_type_id').on('change', function () { 
+    $('#contract_type_id').on('change', function () {
         const selectedText = $(this).find('option:selected').text().trim();
         if (selectedText === 'Monthly') {
             $('#MonthlyDiv').show();
         } else {
             $('#MonthlyDiv').hide();
         }
+        calcEndDate();
     });
     
     
