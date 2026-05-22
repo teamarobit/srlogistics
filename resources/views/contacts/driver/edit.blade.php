@@ -328,7 +328,8 @@
                                                 <label>Date of Birth</label>
                                             </div>
                                             <div class="col-12 col-md-7">
-                                                <input type="date" class="form-control dob" name="dob" id="dob" value="{{ $contact->dob ?? '' }}" max="{{ date('Y-m-d') }}" />
+                                                <input type="text" class="form-control app-date-display" data-target="dob" data-max-today="1" value="{{ $contact->dob ? \Carbon\Carbon::parse($contact->dob)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                <input type="hidden" class="dob" name="dob" id="dob" value="{{ $contact->dob ?? '' }}">
                                                 <small class="error text-danger" id="edit_dob_error"></small>
                                             </div>
                                         </div>
@@ -384,7 +385,8 @@
                                                 <label>Date of Joining <span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
-                                                <input type="date" name="doj" id="doj" value="{{ $contact->doj ?? '' }}" class="form-control" max="{{ date('Y-m-d') }}" />
+                                                <input type="text" class="form-control app-date-display" data-target="doj" data-max-today="1" value="{{ $contact->doj ? \Carbon\Carbon::parse($contact->doj)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                <input type="hidden" name="doj" id="doj" value="{{ $contact->doj ?? '' }}">
                                                 <small class="error text-danger" id="edit_doj_error"></small>
                                             </div>
                                         </div>
@@ -467,7 +469,8 @@
                                                           <label>Expected Return Date<span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
-                                                          <input name="expected_return_date" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                                          <input type="text" class="form-control app-date-display" data-target="expected_return_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                          <input type="hidden" name="expected_return_date" id="expected_return_date" value="">
                                                           <small class="error text-danger" id="edit_expected_return_date_error"></small>
                                                       </div>
                                                     </div>
@@ -591,7 +594,8 @@
                                                 <label>Opening Balance Date <span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
-                                                <input name="opening_balance_date" value="{{ optional($contact->driverinfo)->opening_balance_date ?? '' }}" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                                <input type="text" class="form-control app-date-display" data-target="opening_balance_date" value="{{ optional($contact->driverinfo)->opening_balance_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->opening_balance_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                <input type="hidden" name="opening_balance_date" id="opening_balance_date" value="{{ optional($contact->driverinfo)->opening_balance_date ?? '' }}">
                                                 <small class="error text-danger" id="edit_opening_balance_date_error"></small>
                                             </div>
                                         </div>
@@ -1324,14 +1328,16 @@
                                                 </div>
                                                 <div class="col-12 col-md-6">
                                                     <label class="mb-1">License Issue Date <span class="text-danger">*</span></label>
-                                                    <input type="date" name="licence_issue_date" value="{{ optional($contact->driverinfo)->licence_issue_date }}" class="form-control" >
+                                                    <input type="text" class="form-control app-date-display" data-target="licence_issue_date" value="{{ optional($contact->driverinfo)->licence_issue_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->licence_issue_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="licence_issue_date" id="licence_issue_date" value="{{ optional($contact->driverinfo)->licence_issue_date ?? '' }}">
                                                     <small class="error text-danger" id="add_licence_issue_date_error"></small>
                                                 </div>
                                             </div>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
                                                     <label class="mb-1">License Expiry Date <span class="text-danger">*</span></label>
-                                                    <input type="date" name="licence_expiry_date" value="{{ optional($contact->driverinfo)->licence_expiry_date }}" class="form-control">
+                                                    <input type="text" class="form-control app-date-display" data-target="licence_expiry_date" value="{{ optional($contact->driverinfo)->licence_expiry_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->licence_expiry_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="licence_expiry_date" id="licence_expiry_date" value="{{ optional($contact->driverinfo)->licence_expiry_date ?? '' }}">
                                                     <small class="error text-danger" id="add_licence_expiry_date_error"></small>
                                                 </div>
                                                 <div class="col-12 col-md-6">
@@ -1529,10 +1535,6 @@
                                     
                                     <div class="tab-pane" id="salary" role="tabpanel">
                                         <!--////////////////////////////-->
-                                        
-                                        <div class="no-data">
-                                            <p class="text-dark mb-0">No Data Found</p>
-                                        </div>
 
                                         <div class="row mt-0 align-items-center">
                                             <div class="col-12 col-md-9">
@@ -1591,7 +1593,8 @@
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
-                                                    <input name="exit_date" id="exit_date" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                                    <input type="text" class="form-control app-date-display" data-target="exit_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="exit_date" id="exit_date" value="">
                                                     <small class="error text-danger" id="edit_exit_date_error"></small>
                                                 </div>
                                                 
@@ -2000,7 +2003,8 @@
                     
                     <div class="form-group mb-2">
                         <label>Revoke From<span class="text-danger">*</span></label>
-                        <input type="date" name="revoke_date" class="form-control general_date" />
+                        <input type="text" class="form-control app-date-display" data-target="revoke_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                        <input type="hidden" name="revoke_date" id="revoke_date" value="">
                         <small class="error text-danger" id="add_revoke_date_error"></small>
                     </div>
                     
@@ -2055,7 +2059,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

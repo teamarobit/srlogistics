@@ -326,7 +326,8 @@
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5"><label>Registration Date</label></div>
                                         <div class="col-12 col-md-7">
-                                            <input name="company_registration_date" value="{{ $contact->company_registration_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date">
+                                            <input type="text" class="form-control app-date-display" data-target="company_registration_date" value="{{ $contact->company_registration_date ? \Carbon\Carbon::parse($contact->company_registration_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                            <input type="hidden" name="company_registration_date" id="company_registration_date" value="{{ $contact->company_registration_date ?? '' }}">
                                             <small class="error text-danger" id="edit_company_registration_date_error"></small>
                                         </div>
                                     </div>
@@ -336,7 +337,8 @@
                                             <label>Working with {{ optional(Auth::user()->organisation)->short_name }} Since</label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input name="working_since" value="{{ $contact->working_since ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date">
+                                            <input type="text" class="form-control app-date-display" data-target="working_since" value="{{ $contact->working_since ? \Carbon\Carbon::parse($contact->working_since)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                            <input type="hidden" name="working_since" id="working_since" value="{{ $contact->working_since ?? '' }}">
                                             <small class="error text-danger" id="edit_working_since_error"></small>
                                         </div>
                                     </div>
@@ -766,7 +768,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/sparevendor/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/sparevendor/edit.js?v=1.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

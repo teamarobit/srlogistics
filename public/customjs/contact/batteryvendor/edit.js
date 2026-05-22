@@ -727,17 +727,28 @@ $(document).ready(function(){
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+});
+
+// Date picker — DD/MM/YYYY display + hidden YYYY-MM-DD field (separate ready)
+$(document).ready(function () {
+    $('.app-date-display').each(function () {
+        var $display = $(this);
+        var $hidden  = $('#' + $display.data('target'));
+        var maxDate  = $display.data('max-today') ? moment() : undefined;
+
+        $display.daterangepicker({
+            singleDatePicker : true,
+            showDropdowns    : true,
+            autoUpdateInput  : false,
+            maxDate          : maxDate,
+            locale           : { format: 'DD/MM/YYYY' }
+        }, function (start) {
+            $display.val(start.format('DD/MM/YYYY'));
+            $hidden.val(start.format('YYYY-MM-DD')).trigger('change');
+        });
+    });
 });
 
 
