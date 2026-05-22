@@ -80,6 +80,11 @@ const Toast = Swal.mixin({
         var sp  = document.getElementById('addSpinner');
         btn.disabled = true; sp.classList.remove('d-none');
 
+        // SD-12: write full E.164 number back to input before FormData serialises
+        var addPhoneEl = document.getElementById('add_phone');
+        var addIti = addPhoneEl ? $(addPhoneEl).data('iti') : null;
+        if (addIti) { $(addPhoneEl).val(addIti.getNumber()); }
+
         apiFetch(window.IP_SAVE, 'POST', this)
             .then(function (d) {
                 if (d.success) {
@@ -91,9 +96,8 @@ const Toast = Swal.mixin({
                     Object.entries(d.data).forEach(function (entry) {
                         var f    = entry[0]; var msgs = entry[1];
                         var el   = document.getElementById('add_' + f + '_error');
-                        var inp  = document.getElementById('add_' + f);
+                        // SD-4: error text only — no red border (is-invalid removed)
                         if (el)  { el.textContent = Array.isArray(msgs) ? msgs[0] : msgs; }
-                        if (inp) { inp.classList.add('is-invalid'); }
                     });
                 } else {
                     showToast(d.message || 'An error occurred.', false);
@@ -122,12 +126,17 @@ const Toast = Swal.mixin({
             document.getElementById('edit_company_name').value = c.company_name || '';
             document.getElementById('edit_contact_name').value = c.contact_name || '';
             document.getElementById('edit_contact_code').value = c.contact_code || '';
-            document.getElementById('edit_phone').value        = c.phone        || '';
             document.getElementById('edit_email').value        = c.email        || '';
             document.getElementById('edit_gst_number').value   = c.gst_number   || '';
+            // SD-12: use setNumber so intl-tel-input shows correct dial code
+            var editPhoneEl = document.getElementById('edit_phone');
+            var editIti = editPhoneEl ? $(editPhoneEl).data('iti') : null;
+            if (editIti) { editIti.setNumber(c.phone || ''); }
+            else if (editPhoneEl) { editPhoneEl.value = c.phone || ''; }
             $('#edit_state_id').val(c.state_id || '').trigger('change');
             var statusVal   = c.status || 'Active';
-            var statusRadio = document.querySelector('input[name="status"][value="' + statusVal + '"]');
+            // BUG-003: scope to #editProviderForm — prevents matching Add modal radio first
+            var statusRadio = document.querySelector('#editProviderForm input[name="status"][value="' + statusVal + '"]');
             if (statusRadio) { statusRadio.checked = true; }
 
             /* ── Show current logo ── */
@@ -175,6 +184,11 @@ const Toast = Swal.mixin({
         var sp  = document.getElementById('editSpinner');
         btn.disabled = true; sp.classList.remove('d-none');
 
+        // SD-12: write full E.164 number back to input before FormData serialises
+        var editPhoneElSubmit = document.getElementById('edit_phone');
+        var editItiSubmit = editPhoneElSubmit ? $(editPhoneElSubmit).data('iti') : null;
+        if (editItiSubmit) { $(editPhoneElSubmit).val(editItiSubmit.getNumber()); }
+
         apiFetch(window.IP_JSON_URL + '/' + id + '/update', 'POST', this)
             .then(function (d) {
                 if (d.success) {
@@ -185,9 +199,8 @@ const Toast = Swal.mixin({
                     Object.entries(d.data).forEach(function (entry) {
                         var f   = entry[0]; var msgs = entry[1];
                         var el  = document.getElementById('edit_' + f + '_error');
-                        var inp = document.getElementById('edit_' + f);
+                        // SD-4: error text only — no red border (is-invalid removed)
                         if (el)  { el.textContent = Array.isArray(msgs) ? msgs[0] : msgs; }
-                        if (inp) { inp.classList.add('is-invalid'); }
                     });
                 } else {
                     showToast(d.message || 'An error occurred.', false);
