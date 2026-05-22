@@ -11584,12 +11584,14 @@ class ContactController extends Controller
         $banks = Bank::orderBy('name')->get();
         
         //$tyres = Tyre::where('contact_id', $contact->id)->paginate(10, ['*'], 'tyre_page');
-         
+
+        $batteries = \App\Models\Battery::where('vendor_id', $contact->id)->paginate(10, ['*'], 'battery_page');
+
         // Log activity
         $description = 'Retrieve a load vendor named '.$contact->contact_name.' to edit.';
         $useractivity = $this->storeUseractivity(69, 5, Auth::user()->id, $contact->id, $description);
-         
-        return view('contacts.batteryvendor.edit', compact('contact','customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks')); 
+
+        return view('contacts.batteryvendor.edit', compact('contact','customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks', 'batteries')); 
                                                     
     }
     
