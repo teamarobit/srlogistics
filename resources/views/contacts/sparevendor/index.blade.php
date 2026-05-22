@@ -14,17 +14,21 @@
                 <div class="container-fluid page-head">
                     <div class="row align-items-center">
                         <div class="col-12 d-flex align-items-center flex-wrap gap-2">
-                            <h6 class="mb-0">Spare Part Vendors</h6>
+                            <h6 class="mb-0">Spare Part Vendor</h6>
 
                             @if(Route::has('contact.sparevendor.create'))
                             <a href="{{ route('contact.sparevendor.create') }}" class="btn btn-theme btn-sm">
-                                <i class="uil uil-plus me-1"></i>Add Vendor
+                                <i class="uil uil-plus me-1"></i>Spare Part Vendor
                             </a>
                             @endif
 
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="uil uil-trash-alt me-1"></i>Delete
+                            </button>
+
                             <form action="{{ route('contact.sparevendor.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap ms-1" id="filterForm">
                                 <input type="text" name="name" value="{{ $search_name ?? '' }}"
-                                    class="form-control form-control-sm" placeholder="Search by name…" style="width:170px;">
+                                    class="form-control form-control-sm" placeholder="Search by Name" style="width:170px;">
                                 <select name="city" class="form-select form-select-sm" style="width:140px;" onchange="this.form.submit()">
                                     <option value="">Filter by City</option>
                                     @foreach($cities as $city)
@@ -41,6 +45,7 @@
                     <table class="table table-hover sc-table mb-0" id="spvTable">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
                                 <th>Vendor Name</th>
                                 <th>Company Name</th>
                                 <th>Specialisation</th>
@@ -54,7 +59,8 @@
                         <tbody>
                             @forelse($contacts as $contact)
                             <tr id="row-{{ $contact->id }}">
-                                <td class="fw-semibold">{{ $contact->contact_name ?? '—' }}</td>
+                                <td><input type="checkbox" class="rowCheckbox" value="{{ $contact->id }}"></td>
+                                <td class="fw-semibold"><a href="{{ route('contact.sparevendor.edit', $contact->id) }}" class="text-dark text-decoration-none hover-link">{{ $contact->contact_name ?? '—' }}</a></td>
                                 <td style="font-size:12px;color:#555;">{{ $contact->company_name ?? '—' }}</td>
                                 <td>
                                     @if($contact->specialisation)
@@ -114,7 +120,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">No spare part vendors found.</td>
+                                <td colspan="9" class="text-center text-muted py-4">No spare part vendors found.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -134,71 +140,43 @@
 </div>
 @endsection
 
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Option</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check form-check-inline radio-chip">
+                    <input class="form-check-input" type="radio" name="deleteType" id="delete_selected" value="selected" checked>
+                    <label class="form-check-label" for="delete_selected">
+                        <i class="uil uil-check-circle me-1"></i>Delete Selected
+                    </label>
+                </div>
+                <div class="form-check form-check-inline radio-chip">
+                    <input class="form-check-input" type="radio" name="deleteType" id="delete_all" value="all">
+                    <label class="form-check-label" for="delete_all">
+                        <i class="uil uil-check-circle me-1"></i>Delete All
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('js')
 <script>
-(function () {
-    var CSRF        = $('meta[name="csrf-token"]').attr('content');
-    var TOGGLE_BASE = '/contacts/sparevendor/';   // + id + '/toggle-status'
-    var DELETE_BASE = '/contacts/sparevendor/';   // + id  (DELETE)
-
-    // ── Toggle Status ─────────────────────────────────────────────────────
-    $(document).on('click', '.spv-toggle', function () {
-        var id      = $(this).data('id');
-        var name    = $(this).data('name');
-        var current = $(this).data('status');
-        var action  = current === 'Active' ? 'Deactivate' : 'Activate';
-        var color   = current === 'Active' ? '#ea0027' : '#10863f';
-
-        Swal.fire({
-            title: action + ' Vendor?', text: '"' + name + '"', icon: 'warning',
-            showCancelButton: true, confirmButtonColor: color, confirmButtonText: action
-        }).then(function (r) {
-            if (!r.isConfirmed) return;
-            $.ajax({
-                method: 'POST',
-                url: TOGGLE_BASE + id + '/toggle-status',
-                data: { _token: CSRF },
-                dataType: 'json',
-                success: function (res) {
-                    if (res.success) {
-                        Swal.fire({ icon: 'success', title: 'Status updated to ' + res.new_status, timer: 1400, showConfirmButton: false,
-                            didClose: () => location.reload() });
-                    }
-                }
-            });
-        });
-    });
-
-    // ── Soft Delete ───────────────────────────────────────────────────────
-    $(document).on('click', '.spv-delete', function () {
-        var id   = $(this).data('id');
-        var name = $(this).data('name');
-        Swal.fire({
-            title: 'Delete "' + name + '"?',
-            text: 'This vendor will be soft-deleted and can be restored later.',
-            icon: 'warning', showCancelButton: true,
-            confirmButtonColor: '#ea0027', confirmButtonText: 'Delete'
-        }).then(function (r) {
-            if (!r.isConfirmed) return;
-            $.ajax({
-                method: 'POST',
-                url: DELETE_BASE + id,
-                data: { _token: CSRF, _method: 'DELETE' },
-                dataType: 'json',
-                success: function (res) {
-                    if (res.success) {
-                        $('#row-' + id).fadeOut(300, function () { $(this).remove(); });
-                        Swal.fire({ icon: 'success', title: 'Deleted', timer: 1200, showConfirmButton: false });
-                    }
-                }
-            });
-        });
-    });
-
-    // ── Enter key search ─────────────────────────────────────────────────
-    $('input[name=name]').on('keydown', function (e) {
-        if (e.key === 'Enter') $('#filterForm').submit();
-    });
-})();
+var CSRF        = $('meta[name="csrf-token"]').attr('content');
+var CO_TYPE     = "{{ $cotype->slug }}";
+var TOGGLE_BASE = '/contacts/sparevendor/';
+var DELETE_BASE = '/contacts/sparevendor/';
+var DELETE_SELECTED_CONTACT = "{{ route('contact.delete.selected') }}";
+var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 </script>
+<script src="{{ asset('customjs/contact/sparevendor/index.js?v=1.0') }}"></script>
 @endsection

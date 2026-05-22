@@ -16,7 +16,12 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name , #search_location , #search_rag, #search_size').on('change blur', function () { 
+    // Re-init filter selects with descriptive placeholders (destroy first to override global "Please Select")
+    $('#search_location').select2('destroy').select2({ placeholder: 'Filter by Location', allowClear: true });
+    $('#search_rag').select2('destroy').select2({ placeholder: 'Filter by RAG Status', allowClear: true });
+    $('#search_size').select2('destroy').select2({ placeholder: 'Filter by Size', allowClear: true });
+
+    $('#search_name , #search_location , #search_rag, #search_size').on('change blur', function () {
         $('#searchform').submit();
     });
     

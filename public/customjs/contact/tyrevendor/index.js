@@ -16,7 +16,10 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name , #search_city , #search_rag, #search_size').on('change blur', function () { 
+    // Re-init filter select with descriptive placeholder (destroy first to override global "Please Select")
+    $('#search_city').select2('destroy').select2({ placeholder: 'Filter by City', allowClear: true });
+
+    $('#search_name , #search_city , #search_rag, #search_size').on('change blur', function () {
         $('#searchform').submit();
     });
     

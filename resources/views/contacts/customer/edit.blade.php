@@ -1439,7 +1439,8 @@
                         </div>
                     </div>
                     
-                    <div class="text-end">
+                    <div class="text-end d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" id="addContactLocationBtn" class="btn btn-primary">Save</button>
                     </div>
                 </form>

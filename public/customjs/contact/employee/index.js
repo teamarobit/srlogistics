@@ -16,7 +16,11 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name , #search_branch , #search_worktype').on('change blur', function () { 
+    // Re-init filter selects with descriptive placeholders (destroy first to override global "Please Select")
+    $('#search_branch').select2('destroy').select2({ placeholder: 'Filter by Branch', allowClear: true });
+    $('#search_worktype').select2('destroy').select2({ placeholder: 'Filter by Work Type', allowClear: true });
+
+    $('#search_name , #search_branch , #search_worktype').on('change blur', function () {
         $('#searchform').submit();
     });
     

@@ -96,7 +96,7 @@ body{
                                 <th>RAG Status</th>
                                 <th>Status</th>
                                 <th>Created by</th>
-                                <th class="text-end">
+                                <th class="text-end" style="position:sticky;right:0;background:#fff;z-index:2;box-shadow:-2px 0 4px rgba(0,0,0,.06);">
                                     Action
                                 </th>
                             </tr>
@@ -147,7 +147,7 @@ body{
                                         {{ $contact->createdby?->name ?? '' }}
                                         <span class="text-secondary d-block">{{ $contact->createdby?->email ?? '' }}</span>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" style="position:sticky;right:0;background:#fff;box-shadow:-2px 0 4px rgba(0,0,0,.06);">
                                         <div class="dropdown dot-dd">
                                           <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="uil uil-ellipsis-h"></i>
