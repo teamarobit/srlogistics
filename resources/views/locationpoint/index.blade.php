@@ -85,7 +85,6 @@
                                         <th>Contact Type</th>
                                         <th>City</th>
                                         <th>State</th>
-                                        <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -112,21 +111,10 @@
                                             <td>{{ $row['contact_type'] }}</td>
                                             <td>{{ $row['city_name'] }}</td>
                                             <td>{{ $row['state_name'] }}</td>
-                                            
-                                            <td class="text-end">
-                                                <div class="dropdown dot-dd">
-                                                  <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="uil uil-ellipsis-h"></i>
-                                                  </span>
-                                                  <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                    <li><a class="dropdown-item" href="javascript:void(0)"><i class="uil uil-whatsapp me-2"></i>Share</a></li>
-                                                  </ul>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted">
+                                            <td colspan="8" class="text-center text-muted">
                                                 No Data found!
                                             </td>
                                         </tr>

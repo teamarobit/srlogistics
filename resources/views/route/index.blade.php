@@ -65,7 +65,7 @@
                     <div class="container-fluid">
                         
                         <div class="table-responsive mt-3">
-                            <table class="table table-hover invoice-table mb-0">
+                            <table class="table table-hover invoice-table mb-0" data-delete-url="{{ route('route.delete') }}">
                                 <thead>
                                     <tr>
                                         <th>SL No.</th>
@@ -85,7 +85,7 @@
                                     
                                     @forelse($routes as $key => $route)
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ ($routes->currentPage() - 1) * $routes->perPage() + $key + 1 }}</td>
                                         <td>{{ $route->name ?? '-' }}</td>
                                         <td>
                                             {{ $route->sourceCity->name ?? '-' }}
@@ -196,12 +196,7 @@
 @endsection
 
 @section('js')
-<script>
-var DELETE_ROUTE  = "{{route('route.delete')}}";
-</script>
-
-<script type="text/javascript" src="{{asset('js/Routes/index.js')}}"></script>
-
+<script type="text/javascript" src="{{ asset('js/Routes/index.js?v=1.1') }}"></script>
 @endsection
 
 

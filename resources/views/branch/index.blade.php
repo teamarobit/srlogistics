@@ -3,8 +3,9 @@
 @section('css')
 
 <link rel="stylesheet" href="{{ asset('css/Branch/index.css') }}">
-
-body{ background-color: #fff; }
+<style>
+body { background-color: #fff; }
+</style>
 
 @endsection
 
@@ -76,7 +77,7 @@ body{ background-color: #fff; }
                             <!-- /////////////////////////////////// -->
 
                             <div class="table-responsive mt-3">
-                                <table class="table table-hover invoice-table mb-0">
+                                <table class="table table-hover invoice-table mb-0" data-delete-url="{{ route('branch.delete') }}" data-index-url="{{ route('branch.index') }}">
                                     <thead>
                                         <tr>
                                             <th>Branch Location</th>
@@ -209,12 +210,5 @@ body{ background-color: #fff; }
 @endsection
 
 @section('js')
-
-<script>
-    var BRANCHES = "{{ route('branch.index') }}";
-    
-    var DELETE_BRANCH  = "{{route('branch.delete')}}";
-    
-</script>
-<script type="text/javascript" src="{{ asset('customjs/branch/index.js') }}?v={{ time() }}"></script>
+<script type="text/javascript" src="{{ asset('js/Branch/index.js?v=1.1') }}"></script>
 @endsection

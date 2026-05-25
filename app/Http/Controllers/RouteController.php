@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
     
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreRouteRequest;
+use App\Http\Requests\UpdateRouteRequest;
 
 use App\Models\Country;
 use App\Models\State;
@@ -111,61 +112,9 @@ class RouteController extends Controller
     
     
     
-    public function store(Request $request)
+    public function store(StoreRouteRequest $request)
     {
-        // Step 1: Validate main fields and dynamic rows
-        $validator = Validator::make($request->all(), [
-            'route_name'              => 'required|unique:routes,name',
-            'source_state_id'         => 'required|integer|exists:states,id',
-            'source_city_id'          => 'required',
-            'destination_state_id'    => 'required|integer|exists:states,id',
-            'destination_city_id'     => 'required',
-            'fixed_km'                => 'required|numeric|min:1|max:999999999999999.99999',
-            'transit_time_days'       => 'required|integer|min:0|max:365',
-            'transit_time_hrs'        => 'required|numeric|min:0|max:999.99',
-            'fixed_diesel_bs3_bs4'    => 'required|numeric|min:0|max:9999.99',
-            'fixed_diesel_bs6'        => 'required|numeric|min:0|max:9999.99',
-            'fixed_driver_advance'    => 'required|numeric|min:0|max:999999999999999.99999',
-            'remarks'                 => 'nullable',
-            'route_type'              => 'required|in:Line,Local',
-            'status'                  => 'required|in:Active,Inactive',
 
-            'rto_id' => ['required', 'array', 'min:1'],
-            'rto_id.*' => ['required', 'integer', 'exists:rtos,id'],
-
-            'tollstation_id' => ['required', 'array', 'min:1'],
-            'tollstation_id.*' => ['required', 'integer', 'exists:tollstations,id'],
-
-
-        ], [
-            'required' => 'This field is required.',
-            'max'      => 'Maximum 100 characters allowed.',
-            'unique'   => 'This value already exists.',
-            'numeric'  => 'Only numeric values are allowed.',
-            'min'      => 'Value must be at least :min.',
-            'max'      => 'Maximum allowed value is :max.',
-            'in'       => 'Invalid selection.',
-        ]);
-
-        $validator->sometimes('transit_time_hrs', 'gt:1', function ($input) {
-            return (int) $input->transit_time_days === 0;
-        });
-
-
-        if ($validator->fails()) {
-            // \Log::error('Validation failed', [
-            //     'errors' => $validator->errors()->toArray(),
-            //     'input' => request()->all(), // optional: log the input data for context
-            // ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
-        }
-        
-    
         try {
             
             $route = null;
@@ -354,65 +303,15 @@ class RouteController extends Controller
     
     
     
-    public function update(Request $request)
-    {   
+    public function update(UpdateRouteRequest $request)
+    {
         $route = Route::find($request->get('routeid'));
-        
-        if($route == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops ! Route not found!'], 422);
+
+        if ($route == NULL) {
+            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Route not found.'], 422);
         }
-        
-        // Step 1: Validate main fields and dynamic rows
-        $validator = Validator::make($request->all(), [
-                        'route_name'              => 'required|unique:routes,name,' . $route->id,
-                        'source_state_id'         => 'required|integer|exists:states,id',
-                        'source_city_id'          => 'required',
-                        'destination_state_id'    => 'required|integer|exists:states,id',
-                        'destination_city_id'     => 'required',
-                        'fixed_km'                => 'required|numeric|min:1|max:999999999999999.99999',
-                        'transit_time_days'       => 'required|integer|min:0|max:365',
-                        'transit_time_hrs'        => 'required|numeric|min:0|max:999.99',
-                        'fixed_diesel_bs3_bs4'    => 'required|numeric|min:0|max:9999.99',
-                        'fixed_diesel_bs6'        => 'required|numeric|min:0|max:9999.99',
-                        'fixed_driver_advance'    => 'required|numeric|min:0|max:999999999999999.99999',
-                        'remarks'                 => 'nullable',
-                        'route_type'              => 'required|in:Line,Local',
-                        'status'                  => 'required|in:Active,Inactive',
-                
-                        'rto_id'                 => 'required|array',
-                        'rto_id.*'               => 'integer|exists:rtos,id',
-                
-                        'tollstation_id'         => 'required|array',
-                        'tollstation_id.*'       => 'integer|exists:tollstations,id',
-            
-                    ], [
-                        'required' => 'This field is required.',
-                        'max'      => 'Maximum 100 characters allowed.',
-                        'unique'   => 'This value already exists.',
-                        'numeric'  => 'Only numeric values are allowed.',
-                        'min'      => 'Value must be at least :min.',
-                        'max'      => 'Maximum allowed value is :max.',
-                        'in'       => 'Invalid selection.',
-                    ]);
-
-        $validator->sometimes('transit_time_hrs', 'gt:1', function ($input) {
-            return (int) $input->transit_time_days === 0;
-        });
 
 
-        if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
-        }
-        
-        
         try{
             
             
@@ -575,64 +474,62 @@ class RouteController extends Controller
     
     public function destroy(Request $request)
     {
-        $id = $request->get('id'); 
-        
+        $id = $request->get('id');
+
         if (empty($id)) {
             return response()->json([
                 'success' => false,
                 'data' => [],
                 'message' => 'Woops! ID not found.'
-            ]);
+            ], 422);
         }
-    
-        $tollstation = Tollstation::find($id);
-        if (!$tollstation) {
+
+        $route = Route::find($id);
+        if (!$route) {
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'Woops! Tollstation not found.'
-            ]);
+                'message' => 'Route not found.'
+            ], 422);
         }
-        
-        // Check if Tollstation is used in BOP Items
-        // $existsInBOP = Bopitem::where('process_id', $id)->exists();
-        // if ($existsInBOP) {
+
+        // Check if Route is used elsewhere before deleting (uncomment when needed)
+        // $existsInUsage = SomeRelatedModel::where('route_id', $id)->exists();
+        // if ($existsInUsage) {
         //     return response()->json([
         //         'success' => false,
         //         'data' => [],
-        //         'message' => 'This process is used in a Bill of Process (BOP) and cannot be deleted.'
-        //     ]);
+        //         'message' => 'This route is in use and cannot be deleted.'
+        //     ], 422);
         // }
-    
-    
-        
-        try{
-            
-            DB::transaction(function () use($request, $id, &$tollstation){
-                
-                $tollstation = Tollstation::find($id);
-                $tollstation->delete(); // Perform delete operation
-        
-                $description = 'Deleted a tollstation.';
-                $useractivity = $this->storeUseractivity(42, 6, Auth::user()->id, $id, $description);
+
+        try {
+
+            DB::transaction(function () use ($id, &$route) {
+
+                $route = Route::find($id);
+                $route->delete();
+
+                $description = 'Deleted a Route.';
+                $this->storeUseractivity(20, 6, Auth::user()->id, $id, $description);
             });
-            
+
             $success = true;
-            $respmessage = 'Tollstation deleted successfully.';
-            
-        } catch (\Exception $exp){
-                                    
+            $respmessage = 'Route deleted successfully.';
+
+        } catch (\Exception $exp) {
+
             DB::rollBack();
             $success = false;
             $respmessage = $exp->getMessage();
-            
+
         }
-        
+
         return response()->json([
             'success' => $success,
             'data' => [],
             'message' => $respmessage
-        ]);
+        ], $success ? 200 : 500);
     }
     
     
