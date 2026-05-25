@@ -22,7 +22,7 @@
                             </a>
                             @endif
 
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" style="display:none;">
                                 <i class="uil uil-trash-alt me-1"></i>Delete
                             </button>
 
@@ -178,5 +178,5 @@ var DELETE_BASE = '/contacts/sparevendor/';
 var DELETE_SELECTED_CONTACT = "{{ route('contact.delete.selected') }}";
 var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 </script>
-<script src="{{ asset('customjs/contact/sparevendor/index.js?v=1.0') }}"></script>
+<script src="{{ asset('customjs/contact/sparevendor/index.js?v=1.2') }}"></script>
 @endsection

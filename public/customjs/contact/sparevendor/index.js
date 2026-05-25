@@ -76,15 +76,26 @@ $(document).ready(function () {
         });
     });
 
+    // ── Bulk Delete button visibility helper ──────────────────────────────
+    function toggleBulkDeleteBtn() {
+        if ($('.rowCheckbox:checked').length > 0) {
+            $('#bulkDeleteBtn').show();
+        } else {
+            $('#bulkDeleteBtn').hide();
+        }
+    }
+
     // ── Select All checkbox ───────────────────────────────────────────────
     $(document).on('change', '#selectAll', function () {
         $('.rowCheckbox').prop('checked', this.checked);
+        toggleBulkDeleteBtn();
     });
 
     $(document).on('change', '.rowCheckbox', function () {
         $('#selectAll').prop('checked',
             $('.rowCheckbox:checked').length === $('.rowCheckbox').length
         );
+        toggleBulkDeleteBtn();
     });
 
     // ── Bulk Delete ───────────────────────────────────────────────────────
@@ -160,11 +171,6 @@ $(document).ready(function () {
                 });
             });
         }
-    });
-
-    // ── Enter key triggers search ─────────────────────────────────────────
-    $('input[name=name]').on('keydown', function (e) {
-        if (e.key === 'Enter') $('#filterForm').submit();
     });
 
 });
