@@ -108,7 +108,7 @@
 <script>
 var LISTING = "{{ route('vehicleownership.index') }}";
 </script>
-<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js?v=1.1')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js?v=1.2')}}"></script>
 
 @endsection
 

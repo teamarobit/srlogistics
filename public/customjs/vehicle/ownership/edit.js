@@ -26,10 +26,11 @@ $(document).ready(function() {
         var formData = new FormData(this);
         // Ensure hidden field is included
         formData.append('id', $('#edit_id_input').val());
-    
-        $('.error').html('');
+
+        // Clear previous errors
+        $('.error.text-danger').text('');
         $('#editBtn').html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled', true);
-    
+
         $.ajax({
             method: 'POST',
             url: $(this).attr('action'),
@@ -50,7 +51,7 @@ $(document).ready(function() {
             },
             error: function (xhr) {
                     $('#editBtn').html('Save').prop('disabled', false);
-        
+
                     let response = {};
                     try {
                         response = JSON.parse(xhr.responseText);
@@ -61,7 +62,7 @@ $(document).ready(function() {
                         });
                         return;
                     }
-        
+
                     Toast.fire({
                         icon: 'error',
                         title: response.message || 'Please check validation errors.'
@@ -71,49 +72,29 @@ $(document).ready(function() {
 
                     Object.entries(errors).forEach(([field, messages]) => {
                         const msg = messages[0];
-        
+
                         /* -----------------------------
-                         Dynamic ARRAY fields (vehiclesize_*)
+                         Dynamic ARRAY fields
                         ----------------------------- */
-        
+
                         if (field.includes('.')) {
                             const errorId = field.replace('.', '_') + '_error';
                             $('#' + errorId).text(msg);
-        
-                            const nameAttr = field.replace(/\.(\d+)/g, '[$1]');
-                            $(`[name="${nameAttr}"]`).addClass('is-invalid');
                             return;
                         }
-        
+
                         /* -----------------------------
-                         Radio / Checkbox
+                         All fields — show error in span below input
                         ----------------------------- */
-        
-                        const $radio = $(`[name="${field}"]`);
-                        if ($radio.length && ['radio', 'checkbox'].includes($radio.attr('type'))) {
-                            $radio.addClass('is-invalid');
-                            $(`#edit_${field}_error`).text(msg);
-                            return;
-                        }
-        
-                        /* -----------------------------
-                         Normal inputs / selects
-                        ----------------------------- */
-        
-                        const $input = $(`[name="${field}"]`);
-                        if ($input.length) {
-                            $input.addClass('is-invalid');
-                            $input.after(`<div class="invalid-feedback d-block">${msg}</div>`);
-                        } else {
-                            $(`#edit_${field}_error`).text(msg);
-                        }
+
+                        $(`#edit_${field}_error`).text(msg);
                     });
-                    
+
             }
 
-            
+
         });
-    
+
         return false;
     });
 
