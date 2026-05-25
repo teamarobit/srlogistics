@@ -128,15 +128,15 @@
                 <!--<p><a href="location-list.php" style="color: #261F35; font-size: 13px;">Location List</a></p>-->
                 
                 @if(Route::has('route.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('route.index') }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('route.*') ? 'font-weight:bold;' : '' }}">Routes</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('route.index') }}" class="{{ request()->routeIs('route.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('route.*') ? 'font-weight:bold;' : '' }}">Routes <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
 
                 @if(Route::has('branch.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('branch.*') ? 'font-weight:bold;' : '' }}">Branch <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" class="{{ request()->routeIs('branch.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('branch.*') ? 'font-weight:bold;' : '' }}">Branch <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
 
                 @if(Route::has('locationpoint.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('locationpoint.index') }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('locationpoint.*') ? 'font-weight:bold;' : '' }}">Location Points</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('locationpoint.index') }}" class="{{ request()->routeIs('locationpoint.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('locationpoint.*') ? 'font-weight:bold;' : '' }}">Location Points <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 

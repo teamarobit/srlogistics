@@ -1287,6 +1287,12 @@ hr{
     background: #ededf7;
     border-radius: 5px;
 }
+.sidemenu .accordion-body p a.active-nav {
+    color: #032671 !important;
+    background: #ededf7;
+    border-radius: 5px;
+    font-weight: 700 !important;
+}
 .sidemenu .accordion-body{
     background: #f9f9f9;
     border: 0;
