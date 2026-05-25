@@ -185,7 +185,7 @@
                     @endif
 
                     @if(Route::has('ws.master.spare-part-categories'))
-                    <p><a href="{{ route('ws.master.spare-part-categories') }}" style="color: #261f35; font-size: 13px;">Spare Part Categories</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('ws.master.spare-part-categories') }}" style="color:#261F35; font-size:13px;">Spare Part Categories <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
 
                     @if(Route::has('ws.master.maintenance-items'))

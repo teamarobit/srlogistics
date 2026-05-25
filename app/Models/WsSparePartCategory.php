@@ -44,6 +44,6 @@ class WsSparePartCategory extends Model
 
     public function spareParts()
     {
-        return $this->hasMany(WsSparePart::class, 'category_id');
+        return $this->hasMany(SparePart::class, 'wssparepartscategory_id');
     }
 }

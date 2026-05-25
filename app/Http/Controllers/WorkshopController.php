@@ -501,7 +501,10 @@ class WorkshopController extends Controller
             $query->where('status', $status);
         }
 
-        $categories = $query->orderBy('name')->paginate(25)->withQueryString();
+        $categories = $query->withCount('spareParts')
+            ->orderBy('name')
+            ->paginate(25)
+            ->withQueryString();
 
         return view('ws.master-spare-part-categories', compact('categories'));
     }
@@ -515,22 +518,35 @@ class WorkshopController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
-        $category = WsSparePartCategory::create(array_merge($validated, [
-            'status'     => 'Active',
-            'created_by' => Auth::id(),
-        ]));
+        try {
+            $category = DB::transaction(function () use ($validated) {
+                return WsSparePartCategory::create(array_merge($validated, [
+                    'organisation_id' => Auth::user()->organisation_id ?? 1,
+                    'status'          => 'Active',
+                    'created_by'      => Auth::id(),
+                ]));
+            });
 
-        return response()->json([
-            'success'  => true,
-            'category' => $category,
-            'message'  => "{$category->name} added successfully.",
-        ]);
+            return response()->json([
+                'success'  => true,
+                'category' => $category,
+                'message'  => "{$category->name} added successfully.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /** PUT /workshop/master/spare-part-categories/{id} */
     public function masterSparePartCategoryUpdate(Request $request, int $id)
     {
-        $category = WsSparePartCategory::findOrFail($id);
+        $category = WsSparePartCategory::find($id);
+        if (! $category) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
         $validated = $request->validate([
             'name'        => "required|string|max:100|unique:wssparepartscategories,name,{$id}",
@@ -538,40 +554,118 @@ class WorkshopController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
-        $category->update(array_merge($validated, ['updated_by' => Auth::id()]));
+        try {
+            $category = DB::transaction(function () use ($category, $validated) {
+                $category->update(array_merge($validated, ['updated_by' => Auth::id()]));
+                return $category->fresh();
+            });
 
-        return response()->json([
-            'success'  => true,
-            'category' => $category->fresh(),
-            'message'  => "{$category->name} updated successfully.",
-        ]);
+            return response()->json([
+                'success'  => true,
+                'category' => $category,
+                'message'  => "{$category->name} updated successfully.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /** DELETE /workshop/master/spare-part-categories/{id} */
+    /**
+     * DELETE /workshop/master/spare-part-categories/{id}
+     *
+     * Mirrors the WarehouseController BUG-010 pattern — refuse to delete
+     * when the category is referenced by other modules. Returns 422 with a
+     * human-readable list of blockers so the user knows what to clear first.
+     */
     public function masterSparePartCategoryDestroy(int $id)
     {
-        $category = WsSparePartCategory::findOrFail($id);
-        $category->update(['deleted_by' => Auth::id()]);
-        $category->delete();
+        $category = WsSparePartCategory::find($id);
+        if (! $category) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => "{$category->name} removed.",
-        ]);
+        // ── Linked-module guard (Warehouse BUG-010 pattern) ──────────────
+        $blockers = $this->collectSparePartCategoryDeleteBlockers($category);
+        if (!empty($blockers)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete this category — it is linked to '
+                           . implode(', ', $blockers)
+                           . '. Please reassign or remove these references first.',
+            ], 422);
+        }
+
+        try {
+            $name = $category->name;
+            DB::transaction(function () use ($category) {
+                $category->update(['deleted_by' => Auth::id()]);
+                $category->delete();
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$name} removed.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Return a list of human-readable labels for every module that still
+     * references this spare-part category. Empty list ⇒ safe to delete.
+     *
+     * Eloquent-only: every check uses a relation on the WsSparePartCategory
+     * model so that soft-deletes and global scopes are respected automatically.
+     */
+    private function collectSparePartCategoryDeleteBlockers(WsSparePartCategory $cat): array
+    {
+        $relations = [
+            'spareParts' => 'spare parts',
+        ];
+
+        $blockers = [];
+        foreach ($relations as $relation => $label) {
+            if ($cat->{$relation}()->exists() && ! in_array($label, $blockers, true)) {
+                $blockers[] = $label;
+            }
+        }
+
+        return $blockers;
     }
 
     /** PATCH /workshop/master/spare-part-categories/{id}/status */
     public function masterSparePartCategoryToggleStatus(int $id)
     {
-        $category  = WsSparePartCategory::findOrFail($id);
-        $newStatus = $category->status === 'Active' ? 'Inactive' : 'Active';
-        $category->update(['status' => $newStatus, 'updated_by' => Auth::id()]);
+        $category = WsSparePartCategory::find($id);
+        if (! $category) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
-        return response()->json([
-            'success'    => true,
-            'new_status' => $newStatus,
-            'message'    => "{$category->name} marked as {$newStatus}.",
-        ]);
+        try {
+            $newStatus = $category->status === 'Active' ? 'Inactive' : 'Active';
+            $result = DB::transaction(function () use ($category, $newStatus) {
+                $category->update(['status' => $newStatus, 'updated_by' => Auth::id()]);
+                return $category->fresh();
+            });
+
+            return response()->json([
+                'success'    => true,
+                'new_status' => $newStatus,
+                'message'    => "{$result->name} marked as {$newStatus}.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function masterMaintenanceItems()

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Workshop/Master/spare-part-categories.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/Workshop/Master/spare-part-categories.css?v=1.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
-<div class="layout-wrapper">
+<div class="layout-wrapper" id="spcPageRoot" data-base-url="{{ route('ws.master.spare-part-categories') }}">
     @include('includes.header')
     <div class="wrapper srlog-bdwrapper">
         <div class="side-wrap">
@@ -37,7 +37,7 @@
             </span>
             <input type="text" name="search" value="{{ request('search') }}"
                    class="form-control" style="width:260px;" placeholder="Search name, code, description…">
-            <select name="status" class="form-select" style="width:120px;" onchange="this.form.submit()">
+            <select name="status" class="form-select" style="width:120px;" id="spStatusFilter">
                 <option value="">All Status</option>
                 <option value="Active"   {{ request('status') === 'Active'   ? 'selected' : '' }}>Active</option>
                 <option value="Inactive" {{ request('status') === 'Inactive' ? 'selected' : '' }}>Inactive</option>
@@ -119,7 +119,8 @@
                                             <i class="uil {{ $cat->status === 'Active' ? 'uil-toggle-off' : 'uil-toggle-on' }}"></i>
                                         </button>
                                         <button type="button" class="sp-action-btn danger" title="Remove"
-                                            onclick="deleteCategory({{ $cat->id }}, @json($cat->name))">
+                                            data-parts-count="{{ $cat->spare_parts_count ?? 0 }}"
+                                            onclick="deleteCategory({{ $cat->id }}, @json($cat->name), {{ $cat->spare_parts_count ?? 0 }})">
                                             <i class="uil uil-trash-alt"></i>
                                         </button>
                                     </div>
@@ -248,169 +249,8 @@
     </div>
 </div>
 
-{{-- Toast --}}
-<div id="spToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-        <div class="toast-body fw-semibold" id="spToastMsg"></div>
-        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-</div>
 @endsection
 
 @section('js')
-<script>
-(function () {
-    'use strict';
-
-    const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-    const BASE = '{{ route("ws.master.spare-part-categories") }}';
-
-    /* ── Toast ── */
-    function showToast(msg, ok = true) {
-        const el = document.getElementById('spToast');
-        document.getElementById('spToastMsg').textContent = msg;
-        el.classList.remove('bg-success', 'bg-danger', 'text-white');
-        el.classList.add(ok ? 'bg-success' : 'bg-danger', 'text-white');
-        bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
-    }
-
-    /* ── Clear / show errors ── */
-    function clearErrors(prefix) {
-        document.querySelectorAll(`[id^="${prefix}_"][id$="_error"]`).forEach(el => el.textContent = '');
-        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-    }
-
-    function showErrors(prefix, errors) {
-        Object.entries(errors).forEach(([field, msgs]) => {
-            const errEl   = document.getElementById(`${prefix}_${field}_error`);
-            const inputEl = document.getElementById(`${prefix}_${field}`);
-            if (errEl)   errEl.textContent = Array.isArray(msgs) ? msgs[0] : msgs;
-            if (inputEl) inputEl.classList.add('is-invalid');
-        });
-    }
-
-    /* ── AJAX helper ── */
-    function apiFetch(url, method, formOrBody) {
-        const body = formOrBody instanceof HTMLFormElement
-            ? new URLSearchParams(new FormData(formOrBody))
-            : formOrBody;
-        if (method !== 'GET' && method !== 'POST') {
-            if (body instanceof URLSearchParams) body.set('_method', method);
-        }
-        return fetch(url, {
-            method : method === 'GET' ? 'GET' : 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json',
-                       'Content-Type': 'application/x-www-form-urlencoded' },
-            body   : method === 'GET' ? undefined : body,
-        }).then(r => r.json());
-    }
-
-    /* ── ADD ── */
-    document.getElementById('addCategoryForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors('add');
-        const btn = document.getElementById('addCategoryBtn');
-        const sp  = document.getElementById('addSpinner');
-        btn.disabled = true; sp.classList.remove('d-none');
-
-        apiFetch(BASE, 'POST', this)
-            .then(d => {
-                if (d.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
-                    this.reset();
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 900);
-                } else if (d.errors) {
-                    showErrors('add', d.errors);
-                } else {
-                    showToast(d.message ?? 'An error occurred.', false);
-                }
-            })
-            .catch(() => showToast('Server error. Please try again.', false))
-            .finally(() => { btn.disabled = false; sp.classList.add('d-none'); });
-    });
-
-    /* ── Open edit modal ── */
-    window.openEditModal = function (id, name, code, description) {
-        clearErrors('edit');
-        document.getElementById('edit_id').value          = id;
-        document.getElementById('edit_name').value        = name;
-        document.getElementById('edit_code').value        = code;
-        document.getElementById('edit_description').value = description;
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('editCategoryModal')).show();
-    };
-
-    /* ── EDIT ── */
-    document.getElementById('editCategoryForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors('edit');
-        const id  = document.getElementById('edit_id').value;
-        const btn = document.getElementById('editCategoryBtn');
-        const sp  = document.getElementById('editSpinner');
-        btn.disabled = true; sp.classList.remove('d-none');
-
-        apiFetch(`${BASE}/${id}`, 'PUT', this)
-            .then(d => {
-                if (d.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 900);
-                } else if (d.errors) {
-                    showErrors('edit', d.errors);
-                } else {
-                    showToast(d.message ?? 'An error occurred.', false);
-                }
-            })
-            .catch(() => showToast('Server error. Please try again.', false))
-            .finally(() => { btn.disabled = false; sp.classList.add('d-none'); });
-    });
-
-    /* ── Toggle status ── */
-    window.toggleStatus = function (id, currentStatus) {
-        const action = currentStatus === 'Active' ? 'deactivate' : 'activate';
-        if (!confirm(`Are you sure you want to ${action} this category?`)) return;
-
-        const body = new URLSearchParams({ _method: 'PATCH' });
-        apiFetch(`${BASE}/${id}/status`, 'PATCH', body)
-            .then(d => {
-                if (d.success) {
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 700);
-                } else {
-                    showToast(d.message ?? 'Could not update status.', false);
-                }
-            })
-            .catch(() => showToast('Server error.', false));
-    };
-
-    /* ── Delete ── */
-    window.deleteCategory = function (id, name) {
-        if (!confirm(`Remove "${name}"?\n\nThis can be restored by an administrator.`)) return;
-
-        const body = new URLSearchParams({ _method: 'DELETE' });
-        apiFetch(`${BASE}/${id}`, 'DELETE', body)
-            .then(d => {
-                if (d.success) {
-                    showToast(d.message);
-                    const row = document.getElementById(`cat-row-${id}`);
-                    if (row) {
-                        row.style.transition = 'opacity .35s';
-                        row.style.opacity    = '0';
-                        setTimeout(() => row.remove(), 350);
-                    }
-                } else {
-                    showToast(d.message ?? 'Could not delete category.', false);
-                }
-            })
-            .catch(() => showToast('Server error.', false));
-    };
-
-    /* ── Enter on search ── */
-    document.querySelector('input[name="search"]')
-        ?.addEventListener('keypress', e => {
-            if (e.key === 'Enter') { e.preventDefault(); document.getElementById('spFilterForm').submit(); }
-        });
-
-}());
-</script>
+<script src="{{ asset('js/Workshop/Master/spare-part-categories.js?v=1.1') }}"></script>
 @endsection
