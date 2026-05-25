@@ -25,7 +25,7 @@
                                     }
                                 @endphp
 
-                                <p style="background-color: #a2ffe0;"><a href="{{ route('contact.'.$menucotype->slug . '.index') }}" style="color: #261f35; font-size: 13px;">{{ $plural }}</a></p>
+                                <p style="background-color: #a2ffe0;"><a href="{{ route('contact.'.$menucotype->slug . '.index') }}" style="color: #261f35; font-size: 13px;">{{ $plural }} <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
 
                             @endforeach
                         @endif
@@ -41,7 +41,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree" >
                 <a class="accordion-button no-dd" href="{{ route('contact.customer.contract.list') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-file-contract me-2"></i> Contract Master</a>
+                <i class="uil uil-file-contract me-2"></i> Contract Master <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -50,8 +50,8 @@
         @if(Route::has('department.index'))
         <div class="accordion-item" >
             <h2 class="accordion-header" id="headingThree" >
-                <a class="accordion-button no-dd" href="{{ route('department.index') }}" style="background-color: #a2ffe0;"> 
-                <i class="uil uil-car me-2"></i> Department</a>
+                <a class="accordion-button no-dd" href="{{ route('department.index') }}" style="background-color: #a2ffe0;">
+                <i class="uil uil-car me-2"></i> Department <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -60,7 +60,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree">
                 <a class="accordion-button no-dd" href="{{ route('designation.index') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-briefcase me-2"></i> Designation </a>
+                <i class="uil uil-briefcase me-2"></i> Designation <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -70,7 +70,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree">
                 <a class="accordion-button no-dd" href="{{ route('jobrank.index') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-briefcase me-2"></i> Job Rank </a>
+                <i class="uil uil-briefcase me-2"></i> Job Rank <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -89,27 +89,27 @@
                 <div class="accordion-body">
                 
                     @if(Route::has('vehiclemanagement.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclemanagement.index') }}" style="color:#261F35; font-size:13px;">Vehicle Management</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclemanagement.index') }}" style="color:#261F35; font-size:13px;">Vehicle Management <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehicletype.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletype.index') }}" style="color:#261F35; font-size:13px;">Vehicle Type</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletype.index') }}" style="color:#261F35; font-size:13px;">Vehicle Type <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehiclegroup.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclegroup.index') }}" style="color:#261F35; font-size:13px;">Vehicle Group</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclegroup.index') }}" style="color:#261F35; font-size:13px;">Vehicle Group <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehiclestatus.index')) 
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclestatus.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Status</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclestatus.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Status <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehicletracking.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                       
                     @if(Route::has('vehicleownership.index')) 
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                 
                 </div>
@@ -132,7 +132,7 @@
                 @endif
                 
                 @if(Route::has('branch.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" style="color:#261F35; font-size:13px;">Branch</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" style="color:#261F35; font-size:13px;">Branch <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('locationpoint.index'))
@@ -168,7 +168,7 @@
                     @endif
 
                     @if(Route::has('skillset.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('skillset.index') }}" style="color: #261f35; font-size: 13px;">Skill Set</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('skillset.index') }}" style="color: #261f35; font-size: 13px;">Skill Set <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
 
                     @if(Route::has('ws.master.services'))
@@ -258,7 +258,7 @@
                 <!--<p><a href="#" style="color: #261f35; font-size: 13px;">Operational Overheads</a></p>-->
                 
                 @if(Route::has('expense.index'))
-                <p style="background-color: #ffe0e0;"><a href="{{ route('expense.index') }}" style="color: #dc3545; font-size: 13px; font-weight: 600;">Expense Type Master</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('expense.index') }}" style="color: #261f35; font-size: 13px;">Expense Type Master <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 
@@ -266,7 +266,7 @@
                 <p><a href="#" style="color: #261f35; font-size: 13px;">Chart of Accounts</a></p>
                 
                 @if(Route::has('asset.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('asset.index') }}" style="color: #261f35; font-size: 13px;">Asset Master</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('asset.index') }}" style="color: #261f35; font-size: 13px;">Asset Master <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
             </div>
         </div>
