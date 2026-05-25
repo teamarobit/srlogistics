@@ -4,7 +4,7 @@ $(document).ready(function(){
 
     const Toast = Swal.mixin({
           toast: true,
-          position: 'top',
+          position: 'top-end',
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
@@ -18,8 +18,9 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name, #search_status').on('change blur', function () { 
-        $('#searchform').submit();
+    $('#search_name').on('keyup change', function () {
+        clearTimeout(window._searchTimer);
+        window._searchTimer = setTimeout(function(){ $('#searchform').submit(); }, 400);
     });
     
     

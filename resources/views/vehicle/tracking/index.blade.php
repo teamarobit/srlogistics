@@ -20,9 +20,15 @@
                 <div class="container-fluid page-head">
                     <div class="row align-items-end">
                         <div class="col-12">
-                            <h5 class="d-inline-block mb-0">Vehicle Tracking Group</h5>
+                            <h5 class="d-inline-block mb-0">Vehicle Group Tracking</h5>
                             <a href="{{ route('vehicletracking.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Vehicle Group Tracking</a>
-                            
+
+                            <form action="{{ route('vehicletracking.index') }}" method="GET" id="searchform" class="d-inline-block">
+                                <div class="search-wrap d-inline-block ms-2" style="width: 200px;">
+                                    <input type="text" name="name" id="search_name" value="{{ $search_name ?? '' }}" class="form-control" placeholder="Search by Group Name" />
+                                </div>
+                            </form>
+                            <a href="{{ route('vehicletracking.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
                         </div>
                     </div>
                 </div>
@@ -53,7 +59,7 @@
                             <tr>
                                 <td>{{ $data->vehicleGroup->name ?? '-' }}</td>
                                 <td>{{ $data->managed_by_employee ?? '-' }}</td>
-                                <td>{{ $data->no_of_vehicles ?? '-' }}</td>
+                                <td>{{ $data->vehicles->count() }}</td>
                             
                                 <td>
                                     @if($data->vehicles->count())
@@ -142,11 +148,7 @@
 
 @section('js')
 
-<script>
-var DELETE_VEHICLE_TYPE  = "{{route('vehicletype.delete')}}";
-</script>
-
-<script type="text/javascript" src="{{asset('js/Vehicle/Tracking/index.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/Vehicle/Tracking/index.js?v=1.2') }}"></script>
 
 @endsection
 

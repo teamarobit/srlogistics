@@ -21,7 +21,7 @@
                        <div class="container-fluid page-head">
                           <div class="row align-items-end">
                               <div class="col-12">
-                                  <h5 class="d-inline-block mb-0">Vehicle Group Tracking</h5>
+                                  <h5 class="d-inline-block mb-0">Vehicle Group</h5>
                                   <a href="javascript:void(0)" class="btn btn-theme mb-0 ms-2" data-bs-toggle="modal" data-bs-target="#addGroup"><i class="uil uil-plus me-1"></i>Vehicle Group</a>
                                   <form action="{{ route('vehiclegroup.index') }}" method="GET" id="searchform" class="d-inline-block">
                                       <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
@@ -69,8 +69,6 @@
                                                   </span>
                                                   <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
                                                     <li><a class="dropdown-item editRecord" data-id="{{ $group->id }}" href="javascript:void(0)"><i class="uil uil-pen me-2"></i>Edit</a></li>
-                                                    {{--<li><a class="dropdown-item text-danger deleteRecord" data-id="{{ $group->id }}" data-actmodelid="14" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
-                                                    
                                                   </ul>
                                                 </div>
                                             </td>
@@ -178,10 +176,11 @@
                 </div>
                           
                 <div class="text-end">
+                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" id="addBtn" class="btn btn-primary">Save</button>
                 </div>
             </form>
-            
+
       </div>
     </div>
   </div>

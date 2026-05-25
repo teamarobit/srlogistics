@@ -67,10 +67,11 @@ class VehiclemanagementController extends Controller
                        
                         
         $vehicletype = Vehicletype::orderBy('name')->get();
-        
+        $vehicles    = Vehicle::orderBy('vehicle_no')->get(['id', 'vehicle_no']);
+
         //dd($datas->toArray());
-        
-        return view('vehicle.management.index', compact('datas','vehicletype','search_number','search_type'));
+
+        return view('vehicle.management.index', compact('datas','vehicletype','search_number','search_type','vehicles'));
         
     }
     
@@ -448,33 +449,27 @@ class VehiclemanagementController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! id not found.']);
         }
     
-        $record = Vehiclegroup::find($id);
-    
+        $record = Vehicle::find($id);
+
         if (!$record) {
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Vehicle group not found.']);
+            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Vehicle not found.'], 422);
         }
-    
-        // Check if this contact is associated with any SalesOrder
-        // $hasSO = SalesOrder::where('customer_id', $id)->exists();
-        // if ($hasSO) {
-        //     return response()->json([
-        //         'success' => false, 
-        //         'data' => [], 
-        //         'message' => 'This contact is associated with a Sales Order and cannot be deleted.'
-        //     ]);
-        // }
-        
-    
+
+
         // Proceed with delete inside transaction
-        DB::transaction(function () use ($record, $actmodelid) {
-            $record->delete(); // delete contact
-    
-            // Log activity
-            $description = 'Deleted a Vehicle group.';
-            $this->storeUseractivity($actmodelid, 6, Auth::user()->id, $record->id, $description);
-        });
-    
-        return response()->json(['success' => true, 'data' => [], 'message' => 'Record deleted successfully.']);
+        try {
+            DB::transaction(function () use ($record, $actmodelid) {
+                $record->delete();
+
+                // Log activity
+                $description = 'Deleted a Vehicle.';
+                $this->storeUseractivity($actmodelid, 6, Auth::user()->id, $record->id, $description);
+            });
+
+            return response()->json(['success' => true, 'data' => [], 'message' => 'Vehicle deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'data' => [], 'message' => $e->getMessage()], 500);
+        }
     }
     
     

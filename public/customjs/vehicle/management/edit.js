@@ -1,15 +1,15 @@
 $(document).ready(function() {
-    
+
     const Toast = Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer);
             toast.addEventListener('mouseleave', Swal.resumeTimer);
-          }
+        }
     });
     
     
@@ -141,9 +141,18 @@ $(document).ready(function() {
     
     
     
+    // ── Clear validation error on user input (BUG-04) ────────────────────────
+    $(document).on('input change', 'input, select, textarea', function () {
+        let name = $(this).attr('name');
+        if (name) {
+            $('#edit_' + name + '_error').text('');
+        }
+    });
+
+
     //==========================================================================
-    
-    
+
+
     $(document).on('click','#editBtn',function(){
         $('form#editForm').submit();
     });
@@ -169,7 +178,7 @@ $(document).ready(function() {
                     title: response.message || 'Saved successfully!'
                 });
                 $('#editBtn').html('Save').attr('disabled', false);
-                window.location.href = LISTING;
+                setTimeout(function () { window.location.href = LISTING; }, 1500);
             },
             error: function (xhr) {
 

@@ -37,20 +37,23 @@ class VehicleGroupTrackingController extends Controller
     use Useractivity;
     
     public function index(Request $request): View
-    {   
-        
+    {
+        $search_name = $request->get('name');
+
         $datas = Vehiclegrouptracking::with([
                                             'vehicleGroup',
                                             'vehicles.vehicle'
                                         ])
+                                        ->when($search_name, function ($q) use ($search_name) {
+                                            $q->whereHas('vehicleGroup', function ($q2) use ($search_name) {
+                                                $q2->where('name', 'like', '%' . $search_name . '%');
+                                            });
+                                        })
                                         ->orderBy('id', 'desc')
                                         ->paginate(10)
                                         ->withQueryString();
-        
-        //dd($datas->toArray());
-        
-        return view('vehicle.tracking.index', compact('datas'));
-        
+
+        return view('vehicle.tracking.index', compact('datas', 'search_name'));
     }
     
     

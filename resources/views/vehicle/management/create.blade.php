@@ -42,10 +42,10 @@
                                         </div>
                                         <div class="col-12 col-md-8">
                                             <div class="input-group">
-                                              <input type="text" name="vc_no" id="vc_no" class="form-control" placeholder="27AAACT2727Q1ZW">
+                                              <input type="text" name="vc_no" id="vc_no" class="form-control" placeholder="e.g. TS09QA1234">
                                               <button class="btn btn-primary fetch-data-btn" style="text-transform: capitalize;" type="button" id="fetchData"><i class="uil uil-search me-1"></i>Fetch Info</button>
                                             </div>
-                                            <small class="text-primary">Format : 27AAACT2727Q1ZW</small>
+                                            <small class="text-primary">Format: TS09QA1234</small>
                                             <small class="error text-danger d-block" id="add_vc_no_error"></small>
                                         </div>
                                     </div>
@@ -180,10 +180,11 @@
                                             <label>Vehicle Size <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-8">
-                                            <select class="form-select" name="vehicle_size" id="vehicle_size">
+                                            <select class="form-select" name="vehicle_size" id="vehicle_size" disabled>
                                                 <option value="">Choose</option>
                                             </select>
-                                            <small class="error text-danger" id="add_vehicle_size_error"></small>
+                                            <small class="text-muted">Select a Vehicle Type above to load sizes.</small>
+                                            <small class="error text-danger d-block" id="add_vehicle_size_error"></small>
                                         </div>
                                     </div>
             
