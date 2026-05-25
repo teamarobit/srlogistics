@@ -8,6 +8,7 @@ use App\Http\Requests\WarehouseRequest;
 use App\Models\Warehouse;
 use App\Models\State;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,11 @@ class WarehouseController extends Controller
      */
     public function create(): View
     {
-        $states   = State::orderBy('name')->get(['id', 'name']);
+        // BUG-003 fix: only show Indian states (was dumping ~5K global states).
+        $indiaId  = Country::where('name', 'India')->value('id');
+        $states   = State::where('country_id', $indiaId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $managers = Contact::whereHas('cotype', fn($q) => $q->where('slug', 'employee'))
             ->where('status', 'Active')
             ->orderBy('contact_name')
@@ -83,7 +88,11 @@ class WarehouseController extends Controller
     {
         $wh = Warehouse::with('state')->findOrFail($warehouse);
 
-        $states   = State::orderBy('name')->get(['id', 'name']);
+        // BUG-003 fix: only show Indian states (was dumping ~5K global states).
+        $indiaId  = Country::where('name', 'India')->value('id');
+        $states   = State::where('country_id', $indiaId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $managers = Contact::whereHas('cotype', fn($q) => $q->where('slug', 'employee'))
             ->where('status', 'Active')
             ->orderBy('contact_name')
@@ -143,6 +152,11 @@ class WarehouseController extends Controller
      * DESTROY — Soft-delete a warehouse (AJAX).
      * SD-8: No findOrFail() — use find() + manual 422.
      * SD-9: Explicit HTTP status on every response.
+     *
+     * BUG-010 (2026-05-25): Block delete when the warehouse is referenced by
+     *   any other module (tyres, batteries, stock balances, stock ledger,
+     *   tyrelogs, batterylogs). Returns 422 with a human-readable list of
+     *   blockers so the user knows what to clear first.
      */
     public function destroy(int $warehouse): JsonResponse
     {
@@ -152,6 +166,17 @@ class WarehouseController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Warehouse not found.',
+                ], 422);
+            }
+
+            // ── BUG-010: linked-module guard ──────────────────────────
+            $blockers = $this->collectDeleteBlockers($wh);
+            if (!empty($blockers)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete this warehouse — it is linked to '
+                               . implode(', ', $blockers)
+                               . '. Please reassign or remove these references first.',
                 ], 422);
             }
 
@@ -170,6 +195,36 @@ class WarehouseController extends Controller
                 'message' => 'Failed to delete warehouse: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * BUG-010 helper — return a list of human-readable labels for every module
+     * that still references this warehouse. Empty list ⇒ safe to delete.
+     *
+     * Eloquent-only: every check uses a relation on the Warehouse model so
+     * that soft-deletes, global scopes, and model-side changes are respected
+     * automatically.
+     */
+    private function collectDeleteBlockers(Warehouse $wh): array
+    {
+        $relations = [
+            'tyres'           => 'tyres',
+            'tyrelogs'        => 'tyre logs',
+            'batteries'       => 'batteries',
+            'batterylogs'     => 'battery logs',
+            'stockBalances'   => 'stock balances',
+            'stockLedgerIn'   => 'stock ledger entries',
+            'stockLedgerOut'  => 'stock ledger entries',
+        ];
+
+        $blockers = [];
+        foreach ($relations as $relation => $label) {
+            if ($wh->{$relation}()->exists() && ! in_array($label, $blockers, true)) {
+                $blockers[] = $label;
+            }
+        }
+
+        return $blockers;
     }
 
     /**

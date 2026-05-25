@@ -1,9 +1,14 @@
 /**
  * Warehouse Master — Index Page JS
- * SR Logistics | public/js/Warehouse/index.js v1.1
+ * SR Logistics | public/js/Warehouse/index.js v1.2
  *
  * SD-1:  No inline JS in blade. All logic here.
  * SD-7:  Toast.fire() for all notifications — never bare Swal.fire() for toasts.
+ *
+ * v1.2 (2026-05-25): BUG-001 fix — Reset button now clears search, status,
+ *                    and type tab and re-runs filter. BUG-005 — empty-state
+ *                    row toggled when client filter returns zero matches.
+ *                    BUG-006 — explicit showDenyButton:false on delete swal.
  */
 
 // SD-7: Define Toast mixin once at top of file
@@ -37,20 +42,41 @@ $(function () {
 
     $('#whSearch, #whStatusFilter').on('input change', filterTable);
 
+    // ── BUG-001 fix: Reset button clears filters and re-shows full list ──
+    $('.btn-reset').on('click', function (e) {
+        e.preventDefault();
+        $('#whSearch').val('');
+        $('#whStatusFilter').val('');
+        $('#whTypeTabs .nav-link').removeClass('active');
+        $('#whTypeTabs .nav-link').filter(function () {
+            return $(this).data('type') === '' || $(this).data('type') == null;
+        }).addClass('active');
+        filterTable();
+    });
+
     function filterTable() {
         var type   = $('#whTypeTabs .nav-link.active').data('type');
         var status = $('#whStatusFilter').val().toLowerCase();
         var search = $('#whSearch').val().toLowerCase();
 
-        $('#whTable tbody tr').each(function () {
+        var visibleCount = 0;
+        var $dataRows = $('#whTable tbody tr').not('#whNoResults').not('.wh-server-empty');
+
+        $dataRows.each(function () {
             var $r = $(this);
             var ok = (!type   || $r.data('type')   === type)
                   && (!status || $r.data('status')  === status)
-                  && (!search || $r.data('name').includes(search)
-                              || $r.data('city').includes(search)
-                              || String($r.data('code')).includes(search));
+                  && (!search || ($r.data('name') || '').toString().includes(search)
+                              || ($r.data('city') || '').toString().includes(search)
+                              || String($r.data('code') || '').includes(search));
             $r.toggle(ok);
+            if (ok) visibleCount++;
         });
+
+        // ── BUG-005 fix: show empty-state row when filters return zero matches ──
+        if ($dataRows.length > 0) {
+            $('#whNoResults').toggleClass('d-none', visibleCount > 0);
+        }
     }
 
     // ── Delete (soft delete via AJAX) ─────────────────────────
@@ -65,10 +91,16 @@ $(function () {
             html: 'Are you sure you want to delete <strong>' + name + '</strong>?<br>This action cannot be undone.',
             icon: 'warning',
             showCancelButton: true,
+            showDenyButton: false,
             confirmButtonColor: '#dc2626',
             cancelButtonColor:  '#6c757d',
             confirmButtonText:  'Yes, Delete',
             cancelButtonText:   'Cancel',
+            // BUG-006 fix: remove the hidden swal2-deny element from DOM (a11y nit)
+            didOpen: function (popup) {
+                var deny = popup.querySelector('.swal2-deny');
+                if (deny) deny.remove();
+            },
         }).then(function (result) {
             if (!result.isConfirmed) return;
 

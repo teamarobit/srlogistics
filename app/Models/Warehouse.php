@@ -56,6 +56,24 @@ class Warehouse extends Model
         return $this->hasMany(Tyre::class);
     }
 
+    /** Tyre movement / history logs for this warehouse */
+    public function tyrelogs()
+    {
+        return $this->hasMany(Tyrelog::class, 'warehouse_id');
+    }
+
+    /** Batteries currently parked at this warehouse */
+    public function batteries()
+    {
+        return $this->hasMany(Battery::class, 'warehouse_id');
+    }
+
+    /** Battery movement / history logs for this warehouse */
+    public function batterylogs()
+    {
+        return $this->hasMany(Batterylog::class, 'warehouse_id');
+    }
+
     /** Location-wise stock balances at this warehouse */
     public function stockBalances()
     {
@@ -63,11 +81,24 @@ class Warehouse extends Model
                     ->where('location_type', 'warehouse');
     }
 
-    /** Stock ledger entries for this warehouse */
-    public function stockLedger()
+    /** Stock ledger entries arriving at this warehouse (inward leg) */
+    public function stockLedgerIn()
     {
         return $this->hasMany(WsStockLedger::class, 'to_location_id')
                     ->where('to_location_type', 'warehouse');
+    }
+
+    /** Stock ledger entries leaving this warehouse (outward leg) */
+    public function stockLedgerOut()
+    {
+        return $this->hasMany(WsStockLedger::class, 'from_location_id')
+                    ->where('from_location_type', 'warehouse');
+    }
+
+    /** Backwards-compatible alias for the inward stock ledger relation. */
+    public function stockLedger()
+    {
+        return $this->stockLedgerIn();
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
