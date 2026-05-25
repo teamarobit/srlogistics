@@ -65,7 +65,10 @@
                                 <td>
                                     @if($contact->specialisation)
                                         @foreach(explode(',', $contact->specialisation) as $spec)
-                                        <span class="badge bg-primary me-1" style="font-size:10px;">{{ trim($spec) }}</span>
+                                            @php $specId = trim($spec); $specName = $specMap[$specId] ?? null; @endphp
+                                            @if($specName)
+                                                <span class="badge bg-primary m-1" style="font-size:10px;">{{ $specName }}</span>
+                                            @endif
                                         @endforeach
                                     @else
                                         <span class="text-muted">—</span>

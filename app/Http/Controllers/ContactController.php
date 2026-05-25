@@ -12187,7 +12187,9 @@ class ContactController extends Controller
                             $q->where('iso2', 'IN');
                         })->orderBy('name')->get();
 
-        return view('contacts.sparevendor.index', compact('contacts', 'cities', 'cotype', 'search_name', 'search_city'));
+        $specMap = WsSparePartCategory::pluck('name', 'id');
+
+        return view('contacts.sparevendor.index', compact('contacts', 'cities', 'cotype', 'search_name', 'search_city', 'specMap'));
     }
 
     public function createSpareVendor(Request $request)
