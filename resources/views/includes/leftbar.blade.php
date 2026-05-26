@@ -326,11 +326,11 @@
                 @endif
                 
                 @if(Route::has('fasttagprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('fasttagprovider.index') }}" style="color: #261f35; font-size: 13px;">Fastag Provider</a></p>
+                <p style="background-color: #a2ffe0;" class="{{ Route::is('fasttagprovider.*') ? 'active' : '' }}"><a href="{{ route('fasttagprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('fasttagprovider.*') ? 'font-weight:700; ' : '' }}">Fasttag Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('digilockprovider.index'))
-                <p style="background-color: #a2ffe0;" class="{{ Route::is('digilockprovider.*') ? 'active' : '' }}"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('digilockprovider.*') ? 'font-weight:700; text-decoration:underline;' : '' }}">Digital Lock Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
+                <p style="background-color: #a2ffe0;" class="{{ Route::is('digilockprovider.*') ? 'active' : '' }}"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('digilockprovider.*') ? 'font-weight:700; ' : '' }}">Digital Lock Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
             </div>

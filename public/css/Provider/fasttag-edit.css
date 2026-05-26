@@ -1,5 +1,12 @@
 
 
+/* breadcrumb — matches Digital Lock pattern */
+.ft-breadcrumb { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+.ft-breadcrumb a { color: #032671; text-decoration: none; }
+.ft-breadcrumb a:hover { text-decoration: underline; }
+.ft-breadcrumb .sep { margin: 0 6px; }
+
+
 /**/
 .main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
 	border-radius: 6px; }

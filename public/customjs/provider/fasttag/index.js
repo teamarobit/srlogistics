@@ -1,31 +1,44 @@
-$(document).ready(function(){
-    
+$(document).ready(function () {
+
+    var $data       = $('#fasttag-index-data');
+    var LISTING     = $data.data('listing-url') || '';
+    var DELETE_DATA = $data.data('delete-url')  || '';
+
     const Toast = Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer);
             toast.addEventListener('mouseleave', Swal.resumeTimer);
-          }
+        }
     });
-    
+
+    // Flash success toast after redirect from create/edit
+    try {
+        var flashMsg = sessionStorage.getItem('fasttagprovider_flash');
+        if (flashMsg) {
+            Toast.fire({ icon: 'success', title: flashMsg });
+            sessionStorage.removeItem('fasttagprovider_flash');
+        }
+    } catch (e) { /* sessionStorage unavailable - ignore */ }
+
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-    
-    
-    $('#search_status, #search_name').on('change blur', function () { 
+
+
+    $('#search_status, #search_name').on('change blur', function () {
         $('#searchform').submit();
     });
-    
-    
-    
-    
+
+
+
+
     $(document.body).on('click', '.deleteDepartment', function () {
         var departmentid = $(this).data('id');
-    
+
         Swal.fire({
             icon: 'warning',
             title: 'Are you sure to delete?',
@@ -44,7 +57,7 @@ $(document).ready(function(){
             if (result.isConfirmed) {
                 var formData = new FormData();
                 formData.append('departmentid', departmentid);
-    
+
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -78,10 +91,9 @@ $(document).ready(function(){
         });
     });
 
-    
-    
-    
-    
-    
-});
 
+
+
+
+
+});
