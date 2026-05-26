@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/RTO/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/RTO/create.css?v=1.1') }}">
 
 
 
@@ -92,37 +92,37 @@
                             <label>Charge For Large Truck </label>
                           </div>
                           <div class="col-12 col-md-6">
-                              <div class="input-group mb-3">
-                                  <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_large_truck" value="{{ old('charge_for_large_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
-                                  <small class="error text-danger" id="add_charge_for_large_truck_error"></small>
+                              <div class="input-group mb-1">
+                                  <span class="input-group-text" id="rate_large">₹</span>
+                                  <input type="text" name="charge_for_large_truck" value="{{ old('charge_for_large_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" inputmode="decimal" aria-describedby="rate_large">
                               </div>
+                              <small class="error text-danger d-block mt-1" id="add_charge_for_large_truck_error"></small>
                           </div>
                         </div>
-                      
+
                         <div class="form-group row pb-1">
                           <div class="col-12 col-md-3">
                             <label>Charge For Medium Truck</label>
                           </div>
                           <div class="col-12 col-md-6">
-                              <div class="input-group mb-3">
-                                  <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_medium_truck" value="{{ old('charge_for_medium_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
-                                  <small class="error text-danger" id="add_charge_for_medium_truck_error"></small>
+                              <div class="input-group mb-1">
+                                  <span class="input-group-text" id="rate_medium">₹</span>
+                                  <input type="text" name="charge_for_medium_truck" value="{{ old('charge_for_medium_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" inputmode="decimal" aria-describedby="rate_medium">
                               </div>
+                              <small class="error text-danger d-block mt-1" id="add_charge_for_medium_truck_error"></small>
                           </div>
                         </div>
-                      
+
                         <div class="form-group row pb-1">
                           <div class="col-12 col-md-3">
                             <label>Charge For Small Truck</label>
                           </div>
                           <div class="col-12 col-md-6">
-                              <div class="input-group mb-3">
-                                  <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="charge_for_small_truck" value="{{ old('charge_for_small_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
-                                  <small class="error text-danger" id="add_charge_for_small_truck_error"></small>
+                              <div class="input-group mb-1">
+                                  <span class="input-group-text" id="rate_small">₹</span>
+                                  <input type="text" name="charge_for_small_truck" value="{{ old('charge_for_small_truck') }}" class="form-control decimalonly text-end" placeholder="0.00" inputmode="decimal" aria-describedby="rate_small">
                               </div>
+                              <small class="error text-danger d-block mt-1" id="add_charge_for_small_truck_error"></small>
                           </div>
                         </div>
                         
@@ -155,8 +155,8 @@
                       
                       
                         <div class="text-right">
-                          <button class="btn btn-dark mb-4" id="addBtn">Save</button>
-                          
+                          <button type="button" class="btn btn-dark mb-4" id="addBtn">Save</button>
+
                           <a href="{{ route('rto.index') }}" class="btn btn-danger mb-4"> Close </a>
                         </div>
 
@@ -182,7 +182,7 @@
 var RTOS = "{{ route('rto.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/rto/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/rto/create.js?v=1.1')}}"></script>
 
 @endsection
 

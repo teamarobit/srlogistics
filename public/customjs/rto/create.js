@@ -71,6 +71,14 @@ $(document).ready(function() {
         $('form#addForm').submit();
     });
 
+    // Clear the field-level error message as soon as the user edits the field
+    $(document).on('input change', 'form#addForm input, form#addForm select, form#addForm textarea', function () {
+        var name = $(this).attr('name');
+        if (name) {
+            $('#add_' + name + '_error').text('');
+        }
+    });
+
     $('form#addForm').on('submit', function () {
         var formData = new FormData(this);
     

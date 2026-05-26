@@ -28,6 +28,12 @@
 	border-radius: 6px; }
 
 
+/* Index filter widths */
+.search-wrap.filter-w-110 { width: 110px; }
+.search-wrap.filter-w-120 { width: 120px; }
+.search-wrap.filter-w-125 { width: 125px; }
+
+
 .input-group>.form-control{
     padding: 5px 15px;
     height: 30px !important;

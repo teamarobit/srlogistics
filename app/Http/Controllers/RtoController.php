@@ -135,7 +135,7 @@ class RtoController extends Controller
                 $Rto = new Rto();
                 
                 $Rto->rtono = $Rtono;
-                $Rto->organisation_id = optional(Auth::user()->organisation)->id;
+                $Rto->organisation_id = Auth::user()->organisation_id ?? 1;
                 $Rto->name = $request->rto_name;
                 
                 $Rto->state_id = $request->state_id;
@@ -155,23 +155,26 @@ class RtoController extends Controller
                 // Log user activity
                 $this->storeUseractivity(17, 3, Auth::user()->id, $Rto->id, 'Added new RTO Checkpoint.');
             });
-    
-            $success = true;
-            $respmessage = 'RTO Checkpoint saved successfully.';
-    
+
+            return response()->json([
+                'success' => true,
+                'data'    => $Rto,
+                'message' => 'RTO Checkpoint saved successfully.'
+            ], 200);
+
         } catch (\Exception $exp) {
-            
+
             // \Log::error('Process save error', [
             //     'message' => $exp->getMessage(),
             //     'trace' => $exp->getTraceAsString()
             // ]);
-    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
+
+            return response()->json([
+                'success' => false,
+                'data'    => null,
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        return response()->json(['success' => $success, 'data' => $Rto, 'message' => $respmessage]);
     }
     
     
@@ -269,15 +272,15 @@ class RtoController extends Controller
         }
         
         try{
-            
-            
+
+
             DB::transaction(function () use($request, &$rto){
-                
+
                 $rto->name = $request->rto_name;
                 $rto->state_id = $request->state_id;
                 $rto->city_id = $request->city_id;
                 $rto->embed_map_location = $request->embed_map_location ?? null;
-                
+
                 $rto->currency_id = 1;
                 $rto->charge_for_large_truck = $request->charge_for_large_truck ?? 0;
                 $rto->charge_for_medium_truck = $request->charge_for_medium_truck ?? 0;
@@ -285,55 +288,57 @@ class RtoController extends Controller
                 $rto->status = $request->status;
                 $rto->updated_by = Auth::user()->id;
                 $rto->save();
-        
-                
+
+
                 $description = 'Updated a Rto.';
                 $useractivity = $this->storeUseractivity(17, 4, Auth::user()->id, $rto->id, $description);
-                
+
             });
-            
-            $success = true;
-            $respmessage = 'Rto updated successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => $rto->fresh(),
+                'message' => 'Rto updated successfully.'
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+
             \Log::error('RTO update failed', [
-                'error_message' => $e->getMessage(),
+                'error_message' => $exp->getMessage(),
                 'rto_id'        => $request->rtoid ?? null,
             ]);
-            
+
+            return response()->json([
+                'success' => false,
+                'data'    => Rto::find($request->get('rtoid')),
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        return response()->json(['success' => $success, 'data' => $rto, 'message' => $respmessage]);
     }
     
     
     
     public function destroy(Request $request)
     {
-        $id = $request->get('id'); 
-        
+        $id = $request->get('id');
+
         if (empty($id)) {
             return response()->json([
                 'success' => false,
                 'data' => [],
                 'message' => 'Woops! ID not found.'
-            ]);
+            ], 422);
         }
-    
+
         $Rto = Rto::find($id);
         if (!$Rto) {
             return response()->json([
                 'success' => false,
                 'data' => [],
                 'message' => 'Woops! RTO not found.'
-            ]);
+            ], 422);
         }
-        
+
         // Check if Rto is used in BOP Items
         // $existsInBOP = Bopitem::where('process_id', $id)->exists();
         // if ($existsInBOP) {
@@ -343,36 +348,34 @@ class RtoController extends Controller
         //         'message' => 'This process is used in a Bill of Process (BOP) and cannot be deleted.'
         //     ]);
         // }
-    
-    
-        
+
+
+
         try{
-            
+
             DB::transaction(function () use($request, $id, &$Rto){
-                
+
                 $Rto = Rto::find($id);
                 $Rto->delete(); // Perform delete operation
-        
+
                 $description = 'Deleted a RTO.';
                 $useractivity = $this->storeUseractivity(17, 6, Auth::user()->id, $id, $description);
             });
-            
-            $success = true;
-            $respmessage = 'RTO Checkpoint deleted successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => [],
+                'message' => 'RTO Checkpoint deleted successfully.'
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'success' => $success,
-            'data' => [],
-            'message' => $respmessage
-        ]);
     }
     
     
