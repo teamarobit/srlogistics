@@ -34,50 +34,28 @@ class DigitalLockProviderController extends Controller
      */
     public function index(Request $request): View
     {
-        $search_name = $request->get('name');
+        $search_name   = $request->get('name');
         $search_status = $request->get('status');
 
-        // Sort whitelist — never trust raw input as a column name.
-        // Maps the public ?sort= key → an array of [table, column] used in the query.
-        $sortMap = [
-            'name'       => ['digitallockproviders.name'],
-            'code'       => ['digitallockproviders.code'],
-            'status'     => ['digitallockproviders.status'],
-            'created_by' => ['users.name'],
-        ];
+        // Sort — same pattern as GpsProviderController
+        $sort_by  = in_array($request->get('sort_by'), ['name','code','status','created_at','updated_at']) ? $request->get('sort_by') : 'created_at';
+        $sort_dir = $request->get('sort_dir') === 'asc' ? 'asc' : 'desc';
 
-        $sort = $request->get('sort');
-        $dir  = strtolower($request->get('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
-
-        $query = Digitallockprovider::query()
-                    ->when(!empty($search_name), function ($q) use ($search_name) {
-                        $q->where('name', 'like', '%' . trim($search_name) . '%');
-                    })
-                    ->when(!is_null($search_status) && $search_status !== '', function ($q) use ($search_status) {
-                        $q->where('status', $search_status);
-                    });
-
-        if ($sort && isset($sortMap[$sort])) {
-            $column = $sortMap[$sort][0];
-
-            // Join users table only when sorting by createdBy
-            if ($sort === 'created_by') {
-                $query->leftJoin('users', 'users.id', '=', 'digitallockproviders.created_by')
-                      ->select('digitallockproviders.*');
-            }
-
-            $query->orderBy($column, $dir);
-        } else {
-            $query->orderByDesc('digitallockproviders.id'); // default — newest first
-        }
-
-        $datas = $query->paginate(10)->withQueryString();
-
-        $current_sort = $sort && isset($sortMap[$sort]) ? $sort : null;
-        $current_dir  = $dir;
+        $datas = Digitallockprovider::with(['createdBy','updatedBy'])
+                                ->when(!empty($search_name), function ($query) use ($search_name) {
+                                    // Escape LIKE wildcards so '%' and '_' inside the search term are treated literally.
+                                    $term = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search_name));
+                                    $query->where('name', 'like', '%' . $term . '%');
+                                })
+                                ->when(!is_null($search_status) && $search_status !== '', function ($query) use ($search_status) {
+                                    $query->where('status', $search_status);
+                                })
+                                ->orderBy($sort_by, $sort_dir)
+                                ->paginate(10)
+                                ->withQueryString();
 
         return view('provider.digilock.index', compact(
-            'datas','search_name','search_status','current_sort','current_dir'
+            'datas','search_name','search_status','sort_by','sort_dir'
         ));
     }
 

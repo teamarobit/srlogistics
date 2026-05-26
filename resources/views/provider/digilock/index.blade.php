@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.2') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.3') }}">
 
 
 @endsection
@@ -57,31 +57,59 @@
                 <div class="table-responsive mt-3">
                     <table class="table table-hover invoice-table mb-0">
                         <thead>
-                            @php
-                                // Build sortable header link — toggles dir, preserves other filters
-                                $buildSortUrl = function ($col) use ($current_sort, $current_dir, $search_name, $search_status) {
-                                    $nextDir = ($current_sort === $col && $current_dir === 'asc') ? 'desc' : 'asc';
-                                    return route('digilockprovider.index', array_filter([
-                                        'name'   => $search_name,
-                                        'status' => $search_status,
-                                        'sort'   => $col,
-                                        'dir'    => $nextDir,
-                                    ], fn($v) => !is_null($v) && $v !== ''));
-                                };
-                                $sortIcon = function ($col) use ($current_sort, $current_dir) {
-                                    if ($current_sort !== $col) {
-                                        return '<i class="uil uil-sort ms-1 text-muted small"></i>';
-                                    }
-                                    return $current_dir === 'asc'
-                                        ? '<i class="uil uil-sort-amount-up ms-1 small"></i>'
-                                        : '<i class="uil uil-sort-amount-down ms-1 small"></i>';
-                                };
-                            @endphp
                             <tr>
-                                <th><a class="dl-sort" href="{{ $buildSortUrl('name') }}">Name {!! $sortIcon('name') !!}</a></th>
-                                <th><a class="dl-sort" href="{{ $buildSortUrl('code') }}">Code {!! $sortIcon('code') !!}</a></th>
-                                <th><a class="dl-sort" href="{{ $buildSortUrl('status') }}">Status {!! $sortIcon('status') !!}</a></th>
-                                <th><a class="dl-sort" href="{{ $buildSortUrl('created_by') }}">Created By {!! $sortIcon('created_by') !!}</a></th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_dir' => ($sort_by === 'name' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Name
+                                        @if($sort_by === 'name')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'code', 'sort_dir' => ($sort_by === 'code' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Code
+                                        @if($sort_by === 'code')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_dir' => ($sort_by === 'status' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Status
+                                        @if($sort_by === 'status')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>Created By</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => ($sort_by === 'created_at' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Created At
+                                        @if($sort_by === 'created_at')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>Updated By</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'updated_at', 'sort_dir' => ($sort_by === 'updated_at' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Updated At
+                                        @if($sort_by === 'updated_at')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th class="text-end">Action</th>
                             </tr>
                         </thead>
@@ -101,6 +129,12 @@
                                     {{$value->createdBy?->name}}
                                     <span class="text-secondary d-block">{{$value->createdBy?->email}}</span>
                                 </td>
+                                <td>{{ $value->created_at ? $value->created_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>
+                                    {{ $value->updatedBy?->name ?? '—' }}
+                                    <span class="text-secondary d-block">{{ $value->updatedBy?->email ?? '' }}</span>
+                                </td>
+                                <td>{{ $value->updated_at ? $value->updated_at->format('d-M-Y h:i A') : '—' }}</td>
                                 <td class="text-end">
                                     <div class="dropdown dot-dd">
                                       <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
@@ -130,7 +164,7 @@
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">
+                                    <td colspan="8" class="text-center text-muted">
                                         No data found.
                                     </td>
                                 </tr>
