@@ -19,6 +19,60 @@ $(document).ready(function(){
         $('#searchform').submit();
     });
 
+    // Render Tollstation list inside the modal
+    $(document).on('click', '.toll-detail-btn', function () {
+
+        var items = $(this).data('items') || [];
+        var rows  = '';
+
+        if (items.length === 0) {
+
+            rows = '<tr><td colspan="6" class="text-center">No Data Found!</td></tr>';
+
+        } else {
+
+            $.each(items, function (idx, item) {
+                rows += '<tr>'
+                     +    '<td>' + (idx + 1) + '</td>'
+                     +    '<td><span class="tag">' + (item.station_name || '-') + '</span></td>'
+                     +    '<td>' + (item.toll_company  || '-') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.large  || '0.00') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.medium || '0.00') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.small  || '0.00') + '</td>'
+                     +  '</tr>';
+            });
+        }
+
+        $('#tollstationListBody').html(rows);
+    });
+
+    // Render RTO Checkpoint list inside the modal
+    $(document).on('click', '.rto-detail-btn', function () {
+
+        var items = $(this).data('items') || [];
+        var rows  = '';
+
+        if (items.length === 0) {
+
+            rows = '<tr><td colspan="6" class="text-center">No Data Found!</td></tr>';
+
+        } else {
+
+            $.each(items, function (idx, item) {
+                rows += '<tr>'
+                     +    '<td>' + (idx + 1) + '</td>'
+                     +    '<td><span class="tag">' + (item.name  || '-') + '</span></td>'
+                     +    '<td>' + (item.rtono || '-') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.large  || '0.00') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.medium || '0.00') + '</td>'
+                     +    '<td class="text-end">₹ ' + (item.small  || '0.00') + '</td>'
+                     +  '</tr>';
+            });
+        }
+
+        $('#rtoListBody').html(rows);
+    });
+
     $(document.body).on('click', '.delete-route', function () {
         var routeid = $(this).data('id');
         var deleteUrl = $('table.invoice-table').data('delete-url');
