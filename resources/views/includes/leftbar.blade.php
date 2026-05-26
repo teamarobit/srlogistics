@@ -315,7 +315,7 @@
             <div class="accordion-body">
                 
                 @if(Route::has('gpsprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('gpsprovider.index') }}" style="color: #261f35; font-size: 13px;">GPS Provider</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('gpsprovider.index') }}" style="color: #261f35; font-size: 13px;">GPS Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('fasttagprovider.index'))
