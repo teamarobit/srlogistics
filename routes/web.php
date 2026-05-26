@@ -570,7 +570,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/update', [App\Http\Controllers\DigitalLockProviderController::class, 'update'])->name('update');
         Route::post('/delete', [App\Http\Controllers\DigitalLockProviderController::class, 'destroy'])->name('delete');
     });
-    
+
+
+    /******************************** Hisab Category **********************************************************/
+    Route::prefix('hisab-category')->name('hisab.category.')->group(function () {
+        Route::get('/',        [App\Http\Controllers\HisabCategoryController::class, 'index'])->name('index');
+        Route::get('/create',    [App\Http\Controllers\HisabCategoryController::class, 'create'])->name('create');
+    });
+
     
     /******************************** Fleet Dashboard **********************************************************/
     

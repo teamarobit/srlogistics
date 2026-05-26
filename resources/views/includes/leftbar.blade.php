@@ -46,6 +46,13 @@
         </div>
         @endif
         
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree" >
+                <a class="accordion-button no-dd" href="{{ route('hisab.category.index') }}">
+                <i class="uil uil-file-contract me-2"></i> Hisab Category</a>
+            </h2>
+        </div>
+
         <!--///////////////////////////-->
         @if(Route::has('department.index'))
         <div class="accordion-item" >
