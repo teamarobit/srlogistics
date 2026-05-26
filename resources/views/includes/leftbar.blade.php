@@ -289,7 +289,7 @@
                 <p><a href="fuel-station-list.php" style="color: #261f35; font-size: 13px;">Fuel Station</a></p>
                 
                 @if(Route::has('tollstation.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('tollstation.index') }}" style="color: #261f35; font-size: 13px;">Toll Station</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('tollstation.index') }}" style="color: #261f35; font-size: 13px;">Toll Station <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('rto.index'))

@@ -1,5 +1,8 @@
 $(document).ready(function() {
-    
+
+    // BUG-011 fix: SD-1 — no inline JS in blade. Read constants from form data attrs.
+    var TOLLSTATIONS = $('form#editForm').data('tollstation-list-url') || '/tollstations';
+
     const Toast = Swal.mixin({
           toast: true,
           position: 'top',
@@ -68,11 +71,47 @@ $(document).ready(function() {
     
     
     
-    $(document).on('click','#editBtn',function(){
-        $('form#editForm').submit();
+    // BUG-009 fix: numeric-only guard on charge fields (.decimalonly).
+    $(document).on('input', '.decimalonly', function () {
+        var v = $(this).val();
+        v = v.replace(/[^0-9.]/g, '');
+        var firstDot = v.indexOf('.');
+        if (firstDot !== -1) {
+            v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+        }
+        $(this).val(v);
     });
-    
-    $('form#editForm').on('submit', function(){
+
+
+    // BUG-005 fix: clear stale "This field is required." messages
+    // as soon as the field becomes valid.
+    function clearErrorFor(name) {
+        var key = name.replace(/\[(\d+)\]/g, '.$1');
+        $('#edit_' + key + '_error').text('');
+    }
+
+    $(document).on('input change', 'form#editForm input, form#editForm textarea, form#editForm select', function () {
+        var $el  = $(this);
+        var name = $el.attr('name');
+        if (!name) return;
+
+        var val = $el.is(':radio') || $el.is(':checkbox')
+            ? $('form#editForm [name="' + name + '"]:checked').val()
+            : $el.val();
+
+        if (val !== undefined && val !== null && String(val).trim() !== '') {
+            clearErrorFor(name);
+        }
+    });
+
+    $(document).on('click','#editBtn',function(e){
+        e.preventDefault();
+        $('form#editForm').trigger('submit');
+    });
+
+    $('form#editForm').on('submit', function(e){
+        e.preventDefault();
+
         var formData = new FormData(this);
         // Ensure hidden field is included
         formData.append('tollstationid', $('#edit_tollstationid_input').val());

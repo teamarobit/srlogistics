@@ -32,7 +32,8 @@
                 <div class="addroute-bd">
                   <div class="container-fluid">
 
-                    <form action="{{route('tollstation.save')}}" method="POST" id="addForm">
+                    <form action="{{route('tollstation.save')}}" method="POST" id="addForm"
+                          data-tollstation-list-url="{{ route('tollstation.index') }}">
                         @csrf
                         
                         <div class="form-group row pb-1">
@@ -127,7 +128,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge') }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate">
                                   <small class="error text-danger" id="add_large_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -141,7 +142,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge') }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate">
                                   <small class="error text-danger" id="add_medium_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -155,7 +156,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge') }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate">
+                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge') }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate">
                                   <small class="error text-danger" id="add_small_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -186,7 +187,7 @@
                       
                       
                         <div class="text-right">
-                          <button class="btn btn-dark mb-4" id="addBtn">Save</button>
+                          <button type="button" class="btn btn-dark mb-4" id="addBtn">Save</button>
                           
                           <a href="{{ route('tollstation.index') }}" class="btn btn-danger mb-4"> Close </a>
                         </div>
@@ -209,11 +210,7 @@
 
 @section('js')
 
-<script>
-var TOLLSTATIONS = "{{ route('tollstation.index') }}";
-</script>
-
-<script type="text/javascript" src="{{asset('js/Tollstation/create.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/Tollstation/create.js?v=1.1') }}"></script>
 
 @endsection
 

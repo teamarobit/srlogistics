@@ -57,15 +57,19 @@ class TollstationController extends Controller
                         })
                         ->orderBy('name')
                         ->get();
-                        
-                        
-        $cities = City::whereHas('state.country', function ($q) {
-                            $q->where('iso2', 'IN');
-                        })
-                        ->orderBy('name')
-                        ->get();
-                        
-        
+
+
+        // BUG-002 fix: cities now cascade from selected state.
+        // If a state is selected, return only cities of that state;
+        // otherwise return an empty list — the JS cascade populates it on state change.
+        $cities = collect();
+        if ($search_state) {
+            $cities = City::where('state_id', $search_state)
+                          ->orderBy('name')
+                          ->get();
+        }
+
+
         return view('tollstation.index', compact('tollstations','states','cities','search_tollstation_name','search_state','search_city'));
     }
     
@@ -136,7 +140,8 @@ class TollstationController extends Controller
                 // Step 4: Save Tollstation
                 $tollstation = new Tollstation();
                 $tollstation->tollstationno = $tollstationno;
-                $tollstation->organisation_id = optional(Auth::user()->organisation)->id;
+                // SD-11: organisation_id is always set, never null (default 1).
+                $tollstation->organisation_id = Auth::user()->organisation_id ?? 1;
                 $tollstation->station_name = $request->station_name;
                 $tollstation->toll_company = $request->toll_company ?? null;
                 $tollstation->state_id = $request->state_id ?? null;
@@ -177,6 +182,26 @@ class TollstationController extends Controller
     
     
     
+    public function show($id)
+    {
+        if ($id == '') {
+            return redirect()->route('tollstation.index')->with('error', 'Woops! id not found.');
+        }
+
+        $tollstation = Tollstation::with(['state', 'city', 'currency', 'createdBy', 'updatedBy'])->find($id);
+
+        if ($tollstation == null) {
+            return redirect()->route('tollstation.index')->with('error', 'Woops! Toll Station not found.');
+        }
+
+        // Log activity
+        $description = 'Viewed a Toll Station named ' . $tollstation->station_name . '.';
+        $this->storeUseractivity(42, 7, Auth::user()->id, $tollstation->id, $description);
+
+        return view('tollstation.show', compact('tollstation'));
+    }
+
+
     public function edit($id)
     {
         if($id == ''){
@@ -186,7 +211,7 @@ class TollstationController extends Controller
         $tollstation = TollStation::with(['currency', 'createdBy'])->find($id);
         
         if($tollstation == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Tollstation not found.']);
+            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Toll Station not found.']);
         }
 
         // if ($tollstation->routetollstations()->exists()) {
@@ -204,7 +229,7 @@ class TollstationController extends Controller
                         ->get();
         
         // Log activity
-        $description = 'Retrieve a tollstation named '.$tollstation->station_name.' to edit.';
+        $description = 'Retrieved a Toll Station named '.$tollstation->station_name.' to edit.';
         $useractivity = $this->storeUseractivity(42, 5, Auth::user()->id, $tollstation->id, $description);
         
         return view('tollstation.edit', compact('tollstation','states','hasRoutes'));
@@ -219,7 +244,7 @@ class TollstationController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'Tollstation ID is missing.'
+                'message' => 'Toll Station ID is missing.'
             ], 422);
         }
         
@@ -269,12 +294,12 @@ class TollstationController extends Controller
         $tollstation = Tollstation::find($request->get('tollstationid'));
         
         if($tollstation == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops ! Tollstation not found.'], 422);
+            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Toll Station not found.'], 422);
         }
             
         $hasRoutes = $tollstation->routetollstations()->exists();
         if($hasRoutes && $request->status == 'Inactive'){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'This toll is tagged with route hence you cannot inactive it.'], 422);
+            return response()->json(['success' => false, 'data' => [], 'message' => 'This Toll Station is tagged with a route, hence it cannot be set Inactive.'], 422);
         }
         
         try{
@@ -297,13 +322,13 @@ class TollstationController extends Controller
                 $tollstation->save();
         
                 
-                $description = 'Updated a Tollstation.';
+                $description = 'Updated a Toll Station.';
                 $useractivity = $this->storeUseractivity(42, 4, Auth::user()->id, $tollstation->id, $description);
                 
             });
             
             $success = true;
-            $respmessage = 'Tollstation updated successfully.';
+            $respmessage = 'Toll Station updated successfully.';
             
         } catch (\Exception $exp){
                                     
@@ -335,7 +360,7 @@ class TollstationController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'Woops! Tollstation not found.'
+                'message' => 'Woops! Toll Station not found.'
             ]);
         }
         
@@ -358,12 +383,12 @@ class TollstationController extends Controller
                 $tollstation = Tollstation::find($id);
                 $tollstation->delete(); // Perform delete operation
         
-                $description = 'Deleted a tollstation.';
+                $description = 'Deleted a Toll Station.';
                 $useractivity = $this->storeUseractivity(42, 6, Auth::user()->id, $id, $description);
             });
             
             $success = true;
-            $respmessage = 'Tollstation deleted successfully.';
+            $respmessage = 'Toll Station deleted successfully.';
             
         } catch (\Exception $exp){
                                     

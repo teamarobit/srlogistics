@@ -270,6 +270,7 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('/{id}/edit', [App\Http\Controllers\TollstationController::class, 'edit'])->name('edit');
             Route::post('/update', [App\Http\Controllers\TollstationController::class, 'update'])->name('update');
             Route::post('/delete', [App\Http\Controllers\TollstationController::class, 'destroy'])->name('delete');
+            Route::get('/{id}', [App\Http\Controllers\TollstationController::class, 'show'])->name('show');
         });
         
         
