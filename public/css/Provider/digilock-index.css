@@ -1,1 +1,23 @@
-body{ background-color: #fff; }
+body { background-color: #fff; }
+
+/* BUG-008 — breadcrumb */
+.dl-breadcrumb { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+.dl-breadcrumb a { color: #032671; text-decoration: none; }
+.dl-breadcrumb a:hover { text-decoration: underline; }
+.dl-breadcrumb .sep { margin: 0 6px; }
+
+/* View modal */
+#viewProviderModal .modal-body table th { font-weight: 600; color: #475569; }
+#viewProviderModal .modal-body table td { color: #1e293b; }
+
+/* BUG-009 — search submit button */
+#searchBtn { vertical-align: bottom; }
+
+/* BUG-004 — sidebar active highlight (scoped) */
+.accordion-body p.active { box-shadow: inset 3px 0 0 #032671; }
+.accordion-body p.active a { color: #032671 !important; }
+
+/* Sortable column headers */
+.invoice-table thead a.dl-sort { color: inherit; text-decoration: none; display: inline-flex; align-items: center; }
+.invoice-table thead a.dl-sort:hover { color: #032671; }
+.invoice-table thead a.dl-sort i { font-size: 14px; }

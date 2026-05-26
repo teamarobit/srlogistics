@@ -1,7 +1,7 @@
 <?php
-    
+
 namespace App\Http\Controllers;
-    
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -19,14 +19,14 @@ use Illuminate\Http\RedirectResponse;
 use Auth;
 
 use App\Traits\Useractivity;
-    
-    
+
+
 class DigitalLockProviderController extends Controller
 {
-    
+
     use Useractivity;
-    
-    
+
+
     /**
      * Display a listing of the resource.
      *
@@ -36,26 +36,53 @@ class DigitalLockProviderController extends Controller
     {
         $search_name = $request->get('name');
         $search_status = $request->get('status');
-        
-        
-        $datas = Digitallockprovider::query()
-                                ->when(!empty($search_name), function ($query) use ($search_name) {
-                                    $query->where('name', 'like', '%' . trim($search_name) . '%');
-                                })
-                                ->when(!is_null($search_status) && $search_status !== '', function ($query) use ($search_status) {
-                                    $query->where('status', $search_status); // 1 = active, 0 = inactive
-                                })
-                                ->orderByDesc('id')
-                                ->paginate(10)
-                                ->withQueryString();
 
-        //dd($supervisors);
-        
-        return view('provider.digilock.index', compact('datas','search_name','search_status'));
+        // Sort whitelist — never trust raw input as a column name.
+        // Maps the public ?sort= key → an array of [table, column] used in the query.
+        $sortMap = [
+            'name'       => ['digitallockproviders.name'],
+            'code'       => ['digitallockproviders.code'],
+            'status'     => ['digitallockproviders.status'],
+            'created_by' => ['users.name'],
+        ];
+
+        $sort = $request->get('sort');
+        $dir  = strtolower($request->get('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        $query = Digitallockprovider::query()
+                    ->when(!empty($search_name), function ($q) use ($search_name) {
+                        $q->where('name', 'like', '%' . trim($search_name) . '%');
+                    })
+                    ->when(!is_null($search_status) && $search_status !== '', function ($q) use ($search_status) {
+                        $q->where('status', $search_status);
+                    });
+
+        if ($sort && isset($sortMap[$sort])) {
+            $column = $sortMap[$sort][0];
+
+            // Join users table only when sorting by createdBy
+            if ($sort === 'created_by') {
+                $query->leftJoin('users', 'users.id', '=', 'digitallockproviders.created_by')
+                      ->select('digitallockproviders.*');
+            }
+
+            $query->orderBy($column, $dir);
+        } else {
+            $query->orderByDesc('digitallockproviders.id'); // default — newest first
+        }
+
+        $datas = $query->paginate(10)->withQueryString();
+
+        $current_sort = $sort && isset($sortMap[$sort]) ? $sort : null;
+        $current_dir  = $dir;
+
+        return view('provider.digilock.index', compact(
+            'datas','search_name','search_status','current_sort','current_dir'
+        ));
     }
-    
-    
-    
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -65,9 +92,9 @@ class DigitalLockProviderController extends Controller
     {
         return view('provider.digilock.create');
     }
-    
-    
-    
+
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -76,11 +103,11 @@ class DigitalLockProviderController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'provider_name' => 'required|max:100|unique:digitallockproviders,name',
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'status'          => 'required|in:Active,Inactive',
+
         ], [
                 'required' => 'This field is required.',
                 'max'      => 'Maximum 100 characters allowed.',
@@ -91,52 +118,54 @@ class DigitalLockProviderController extends Controller
                 'in'       => 'Invalid selection.',
             ]
         );
-        
+
         $errorcount = 0;
         $errors = [];
-        
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
-        
+
         if($validator->fails() || $errorcount > 0){
             return response()->json(['success' => false, 'data' => $errormessages, 'message' => 'Please check validation error.'], 422);
         }
-        
+
         try{
-            
+
             $provider = [];
-            
-            DB::transaction(function () use($request, &$provider){
-                
+
+            $provider = DB::transaction(function () use($request){
+
                 $lastCode = Digitallockprovider::withTrashed()->orderBy('id', 'DESC')->first();
-                $provider_code = $lastCode ? str_pad($lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
-                   
-        
+                $provider_code = $lastCode ? str_pad((int) $lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
+
+
                 $provider = new Digitallockprovider;
                 $provider->name = $request->provider_name;
                 $provider->code = $provider_code;
                 $provider->status = $request->status;
                 $provider->created_by = Auth::user()->id;
                 $provider->save();
-                
-                $description = 'Added new gps provider.';
-                $useractivity = $this->storeUseractivity(56, 3, Auth::user()->id, $provider->id, $description);
+
+                $description = 'Added new digital lock provider.';
+                $this->storeUseractivity(56, 3, Auth::user()->id, $provider->id, $description);
+
+                return $provider;
             });
-            
-            $success = true;
-            $respmessage = 'Digital Lock provider saved successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => $provider,
+                'message' => 'Digital Lock provider saved successfully.'
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $provider, 'message' => $respmessage]);
     }
-    
+
     /**
      * Display the specified resource.
      *
@@ -146,35 +175,39 @@ class DigitalLockProviderController extends Controller
     {
         //
     }
-    
-    
+
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
-        if($id == ''){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! id not found.']);
+        // BUG-003: never return raw JSON from a GET view route.
+        // Redirect back to listing with a flash error if record is missing.
+        if(empty($id)){
+            return redirect()->route('digilockprovider.index')
+                             ->with('error', 'Woops! id not found.');
         }
-        
+
         $record = Digitallockprovider::find($id);
-        
+
         if($record == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Data not found.']);
+            return redirect()->route('digilockprovider.index')
+                             ->with('error', 'Woops! Data not found.');
         }
-    
-        
+
+
         // Log activity
         $description = 'Retrieve a record named '.$record->name.' to edit.';
-        $useractivity = $this->storeUseractivity(56, 5, Auth::user()->id, $record->id, $description);
-        
+        $this->storeUseractivity(56, 5, Auth::user()->id, $record->id, $description);
+
         return view('provider.digilock.edit', compact('record'));
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * Update the specified resource in storage.
      *
@@ -188,8 +221,8 @@ class DigitalLockProviderController extends Controller
                 'max:100',
                 Rule::unique('digitallockproviders', 'name')->ignore($request->get('recordid'), 'id'),
             ],
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'status'          => 'required|in:Active,Inactive',
+
         ], [
                 'required' => 'This field is required.',
                 'max'      => 'Maximum 100 characters allowed.',
@@ -200,119 +233,113 @@ class DigitalLockProviderController extends Controller
                 'in'       => 'Invalid selection.',
             ]
         );
-        
+
         $errorcount = 0;
         $errors = [];
-        
+
+        // SD-8 — find() not findOrFail() in AJAX
         $record = Digitallockprovider::find($request->get('recordid'));
-        
+
         if($record == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops ! Data not found.'], 422);
         }
-        
-        
+
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
-        
+
         if($validator->fails() || $errorcount > 0){
             return response()->json(['success' => false, 'data' => $errormessages, 'message' => 'Please check validation error.'], 422);
         }
-        
+
         try{
-            
-            
-            DB::transaction(function () use($request, &$record){
-                
+            $record = DB::transaction(function () use($request, $record){
+
                 $record->name = $request->get('provider_name');
                 $record->status = $request->get('status');
-                
+
                 $record->updated_by = Auth::user()->id;
                 $record->save();
-                
-                $description = 'Updated a department.';
-                $useractivity = $this->storeUseractivity(56, 4, Auth::user()->id, $record->id, $description);
-                
+
+                $description = 'Updated a digital lock provider.';
+                $this->storeUseractivity(56, 4, Auth::user()->id, $record->id, $description);
+
+                return $record;
             });
-            
-            $success = true;
-            $respmessage = 'Digital Lock provider updated successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => $record,
+                'message' => 'Digital Lock provider updated successfully.'
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $record, 'message' => $respmessage]);
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request)
     {
-        $id = $request->get('departmentid'); 
-        
+        $id = $request->get('recordid');
+
         if (empty($id)) {
             return response()->json([
                 'success' => false,
-                'data' => [],
+                'data'    => [],
                 'message' => 'Woops! ID not found.'
-            ]);
+            ], 422);
         }
-    
-        $department = Department::find($id);
-    
-        if (!$department) {
+
+        // SD-8 — find() not findOrFail() in AJAX
+        $record = Digitallockprovider::find($id);
+
+        if (!$record) {
             return response()->json([
                 'success' => false,
-                'data' => [],
-                'message' => 'Woops! Department not found.'
-            ]);
+                'data'    => [],
+                'message' => 'Woops! Digital Lock provider not found.'
+            ], 422);
         }
-        
+
         try{
-            
-            $department = [];
-            
-            DB::transaction(function () use($request, $id, &$department){
-                
-                $department = Department::find($id);
-                $department->delete(); // Perform delete operation
-                
-                
+            DB::transaction(function () use($id, $record){
+                $record->deleted_by = Auth::user()->id;
+                $record->save();
+
+                $record->delete(); // soft delete
+
                 // Log activity
-                $description = 'Deleted a department.';
-                $useractivity = $this->storeUseractivity(56, 6, Auth::user()->id, $id, $description);
-            
+                $description = 'Deleted a digital lock provider.';
+                $this->storeUseractivity(56, 6, Auth::user()->id, $id, $description);
             });
-            
-            $success = true;
-            $respmessage = 'Department deleted successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => [],
+                'message' => 'Digital Lock provider deleted successfully.'
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'success' => $success,
-            'data' => [],
-            'message' => $respmessage
-        ]);
     }
 
-    
-    
-    
-    
+
+
+
+
 }

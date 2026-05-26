@@ -1,16 +1,19 @@
+// Global Toast — see note in index.js
+window.Toast = window.Toast || Swal.mixin({
+    toast: true,
+    position: 'top',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
+
 $(document).ready(function() {
-    
-    const Toast = Swal.mixin({
-          toast: true,
-          position: 'top',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-          }
-    });
+
+    var Toast = window.Toast;
     
     
     
@@ -41,11 +44,9 @@ $(document).ready(function() {
             dataType: 'json',
     
             success: function (response) {
-                Toast.fire({
-                    icon: 'success',
-                    title: response.message || 'Saved successfully!'
-                });
-    
+                // BUG-007 — hand the message off to the listing page so the toast survives the redirect
+                sessionStorage.setItem('digilock_success_msg', response.message || 'Saved successfully!');
+
                 $('#editBtn').html('Save').attr('disabled', false);
                 window.location.href = LISTING;
             },

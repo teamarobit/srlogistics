@@ -323,7 +323,7 @@
                 @endif
                 
                 @if(Route::has('digilockprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px;">Digital Lock Provider</a></p>
+                <p style="background-color: #a2ffe0;" class="{{ Route::is('digilockprovider.*') ? 'active' : '' }}"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('digilockprovider.*') ? 'font-weight:700; text-decoration:underline;' : '' }}">Digital Lock Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
             </div>
