@@ -404,13 +404,13 @@ class WorkshopController extends Controller
     {
         // Auto-number endpoint
         if ($request->has('_auto_no')) {
-            return response()->json(['part_no' => SparePart::nextPartNo()]);
+            return response()->json(['part_no' => SparePart::nextPartNo()], 200);
         }
 
         $validated = $request->validate([
             'part_no'          => 'required|string|max:50|unique:wsspareparts,part_no',
             'name'             => 'required|string|max:255',
-            'wssparepartscategory_id' => 'nullable|exists:wssparepartscategories,id',
+            'wssparepartscategory_id' => 'required|exists:wssparepartscategories,id',
             'compatible_makes' => 'nullable|string|max:500',
             'unit'             => 'required|string|max:30',
             'standard_cost'    => 'required|numeric|min:0',
@@ -418,27 +418,40 @@ class WorkshopController extends Controller
             'notes'            => 'nullable|string|max:1000',
         ]);
 
-        $part = SparePart::create(array_merge($validated, [
-            'status'     => 'Active',
-            'created_by' => Auth::id(),
-        ]));
+        try {
+            $part = DB::transaction(function () use ($validated) {
+                return SparePart::create(array_merge($validated, [
+                    'organisation_id' => Auth::user()->organisation_id ?? 1,
+                    'status'          => 'Active',
+                    'created_by'      => Auth::id(),
+                ]));
+            });
 
-        return response()->json([
-            'success' => true,
-            'part'    => $part,
-            'message' => "{$part->name} ({$part->part_no}) added successfully.",
-        ]);
+            return response()->json([
+                'success' => true,
+                'part'    => $part,
+                'message' => "{$part->name} ({$part->part_no}) added successfully.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /** PUT /workshop/master/spare-parts/{id} */
     public function masterSparePartUpdate(Request $request, int $id)
     {
-        $part = SparePart::findOrFail($id);
+        $part = SparePart::find($id);
+        if (! $part) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
         $validated = $request->validate([
             'part_no'          => "required|string|max:50|unique:wsspareparts,part_no,{$id}",
             'name'             => 'required|string|max:255',
-            'wssparepartscategory_id' => 'nullable|exists:wssparepartscategories,id',
+            'wssparepartscategory_id' => 'required|exists:wssparepartscategories,id',
             'compatible_makes' => 'nullable|string|max:500',
             'unit'             => 'required|string|max:30',
             'standard_cost'    => 'required|numeric|min:0',
@@ -446,41 +459,79 @@ class WorkshopController extends Controller
             'notes'            => 'nullable|string|max:1000',
         ]);
 
-        $part->update(array_merge($validated, ['updated_by' => Auth::id()]));
+        try {
+            $part = DB::transaction(function () use ($part, $validated) {
+                $part->update(array_merge($validated, ['updated_by' => Auth::id()]));
+                return $part->fresh();
+            });
 
-        return response()->json([
-            'success' => true,
-            'part'    => $part->fresh(),
-            'message' => "{$part->name} updated successfully.",
-        ]);
+            return response()->json([
+                'success' => true,
+                'part'    => $part,
+                'message' => "{$part->name} updated successfully.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /** DELETE /workshop/master/spare-parts/{id} */
     public function masterSparePartDestroy(int $id)
     {
-        $part = SparePart::findOrFail($id);
-        $part->update(['deleted_by' => Auth::id()]);
-        $part->delete(); // soft delete
+        $part = SparePart::find($id);
+        if (! $part) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => "{$part->name} removed from spare parts master.",
-        ]);
+        try {
+            $name = $part->name;
+            DB::transaction(function () use ($part) {
+                $part->update(['deleted_by' => Auth::id()]);
+                $part->delete(); // soft delete
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$name} removed from spare parts master.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /** PATCH /workshop/master/spare-parts/{id}/status */
     public function masterSparePartToggleStatus(int $id)
     {
-        $part       = SparePart::findOrFail($id);
-        $newStatus  = $part->status === 'Active' ? 'Inactive' : 'Active';
+        $part = SparePart::find($id);
+        if (! $part) {
+            return response()->json(['success' => false, 'message' => 'Not found.'], 422);
+        }
 
-        $part->update(['status' => $newStatus, 'updated_by' => Auth::id()]);
+        $newStatus = $part->status === 'Active' ? 'Inactive' : 'Active';
 
-        return response()->json([
-            'success'    => true,
-            'new_status' => $newStatus,
-            'message'    => "{$part->name} marked as {$newStatus}.",
-        ]);
+        try {
+            $part = DB::transaction(function () use ($part, $newStatus) {
+                $part->update(['status' => $newStatus, 'updated_by' => Auth::id()]);
+                return $part->fresh();
+            });
+
+            return response()->json([
+                'success'    => true,
+                'new_status' => $newStatus,
+                'message'    => "{$part->name} marked as {$newStatus}.",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     // ─── Spare Part Categories ────────────────────────────────────────────────
