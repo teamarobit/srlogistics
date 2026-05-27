@@ -455,7 +455,7 @@ class TyreController extends Controller
         $remainingWarrantyMonths = null;
         if ($tyre->tyre_warrenty_end_date) {
             $endDate = Carbon::parse($tyre->tyre_warrenty_end_date);
-            $remainingWarrantyMonths = $today->diffInMonths($endDate, false);
+            $remainingWarrantyMonths = (int) $today->diffInMonths($endDate, false);
             // negative means expired
         }
 
@@ -1033,7 +1033,7 @@ class TyreController extends Controller
                     'attachment_type' => 'required',
                 
                     'document_number' => 'required|string|max:100',
-                    'issue_date' => 'nullable|date',
+                    'issue_date' => 'required|date',
                     'expiry_date' => 'nullable|date|after:issue_date',
                 
                     'set_reminder' => 'nullable',

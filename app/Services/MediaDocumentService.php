@@ -39,8 +39,8 @@ class MediaDocumentService
             $document = Mediadocument::create([
                 'attachmenttype_id'  => $attachmenttype->id,
                 'document_number'    => $data['document_number'] ?? NULL,
-                'issue_date'         => $data['issue_date'] ? date('Y-m-d', strtotime($data['issue_date'])) : NULL,
-                'expiry_date'        => $data['expiry_date'] ? date('Y-m-d', strtotime($data['expiry_date'])) :  NULL,
+                'issue_date'         => !empty($data['issue_date']) ? date('Y-m-d', strtotime($data['issue_date'])) : NULL,
+                'expiry_date'        => !empty($data['expiry_date']) ? date('Y-m-d', strtotime($data['expiry_date'])) :  NULL,
                 'set_reminder'       => isset($data['set_reminder']) ? 'Yes' : 'No',
                 'reminder_days'      => $data['reminder_days'] ?? NULL,
                 'notes'              => $data['notes'] ?? NULL,
@@ -100,8 +100,8 @@ class MediaDocumentService
             $mediaDocument->update([
                 'attachmenttype_id'  => $attachmenttype->id,
                 'document_number'    => $data['document_number'] ?? NULL,
-                'issue_date'         => $data['issue_date'] ? date('Y-m-d', strtotime($data['issue_date'])) : NULL,
-                'expiry_date'        => $data['expiry_date'] ? date('Y-m-d', strtotime($data['expiry_date'])) :  NULL,
+                'issue_date'         => !empty($data['issue_date']) ? date('Y-m-d', strtotime($data['issue_date'])) : NULL,
+                'expiry_date'        => !empty($data['expiry_date']) ? date('Y-m-d', strtotime($data['expiry_date'])) :  NULL,
                 'set_reminder'       => isset($data['set_reminder']) ? 'Yes' : 'No',
                 'reminder_days'      => $data['reminder_days'] ?? NULL,
                 'notes'              => $data['notes'] ?? NULL,
