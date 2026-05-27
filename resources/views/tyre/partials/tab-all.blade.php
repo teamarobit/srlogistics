@@ -20,7 +20,6 @@
             <th>Maint. Status</th>
             <th>Tracking Group</th>
             <th class="text-center">Image</th>
-            <th class="text-center">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -148,20 +147,9 @@
                         <span class="text-muted">—</span>
                     @endif
                 </td>
-                <td class="text-center">
-                    @if($tyre->tyre_condition !== 'Discard')
-                        <button class="btn btn-sm btn-outline-danger mark_as_discard"
-                                data-url="{{ route('tyre.markasdiscard', $tyre->id) }}"
-                                title="Mark as Discard">
-                            <i class="uil uil-trash-alt"></i>
-                        </button>
-                    @else
-                        <span class="badge bg-secondary">Discarded</span>
-                    @endif
-                </td>
             </tr>
         @empty
-            <tr><td colspan="18" class="text-center text-muted py-4">No records found</td></tr>
+            <tr><td colspan="17" class="text-center text-muted py-4">No records found</td></tr>
         @endforelse
     </tbody>
 </table>
