@@ -441,6 +441,7 @@
 .tyre-badge-fitment  { background: #6f42c1 !important; color: #fff !important; }
 .tyre-badge-ytd      { background: #6c757d !important; color: #fff !important; }
 .tyre-badge-closed   { background: #198754 !important; color: #fff !important; }
+.tyre-badge-extra    { background: #20c997 !important; color: #fff !important; }
 
 /* Location badges (vehicle / garage) */
 .tyre-badge-allocated { background: #0d6efd !important; color: #fff !important; }

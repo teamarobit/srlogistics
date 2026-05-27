@@ -26,7 +26,7 @@
                 // Warranty remaining
                 $warrantyLabel = 'N/A';
                 if ($tyre->tyre_warrenty_end_date) {
-                    $wDays = now()->diffInDays($tyre->tyre_warrenty_end_date, false);
+                    $wDays = (int) now()->diffInDays($tyre->tyre_warrenty_end_date, false);
                     if ($wDays > 0) {
                         $warrantyLabel = $wDays > 30 ? round($wDays / 30) . ' mo' : $wDays . ' d';
                     } else {

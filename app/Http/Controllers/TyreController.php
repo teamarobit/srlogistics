@@ -39,7 +39,8 @@ class TyreController extends Controller
         // ── Shared eager-load closure ────────────────────────────────────────
         $with = ['tyrevendor', 'rethreadingVendor', 'scrapVendor',
                  'lastFittedVehicle.basicinfo', 'activeVehicleMapping.tyreposition',
-                 'activeVehicleMapping.tyre', 'maintenanceSchedules'];
+                 'activeVehicleMapping.tyre', 'maintenanceSchedules',
+                 'allocatedVehicle.basicinfo', 'allocatedVehicle.group', 'images', 'comments'];
 
         // ── Summary Counters ─────────────────────────────────────────────────
         $q = Tyre::query();
