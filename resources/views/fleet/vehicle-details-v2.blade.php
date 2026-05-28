@@ -355,7 +355,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6">
                             <div class="ltblock">
-                                <div class="icon_car {{ $vehicle->basicinfo->registration_status == 'Active' ? 'reg-active' : 'reg-inactive' }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ $vehicle->basicinfo->registration_status == 'Active' ? 'Registration Active' : 'Registration Inactive' }}">
+                                <div class="icon_car {{ ($vehicle->basicinfo?->registration_status ?? '') == 'Active' ? 'reg-active' : 'reg-inactive' }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ ($vehicle->basicinfo?->registration_status ?? '') == 'Active' ? 'Registration Active' : 'Registration Inactive' }}">
                                     <img src="{{ asset('images/icons/car-icon04.png') }}" />
                                 </div>
 

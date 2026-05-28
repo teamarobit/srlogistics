@@ -247,6 +247,17 @@ $(document).on('change', '#batteryConditionSelect', function () {
     }
 });
 
+/* ── BUG-02 FIX: Clear individual field errors on change (SD-4) ─────── */
+$(document).on('change', '#batteryConditionSelect', function () {
+    $('#err_battery_condition').text('');
+});
+$(document).on('change', '#warehouseBatterySelect', function () {
+    $('#err_warehouse_battery_id').text('');
+});
+$(document).on('change', '#fitmentDateInput', function () {
+    $('#err_fitment_date').text('');
+});
+
 /* When a warehouse battery is selected, auto-fill Brand + Serial */
 $(document).on('change', '#warehouseBatterySelect', function () {
     var $opt = $(this).find('option:selected');
