@@ -1271,9 +1271,11 @@ class TyreController extends Controller
             'before_or_equal' => 'Date cannot be in the future.',
             'after_or_equal'  => 'Date must be on or after the Purchase Date.',
             'unique'      => 'This serial number is already taken.',
-            'required_if' => 'This field is required.',
-            'required_with' => 'This field is required.',
-            'mimes'       => 'Invalid file type.',
+            'required_if'     => 'This field is required.',
+            'required_with'   => 'This field is required.',
+            'required_unless' => 'This field is required.',
+            'source_origin_note.required_unless' => 'Please enter a source or origin note.',
+            'mimes'           => 'Invalid file type.',
         ]);
 
         if ($validator->fails()) {
