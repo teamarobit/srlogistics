@@ -314,11 +314,11 @@
                                             
                                             <div class="vehicletype ms-1">
                                                 <label>Trip Status</label>
-                                                <select class="form-select">
-                                                    <option>Choose..</option>
-                                                    <option>Initiated</option>
-                                                    <option>On Going</option>
-                                                    <option>Completed</option>
+                                                <select class="form-select" name="v_trip_status" id="v_trip_status">
+                                                    <option value="">Choose..</option>
+                                                    <option value="Initiated">Initiated</option>
+                                                    <option value="On Going">On Going</option>
+                                                    <option value="Completed">Completed</option>
                                                 </select>
                                             </div>
                                             
@@ -352,7 +352,7 @@
                                             
                                             <div class="ms-1" style="width: 220px;">
                                                 <div class="input-group">
-                                                  <input type="text" class="form-control" placeholder="Search by Location">
+                                                  <input type="text" name="v_location" id="v_location" class="form-control" placeholder="Search by Location">
                                                   <span class="input-group-text"><i class="uil uil-search"></i></span>
                                                   <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
                                                 </div>
@@ -1578,7 +1578,7 @@ let BATTERY_EXCEL   = "{{ asset('sample_excels/Battery.xlsx') }}";
 </script>
 
 
-<script type="text/javascript" src="{{ asset('js/Fleet/index.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/index.js?v=1.3') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/dashboard.js?v=1.0') }}"></script>
 
 

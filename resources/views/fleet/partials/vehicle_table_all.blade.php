@@ -19,9 +19,9 @@
             <span class="value">{{ $vehicle->group->name ?? '-' }}</span>
         </td>
 
-        <td><span class="value">-</span></td>
+        <td><span class="value">{{ $vehicle->status ?? '—' }}</span></td>
 
-        <td><span class="value">-</span></td>
+        <td><span class="value">—</span></td>
 
         <td>
             <span class="value">{{ $vehicle->groupTracking->managed_by_employee ?? '-' }}</span>

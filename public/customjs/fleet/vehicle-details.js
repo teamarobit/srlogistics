@@ -2761,3 +2761,27 @@ function _batRenderModal(res) {
 
     $('#batModalBody').html(html);
 }
+
+
+// BUG-008: Track Live — delegated handler (was silent; no handler existed)
+$(document).on('click', '.v2-intel-action[data-action="track-live"]', function () {
+    Toast.fire({ icon: 'info', title: 'GPS live tracking is not yet configured for this vehicle.' });
+});
+
+// BUG-009: View EMI Book — moved from inline onclick in blade (SD-1 compliance)
+$(document).on('click', '.v2-intel-action[data-action="view-emi-book"]', function () {
+    var btn = document.querySelector('[data-bs-target="#emi_book"]');
+    if (btn) btn.click();
+});
+
+// BUG-014: Refresh Vahan — fix wrong modal ID (#vahanModal → #vahan_01modal), SD-1 compliance
+$(document).on('click', '[data-action="refresh-vahan"]', function () {
+    var modal = new bootstrap.Modal(document.getElementById('vahan_01modal'));
+    modal.show();
+});
+
+// BUG-014: Vahan Fetch Info — placeholder until backend VAHAN API route is implemented
+$(document).on('click', '#gstForm .submit-btn', function (e) {
+    e.preventDefault();
+    Toast.fire({ icon: 'info', title: 'VAHAN API integration is not yet configured.' });
+});

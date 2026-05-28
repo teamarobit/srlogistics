@@ -56,12 +56,12 @@ $(document).ready(function(){
 
 
     // FILTER CHANGE
-    $('#v_vehiclegroup_id, #v_ownership_id').on('change', function(){
+    $('#v_vehiclegroup_id, #v_ownership_id, #v_trip_status, #v_fleet_status').on('change', function(){
         loadFleetData();
     });
-    
-    // FILTER 
-    $('#v_driver, #v_managed_by, #v_vehicle_no').on('keyup', function(){
+
+    // FILTER
+    $('#v_driver, #v_managed_by, #v_vehicle_no, #v_location').on('keyup', function(){
         loadFleetData();
     });
 
@@ -153,10 +153,11 @@ $(document).ready(function(){
     
     $('#file_upload').on('change', function () {
         let file = this.files[0];
-    
+
         if (file) {
             $('#preview').show();
             $('#fileName').text(file.name);
+            $('#add_import_file_error').text('');
         }
     });
     
@@ -190,12 +191,12 @@ $(document).ready(function(){
                     icon: 'success',
                     title: response.message || 'Saved successfully!'
                 });
-                $('#bulkUploadBtn').html('Save').attr('disabled', false);
+                $('#bulkUploadBtn').html('Upload').attr('disabled', false);
                 window.location.reload();
             },
-    
+
             error: function (xhr) {
-                $('#bulkUploadBtn').html('Save').attr('disabled', false);
+                $('#bulkUploadBtn').html('Upload').attr('disabled', false);
             
                 var response = $.parseJSON(xhr.responseText);
                 Toast.fire({

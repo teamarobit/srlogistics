@@ -122,7 +122,7 @@
             {{-- Actions flush right --}}
             <div class="v2-id-actions">
                 <span class="v2-id-tag-btn">Add TAG <i class="uil uil-plus"></i></span>
-                <button class="btn btn-sm" onclick="$('[data-bs-target=\'#vahanModal\']').click()" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                <button class="btn btn-sm" data-action="refresh-vahan" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
                     <i class="uil uil-refresh me-1"></i>Refresh Vahan
                 </button>
                 <a href="{{ route('vehiclemanagement.edit', $vehicle->id) }}"
@@ -278,7 +278,7 @@
                 </div>
 
                 <hr class="v2-intel-divider">
-                <a href="javascript:void(0)" class="v2-intel-action">
+                <a href="javascript:void(0)" class="v2-intel-action" data-action="track-live">
                     <i class="uil uil-map-marker"></i> Track Live
                 </a>
             </div>
@@ -325,8 +325,7 @@
                 </div>
 
                 <hr class="v2-intel-divider">
-                <a href="javascript:void(0)" class="v2-intel-action"
-                   onclick="var btn=document.querySelector('[data-bs-target=\'#emi_book\']'); if(btn) btn.click();">
+                <a href="javascript:void(0)" class="v2-intel-action" data-action="view-emi-book">
                     <i class="uil uil-book-open"></i> View EMI Book
                 </a>
             </div>
@@ -6093,7 +6092,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.3') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 
