@@ -19,7 +19,7 @@
 
         <li class="nav-item">
 
-          <a href="javascript:void(0)" class="nav-link text-white"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
+          <a href="javascript:void(0)" class="nav-link text-white {{ request()->routeIs('fleet.*', 'fleetdashboard.*', 'tyre.*', 'battery.*') ? 'active' : '' }}"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
           
           <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
@@ -34,15 +34,12 @@
                       @endif
                       
                       @if(Route::has('fleet.compliance.document-expiry'))
-                      <li><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Status</a></li>
+                      <li class="{{ request()->routeIs('fleet.compliance.document-expiry') ? 'active' : '' }}"><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Status</a></li>
                       @endif
                       <li><a href="{{ route('tyre.dashboard') }}">Tyre Dashboard</a></li>
                       <li><a href="{{ route('tyre.owner-dashboard') }}">Tyre Owner Dashboard</a></li>
                       <li><a href="{{ route('battery.owner-dashboard') }}">Battery Owner Dashboard</a></li>
-                      @if(Route::has('fleet.compliance.permit-fitness'))
-                      <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Fitness Status</a></li>
-                      <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Route Permit Tracker</a></li>
-                      @endif
+                      {{-- BUG-08: removed "Fitness Status" and "Route Permit Tracker" — both pointed to permit-fitness which is already exposed as "Permit & Fitness Tracker" under Compliance & Insurance. Re-add when dedicated pages exist. --}}
                     </ul>
                   </div>
                   
@@ -60,7 +57,7 @@
                     <ul>
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Driver</li>
                       <li><a href="{{ route('fleetdashboard.drivers') }}">Driver Dashboard</a></li>
-                      <li><a href="{{ route('fleetdashboard.drivers') }}">Driver Documents</a></li>
+                      {{-- BUG-08: removed "Driver Documents" — pointed to same route as Driver Dashboard. Re-add when a dedicated Driver Documents page exists. --}}
                       <li><a href="#">Driver RAG Status</a></li>
                       <li><a href="#">Driver Settlement</a></li>
                     </ul>
@@ -79,7 +76,7 @@
                       <li><a href="{{ route('fleet.compliance.policy-renewal') }}">Policy Renewal Tracker</a></li>
                       @endif
                       @if(Route::has('fleet.compliance.document-expiry'))
-                      <li><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Expiry</a></li>
+                      <li class="{{ request()->routeIs('fleet.compliance.document-expiry') ? 'active' : '' }}"><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Expiry</a></li>
                       @endif
                       @if(Route::has('fleet.compliance.permit-fitness'))
                       <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Permit & Fitness Tracker</a></li>

@@ -1917,6 +1917,19 @@ hr{
 .megamenu-bd .link-list:nth-child(odd) {
   background-color: #eff4ff;
 }
+/* Active state for mega-menu items — highlights current page (BUG-07) */
+.link-list ul li.active > a {
+    color: #1a4fa0;
+    font-weight: 700;
+    background: #eff4ff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-left: -8px;
+}
+.nav-link.active {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
 .bootstrap-tagsinput .tag{
     padding: 0px 5px;
     border-radius: 20px;

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/fleet/compliance-document-expiry.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/compliance-document-expiry.css?v=1.1') }}">
 @endsection
 
 @section('content')
@@ -20,8 +20,13 @@
                             <p class="text-muted mb-0" style="font-size:12px;">Insurance · Fitness · Permit · PUCC · Road Tax</p>
                         </div>
                         <div class="col-auto d-flex gap-2 flex-wrap">
-                            <input type="text" id="searchInput" value="{{ request('search') }}"
-                                class="form-control form-control-sm" placeholder="Search vehicle…" style="width:180px;">
+                            <div class="input-group input-group-sm" style="width:220px;">
+                                <input type="text" id="searchInput" value="{{ request('search') }}"
+                                    class="form-control form-control-sm" placeholder="Search vehicle (Enter)…">
+                                <button type="button" id="searchBtn" class="btn btn-outline-secondary" title="Search">
+                                    <i class="uil uil-search"></i>
+                                </button>
+                            </div>
                             <select id="docTypeFilter" class="form-select form-select-sm" style="width:150px;">
                                 <option value="">All Doc Types</option>
                                 <option value="insurance" {{ request('doc_type')=='insurance' ? 'selected':'' }}>Insurance</option>
@@ -35,7 +40,7 @@
                                 <option value="expired"  {{ request('expiry_filter')=='expired'  ? 'selected':'' }}>Has Expired Doc</option>
                                 <option value="expiring" {{ request('expiry_filter')=='expiring' ? 'selected':'' }}>Expiring in 30d</option>
                             </select>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()">
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary btn-sm">
                                 <i class="uil uil-history"></i> Reset
                             </button>
                         </div>
@@ -66,13 +71,14 @@
                         </div>
                     </div>
 
-                    {{-- Legend --}}
-                    <div class="d-flex gap-2 mb-3 flex-wrap" style="font-size:12px;">
-                        <span class="exp-chip chip-expired">Expired</span>
-                        <span class="exp-chip chip-expiring">Expiring ≤ 30d</span>
-                        <span class="exp-chip chip-warning">Due ≤ 90d</span>
-                        <span class="exp-chip chip-ok">Valid</span>
-                        <span class="exp-chip chip-grey">No Data</span>
+                    {{-- Legend (visual key only — not interactive) --}}
+                    <div class="legend-row d-flex align-items-center gap-2 mb-3 flex-wrap" style="font-size:12px;">
+                        <span class="legend-label text-muted">Legend:</span>
+                        <span class="exp-chip chip-expired legend-chip">Expired</span>
+                        <span class="exp-chip chip-expiring legend-chip">Expiring ≤ 30d</span>
+                        <span class="exp-chip chip-warning legend-chip">Due ≤ 90d</span>
+                        <span class="exp-chip chip-ok legend-chip">Valid</span>
+                        <span class="exp-chip chip-grey legend-chip">No Data</span>
                     </div>
 
                     {{-- Table --}}
@@ -131,6 +137,9 @@
                         <small class="text-muted">{{ $vehicles->total() }} vehicle{{ $vehicles->total() !== 1 ? 's' : '' }}</small>
                         <div>{{ $vehicles->links() }}</div>
                     </div>
+
+                    {{-- Data attrs for external JS (SD-1) --}}
+                    <div id="deUrls" data-base-url="{{ route('fleet.compliance.document-expiry') }}" hidden></div>
                 </div>
 
             </div>
@@ -140,28 +149,5 @@
 @endsection
 
 @section('js')
-<script>
-(function () {
-    var baseUrl = '{{ route('fleet.compliance.document-expiry') }}';
-
-    function applyFilters() {
-        var params = new URLSearchParams();
-        var s  = document.getElementById('searchInput').value.trim();
-        var dt = document.getElementById('docTypeFilter').value;
-        var ef = document.getElementById('expiryFilter').value;
-        if (s)  params.set('search', s);
-        if (dt) params.set('doc_type', dt);
-        if (ef) params.set('expiry_filter', ef);
-        window.location = baseUrl + (params.toString() ? '?' + params.toString() : '');
-    }
-
-    window.resetFilters = function () { window.location = baseUrl; };
-
-    document.getElementById('docTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('expiryFilter').addEventListener('change', applyFilters);
-    document.getElementById('searchInput').addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') applyFilters();
-    });
-})();
-</script>
+<script src="{{ asset('js/Fleet/compliance-document-expiry.js?v=1.1') }}"></script>
 @endsection

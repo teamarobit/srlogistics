@@ -18,3 +18,13 @@ body { background:#fff; }
 .sc-table tbody tr:hover { background:#f9faff; }
 .doc-header { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:#666; display:block; }
 
+/* Legend chips — visual key only, NOT interactive (distinct from table row chips) */
+.legend-row .legend-label { font-weight:600; margin-right:4px; }
+.exp-chip.legend-chip {
+    cursor: default;
+    opacity: 0.85;
+    pointer-events: none;
+    border: 1px dashed currentColor;
+    background: transparent;
+}
+
