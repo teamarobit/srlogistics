@@ -68,7 +68,10 @@ $(document).ready(function () {
         $(this).addClass('active-svg');
 
         if ($card.length) {
-            $('html, body').stop().animate({ scrollTop: $card.offset().top - 80 }, 500);
+            // BUG-005 fix (2026-05-28): use native scrollIntoView for reliable
+            // long-distance scroll. jQuery $('html, body').animate({scrollTop})
+            // was interrupting itself after ~50px (rear-axle cards never reached).
+            $card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
             $('.tyre-card').removeClass('card-highlight');
             $card.addClass('card-highlight');
             clearTimeout($card.data('ht'));

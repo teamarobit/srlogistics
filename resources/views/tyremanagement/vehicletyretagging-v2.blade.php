@@ -21,9 +21,9 @@
                             <h1>Tyre Management Details</h1>
                         </div>
                         <div class="col-12 col-md-6 text-end">
-                            <span class="badge bg-light text-dark border me-2">
+                            <a href="{{ route('fleetdashboard.getVehicleDetails', $vehicle->id) }}" class="badge bg-light text-dark border me-2 text-decoration-none" title="Open vehicle details">
                                 <i class="uil uil-truck me-1"></i>{{ $vehicle->vehicle_registration_number ?? 'Vehicle #'.$vehicle->vehicle_no }}
-                            </span>
+                            </a>
                             <a href="{{ route('fleetdashboard.getVehicleDetails', $vehicle->id) }}" class="btn btn-sm btn-outline-secondary">
                                 <i class="uil uil-arrow-left me-1"></i>Back
                             </a>
@@ -404,7 +404,7 @@
                                                     <span class="attachment-name">{{ $media->file_name ?? 'Attachment' }}</span>
                                                     <span class="attachment-date">{{ $media->created_at ? \Carbon\Carbon::parse($media->created_at)->format('d M Y, h:i A') : '' }}</span>
                                                 </div>
-                                                <a href="{{ asset('medias/'.$media->file_path) }}" target="_blank" class="btn-attachment-view" title="View">
+                                                <a href="{{ route('tyre.media.serve', $media->id) }}" target="_blank" class="btn-attachment-view" title="View">
                                                     <i class="uil uil-eye"></i>
                                                 </a>
                                             </div>

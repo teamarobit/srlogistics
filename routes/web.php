@@ -403,7 +403,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/{tyre}/change-status', [App\Http\Controllers\TyreController::class, 'changeStatus'])->name('changeStatus');
 
     });
-    
+
+    // Auth-gated tyre attachment server (BUG-002 fix, 2026-05-28)
+    Route::get('/tyre-media/{id}', [App\Http\Controllers\MediaController::class, 'serveTyre'])
+        ->name('tyre.media.serve');
+
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
