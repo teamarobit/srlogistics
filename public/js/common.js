@@ -212,6 +212,19 @@ $(document).ready(function(){
         $(this).attr('max', todayDate);
     });
 
+    // select2 placeholders
+    $('#search_location').select2({
+        placeholder: 'Filter by Location',
+    });
+    $('#search_rag').select2({
+        placeholder: 'Filter by RAG',
+    });
+    $('#search_size').select2({
+        placeholder: 'Filter by Size',
+    });
+    $('#search_city').select2({
+        placeholder: 'Filter by Location',
+    });
     
     
 });

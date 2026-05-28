@@ -19,6 +19,10 @@ $(document).ready(function(){
     $('#search_name , #search_location , #search_rag, #search_size').on('change blur', function () { 
         $('#searchform').submit();
     });
+
+    $('#search_location').select2({
+        placeholder: 'Filter by location',
+    });
     
     
     $(document).on('change', '#selectAll', function () {

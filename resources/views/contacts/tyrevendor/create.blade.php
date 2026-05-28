@@ -16,7 +16,7 @@
     <form class="wrapper srlog-bdwrapper" action="{{route('contact.'.str($cotype->slug)->lower().'.save')}}" id="addContactForm">   
         @csrf
 
-        <div class="itemtop-secwrap">
+        <div class="itemtop-secwrap mt-4">
             <div class="container-fluid">
                 <h5 class="d-inline-block">Add Tyre Vendor</h5>
 
@@ -283,7 +283,7 @@
 
 
 
-                            <div class="form-bg">
+                            <div class="form-bg mt-4 pt-4">
                                 <div class="row">
                                     <div class="col-12 col-md-9">
                                         <h6>Company & Tax Details</h6>                                            

@@ -15,20 +15,20 @@
                 <div class="container-fluid page-head">
                     <div class="row align-items-end">
                         <div class="col-12">
-                            <h5 class="d-inline-block mb-0">Load Vendor</h5>
+                            <h6 class="d-inline-block mb-0">Load Vendor</h6>
                             
                             @if (Route::has('contact.loadvendor.create')) 
-                            <a href="{{ route('contact.loadvendor.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Load Vendor</a>
+                            <a href="{{ route('contact.loadvendor.create') }}" class="btn btn-theme mb-0 ms-0"><i class="uil uil-plus me-1"></i>Load Vendor</a>
                             @endif
                             
                             
                             <form action="{{ route('contact.loadvendor.index') }}" id="searchform" class="d-inline-block">
                                 
-                                <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                <div class="search-wrap d-inline-block" style="width: 130px;">
                                     <input type="text" name="name" id="search_name" value="{{ $search_name ?? '' }}" class="form-control" placeholder="Search by Name">
                                 </div>
                                 
-                                <div class="search-wrap d-inline-block ms-1" style="width:190px;">
+                                <div class="search-wrap d-inline-block" style="width:140px;">
                                     <select name="location" id="search_location" class="form-select select2">
                                         <option value="">Filter by Location</option>
                                         @foreach($locationNames as $id => $name)
@@ -40,7 +40,7 @@
                                     </select>
                                 </div>
                                     
-                                <div class="search-wrap d-inline-block ms-1" style="width:130px;">
+                                <div class="search-wrap d-inline-block" style="width:110px;">
                                     <select name="rag" id="search_rag" class="form-select select2">
                                         <option value="">Filter by RAG</option>
                                         <option value="Red" {{ $search_rag == 'Red' ? 'selected' : '' }}>Red</option>
@@ -50,7 +50,7 @@
                                 </div>
                                     
                                     
-                                <div class="search-wrap d-inline-block ms-1" style="width: 120px;">
+                                <div class="search-wrap d-inline-block" style="width: 110px;">
                                     <select name="size" id="search_size" class="form-select select2">
                                         <option value="">Filter by Size</option>
                                         <option value="Small"  {{ $search_size == 'Small' ? 'selected' : '' }}>Small</option>
@@ -64,7 +64,7 @@
                             <a href="{{ route('contact.loadvendor.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
                             
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                <i class="uil uil-trash-alt me-1"></i> Delete
+                                <i class="uil uil-trash-alt me-1"></i>Delete
                             </button>
                             
                             
