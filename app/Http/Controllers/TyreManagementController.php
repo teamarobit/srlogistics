@@ -197,9 +197,8 @@ class TyreManagementController extends Controller
 
             $remainingRunKm      = $tyre->fixed_run_km > 0 ? max(0, $tyre->fixed_run_km - ($tyre->actual_run_km ?? 0)) : null;
             $remainingLifeMonths = null;
-            if ($tyre->fixed_life_months > 0 && $mapping->fitment_date) {
-                $monthsRun = (int) Carbon::parse($mapping->fitment_date)->diffInMonths(now());
-                $remainingLifeMonths = max(0, $tyre->fixed_life_months - $monthsRun);
+            if ($tyre->fixed_life_months > 0) {
+                $remainingLifeMonths = max(0, $tyre->fixed_life_months - ($tyre->actual_run_month ?? 0));
             }
             $warrantyRemainingMonths = null;
             if ($tyre->tyre_warrenty_end_date) {
@@ -265,9 +264,14 @@ class TyreManagementController extends Controller
         $tyres     = [];
 
         if (!empty($condition) && !empty($type)) {
+            $assignedTyreIds = Vehicletyremapping::where('status', 'Active')
+                ->whereNotNull('tyre_id')
+                ->pluck('tyre_id');
+
             $rawTyres = Tyre::where('location', 'Warehouse')
                 ->where('tyre_type', $type)
                 ->where('tyre_condition', $condition)
+                ->whereNotIn('id', $assignedTyreIds)
                 ->get(['id', 'tyre_serial_number', 'tyre_brand', 'tyre_model',
                         'tyre_size', 'fixed_run_km', 'actual_run_km']);
 
@@ -541,7 +545,7 @@ class TyreManagementController extends Controller
             return response()->json([
                 'success'      => true,
                 'message'      => 'Tyre allocated successfully.',
-                'redirect_url' => route('tyremanage.vehicle.tyre.tagging', $vehicle->id),
+                'redirect_url' => route('tyremanage.vehicle.tyre.tagging.v2', $vehicle->id),
             ]);
 
         } catch (\Exception $e) {
@@ -560,8 +564,16 @@ class TyreManagementController extends Controller
      */
     public function addSpareTyre(Request $request, Vehicle $vehicle)
     {
+        $source = $request->spare_tyre_source;
+
         $rules = [
-            'tyre_id'      => [
+            'spare_tyre_source' => 'required|in:SR Warehouse,Direct Fitment',
+            'fitment_date'      => 'required|date',
+            'km_at_fitment'     => 'nullable|numeric|min:0',
+        ];
+
+        if ($source === 'SR Warehouse') {
+            $rules['tyre_id'] = [
                 'required',
                 'integer',
                 function ($attr, $value, $fail) {
@@ -569,15 +581,25 @@ class TyreManagementController extends Controller
                         $fail('Selected tyre is not available in Warehouse.');
                     }
                 },
-            ],
-            'fitment_date' => 'required|date',
-            'km_at_fitment'=> 'nullable|numeric|min:0',
-        ];
+            ];
+        } else {
+            $assignedIds = Vehicletyremapping::where('status', 'Active')->whereNotNull('tyre_id')->pluck('tyre_id');
+            $rules['tyre_id'] = [
+                'required',
+                'integer',
+                function ($attr, $value, $fail) use ($assignedIds) {
+                    if (!Tyre::where('id', $value)->where('tyre_source_mode', 'Fitment')->whereNotIn('id', $assignedIds)->exists()) {
+                        $fail('Selected tyre is not available for Direct Fitment.');
+                    }
+                },
+            ];
+        }
 
         $validator = Validator::make($request->all(), $rules, [
             'required' => 'This field is required.',
             'numeric'  => 'Only numeric values are allowed.',
             'min'      => 'Value must be at least :min.',
+            'in'       => 'Invalid selection.',
         ]);
 
         if ($validator->fails()) {
@@ -1556,6 +1578,14 @@ class TyreManagementController extends Controller
                         'km_at_removal' => null,
                         'notes'         => $noteTo,
                     ]);
+
+                    // 3e. Update last_rotation_km on both tyres
+                    if ($kmFrom !== null) {
+                        Tyre::where('id', $fromTyreId)->update(['last_rotation_km' => $kmFrom]);
+                    }
+                    if ($kmTo !== null) {
+                        Tyre::where('id', $toTyreId)->update(['last_rotation_km' => $kmTo]);
+                    }
                 }
             });
 

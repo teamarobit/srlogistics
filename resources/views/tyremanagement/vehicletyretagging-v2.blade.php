@@ -821,16 +821,29 @@
 
             {{-- ── Direct Fitment section ───────────────────────────────── --}}
             <div id="spareDirectSection" class="d-none">
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Select Direct Fitment Tyre <span class="text-danger">*</span></label>
+                    <div id="spareDirectTyreDropdownState" class="text-muted small mb-1">
+                        — Select source to load available tyres —
+                    </div>
+                    <select class="form-select" id="spareDirectTyreIdSelect" disabled>
+                        <option value="">— No Direct Fitment tyres loaded —</option>
+                    </select>
+                    <div class="invalid-feedback d-block" id="spare_err_direct_tyre_id"></div>
+                    <div id="spareDirectTyreHealthPreview" class="tyre-health-preview d-none mt-2">
+                        <div class="health-bar"><div class="health-bar-fill" id="spareDirectHealthBarFill"></div></div>
+                        <span class="health-pct-text" id="spareDirectHealthPctText"></span>
+                        <span class="health-rag-badge ms-2" id="spareDirectHealthRagBadge"></span>
+                    </div>
+                </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tyre Brand <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="tyre_brand" id="spareDirectTyreBrand" placeholder="e.g. Apollo, MRF, Bridgestone" maxlength="100" />
-                        <div class="invalid-feedback" id="spare_err_tyre_brand"></div>
+                        <label class="form-label fw-semibold small text-muted">Brand (auto-filled)</label>
+                        <input type="text" class="form-control bg-light" id="spareDirectWh_tyreBrand" readonly placeholder="Auto-filled on tyre selection" />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tyre Serial Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="tyre_serial_number" id="spareDirectTyreSerial" placeholder="e.g. SN-12345" maxlength="100" />
-                        <div class="invalid-feedback" id="spare_err_tyre_serial_number"></div>
+                        <label class="form-label fw-semibold small text-muted">Serial No. (auto-filled)</label>
+                        <input type="text" class="form-control bg-light" id="spareDirectWh_tyreSerial" readonly placeholder="Auto-filled on tyre selection" />
                     </div>
                 </div>
             </div>

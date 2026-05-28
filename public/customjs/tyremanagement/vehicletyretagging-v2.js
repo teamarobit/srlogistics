@@ -383,7 +383,10 @@ $(document).ready(function () {
         }
         if (!fitment) { showError('err_fitment_date', 'Fitment date is required.'); hasError = true; }
         if (!validateOdometer()) { showError('err_km_at_fitment', $('#kmOdoWarningText').text()); hasError = true; }
-        if (hasError) return;
+        if (hasError) {
+            Toast.fire({ icon: 'warning', title: 'Please fill all required fields.' });
+            return;
+        }
         if (!mappingId) { Toast.fire({ icon: 'error', title: 'Mapping ID missing.' }); return; }
 
         const fd = new FormData();
@@ -438,6 +441,13 @@ $(document).ready(function () {
         $('#kmOdoWarning').addClass('d-none');
     }
 
+    // ── A10b. BUG-006/007/008 — scroll to top before spare modal opens ───────
+    // Prevents: button unresponsive from scroll position, header cut off,
+    // navbar z-index interference with modal backdrop.
+    $('#addSpare').on('show.bs.modal', function () {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+
     // ── A11. OPEN ADD SPARE MODAL ────────────────────────────────────────────
     $(document).on('click', '.btn-add-spare-slot', function () {
         // Reset source toggle to Warehouse
@@ -452,8 +462,11 @@ $(document).ready(function () {
         // Reset auto-fill + direct fitment fields
         $('#spareWh_tyreBrand').val('');
         $('#spareWh_tyreSerial').val('');
-        $('#spareDirectTyreBrand').val('');
-        $('#spareDirectTyreSerial').val('');
+        $('#spareDirectWh_tyreBrand').val('');
+        $('#spareDirectWh_tyreSerial').val('');
+        $('#spareDirectTyreIdSelect').prop('disabled', true).html('<option value="">— No Direct Fitment tyres loaded —</option>');
+        $('#spareDirectTyreDropdownState').text('— Select source to load available tyres —').removeClass('text-danger text-success text-warning').addClass('text-muted');
+        $('#spareDirectTyreHealthPreview').addClass('d-none');
 
         // Reset date / km
         $('#spareFitmentDateInput').val('');
@@ -491,7 +504,78 @@ $(document).ready(function () {
         resetSpareTyreDropdown();
         $('#spareWh_tyreBrand').val('');
         $('#spareWh_tyreSerial').val('');
+        fetchSpareDirectFitmentTyres();
     }
+
+    function fetchSpareDirectFitmentTyres() {
+        const condition = $('#spareTyreConditionSelect').val();
+        const type      = $('#spareTyreTypeSelect').val();
+
+        $('#spareDirectTyreIdSelect').prop('disabled', true).html('<option value="">Loading…</option>');
+        $('#spareDirectTyreDropdownState')
+            .text('Fetching…')
+            .removeClass('text-danger text-success text-warning text-muted')
+            .addClass('text-muted');
+        $('#spareDirectTyreHealthPreview').addClass('d-none');
+        $('#spareDirectWh_tyreBrand').val('');
+        $('#spareDirectWh_tyreSerial').val('');
+
+        const params = {};
+        if (condition) params.condition = condition;
+        if (type)      params.type      = type;
+
+        $.ajax({
+            url: getDirectFitmentTyresUrl, method: 'GET', data: params, dataType: 'json',
+            success: function (res) {
+                const tyres = res.tyres || [];
+                if (tyres.length === 0) {
+                    $('#spareDirectTyreIdSelect').prop('disabled', true).html('<option value="">No Direct Fitment tyres available</option>');
+                    $('#spareDirectTyreDropdownState')
+                        .text('No unallocated Direct Fitment tyres found.')
+                        .removeClass('text-muted text-success text-warning')
+                        .addClass('text-danger');
+                    return;
+                }
+                let options = '<option value="">— Select Tyre —</option>';
+                tyres.forEach(function (t) {
+                    const ragEmoji    = t.rag_status === 'green' ? '🟢' : t.rag_status === 'amber' ? '🟡' : t.rag_status === 'red' ? '🔴' : '⚫';
+                    const healthLabel = t.health_pct !== null ? ` [${t.health_pct}% health]` : ' [health N/A]';
+                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}" data-rag="${t.rag_status}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
+                });
+                $('#spareDirectTyreIdSelect').prop('disabled', false).html(options);
+                $('#spareDirectTyreDropdownState')
+                    .text(`${tyres.length} tyre(s) available.`)
+                    .removeClass('text-muted text-danger text-warning')
+                    .addClass('text-success');
+            },
+            error: function () {
+                $('#spareDirectTyreIdSelect').prop('disabled', true).html('<option value="">Error loading tyres</option>');
+                $('#spareDirectTyreDropdownState')
+                    .text('Failed to load tyres.')
+                    .removeClass('text-muted text-success text-warning')
+                    .addClass('text-danger');
+            }
+        });
+    }
+
+    // Auto-fill brand/serial on spare Direct Fitment tyre select
+    $(document).on('change', '#spareDirectTyreIdSelect', function () {
+        const $opt  = $(this).find(':selected');
+        const brand  = $opt.data('brand')  || '';
+        const serial = $opt.data('serial') || '';
+        const health = $opt.data('health');
+        const rag    = $opt.data('rag')    || 'grey';
+        $('#spareDirectWh_tyreBrand').val(brand);
+        $('#spareDirectWh_tyreSerial').val(serial);
+        if ($(this).val() && health !== undefined && health !== '') {
+            $('#spareDirectHealthBarFill').css('width', health + '%').attr('class', 'health-bar-fill rag-' + rag);
+            $('#spareDirectHealthPctText').text(health + '% health remaining');
+            $('#spareDirectHealthRagBadge').attr('class', 'health-rag-badge ms-2 rag-' + rag).text(rag.charAt(0).toUpperCase() + rag.slice(1));
+            $('#spareDirectTyreHealthPreview').removeClass('d-none');
+        } else {
+            $('#spareDirectTyreHealthPreview').addClass('d-none');
+        }
+    });
 
     function resetSpareTyreDropdown() {
         $('#spareTyreIdSelect')
@@ -553,7 +637,12 @@ $(document).ready(function () {
             }
         });
     }
-    $('#spareTyreConditionSelect, #spareTyreTypeSelect').on('change', maybeFetchSpareTyres);
+    $('#spareTyreConditionSelect, #spareTyreTypeSelect').on('change', function () {
+        maybeFetchSpareTyres();
+        if ($('#spareSrcDirect').is(':checked')) {
+            fetchSpareDirectFitmentTyres();
+        }
+    });
 
     // ── A13. SPARE TYRE SELECTED → HEALTH PREVIEW + AUTO-FILL ────────────────
     $(document).on('change', '#spareTyreIdSelect', function () {
@@ -617,8 +706,7 @@ $(document).ready(function () {
         if (source === 'SR Warehouse') {
             if (!$('#spareTyreIdSelect').val()) { showSpareError('spare_err_tyre_id', 'Please select a tyre.'); hasError = true; }
         } else {
-            if (!$('#spareDirectTyreBrand').val().trim())  { showSpareError('spare_err_tyre_brand',         'Tyre brand is required.');         hasError = true; }
-            if (!$('#spareDirectTyreSerial').val().trim()) { showSpareError('spare_err_tyre_serial_number', 'Tyre serial number is required.'); hasError = true; }
+            if (!$('#spareDirectTyreIdSelect').val()) { showSpareError('spare_err_direct_tyre_id', 'Please select a Direct Fitment tyre.'); hasError = true; }
         }
         if (!fitment) { showSpareError('spare_err_fitment_date', 'Fitment date is required.'); hasError = true; }
         if (!validateSpareOdometer()) { showSpareError('spare_err_km_at_fitment', $('#spareKmOdoWarningText').text()); hasError = true; }
@@ -628,13 +716,13 @@ $(document).ready(function () {
 
         const fd = new FormData();
         fd.append('_token', csrfToken);
+        fd.append('spare_tyre_source', source);
         fd.append('fitment_date', fitment);
         if (km) fd.append('km_at_fitment', km);
         if (source === 'SR Warehouse') {
             fd.append('tyre_id', $('#spareTyreIdSelect').val());
         } else {
-            fd.append('tyre_brand',         $('#spareDirectTyreBrand').val().trim());
-            fd.append('tyre_serial_number', $('#spareDirectTyreSerial').val().trim());
+            fd.append('tyre_id', $('#spareDirectTyreIdSelect').val());
         }
         const sparePhotoFields = {
             photo_serial:   '#sparePhotoSerial',
@@ -947,6 +1035,9 @@ $(document).ready(function () {
                 '<i class="uil uil-info-circle me-1"></i>Add mapping rows above to fill rotation details' +
                 '</div>'
             );
+            // BUG-005: clear validation errors when all rows are removed
+            $('#tamErrRotMapping').text('');
+            $('#tamErrRotDetails').text('');
         }
         tamRefreshAllMappingDropdowns();
     });
@@ -969,6 +1060,9 @@ $(document).ready(function () {
             );
             return;
         }
+
+        // BUG-009: remove placeholder once real detail rows are being rendered
+        $('#tamRotDetailsEmpty').remove();
 
         /* Remove any detail rows for mapping rows that no longer exist */
         $('#tamRotDetailsRows .tam-rot-detail-row').each(function () {
@@ -1601,6 +1695,13 @@ $(document).ready(function () {
         }
         return ok;
     }
+
+    /* ── B13b. BUG-004 — clear Replace tab errors on change/input ────────── */
+    $(document).on('change input', '#tamPaneReplace select, #tamPaneReplace input, #tamPaneReplace textarea', function () {
+        // Find the nearest error span sibling and clear it
+        const $field = $(this);
+        $field.closest('.mb-3, .col-md-6, .col-12, .col-md-4, .col-md-3').find('[id^="tamErr"]').text('');
+    });
 
     /* ── B14. VALIDATE ROTATE TAB ────────────────────────────────────────── */
     function tamValidateRotateTab() {
