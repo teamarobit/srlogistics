@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.3') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/show.css?v=3.4') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/show.css?v=3.8') }}">
 
 @endsection
     
@@ -861,7 +861,7 @@
     
                         <li class="nav-item">
                             <button class="nav-link nav_click" data-bs-toggle="tab" data-bs-target="#comment">
-                                <span class="icon"><img src="{{ asset('images/icons/comments-0123.png') }}" alt="" /></span>
+                                <span class="icon"><i class="uil uil-comment-alt-lines" style="font-size:16px;vertical-align:middle;"></i></span>
                                 Comments
                             </button>
                         </li>

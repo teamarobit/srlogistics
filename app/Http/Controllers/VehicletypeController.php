@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Vehicletype;
 use App\Models\Vehicletypesize;
+use App\Models\Vehicle;
 
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
@@ -65,34 +66,6 @@ class VehicletypeController extends Controller
     
     public function store(Request $request)
     {   
-        // \Log::info('Vehicle Size Names:', [
-        //     'vehiclesize_name' => $request->vehiclesize_name
-        // ]);
-        
-        // Clean & sync dynamic arrays (remove null rows safely)
-        $names   = $request->vehiclesize_name ?? [];
-        $heights = $request->vehiclesize_height ?? [];
-        $widths  = $request->vehiclesize_width ?? [];
-        $lengths = $request->vehiclesize_length ?? [];
-    
-        $filtered = [
-            'vehiclesize_name'   => [],
-            'vehiclesize_height' => [],
-            'vehiclesize_width'  => [],
-            'vehiclesize_length' => [],
-        ];
-    
-        foreach ($names as $i => $name) {
-            if (!empty($name)) {
-                $filtered['vehiclesize_name'][]   = $name;
-                $filtered['vehiclesize_height'][] = $heights[$i] ?? null;
-                $filtered['vehiclesize_width'][]  = $widths[$i] ?? null;
-                $filtered['vehiclesize_length'][] = $lengths[$i] ?? null;
-            }
-        }
-        // Merge cleaned data back
-        $request->merge($filtered);
-    
 
         // Step 1: Validate main fields and dynamic rows
         $validator = Validator::make($request->all(), [
@@ -128,18 +101,15 @@ class VehicletypeController extends Controller
             'in'       => 'Invalid selection.',
         ]);
     
-    
         if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-                //'input' => request()->all(), // optional: log the input data for context
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
+            $validator_error_msg = $validator->getMessageBag()->toArray();
+            $errors = [];
+            foreach ($validator_error_msg as $attribute => $validator_error) {
+                $attribute = str_replace('.', '_', $attribute);
+                $errors[$attribute] = $validator_error;
+            }
+            
+            return response()->json(['success' => false, 'data' => $errors, 'message' => 'Please fill with valid data.'], 422);
         }
         
     
@@ -292,75 +262,116 @@ class VehicletypeController extends Controller
     
         
         if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-            ]);
-    
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
+            $validator_error_msg = $validator->getMessageBag()->toArray();
+            $errors = [];
+            foreach ($validator_error_msg as $attribute => $validator_error) {
+                $attribute = str_replace('.', '_', $attribute);
+                $errors[$attribute] = $validator_error;
+            }
+            
+            return response()->json(['success' => false, 'data' => $errors, 'message' => 'Please fill with valid data.'], 422);
         }
         
         
+        $ids     = $request->vehiclesize_id     ?? [];
+        $names   = $request->vehiclesize_name   ?? [];
+        $heights = $request->vehiclesize_height ?? [];
+        $widths  = $request->vehiclesize_width  ?? [];
+        $lengths = $request->vehiclesize_length ?? [];
+
+        $existing = Vehicletypesize::where('vehicletype_id', $vehicletype->id)
+                        ->get()
+                        ->keyBy('id');
+
+        $submittedIds = collect($ids)
+                            ->filter(function ($v) { return !empty($v); })
+                            ->map(function ($v) { return (int) $v; })
+                            ->values()
+                            ->all();
+
+        $toDelete = $existing->keys()->diff($submittedIds);
+
+        // Block delete if any of those sizes is used in vehicles table
+        foreach ($toDelete as $delId) {
+            $inUse = Vehicle::where('vehicletypesize_id', $delId)->exists();
+            if ($inUse) {
+                $sizeName = $existing[$delId]->name ?? 'this size';
+                return response()->json([
+                    'success' => false,
+                    'should_reload' => true,
+                    'data'    => [],
+                    'message' => 'Cannot delete vehicle size "' . $sizeName . '" — it is already assigned to one or more vehicles.'
+                ], 422);
+            }
+        }
+
         try{
-            
-            
-            DB::transaction(function () use($request, &$vehicletype){
-                
+
+            DB::transaction(function () use($request, &$vehicletype, $ids, $names, $heights, $widths, $lengths, $existing, $toDelete){
+
                 $vehicletype->name             = $request->vehicletype_name;
                 $vehicletype->description      = $request->description;
                 $vehicletype->status           = $request->status;
                 $vehicletype->updated_by       = Auth::user()->id;
                 $vehicletype->save();
-                
-                $names   = $request->vehiclesize_name ?? [];
-                $heights = $request->vehiclesize_height ?? [];
-                $widths  = $request->vehiclesize_width ?? [];
-                $lengths = $request->vehiclesize_length ?? [];
-                
-                Vehicletypesize::where('vehicletype_id', $vehicletype->id)->delete();
-                
+
                 foreach ($names as $index => $name) {
 
                     // skip empty rows (safety)
                     if (empty($name) && empty($heights[$index]) && empty($widths[$index]) && empty($lengths[$index])) {
                         continue;
                     }
-                    
-                    $vehicletypesizes = new Vehicletypesize();
-                    $vehicletypesizes->vehicletype_id = $vehicletype->id;
-                    $vehicletypesizes->name = $name;
-                    $vehicletypesizes->height = $heights[$index] ?? 0;
-                    $vehicletypesizes->width = $widths[$index] ?? 0;
-                    $vehicletypesizes->length = $lengths[$index] ?? 0;
-                    $vehicletypesizes->save();
-            
+
+                    $rowId = !empty($ids[$index]) ? (int) $ids[$index] : null;
+
+                    if ($rowId && $existing->has($rowId)) {
+                        // Update existing row — preserves FK links from vehicles table
+                        $size = $existing[$rowId];
+                        $size->name   = $name;
+                        $size->height = $heights[$index] ?? 0;
+                        $size->width  = $widths[$index]  ?? 0;
+                        $size->length = $lengths[$index] ?? 0;
+                        $size->save();
+                    } else {
+                        // Insert new row
+                        $size = new Vehicletypesize();
+                        $size->vehicletype_id = $vehicletype->id;
+                        $size->name   = $name;
+                        $size->height = $heights[$index] ?? 0;
+                        $size->width  = $widths[$index]  ?? 0;
+                        $size->length = $lengths[$index] ?? 0;
+                        $size->save();
+                    }
                 }
-    
+
+                // Soft-delete rows the user removed from the form (already verified not in use)
+                if ($toDelete->isNotEmpty()) {
+                    Vehicletypesize::whereIn('id', $toDelete->all())->delete();
+                }
+
                 $description = 'Updated a vehicle type.';
                 $useractivity = $this->storeUseractivity(13, 4, Auth::user()->id, $vehicletype->id, $description);
-                
+
             });
-            
+
             $success = true;
             $respmessage = 'Vehicle type updated successfully.';
-            
+
         } catch (\Exception $exp){
             \Log::error('Vehicle type update error', [
                 'message' => $exp->getMessage(),
                 'trace' => $exp->getTraceAsString()
             ]);
-            
-            
+
+
             DB::rollBack();
             $success = false;
             $respmessage = $exp->getMessage();
-            
+
+            return response()->json(['success' => $success, 'data' => $vehicletype, 'message' => $respmessage], 500);
         }
-        
-        return response()->json(['success' => $success, 'data' => $vehicletype, 'message' => $respmessage]);
+
+        return response()->json(['success' => $success, 'data' => $vehicletype, 'message' => $respmessage], 200);
     }
     
     

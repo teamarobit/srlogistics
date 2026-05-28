@@ -1,7 +1,9 @@
 <?php
-
+// v2
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
+
 
 
 
@@ -409,6 +411,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/vehicle/{vehicle}/tyre/fitment', [App\Http\Controllers\TyreManagementController::class, 'tyreFitment'])->name('vehicle.tyre.fitment');
         // AJAX: fetch warehouse tyres filtered by condition + type (returns serial + health %)
         Route::get('/get-tyre-list', [App\Http\Controllers\TyreManagementController::class, 'getTyreList'])->name('get.tyre.list');
+        // AJAX: fetch unallocated Direct Fitment tyres (tyre_source_mode=Fitment, not Active in vehicletyremappings)
+        Route::get('/get-direct-fitment-tyres', [App\Http\Controllers\TyreManagementController::class, 'getDirectFitmentTyres'])->name('get.direct.fitment.tyres');
         // POST: tag a tyre to a specific mapping position
         Route::post('/vehicle/{vehicle}/mapping/{mapping}/add-tyre', [App\Http\Controllers\TyreManagementController::class, 'addTyreToPosition'])->name('vehicle.mapping.add.tyre');
         // POST: add a spare tyre (new mapping INSERT, auto-assigns next free S-position)
@@ -423,9 +427,32 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/lookup-vehicle', [App\Http\Controllers\TyreManagementController::class, 'lookupVehicleByNumber'])->name('lookup.vehicle.by.number');
     });
     
+    // Battery Management
+    Route::prefix('batterymanage')->name('batterymanage.')->group(function () {
+        // GET: battery tagging page for a vehicle
+        Route::get('/vehicle/{vehicle}/battery/tagging', [App\Http\Controllers\BatteryManagementController::class, 'vehicleBatteryTagging'])->name('vehicle.battery.tagging');
+        // POST: tag a new battery to a vehicle
+        Route::post('/vehicle/{vehicle}/battery/tag', [App\Http\Controllers\BatteryManagementController::class, 'storeBatteryTag'])->name('vehicle.battery.tag.store');
+        // POST: remove a tagged battery
+        Route::post('/vehicle/{vehicle}/battery/{battery}/remove', [App\Http\Controllers\BatteryManagementController::class, 'removeBatteryTag'])->name('vehicle.battery.tag.remove');
+        // POST: replace a tagged battery (Take Action modal)
+        Route::post('/vehicle/{vehicle}/battery/{battery}/replace', [App\Http\Controllers\BatteryManagementController::class, 'replaceBatteryTag'])->name('vehicle.battery.tag.replace');
+        // GET: AJAX — fetch battery log history
+        Route::get('/vehicle/{vehicle}/battery/{battery}/logs', [App\Http\Controllers\BatteryManagementController::class, 'getBatteryLogs'])->name('vehicle.battery.logs');
+        // GET: AJAX — fetch available batteries from inventory by condition
+        Route::get('/batteries/available', [App\Http\Controllers\BatteryManagementController::class, 'getAvailableWarehouseBatteries'])->name('batteries.available');
+        // GET: AJAX — fetch Direct Fitment batteries (battery_source_mode = 'Fitment', unallocated)
+        Route::get('/batteries/direct-fitment', [App\Http\Controllers\BatteryManagementController::class, 'getDirectFitmentBatteries'])->name('batteries.direct.fitment');
+    });
+
+    // Battery Owner Dashboard
+    Route::prefix('batteries')->name('battery.')->group(function () {
+        Route::get('/owner-dashboard', [App\Http\Controllers\BatteryOwnerDashboardController::class, 'index'])->name('owner-dashboard');
+    });
+
     /******************************** Vehicle Master **********************************************************/
-    
-    
+
+
     // Vehicle Management
     Route::prefix('vehicle-management')->name('vehiclemanagement.')->group(function () {
         Route::get('/', [App\Http\Controllers\VehiclemanagementController::class, 'index'])->name('index');
@@ -746,10 +773,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/batteries',        [App\Http\Controllers\WorkshopController::class, 'batteryInventory'])->name('batteries');
         Route::get('/battery-dashboard',[App\Http\Controllers\WorkshopController::class, 'batteryDashboard'])->name('battery-dashboard');
         Route::get('/battery/add',          [App\Http\Controllers\WorkshopController::class, 'createBattery'])->name('battery.add');
+        Route::post('/battery/save',        [App\Http\Controllers\WorkshopController::class, 'storeBattery'])->name('battery.save');
         Route::get('/battery/action',       [App\Http\Controllers\WorkshopController::class, 'batteryAction'])->name('battery.action');
         Route::get('/battery/{id}',         [App\Http\Controllers\WorkshopController::class, 'batteryDetails'])->name('battery.details');
+        Route::post('/battery/{id}/comment/save',               [App\Http\Controllers\WorkshopController::class, 'batteryStoreComment'])->name('battery.comment.store');
+        Route::post('/battery/{id}/maintenance/save',           [App\Http\Controllers\WorkshopController::class, 'batteryStoreMaintenance'])->name('battery.maintenance.store');
+        Route::post('/battery/maintenance/{maintId}/update',    [App\Http\Controllers\WorkshopController::class, 'batteryUpdateMaintenance'])->name('battery.maintenance.update');
+        Route::post('/battery/{id}/document/save',              [App\Http\Controllers\WorkshopController::class, 'batteryStoreDocument'])->name('battery.document.store');
+        Route::post('/battery/document/{mediadocument}/update', [App\Http\Controllers\WorkshopController::class, 'batteryUpdateDocument'])->name('battery.document.update');
+        Route::delete('/battery/document/media/{media}',        [App\Http\Controllers\WorkshopController::class, 'batteryDestroyDocument'])->name('battery.document.destroy');
         Route::get('/battery/{id}/fit',     [App\Http\Controllers\WorkshopController::class, 'batteryFit'])->name('battery.fit');
-        Route::get('/battery/{id}/replace', [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
+        Route::get('/battery/{id}/replace',     [App\Http\Controllers\WorkshopController::class, 'batteryReplace'])->name('battery.replace');
+        Route::post('/battery/{id}/change-status', [App\Http\Controllers\WorkshopController::class, 'batteryChangeStatus'])->name('battery.change-status');
+        Route::post('/battery/{id}/repair/store',         [App\Http\Controllers\WorkshopController::class, 'batteryStoreRepair'])->name('battery.repair.store');
+        Route::post('/battery/repair/{repair}/update',    [App\Http\Controllers\WorkshopController::class, 'batteryUpdateRepair'])->name('battery.repair.update');
+        Route::post('/battery/repair/{repair}/delete',    [App\Http\Controllers\WorkshopController::class, 'batteryDestroyRepair'])->name('battery.repair.destroy');
         Route::get('/purchase-orders',      [App\Http\Controllers\WorkshopController::class, 'poList'])->name('purchase-orders');
         Route::get('/purchase-orders/{id}', [App\Http\Controllers\WorkshopController::class, 'poDetail'])->name('po-detail');
         Route::get('/goods-receipt',        [App\Http\Controllers\WorkshopController::class, 'grn'])->name('goods-receipt');
@@ -758,5 +796,4 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
 
-}); 
-    
+});

@@ -1,0 +1,443 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — Battery Owner Dashboard
+   File: public/css/Battery/owner-dashboard.css
+   Version: 1.0
+   Owner: ArobitAI Frontend Team
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Filter Bar ───────────────────────────────────────────────────────── */
+.bod-filter-section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.bod-filter-section-label i {
+    font-size: 12px;
+    color: #4b6cb7;
+}
+.bod-filter-bar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.bod-filter-bar .bod-filter-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+}
+.bod-filter-bar .form-control,
+.bod-filter-bar .form-select {
+    font-size: 13px;
+    border-color: #d1d5db;
+    border-radius: 6px;
+    height: 36px;
+    padding: 4px 10px;
+    color: #1f2937;
+}
+.bod-filter-bar .btn-filter-apply {
+    background: #032671;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.bod-filter-bar .btn-filter-apply:hover { background: #0a3d8f; }
+.bod-filter-bar .btn-filter-reset {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.bod-filter-bar .btn-filter-reset:hover { border-color: #032671; color: #032671; }
+
+/* ── Section Heading ──────────────────────────────────────────────────── */
+.bod-section-heading {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bod-section-heading .bod-section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* ── KPI Cards (Activity Summary) ────────────────────────────────────── */
+.bod-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.bod-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 14px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.bod-kpi-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+.bod-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 10px 0 0 10px;
+}
+
+/* card-all: All Batteries — Navy Blue */
+.bod-kpi-card.card-all {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border: 1px solid #c5d4ee;
+}
+.bod-kpi-card.card-all::before           { background: #032671; }
+.bod-kpi-card.card-all .bod-kpi-label    { color: #2d4a8a; }
+.bod-kpi-card.card-all .qty-number       { color: #032671; }
+.bod-kpi-card.card-all .bod-kpi-divider  { background: #c5d4ee; }
+
+/* card-new: New Batteries — Teal */
+.bod-kpi-card.card-new {
+    background: linear-gradient(135deg, #ecfdf5 0%, #e6faf5 100%);
+    border: 1px solid #99e6ce;
+}
+.bod-kpi-card.card-new::before           { background: #0d9488; }
+.bod-kpi-card.card-new .bod-kpi-label    { color: #0f766e; }
+.bod-kpi-card.card-new .qty-number       { color: #134e4a; }
+.bod-kpi-card.card-new .bod-kpi-divider  { background: #99e6ce; }
+
+/* card-repair: Repair Batteries — Red */
+.bod-kpi-card.card-repair {
+    background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+    border: 1px solid #f5b8b8;
+}
+.bod-kpi-card.card-repair::before           { background: #dc2626; }
+.bod-kpi-card.card-repair .bod-kpi-label    { color: #b91c1c; }
+.bod-kpi-card.card-repair .qty-number       { color: #7f1d1d; }
+.bod-kpi-card.card-repair .bod-kpi-divider  { background: #f5b8b8; }
+
+/* card-warranty: Replaced Under Warranty — Purple */
+.bod-kpi-card.card-warranty {
+    background: linear-gradient(135deg, #f8f0ff 0%, #f3eefb 100%);
+    border: 1px solid #d8c4f5;
+}
+.bod-kpi-card.card-warranty::before           { background: #7c3aed; }
+.bod-kpi-card.card-warranty .bod-kpi-label    { color: #7c3aed; }
+.bod-kpi-card.card-warranty .qty-number       { color: #6d28d9; }
+.bod-kpi-card.card-warranty .bod-kpi-divider  { background: #d8c4f5; }
+
+/* card-income: Scrap Batteries — Green */
+.bod-kpi-card.card-income {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border: 1px solid #a7ddb8;
+}
+.bod-kpi-card.card-income::before           { background: #16a34a; }
+.bod-kpi-card.card-income .bod-kpi-label    { color: #15803d; }
+.bod-kpi-card.card-income .qty-number       { color: #14532d; }
+.bod-kpi-card.card-income .bod-kpi-divider  { background: #a7ddb8; }
+
+.bod-kpi-card .bod-kpi-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.bod-kpi-card .bod-kpi-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px;
+}
+.bod-kpi-card .bod-kpi-qty {
+    text-align: center;
+}
+.bod-kpi-card .bod-kpi-qty .qty-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1f2937;
+    line-height: 1;
+}
+.bod-kpi-card .bod-kpi-qty .qty-sub {
+    font-size: 9px;
+    color: #9ca3af;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    margin-top: 1px;
+}
+.bod-kpi-card .bod-kpi-divider {
+    width: 1px;
+    height: 30px;
+    background: #e5e7eb;
+    flex-shrink: 0;
+}
+.bod-kpi-card .bod-kpi-amount {
+    text-align: right;
+}
+.bod-kpi-card .bod-kpi-amount .amt-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+}
+.bod-kpi-card .bod-kpi-amount .amt-sub {
+    font-size: 9px;
+    color: #9ca3af;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    margin-top: 1px;
+}
+.bod-kpi-card .bod-kpi-amount .amt-income {
+    color: #10b981;
+}
+
+/* ── RAG Status Cards ─────────────────────────────────────────────────── */
+.bod-rag-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.bod-rag-card {
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.bod-rag-card.rag-green  { background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%); border: 1px solid #6ee7b7; }
+.bod-rag-card.rag-yellow { background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border: 1px solid #fcd34d; }
+.bod-rag-card.rag-red    { background: linear-gradient(135deg, #fee2e2 0%, #fff5f5 100%); border: 1px solid #fca5a5; }
+.bod-rag-card .rag-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+.bod-rag-card.rag-green  .rag-dot { background: #10b981; color: #fff; }
+.bod-rag-card.rag-yellow .rag-dot { background: #f59e0b; color: #fff; }
+.bod-rag-card.rag-red    .rag-dot { background: #ef4444; color: #fff; }
+.bod-rag-card .rag-info .rag-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    color: #1f2937;
+}
+.bod-rag-card .rag-info .rag-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 2px;
+}
+.bod-rag-card .rag-info .rag-sublabel {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 1px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Analytics Tables ─────────────────────────────────────────────────── */
+.bod-analytics-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+.bod-analytics-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+.bod-analytics-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+.bod-analytics-table thead th {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 8px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+.bod-analytics-table tbody tr {
+    background: #fff;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+.bod-analytics-table tbody tr:hover { background: #f9fafb; }
+.bod-analytics-table tbody td {
+    padding: 8px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+.bod-analytics-table .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    font-size: 10px;
+    font-weight: 700;
+    color: #374151;
+    flex-shrink: 0;
+}
+.bod-analytics-table .rank-badge.rank-1 { background: #fbbf24; color: #1f2937; }
+.bod-analytics-table .rank-badge.rank-2 { background: #9ca3af; color: #fff; }
+.bod-analytics-table .rank-badge.rank-3 { background: #b45309; color: #fff; }
+.bod-analytics-table .cost-chip {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* ── Budget Section ───────────────────────────────────────────────────── */
+.bod-budget-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.bod-budget-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px 22px;
+}
+.bod-budget-card .bud-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bod-budget-card .bud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+.bod-budget-card .bud-row:last-child { border-bottom: none; }
+.bod-budget-card .bud-row .bud-key   { color: #6b7280; }
+.bod-budget-card .bud-row .bud-val   { font-weight: 700; color: #1f2937; }
+.bod-budget-card .bud-row .bud-val.bud-warning { color: #ef4444; }
+.bod-budget-card .bud-row .bud-val.bud-ok      { color: #10b981; }
+
+/* ── Placeholder / Coming-Soon Note ──────────────────────────────────── */
+.bod-placeholder-note {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* ── Info Note ────────────────────────────────────────────────────────── */
+.bod-info-note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #1e40af;
+    margin-bottom: 14px;
+}
+.bod-info-note i { margin-right: 6px; }
+
+/* ── Animated Counter (JS-driven) ────────────────────────────────────── */
+.bod-count-animate {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1400px) {
+    .bod-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 992px) {
+    .bod-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .bod-kpi-grid          { grid-template-columns: 1fr; }
+    .bod-rag-grid          { grid-template-columns: 1fr; }
+    .bod-analytics-wrap    { grid-template-columns: 1fr; }
+    .bod-budget-grid       { grid-template-columns: 1fr; }
+}

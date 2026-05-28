@@ -46,7 +46,8 @@
                                     <th>Warranty</th>
                                     <th>Warranty End</th>
                                     <!--<th>Amount</th>-->
-                                    <th style="width: 100px">Status</th>
+                                    <th style="width: 110px">Assignment</th>
+                                    <th style="width: 90px">Status</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -98,10 +99,18 @@
                                                     <i class="fa fa-dot-circle-o text-danger mr-2"></i>
                                                     Unassigned
                                                 @endif
-                                                
+
                                                 <i class="uil uil-angle-down ml-1"></i>
                                             </span>
                                         </div>
+                                    </td>
+
+                                    <td>
+                                        @if(($data->status ?? 'Active') === 'Active')
+                                            <span class="badge bg-success">Active</span>
+                                        @else
+                                            <span class="badge bg-danger">Inactive</span>
+                                        @endif
                                     </td>
                                     
                                     
@@ -164,7 +173,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted">
+                                    <td colspan="10" class="text-center text-muted">
                                         No Data found!
                                     </td>
                                 </tr>

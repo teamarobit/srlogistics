@@ -312,7 +312,8 @@ class AssetController extends Controller
             'comment'     => 'nullable|string|max:2000',
             'documents'   => 'nullable|array',
             'documents.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
-    
+            'status'      => 'required|in:Active,Inactive',
+
         ], [
             'required' => 'This field is required.',
             'max'      => 'Maximum allowed value is :max.',
@@ -379,7 +380,8 @@ class AssetController extends Controller
                 $asset->assigned_on = $request->get('assigned_on') ?? null;
                 $asset->assigned_by = $request->get('assigned_by') ?? null;
                 $asset->comment = $request->get('comment') ?? null;
-    
+                $asset->status = $request->get('status', 'Active');
+
                 $asset->updated_by = Auth::user()->id;
                 $asset->save();
                 

@@ -49,8 +49,8 @@
                                 <div class="vehicle-size-wrapper">
                             
                                     @forelse($vehicletype->sizes as $index => $size)
-                                        <div class="card p-3 mb-3 vehicle-size-row position-relative">
-                                            <input type="hidden" name="vehiclesize_id[]" value="{{ $size->id ?? '' }}">
+                                        <div class="card p-3 mb-3 vehicle-size-row position-relative" data-vehiclesize-id="{{ $size->id }}">
+                                            <input type="hidden" name="vehiclesize_id[{{ $index }}]" value="{{ $size->id }}">
 
                                             @if($index > 0)
                                                 <a href="javascript:void(0)"
@@ -72,12 +72,12 @@
 
                                                 <div class="col-12 col-md-6">
                                                     <input type="text"
-                                                           name="vehiclesize_name[]"
+                                                           name="vehiclesize_name[{{ $index }}]"
                                                            class="form-control"
                                                            value="{{ $size->name ?? '' }}">
 
                                                     <small class="error text-danger"
-                                                           id="vehiclesize_name_{{ $index }}_error"></small>
+                                                           id="edit_vehiclesize_name_{{ $index }}_error"></small>
 
                                                     <div class="mt-3">
                                                         <div class="row form-group">
@@ -85,37 +85,37 @@
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
                                                                     <input type="text"
-                                                                           name="vehiclesize_length[]"
+                                                                           name="vehiclesize_length[{{ $index }}]"
                                                                            class="form-control decimalonly"
                                                                            value="{{ $size->length ?? '' }}">
                                                                     <label>Length (ft)</label>
                                                                 </div>
                                                                 <small class="error text-danger"
-                                                                       id="vehiclesize_length_{{ $index }}_error"></small>
+                                                                       id="edit_vehiclesize_length_{{ $index }}_error"></small>
                                                             </div>
 
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
                                                                     <input type="text"
-                                                                           name="vehiclesize_height[]"
+                                                                           name="vehiclesize_height[{{ $index }}]"
                                                                            class="form-control decimalonly"
                                                                            value="{{ $size->height ?? '' }}">
                                                                     <label>Height (ft)</label>
                                                                 </div>
                                                                 <small class="error text-danger"
-                                                                       id="vehiclesize_height_{{ $index }}_error"></small>
+                                                                       id="edit_vehiclesize_height_{{ $index }}_error"></small>
                                                             </div>
 
                                                             <div class="col-12 col-md-4">
                                                                 <div class="form-floating">
                                                                     <input type="text"
-                                                                           name="vehiclesize_width[]"
+                                                                           name="vehiclesize_width[{{ $index }}]"
                                                                            class="form-control decimalonly"
                                                                            value="{{ $size->width ?? '' }}">
                                                                     <label>Width (ft)</label>
                                                                 </div>
                                                                 <small class="error text-danger"
-                                                                       id="vehiclesize_width_{{ $index }}_error"></small>
+                                                                       id="edit_vehiclesize_width_{{ $index }}_error"></small>
                                                             </div>
 
                                                         </div>

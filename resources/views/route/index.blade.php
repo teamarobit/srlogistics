@@ -40,16 +40,16 @@
                                   <div class="search-wrap d-inline-block ms-2" style="width: 130px;">
                                       <select name="route_type" id="route_type" class="form-select">
                                           <option value="">Filter by Route Type</option>
-                                          <option value="Line">Line</option>
-                                          <option value="Local">Local</option>
+                                          <option value="Line" @if($search_route_type == 'Line') selected @endif>Line</option>
+                                          <option value="Local" @if($search_route_type == 'Local') selected @endif>Local</option>
                                       </select>
                                   </div>
                                   
                                   <div class="search-wrap d-inline-block ms-2" style="width: 130px;">
                                       <select name="status" id="search_status" class="form-select">
                                           <option value="">Filter by Status</option>
-                                          <option value="Active">Active</option>
-                                          <option value="Inactive">Inactive</option>
+                                          <option value="Active" @if($search_status == 'Active') selected @endif>Active</option>
+                                          <option value="Inactive" @if($search_status == 'Inactive') selected @endif>Inactive</option>
                                       </select>
                                   </div>
                                   

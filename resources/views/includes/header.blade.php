@@ -38,6 +38,7 @@
                       @endif
                       <li><a href="{{ route('tyre.dashboard') }}">Tyre Dashboard</a></li>
                       <li><a href="{{ route('tyre.owner-dashboard') }}">Tyre Owner Dashboard</a></li>
+                      <li><a href="{{ route('battery.owner-dashboard') }}">Battery Owner Dashboard</a></li>
                       @if(Route::has('fleet.compliance.permit-fitness'))
                       <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Fitness Status</a></li>
                       <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Route Permit Tracker</a></li>

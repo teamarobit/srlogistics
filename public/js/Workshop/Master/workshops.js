@@ -131,6 +131,18 @@ $(function () {
         loadCities(citiesUrl, stateId, $('#editWsCity'), preselect);
     });
 
+    /* ── Reset Edit modal on close ──────────────────────────────────────── */
+    $('#editWsModal').on('hidden.bs.modal', function () {
+        clearValidationErrors('#editWsModal');
+        /* Reset edit-modal ownership fields to a neutral state */
+        $('.ws-edit-external-only').hide();
+        $('.opt-edit-external').hide();
+        $('.ws-edit-own-only').show();
+        $('.opt-edit-own').show();
+        $('#editWsType').val('');
+        $('#btnUpdateWs').prop('disabled', false).html('<i class="uil uil-save me-1"></i> Update');
+    });
+
     /* ── Reset Add modal on close ────────────────────────────────────────── */
     $('#addWsModal').on('hidden.bs.modal', function () {
         $('#addWsForm')[0].reset();
@@ -226,6 +238,15 @@ $(function () {
         });
     });
 
+    /* ── Edit modal: apply ownership-driven visibility ───────────────────── */
+    function applyEditOwnership(ownership) {
+        var isOwn = ownership === 'Own';
+        $('.ws-edit-own-only').toggle(isOwn);
+        $('.ws-edit-external-only').toggle(!isOwn);
+        $('.opt-edit-own').toggle(isOwn);
+        $('.opt-edit-external').toggle(!isOwn);
+    }
+
     /* ── Edit modal: populate fields ─────────────────────────────────────── */
     $(document).on('click', '.btn-edit-ws', function () {
         var b = $(this);
@@ -236,6 +257,10 @@ $(function () {
         $('#editWsName').val(b.data('name'));
         $('#editWsOwnership').val(b.data('ownership'));
         $('#editWsOwnershipHidden').val(b.data('ownership'));
+
+        /* Apply show/hide before setting type so correct optgroup is visible */
+        applyEditOwnership(b.data('ownership'));
+
         $('#editWsType').val(b.data('type'));
         $('#editWsBrand').val(b.data('brand') || '');
         $('#editWsManager').val(b.data('manager') || '');

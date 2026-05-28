@@ -74,7 +74,17 @@ $(document).ready(function () {
                 calculatedEnd.setMonth(calculatedEnd.getMonth() + 1);
                 calculatedEnd.setDate(calculatedEnd.getDate() - 1);
             }
-            
+
+            if (contractType === 'Quarterly') {
+                calculatedEnd.setMonth(calculatedEnd.getMonth() + 3);
+                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
+            }
+
+            if (contractType === 'Half Yearly') {
+                calculatedEnd.setMonth(calculatedEnd.getMonth() + 6);
+                calculatedEnd.setDate(calculatedEnd.getDate() - 1);
+            }
+
             if (contractType === 'Yearly') {
                 calculatedEnd.setFullYear(calculatedEnd.getFullYear() + 1);
                 calculatedEnd.setDate(calculatedEnd.getDate() - 1);

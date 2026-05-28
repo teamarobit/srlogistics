@@ -108,8 +108,9 @@ $(document).ready(function () {
 
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
-        $('#directTyreBrand').val('');
-        $('#directTyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
+        resetDirectFitmentDropdown();
 
         $('#fitmentDateInput').val('');
         $('#kmAtFitmentInput').val('');
@@ -134,8 +135,7 @@ $(document).ready(function () {
     function showWarehouseSection() {
         $('#srcWarehouseSection').removeClass('d-none');
         $('#srcDirectSection').addClass('d-none');
-        $('#directTyreBrand').removeAttr('required');
-        $('#directTyreSerial').removeAttr('required');
+        maybeFetchTyres();
     }
 
     function showDirectSection() {
@@ -144,6 +144,65 @@ $(document).ready(function () {
         resetTyreDropdown();
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
+        resetDirectFitmentDropdown();
+        fetchDirectFitmentTyres();
+    }
+
+    function resetDirectFitmentDropdown() {
+        $('#directTyreIdSelect')
+            .prop('disabled', true)
+            .html('<option value="">— Loading… —</option>');
+        $('#directTyreDropdownState')
+            .text('— Loading available Direct Fitment tyres… —')
+            .removeClass('text-danger text-success text-warning')
+            .addClass('text-muted');
+        $('#dfTyreHealthPreview').addClass('d-none');
+        $('#df_tyreBrand').val('');
+        $('#df_tyreSerial').val('');
+        $('#df_tyreModel').val('');
+        $('#df_tyreSize').val('');
+    }
+
+    function fetchDirectFitmentTyres() {
+        const condition = $('#tyreConditionSelect').val();
+        const type      = $('#tyreTypeSelect').val();
+
+        resetDirectFitmentDropdown();
+
+        const params = {};
+        if (condition) params.condition = condition;
+        if (type)      params.type      = type;
+
+        const stateMsg = condition || type
+            ? `Fetching Direct Fitment tyres${condition ? ' · ' + condition : ''}${type ? ' · ' + type : ''}…`
+            : 'Fetching all Direct Fitment tyres…';
+        $('#directTyreDropdownState').text(stateMsg);
+
+        $.ajax({
+            url: getDirectFitmentTyresUrl, method: 'GET', data: params, dataType: 'json',
+            success: function (res) {
+                const tyres = res.tyres || [];
+                if (tyres.length === 0) {
+                    $('#directTyreIdSelect').prop('disabled', true).html('<option value="">No Direct Fitment tyres available</option>');
+                    $('#directTyreDropdownState').text('No unallocated Direct Fitment tyres found.').removeClass('text-muted text-success text-warning').addClass('text-danger');
+                    return;
+                }
+                let options = '<option value="">— Select Tyre —</option>';
+                tyres.forEach(function (t) {
+                    const ragEmoji = t.rag_status === 'green' ? '🟢' : t.rag_status === 'amber' ? '🟡' : t.rag_status === 'red' ? '🔴' : '⚫';
+                    const healthLabel = t.health_pct !== null ? ` [${t.health_pct}% health]` : ' [health N/A]';
+                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}" data-model="${t.tyre_model ?? ''}" data-size="${t.tyre_size ?? ''}" data-rag="${t.rag_status}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
+                });
+                $('#directTyreIdSelect').prop('disabled', false).html(options);
+                $('#directTyreDropdownState').text(`${tyres.length} tyre(s) available.`).removeClass('text-muted text-danger text-warning').addClass('text-success');
+            },
+            error: function () {
+                $('#directTyreIdSelect').prop('disabled', true).html('<option value="">Error loading tyres</option>');
+                $('#directTyreDropdownState').text('Failed to load tyres.').removeClass('text-muted text-success text-warning').addClass('text-danger');
+            }
+        });
     }
 
     function resetTyreDropdown() {
@@ -157,6 +216,8 @@ $(document).ready(function () {
         $('#tyreHealthPreview').addClass('d-none');
         $('#wh_tyreBrand').val('');
         $('#wh_tyreSerial').val('');
+        $('#wh_tyreModel').val('');
+        $('#wh_tyreSize').val('');
     }
 
     // ── A5. SOURCE TOGGLE ────────────────────────────────────────────────────
@@ -196,7 +257,7 @@ $(document).ready(function () {
                 tyres.forEach(function (t) {
                     const healthLabel = t.health_pct !== null ? ` [${t.health_pct}% health]` : ' [health N/A]';
                     const ragEmoji = t.rag_status === 'green' ? '🟢' : t.rag_status === 'amber' ? '🟡' : t.rag_status === 'red' ? '🔴' : '⚫';
-                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
+                    options += `<option value="${t.id}" data-health="${t.health_pct ?? ''}" data-rag="${t.rag_status}" data-brand="${t.tyre_brand ?? ''}" data-serial="${t.tyre_serial_number ?? ''}" data-model="${t.tyre_model ?? ''}" data-size="${t.tyre_size ?? ''}">${ragEmoji} ${t.tyre_serial_number ?? 'N/A'} — ${t.tyre_brand ?? ''}${healthLabel}</option>`;
                 });
                 $('#tyreIdSelect').prop('disabled', false).html(options);
                 $('#tyreDropdownState').text(`${tyres.length} tyre(s) available.`).removeClass('text-muted text-danger text-warning').addClass('text-success');
@@ -207,15 +268,51 @@ $(document).ready(function () {
             }
         });
     }
-    $('#tyreConditionSelect, #tyreTypeSelect').on('change', maybeFetchTyres);
+    $('#tyreConditionSelect, #tyreTypeSelect').on('change', function () {
+        maybeFetchTyres();
+        if ($('#srcDirect').is(':checked')) {
+            fetchDirectFitmentTyres();
+        }
+    });
 
-    // ── A7. TYRE SELECTED → HEALTH PREVIEW ───────────────────────────────────
+    // ── A7a. DIRECT FITMENT TYRE SELECTED → AUTO-FILL + HEALTH PREVIEW ──────
+    $(document).on('change', '#directTyreIdSelect', function () {
+        const $opt      = $(this).find('option:selected');
+        const healthPct = $opt.data('health');
+        const rag       = $opt.data('rag') || 'grey';
+
+        $('#df_tyreBrand').val($opt.data('brand') || '');
+        $('#df_tyreSerial').val($opt.data('serial') || '');
+        $('#df_tyreModel').val($opt.data('model') || '');
+        $('#df_tyreSize').val($opt.data('size') || '');
+
+        if (!$(this).val() || healthPct === '' || healthPct === undefined) {
+            $('#dfTyreHealthPreview').addClass('d-none');
+            return;
+        }
+        const pct = parseFloat(healthPct);
+        if (!isNaN(pct)) {
+            $('#dfHealthBarFill').css('width', pct + '%')
+                .removeClass('rag-bg-green rag-bg-amber rag-bg-red rag-bg-grey')
+                .addClass('rag-bg-' + rag);
+            $('#dfHealthPctText').text(pct + '%');
+        }
+        const ragLabel = rag === 'green' ? '🟢 Good' : rag === 'amber' ? '🟡 Moderate' : rag === 'red' ? '🔴 Critical' : '⚫ Unknown';
+        $('#dfHealthRagBadge').text(ragLabel)
+            .removeClass('rag-badge rag-green rag-amber rag-red rag-grey')
+            .addClass('rag-badge rag-' + rag);
+        $('#dfTyreHealthPreview').removeClass('d-none');
+    });
+
+    // ── A7. WAREHOUSE TYRE SELECTED → HEALTH PREVIEW ────────────────────────
     $(document).on('change', '#tyreIdSelect', function () {
         const $opt      = $(this).find('option:selected');
         const healthPct = $opt.data('health');
         const rag       = $opt.data('rag') || 'grey';
         $('#wh_tyreBrand').val($opt.data('brand') || '');
         $('#wh_tyreSerial').val($opt.data('serial') || '');
+        $('#wh_tyreModel').val($opt.data('model') || '');
+        $('#wh_tyreSize').val($opt.data('size') || '');
 
         if (!$(this).val() || healthPct === '') { $('#tyreHealthPreview').addClass('d-none'); return; }
         const pct = parseFloat(healthPct);
@@ -282,8 +379,7 @@ $(document).ready(function () {
         if (source === 'SR Warehouse') {
             if (!$('#tyreIdSelect').val()) { showError('err_tyre_id', 'Please select a tyre.'); hasError = true; }
         } else {
-            if (!$('#directTyreBrand').val().trim())  { showError('err_tyre_brand',         'Tyre brand is required.');         hasError = true; }
-            if (!$('#directTyreSerial').val().trim()) { showError('err_tyre_serial_number', 'Tyre serial number is required.'); hasError = true; }
+            if (!$('#directTyreIdSelect').val()) { showError('err_tyre_id', 'Please select a Direct Fitment tyre.'); hasError = true; }
         }
         if (!fitment) { showError('err_fitment_date', 'Fitment date is required.'); hasError = true; }
         if (!validateOdometer()) { showError('err_km_at_fitment', $('#kmOdoWarningText').text()); hasError = true; }
@@ -300,8 +396,7 @@ $(document).ready(function () {
         if (source === 'SR Warehouse') {
             fd.append('tyre_id', $('#tyreIdSelect').val());
         } else {
-            fd.append('tyre_brand', $('#directTyreBrand').val().trim());
-            fd.append('tyre_serial_number', $('#directTyreSerial').val().trim());
+            fd.append('tyre_id', $('#directTyreIdSelect').val());
         }
         const photoFields = { photo_serial: '#photoSerial', photo_fitment: '#photoFitment', photo_odometer: '#photoOdometer' };
         $.each(photoFields, function (fieldName, selector) {

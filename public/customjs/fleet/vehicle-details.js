@@ -2535,16 +2535,229 @@ $(document).ready(function(){
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
 });
 
+/* ===================================================================
+   BATTERY LOG MODAL  v2  — eye icon on battery card
+   Matches vtd-tl-* structure exactly: attachment toggle per entry.
+   vehicle-details-tyre.js already handles .vtd-tl-attach-toggle click.
+=================================================================== */
 
+var _batLogsXhr = null;
 
+$(document).on('click', '.viewBatteryAttachment', function (e) {
+    e.preventDefault();
+
+    var batteryId = $(this).data('id');
+    if (!batteryId || typeof BATTERY_LOGS_URL === 'undefined') return;
+
+    var url = BATTERY_LOGS_URL.replace(':battery', batteryId);
+
+    var $dot = $(this).closest('.bat-card-actions').find('.bat-rag-dot');
+    var headerColor = '#032671';
+    if ($dot.hasClass('bat-rag-red'))    headerColor = '#ea0027';
+    if ($dot.hasClass('bat-rag-yellow')) headerColor = '#d97706';
+    if ($dot.hasClass('bat-rag-green'))  headerColor = '#10863f';
+
+    $('#batModalHeader').css('border-bottom', '3px solid ' + headerColor);
+    $('#batModalDot').css('background', headerColor);
+    $('#batDetailModalLabel').text('Battery Logs');
+    $('#batModalSubtitle').html('');
+    $('#batModalBody').html(
+        '<div class="vtd-timeline-loading">' +
+        '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>' +
+        '<div>Loading battery history...</div>' +
+        '</div>'
+    );
+
+    var modalEl = document.getElementById('batDetailModal');
+    if (modalEl) { bootstrap.Modal.getOrCreateInstance(modalEl).show(); }
+
+    if (_batLogsXhr) { _batLogsXhr.abort(); }
+
+    _batLogsXhr = $.ajax({
+        url: url,
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        success: function (res) {
+            _batLogsXhr = null;
+            if (!res.success) {
+                $('#batModalBody').html('<div class="vtd-timeline-empty"><i class="uil uil-history"></i><div>Failed to load logs.</div></div>');
+                return;
+            }
+            var serial = res.battery_serial && res.battery_serial !== '-' ? res.battery_serial : 'Battery';
+            $('#batDetailModalLabel').text(serial);
+            var sub = '';
+            if (res.battery_brand) sub += res.battery_brand;
+            if (res.battery_model) sub += (sub ? ' - ' : '') + res.battery_model;
+            if (res.vehicle_no)    sub += (sub ? ' | ' : '') + res.vehicle_no;
+            $('#batModalSubtitle').html('<span style="font-size:11px;opacity:.85;">' + sub + '</span>');
+            _batRenderModal(res);
+        },
+        error: function (xhr) {
+            _batLogsXhr = null;
+            if (xhr.statusText === 'abort') return;
+            $('#batModalBody').html('<div class="vtd-timeline-empty"><i class="uil uil-history"></i><div>Failed to load battery history.</div></div>');
+        }
+    });
+});
+
+function _batEsc(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function _batRenderModal(res) {
+    var logs        = res.logs        || [];
+    var attachments = res.attachments || [];
+
+    if (logs.length === 0 && attachments.length === 0) {
+        $('#batModalBody').html(
+            '<div class="vtd-timeline-empty">' +
+            '<i class="uil uil-history"></i>' +
+            '<div>No history logged for this battery yet.</div>' +
+            '<div style="font-size:11px;color:#adb5bd;margin-top:4px;">History is recorded when a battery is tagged, updated, or removed.</div>' +
+            '</div>'
+        );
+        return;
+    }
+
+    /* Merge battery-level attachments into the most recent log entry */
+    if (attachments.length > 0 && logs.length > 0) {
+        logs[0].attachments = attachments;
+    }
+
+    var html = '';
+    html += '<div class="vtd-timeline">';
+
+    logs.forEach(function (log, idx) {
+        var attachId = 'bat-att-' + (log.id || idx);
+        var hasAtt   = log.attachments && log.attachments.length > 0;
+
+        var action      = log.action || 'Tagged';
+        var actionColor = action === 'Tagged'  ? '#10863f' : (action === 'Removed' ? '#ea0027' : '#d97706');
+        var dotClass    = action === 'Tagged'  ? 'dot-active' : (action === 'Removed' ? 'dot-inactive' : 'dot-neutral');
+        var dotIcon     = action === 'Tagged'  ? 'uil-bolt-alt' : (action === 'Removed' ? 'uil-times-circle' : 'uil-pen');
+
+        html += '<div class="vtd-tl-entry">';
+
+        /* Dot */
+        html += '<div class="vtd-tl-dot ' + dotClass + '" style="border-color:' + actionColor + ';color:' + actionColor + ';">' +
+                '<i class="uil ' + dotIcon + '"></i></div>';
+
+        /* Card body */
+        html += '<div class="vtd-tl-body">';
+
+        /* Row 1: datetime · serial badge · brand·model badge · attachment toggle */
+        html += '<div class="vtd-tl-datetime">' +
+                '<i class="uil uil-calendar-alt"></i>' +
+                _batEsc(log.created_at_formatted || '-');
+
+        if (log.battery_brand || log.battery_model) {
+            html += ' &nbsp;<span class="vtd-tl-tyre-badge"><i class="uil uil-bolt-alt me-1"></i>' +
+                    _batEsc([log.battery_brand, log.battery_model].filter(Boolean).join(' ')) + '</span>';
+        }
+
+        if (hasAtt) {
+            html += ' &nbsp;<button type="button" class="vtd-tl-attach-toggle" data-target="' + attachId + '" ' +
+                    'title="' + log.attachments.length + ' attachment' + (log.attachments.length > 1 ? 's' : '') + '">' +
+                    '<i class="uil uil-paperclip"></i></button>';
+        }
+
+        html += '</div>'; /* .vtd-tl-datetime */
+
+        /* Action chip */
+        html += '<span class="vtd-tl-status-chip" style="background:' + actionColor + '1a;color:' + actionColor + ';">' + _batEsc(action) + '</span>';
+
+        /* Fields grid */
+        html += '<div class="vtd-tl-fields">';
+        if (log.fitment_date) {
+            html += '<div><div class="vtd-tl-field-label">Fitment Date</div><div class="vtd-tl-field-val">' + _batEsc(log.fitment_date) + '</div></div>';
+        }
+        if (log.km_at_fitment) {
+            html += '<div><div class="vtd-tl-field-label">KM at Fitment</div><div class="vtd-tl-field-val">' + Number(log.km_at_fitment).toLocaleString() + ' KM</div></div>';
+        }
+        if (log.battery_condition) {
+            html += '<div><div class="vtd-tl-field-label">Condition</div><div class="vtd-tl-field-val">' + _batEsc(log.battery_condition) + '</div></div>';
+        }
+        if (log.rag_status) {
+            var ragColor = log.rag_status === 'Green' ? '#10863f' : (log.rag_status === 'Red' ? '#ea0027' : '#d97706');
+            html += '<div><div class="vtd-tl-field-label">RAG</div><div class="vtd-tl-field-val" style="color:' + ragColor + ';">' + _batEsc(log.rag_status) + '</div></div>';
+        }
+        if (log.battery_actual_run_months) {
+            html += '<div><div class="vtd-tl-field-label">Run Months</div><div class="vtd-tl-field-val">' + _batEsc(log.battery_actual_run_months) + ' mo</div></div>';
+        }
+        if (log.battery_source) {
+            html += '<div><div class="vtd-tl-field-label">Source</div><div class="vtd-tl-field-val">' + _batEsc(log.battery_source) + '</div></div>';
+        }
+        html += '</div>'; /* .vtd-tl-fields */
+
+        /* Notes */
+        if (log.notes) {
+            html += '<div class="vtd-tl-notes"><i class="uil uil-comment-alt-lines me-1"></i>' + _batEsc(log.notes) + '</div>';
+        }
+
+        /* Attachments — hidden, toggled by paperclip button */
+        if (hasAtt) {
+            html += '<div class="vtd-tl-attachments" id="' + attachId + '" style="display:none;">';
+            html += '<div class="vtd-tl-attach-grid">';
+            log.attachments.forEach(function (att) {
+                if (!att.url) return;
+                var isImage = att.type === 'Image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(att.url);
+                html += '<div style="text-align:center;"><div class="vtd-tl-attach-item">';
+                if (isImage) {
+                    html += '<img src="' + _batEsc(att.url) + '" class="vtd-tl-attach-img" alt="' + _batEsc(att.name || 'Attachment') + '" ' +
+                            'onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.vtd-tl-attach-fallback\').style.display=\'flex\';">';
+                    html += '<div class="vtd-tl-attach-fallback" style="display:none;"><i class="uil uil-image-slash"></i></div>';
+                } else {
+                    html += '<div class="vtd-tl-attach-fallback"><i class="uil uil-file-alt"></i></div>';
+                }
+                html += '</div>';
+                if (att.name) {
+                    html += '<div class="vtd-tl-attach-name" title="' + _batEsc(att.name) + '">' + _batEsc(att.name) + '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div></div>'; /* .vtd-tl-attach-grid + .vtd-tl-attachments */
+        }
+
+        html += '</div>'; /* .vtd-tl-body */
+        html += '</div>'; /* .vtd-tl-entry */
+    });
+
+    /* No-log case but has attachments — show attachments as standalone entry */
+    if (logs.length === 0 && attachments.length > 0) {
+        var attachId = 'bat-att-standalone';
+        html += '<div class="vtd-tl-entry">';
+        html += '<div class="vtd-tl-dot dot-neutral"><i class="uil uil-paperclip"></i></div>';
+        html += '<div class="vtd-tl-body">';
+        html += '<div class="vtd-tl-datetime"><i class="uil uil-image me-1"></i>Attachments</div>';
+        html += '<div class="vtd-tl-attachments" id="' + attachId + '">';
+        html += '<div class="vtd-tl-attach-grid">';
+        attachments.forEach(function (att) {
+            if (!att.url) return;
+            var isImage = att.type === 'Image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(att.url);
+            html += '<div style="text-align:center;"><div class="vtd-tl-attach-item">';
+            html += isImage
+                ? '<img src="' + _batEsc(att.url) + '" class="vtd-tl-attach-img" alt="' + _batEsc(att.name || '') + '">'
+                : '<div class="vtd-tl-attach-fallback"><i class="uil uil-file-alt"></i></div>';
+            html += '</div>';
+            if (att.name) { html += '<div class="vtd-tl-attach-name">' + _batEsc(att.name) + '</div>'; }
+            html += '</div>';
+        });
+        html += '</div></div></div></div>';
+    }
+
+    html += '</div>'; /* .vtd-timeline */
+
+    $('#batModalBody').html(html);
+}

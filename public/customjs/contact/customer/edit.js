@@ -1407,15 +1407,15 @@ $(document).ready(function(){
             opens: 'right',
             autoUpdateInput: false,
             locale: {
-                format: 'YYYY-MM-DD',
+                format: 'DD-MM-YYYY',
                 cancelLabel: 'Clear'
             }
         });
 
         $(this).on('apply.daterangepicker', function(ev, picker) {
             $(this).val(
-                picker.startDate.format('YYYY-MM-DD') + ' - ' +
-                picker.endDate.format('YYYY-MM-DD')
+                picker.startDate.format('DD-MM-YYYY') + ' - ' +
+                picker.endDate.format('DD-MM-YYYY')
             );
 
             // Store start and end dates into hidden inputs

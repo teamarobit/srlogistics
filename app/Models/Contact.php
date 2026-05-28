@@ -9,7 +9,8 @@ class Contact extends Model
 {
     use SoftDeletes;
 
-    
+    protected $guarded = [];
+
     public function cotype()
     {
         return $this->belongsTo(Cotype::class);

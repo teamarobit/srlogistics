@@ -106,6 +106,9 @@
 @endsection
 
 @section('js')
+<script>
+    var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
+</script>
 
 <script type="text/javascript" src="{{asset('customjs/vehicle/status/edit.js')}}"></script>
 
