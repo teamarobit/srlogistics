@@ -35,11 +35,11 @@ body{
                             
                             <form action="{{ route('contact.vehiclevendor.index') }}" id="searchform" class="d-flex align-items-center m-1">
                                 
-                                <div class="search-wrap d-inline-block ms-1" style="width:140px;">
+                                <div class="search-wrap d-inline-block ms-1" style="width:125px;">
                                     <input type="text" name="name" id="search_name" value="{{ $search_name ?? '' }}" class="form-control" placeholder="Search by Contact">
                                 </div>
                                 
-                                <div class="search-wrap d-inline-block ms-1" style="width:120px;">
+                                <div class="search-wrap d-inline-block ms-1" style="width:135px;">
                                     <select class="form-select select2" name="city" id="search_city"> 
                                         <option value="">Filter by City</option> 
                                         @forelse ($cities as $city)
@@ -53,7 +53,7 @@ body{
                                     </select>
                                 </div>
                                 
-                                <div class="search-wrap d-inline-block ms-1" style="width:120px;">
+                                <div class="search-wrap d-inline-block ms-1" style="width:110px;">
                                     <select name="rag" id="search_rag" class="form-select select2">
                                         <option value="">Filter by RAG</option>
                                         <option value="Red" {{ $search_rag == 'Red' ? 'selected' : '' }}>Red</option>
@@ -62,7 +62,7 @@ body{
                                     </select>
                                 </div>
                             
-                                <div class="search-wrap d-inline-block ms-1" style="width:120px;">
+                                <div class="search-wrap d-inline-block ms-1" style="width:110px;">
                                     <select name="size" id="search_size" class="form-select select2">
                                         <option value="">Filter by Size</option>
                                         <option value="Small"  {{ $search_size == 'Small' ? 'selected' : '' }}>Small</option>
@@ -71,10 +71,10 @@ body{
                                     </select>
                                 </div>
                                 
-                                <a href="{{ route('contact.vehiclevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1">Reset</a>
+                                <a href="{{ route('contact.vehiclevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1"><i class="uil uil-history me-1"></i>Reset</a>
                             
                                 <button type="button" id="bulkDeleteBtn" class="btn btn-danger reset-btn ms-1" style="text-transform: capitalize; display:none;" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    Delete
+                                    <i class="uil uil-trash-alt me-1"></i>Delete
                                 </button>
                             
                             </form>

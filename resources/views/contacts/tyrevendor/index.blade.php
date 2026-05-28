@@ -42,10 +42,10 @@
                                     </select>
                                 </div>
                                 
-                                <a href="{{ route('contact.tyrevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1">Reset</a>
+                                <a href="{{ route('contact.tyrevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1"><i class="uil uil-history me-1"></i>Reset</a>
                             
                                 <button type="button" id="bulkDeleteBtn" class="btn btn-danger reset-btn ms-1" style="text-transform: capitalize; display:none;" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    Delete
+                                    <i class="uil uil-trash-alt me-1"></i>Delete
                                 </button>
                             
                             </form>
