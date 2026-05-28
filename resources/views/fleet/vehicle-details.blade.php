@@ -102,7 +102,7 @@
                 <div class="v2-id-field-label">Driver</div>
                 <div class="v2-id-field-value">
                     {{ $vehicle->driverAllocation->contact->contact_name ?? 'Unassigned' }}
-                    <a class="v2-id-edit-link" href="javascript:void(0)"
+                    <a class="v2-id-edit-link edit-driver-btn" href="javascript:void(0)"
                        data-id="{{ $vehicle->id }}" data-bs-toggle="modal" data-bs-target="#notAssigned02">
                         <i class="uil uil-pen"></i>
                     </a>
@@ -3717,7 +3717,7 @@
                         <div class="form-group col-12 col-md-6">
                             <label>GPS Plan Start Date <span class="text-danger">*</span></label>
                             <input type="date" name="gps_plan_start_date" id="gps_plan_start_date" class="form-control general_date">
-                            <small class="error text-danger" id="add_plan_start_date_error"></small>
+                            <small class="error text-danger" id="add_gps_plan_start_date_error"></small>
                         </div>
                         <div class="form-group col-12 col-md-6">
                             <label>GPS Plan Validity (No. of Months) <span class="text-danger">*</span></label>
@@ -3727,7 +3727,7 @@
                         <div class="form-group col-12 col-md-6">
                             <label>Renew Date <span class="text-danger">*</span></label>
                             <input type="date" name="gps_plan_renew_date" id="gps_plan_renew_date" class="form-control" readonly>
-                            <small class="error text-danger" id="add_plan_renew_date_error"></small>
+                            <small class="error text-danger" id="add_gps_plan_renew_date_error"></small>
                         </div>
                         
                         <div class="form-group col-12 col-md-6">
