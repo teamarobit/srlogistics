@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.4') }}">
 
 @endsection
 
@@ -2045,7 +2045,329 @@
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
                                 <h5 class="mb-3"><i class="uil uil-road me-2"></i>Toll Charges Book</h5>
-                                <p class="text-muted mb-0">Toll charges history for this vehicle will appear here.</p>
+
+                                {{-- Mini Dashboard (static, month-wise; supports up to 12 months) --}}
+                                <div class="toll-mini-dashboard mb-4">
+                                    <div class="toll-month-grid">
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jan 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;9,840</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">14 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Feb 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;11,260</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">16 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Mar 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;13,720</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">19 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Apr 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;12,450</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">18 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">May 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;14,820</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">22 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jun 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;15,340</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">23 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jul 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;13,980</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">20 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Aug 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;16,210</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">24 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Sep 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;14,560</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">21 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Oct 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;17,430</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">26 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Nov 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;15,890</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">23 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Dec 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;18,250</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">27 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Filter Card (static) --}}
+                                <div class="accordion mt-3" id="accordionTollChargesBook">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="toll_charges_filter">
+                                            <button
+                                                class="accordion-button filter-options"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseTollChargesBook"
+                                                aria-expanded="true"
+                                                aria-controls="collapseTollChargesBook"
+                                            >
+                                                <div class="item-filter">
+                                                    <span class="filter-icon">
+                                                        <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                    </span>
+                                                    <p>Filter Options</p>
+                                                </div>
+                                            </button>
+                                        </h2>
+
+                                        <div
+                                            id="collapseTollChargesBook"
+                                            class="accordion-collapse collapse show"
+                                            aria-labelledby="toll_charges_filter"
+                                            data-bs-parent="#accordionTollChargesBook">
+                                            <div class="accordion-body">
+                                                <form class="vehicle_dform p-4">
+                                                    <div class="filtersearch-bd justify-content-between">
+
+                                                        <div class="vehicletype">
+                                                            <label>Toll Date Range</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control daterange"
+                                                                id="tollbook_daterange"
+                                                                name="toll_daterange"
+                                                                autocomplete="off"
+                                                                placeholder="Select date range..."
+                                                            />
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Fast-tag ID</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>FT-1001</option>
+                                                                <option>FT-1002</option>
+                                                                <option>FT-1003</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Fast-tag Bank Name</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>ICICI Bank</option>
+                                                                <option>HDFC Bank</option>
+                                                                <option>SBI</option>
+                                                                <option>Axis Bank</option>
+                                                                <option>Paytm Payments Bank</option>
+                                                                <option>Kotak Mahindra Bank</option>
+                                                                <option>IDFC First Bank</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Driver Name &amp; Code</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>Sujit Paul (DRV-001)</option>
+                                                                <option>Ramesh Kumar (DRV-002)</option>
+                                                                <option>Mohan Singh (DRV-003)</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Location</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>Hyderabad</option>
+                                                                <option>Kolkata</option>
+                                                                <option>Mumbai</option>
+                                                                <option>Delhi</option>
+                                                                <option>Bengaluru</option>
+                                                                <option>Chennai</option>
+                                                                <option>Pune</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                        <button class="btn btn-primary ms-1" type="button">
+                                                            <i class="uil uil-sync me-1"></i>Reset
+                                                        </button>
+
+                                                        <div class="dropdown ms-1">
+                                                            <button
+                                                                class="btn btn-primary dropdown-toggle d-flex"
+                                                                type="button"
+                                                                id="exportBtnTollChargesBook"
+                                                                data-bs-toggle="dropdown"
+                                                                aria-expanded="false"
+                                                            >
+                                                                Export <i class="uil uil-upload ms-1"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="exportBtnTollChargesBook">
+                                                                <li>
+                                                                    <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-muted mb-0 mt-3">Toll charges history for this vehicle will appear here.</p>
                             </div>
                         </div>
                     </div>
