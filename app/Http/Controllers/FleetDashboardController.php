@@ -51,6 +51,7 @@ use App\Models\Insuranceclaimfollowup;
 use App\Models\VehicleInsurancePolicy;
 use App\Models\Insurancecompany;
 use App\Models\Workshop;
+use App\Models\Expense;
 
 
 use Spatie\Permission\Models\Role;
@@ -265,7 +266,11 @@ class FleetDashboardController extends Controller
             ->orderBy('contact_name')
             ->get(['id', 'contact_name', 'contact_code']);
 
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers'));
+        // Expense Book — mini-dashboard type cards (dynamic types, static amounts)
+        $expenseTypes = Expense::where('status', 'Active')
+            ->get(['id', 'name']);
+
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers', 'expenseTypes'));
     }
 
     public function getVehicleDetailsV2($id)

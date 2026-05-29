@@ -2956,3 +2956,153 @@
     display: inline-block;
     flex-shrink: 0;
 }
+
+/* =====================================================================
+   EXPENSE BOOK — MINI DASHBOARD (Total + Expense Type Wise)  v5.9
+   ===================================================================== */
+#expenses .exp-mini-dashboard {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    padding: 14px 16px 16px;
+    margin-top: 14px;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#expenses .exp-mini-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #E4E8F3;
+    flex-wrap: wrap;
+}
+#expenses .exp-mini-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #032671;
+    letter-spacing: 0.2px;
+}
+#expenses .exp-mini-title i {
+    font-size: 18px;
+    color: #032671;
+}
+#expenses .exp-mini-sub {
+    font-size: 11.5px;
+    color: #8a92a8;
+    font-weight: 500;
+}
+#expenses .exp-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0,1fr));
+    gap: 10px;
+}
+#expenses .exp-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#expenses .exp-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.08);
+}
+#expenses .exp-kpi-total {
+    background: linear-gradient(135deg, #032671 0%, #1a3a8f 100%);
+    border-color: #032671;
+    color: #fff;
+}
+#expenses .exp-kpi-total .exp-kpi-icon {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+}
+#expenses .exp-kpi-total .exp-kpi-body p {
+    color: rgba(255,255,255,0.85);
+}
+#expenses .exp-kpi-total .exp-kpi-body h4 {
+    color: #fff;
+}
+#expenses .exp-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+}
+#expenses .exp-kpi-icon.exp-c1 { background: rgba(237,76,92,0.10);  color: #C82F40; } /* Fuel */
+#expenses .exp-kpi-icon.exp-c2 { background: rgba(242,169,59,0.10); color: #B97400; } /* Toll */
+#expenses .exp-kpi-icon.exp-c3 { background: rgba(45,197,111,0.10); color: #1a9152; } /* Driver Allowance */
+#expenses .exp-kpi-icon.exp-c4 { background: rgba(123,97,255,0.10); color: #5a3fd1; } /* Repair */
+#expenses .exp-kpi-icon.exp-c5 { background: rgba(0,165,168,0.10);  color: #00858A; } /* Loading */
+#expenses .exp-kpi-icon.exp-c6 { background: rgba(3,38,113,0.08);   color: #032671; } /* Parking */
+#expenses .exp-kpi-icon.exp-c7 { background: rgba(221,107,32,0.10); color: #B0530E; } /* FASTag */
+#expenses .exp-kpi-icon.exp-c8 { background: rgba(108,117,145,0.12); color: #4A5168; } /* Misc */
+
+#expenses .exp-kpi-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: #F7F9FE;
+    border: 1px dashed #E4E8F3;
+    border-radius: 10px;
+    font-size: 12.5px;
+    color: #6c7591;
+    font-weight: 500;
+}
+#expenses .exp-kpi-empty i { font-size: 16px; color: #8a92a8; }
+
+#expenses .exp-kpi-body {
+    min-width: 0;
+}
+#expenses .exp-kpi-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+#expenses .exp-kpi-body h4 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a2042;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#expenses .exp-kpi-body h4 i {
+    font-size: 13px;
+    margin-right: 2px;
+    color: inherit;
+}
+
+@media (max-width: 1200px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+@media (max-width: 991px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 576px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    #expenses .exp-mini-head { flex-direction: column; align-items: flex-start; }
+}

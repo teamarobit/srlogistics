@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.9') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.1') }}">
 
 @endsection
 
@@ -3109,6 +3109,45 @@
 
                     <!--Expenses content-start-->
                     <div class="tab-pane fade" id="expenses">
+
+                        {{-- Mini-Dashboard — Total + Expense Type Wise (Static) --}}
+                        <div class="exp-mini-dashboard">
+                            <div class="exp-mini-head">
+                                <span class="exp-mini-title">
+                                    <i class="uil uil-chart-pie"></i> Expense Mini-Dashboard
+                                </span>
+                                <span class="exp-mini-sub">Snapshot of expenses for this vehicle</span>
+                            </div>
+
+                            <div class="exp-kpi-grid">
+                                {{-- Total Expense (highlight card) --}}
+                                <div class="exp-kpi exp-kpi-total">
+                                    <div class="exp-kpi-icon"><i class="uil uil-usd-circle"></i></div>
+                                    <div class="exp-kpi-body">
+                                        <p>Total Expense</p>
+                                        <h4><i class="fa fa-inr"></i> 1,25,000</h4>
+                                    </div>
+                                </div>
+
+                                {{-- Expense Type Wise — dynamic from Expense model (amounts remain static) --}}
+                                @forelse($expenseTypes as $i => $type)
+                                    <div class="exp-kpi">
+                                        <div class="exp-kpi-icon exp-c{{ ($i % 8) + 1 }}"><i class="uil uil-tag-alt"></i></div>
+                                        <div class="exp-kpi-body">
+                                            <p>{{ $type->name }}</p>
+                                            <h4><i class="fa fa-inr"></i> 0</h4>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="exp-kpi-empty">
+                                        <i class="uil uil-info-circle"></i>
+                                        No active expense types configured.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                        {{-- End Mini-Dashboard --}}
+
                         <div class="accordion mt-3" id="accordionExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="fuel_book">
