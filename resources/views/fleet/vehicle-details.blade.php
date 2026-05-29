@@ -1687,7 +1687,7 @@
                 <ul class="nav nav-tabs item-box">
                     <li class="nav-item">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pl_book">
-                            <span class="icon"><i class="uil uil-chart-line" style="font-size:18px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-chart-line" style="font-size:18px;color:#6c757d;"></i></span>
                             P&amp;L Book
                         </button>
                     </li>
@@ -1715,7 +1715,7 @@
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#toll_charges">
-                            <span class="icon"><i class="uil uil-money-bill" style="font-size:24px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-money-bill" style="font-size:24px;color:#6c757d;"></i></span>
                             Toll Charges Book
                         </button>
                     </li>
@@ -1729,21 +1729,21 @@
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#challan">
-                            <span class="icon"><i class="uil uil-file-alt" style="font-size:18px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-file-alt" style="font-size:18px;color:#6c757d;"></i></span>
                             Challan Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
-                            <span class="icon"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
+                            <span class="icon pb-0"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
                             Document Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
-                            <span class="icon"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
                             Insurance Book
                         </button>
                     </li>
@@ -1757,14 +1757,14 @@
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#driver_history">
-                            <span class="icon"><i class="uil uil-history" style="font-size:18px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-history" style="font-size:18px;color:#6c757d;"></i></span>
                             Driver History Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tyre_book">
-                            <span class="icon"><i class="uil uil-dashboard" style="font-size:18px;color:#6c757d;"></i></span>
+                            <span class="icon pb-0"><i class="uil uil-dashboard" style="font-size:18px;color:#6c757d;"></i></span>
                             Tyre Book
                         </button>
                     </li>
