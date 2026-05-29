@@ -3312,49 +3312,114 @@
                                 <table class="table custom-driver-table">
                                     <thead>
                                         <tr>
+                                            <th>S.No</th>
+                                            <th>Trip ID</th>
+                                            <th>LR Number &amp; Date</th>
+                                            <th>Driver Name &amp; Code</th>
+                                            <th>Route</th>
                                             <th>Date</th>
                                             <th>Expense Type</th>
-                                            <th>Payment Mode</th>
-                                            <th>Trip</th>
-                                            <th>Remark</th>
-                                            <th>Amount</th>
-                                            <th class="text-center">Actions</th>
+                                            <th>Expense Amount</th>
+                                            <th>Payment Method</th>
+                                            <th>Comment</th>
+                                            <th>Attachment</th>
                                         </tr>
                                     </thead>
-                            
+
                                     <tbody>
                                         <!-- Row 1 -->
                                         <tr>
+                                            <td>1</td>
+                                            <td>TRP-56667</td>
+                                            <td>
+                                                LR-10234
+                                                <span class="text-secondary d-block">08-09-2025</span>
+                                            </td>
+                                            <td>
+                                                Ramesh Kumar
+                                                <span class="text-secondary d-block">DRV-001</span>
+                                            </td>
+                                            <td>Chennai &rarr; Bangalore</td>
                                             <td>08-09-2025</td>
                                             <td>Maintenance</td>
+                                            <td>&#8377; 4,500</td>
                                             <td>Cash</td>
-                                            <td>56667</td>
                                             <td>Paid on call request</td>
-                                            <td>₹ 4500</td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success">
-                                                    <i class="uil uil-pen me-2"></i>
-                                                </a>
-                                                <a class="item-delete text-danger">
-                                                    <i class="uil uil-trash-alt"></i>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
                                             </td>
                                         </tr>
-                            
+
                                         <!-- Row 2 -->
                                         <tr>
+                                            <td>2</td>
+                                            <td>TRP-56867</td>
+                                            <td>
+                                                LR-10298
+                                                <span class="text-secondary d-block">08-10-2025</span>
+                                            </td>
+                                            <td>
+                                                Suresh Babu
+                                                <span class="text-secondary d-block">DRV-014</span>
+                                            </td>
+                                            <td>Hyderabad &rarr; Pune</td>
                                             <td>08-10-2025</td>
-                                            <td>Police</td>
+                                            <td>Repair</td>
+                                            <td>&#8377; 1,000</td>
                                             <td>Cash</td>
-                                            <td>56867</td>
                                             <td>Paid on call request</td>
-                                            <td>₹ 1000</td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success">
-                                                    <i class="uil uil-pen me-2"></i>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
-                                                <a class="item-delete text-danger">
-                                                    <i class="uil uil-trash-alt"></i>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 3 — Diesel without trip → Route shows Empty -->
+                                        <tr>
+                                            <td>3</td>
+                                            <td>&mdash;</td>
+                                            <td>&mdash;</td>
+                                            <td>
+                                                Mahesh Singh
+                                                <span class="text-secondary d-block">DRV-022</span>
+                                            </td>
+                                            <td><span class="text-muted">Empty</span></td>
+                                            <td>09-10-2025</td>
+                                            <td>Diesel</td>
+                                            <td>&#8377; 3,200</td>
+                                            <td>UPI</td>
+                                            <td>Top-up at depot</td>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 4 — Driver advance -->
+                                        <tr>
+                                            <td>4</td>
+                                            <td>TRP-57012</td>
+                                            <td>
+                                                LR-10355
+                                                <span class="text-secondary d-block">12-10-2025</span>
+                                            </td>
+                                            <td>
+                                                Ramesh Kumar
+                                                <span class="text-secondary d-block">DRV-001</span>
+                                            </td>
+                                            <td>Chennai &rarr; Coimbatore</td>
+                                            <td>12-10-2025</td>
+                                            <td>Driver Advance</td>
+                                            <td>&#8377; 5,000</td>
+                                            <td>Bank Transfer</td>
+                                            <td>Advance for trip expenses</td>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
                                             </td>
                                         </tr>
