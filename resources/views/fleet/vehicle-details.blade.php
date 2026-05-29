@@ -1285,7 +1285,7 @@
 
                                 @endif {{-- /if($totalTyres === 0) --}}
 
-                                @if(true)
+                                @if(false)
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
