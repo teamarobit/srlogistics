@@ -251,7 +251,7 @@ body{
                                     @csrf
                                 
                                     <div class="form-group position-relative">
-                                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Email-ID" class="form-control @error('email') is-invalid @enderror">
+                                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Email-ID" class="form-control mb-0 @error('email') is-invalid @enderror">
                                         <i class="uil uil-user psw-tgl"></i>
                                         @error('email')
                                         <small class="error text-danger" id="add_email_error"><strong>{{ $message }}</strong></small>
@@ -259,7 +259,7 @@ body{
                                     </div>
                                     
                                     <div class="form-group position-relative">
-                                        <input type="password" id="psw" name="password" placeholder="Password" class="form-control @error('password') is-invalid @enderror">
+                                        <input type="password" id="psw" name="password" placeholder="Password" class="form-control mb-0 @error('password') is-invalid @enderror">
                                         <i class="uil uil-eye-slash psw-tgl"></i>
                                         @error('password')
                                         <small class="error text-danger" id="add_password_error"><strong>{{ $message }}</strong></small>

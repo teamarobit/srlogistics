@@ -185,15 +185,15 @@
                               </div>
                               <div class="col-12 col-md-6">
                                   <div class="d-flex">
-                                      <div class="form-check d-flex me-2 if-owned">
+                                      <div class="form-check d-flex me-2 if-owned" style="height: 0px;">
                                           <input class="form-check-input" type="radio" name="branch_ownership" id="own" value="Owned">
-                                          <label class="form-check-label" for="own">
+                                          <label class="form-check-label mb-0" for="own">
                                               Owned
                                           </label>
                                       </div>
-                                      <div class="form-check d-flex if-rental">
+                                      <div class="form-check d-flex if-rental" style="height: 0px;">
                                           <input class="form-check-input" type="radio" name="branch_ownership" id="rental" value="Rental">
-                                          <label class="form-check-label" for="rental">
+                                          <label class="form-check-label mb-0" for="rental">
                                               Rental
                                           </label>
                                       </div>  

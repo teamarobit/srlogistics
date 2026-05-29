@@ -207,7 +207,7 @@
                               </div>
                               <div class="col-12 col-md-6">
                                   <!--<input type="text" class="form-control">-->
-                                  <div class="input-group mb-3">
+                                  <div class="input-group">
                                       <span class="input-group-text" id="driver">₹</span>
                                       <input type="text" name="fixed_driver_advance" class="form-control text-end decimalonly" placeholder="0.00" aria-describedby="driver">
                                   </div>
@@ -225,7 +225,7 @@
                             </div>
                             
                             <div class="col-12 col-md-9 toll-wrapper">
-                                <div class="row toll-row mb-2 d-flex position-relative">
+                                <div class="row toll-row d-flex position-relative">
                                     
                                     <div class="col-12 col-md-3">
                                         <div class="form-floating mb-3">
@@ -291,7 +291,7 @@
                             
                             <div class="col-12 col-md-9 rto-wrapper">
                                 
-                                <div class="row rto-row mb-2 position-relative"> 
+                                <div class="row rto-row position-relative"> 
                                     
                                     <div class="col-12 col-md-3">
                                         <div class="form-floating mb-3">

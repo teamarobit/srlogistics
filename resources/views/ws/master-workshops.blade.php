@@ -401,7 +401,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Pincode</label>
-                            <input type="text" class="form-control" name="pincode" id="editWsPincode" placeholder="500001" maxlength="10">
+                            <input type="text" class="form-control" name="pincode" id="editWsPincode" placeholder="e.g. 500001" maxlength="10">
                         </div>
 
                         <div class="col-md-6">

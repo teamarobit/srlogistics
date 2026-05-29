@@ -22,14 +22,14 @@
                       <div class="row align-items-end">
                           <div class="col-12">
                               <h5 class="d-inline-block mb-0">Routes</h5>
-                              <a href="{{ route('route.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Route</a>
+                              <a href="{{ route('route.create') }}" class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Route</a>
                               
                               <form action="{{ route('route.index') }}" id="searchform" class="d-inline-block">
-                                  <div class="search-wrap d-inline-block" style="width: 125px;">
+                                  <div class="search-wrap d-inline-block" style="width: 115px;">
                                       <input type="text" name="route" id="search_route" value="{{ old('route', $search_route_name) }}" class="form-control" placeholder="Search by Route" />
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block" style="width: 140px;">
+                                  <div class="search-wrap d-inline-block" style="width: 120px;">
                                       <input type="text" name="source" id="search_source" value="{{ old('source', $search_source) }}" class="form-control" placeholder="Search by Source" />
                                   </div>
                                   
@@ -37,9 +37,9 @@
                                       <input type="text" name="destination" id="search_destination" value="{{ old('destination', $search_destination) }}" class="form-control" placeholder="Search by Destination" />
                                   </div>
                                   
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 130px;">
+                                  <div class="search-wrap d-inline-block ms-2" style="width: 140px;">
                                       <select name="route_type" id="route_type" class="form-select">
-                                          <option value="">Filter by Route Type</option>
+                                          <option value="">Filter by Type</option>
                                           <option value="Line" @if($search_route_type == 'Line') selected @endif>Line</option>
                                           <option value="Local" @if($search_route_type == 'Local') selected @endif>Local</option>
                                       </select>
@@ -72,7 +72,7 @@
                                         <th style="width: 150px">Route Name</th>
                                         <th>Source<br/>Destination</th>
                                         <th style="width: 200px">Fixed  KM<br/>Transit Time</th>
-                                        <th style="width: 200px">Fixed Diesel BS-3 & BS-4<br/>Fixed Diesel BS-6</th>
+                                        <th style="min-width: 200px">Fixed Diesel BS-3 & BS-4<br/>Fixed Diesel BS-6</th>
                                         <th style="width: 200px">Fixed Driver Advance</th>
                                         <th>Route Type</th>
                                         <th>Status</th>

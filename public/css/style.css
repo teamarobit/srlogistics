@@ -99,6 +99,10 @@ p{
 /*    max-width: 1600px;*/
 /*}*/
 
+.vehicle-size-row{
+    border: 1px solid #d7e3fd;
+}
+
 .text-theme {
     color: #032671;
 }
