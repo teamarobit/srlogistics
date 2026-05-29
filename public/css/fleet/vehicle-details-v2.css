@@ -128,44 +128,78 @@
     box-shadow: 0 2px 8px rgba(3,38,113,0.06);
 }
 
-/* ── Scroll wrapper + thin nav buttons ── */
+/* ── Scroll wrapper + thin nav buttons (brand gradient pill) ── */
 .item-box-scroll-wrap {
     position: relative;
 }
+
+/* Soft fade overlays on the strip edges — hints that more tabs exist */
+.item-box-scroll-wrap::before,
+.item-box-scroll-wrap::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    width: 38px;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity .2s ease;
+    border-radius: 10px;
+}
+.item-box-scroll-wrap::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.item-box-scroll-wrap::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.item-box-scroll-wrap.has-prev::before { opacity: 1; }
+.item-box-scroll-wrap.has-next::after  { opacity: 1; }
+
 .item-box-scroll-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 6;
-    width: 22px;
-    height: 34px;
+    width: 18px;
+    height: 48px;
     padding: 0;
-    border: 1px solid #e4e7ef;
-    background: #ffffff;
-    border-radius: 6px;
-    color: #032671;
-    font-size: 16px;
+    border: none;
+    background: linear-gradient(135deg, #032671, #0a3d9e);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(3,38,113,0.18);
-    transition: background .15s ease, color .15s ease, transform .15s ease;
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.9);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 .item-box-scroll-btn:hover {
-    background: #032671;
-    color: #ffffff;
+    background: linear-gradient(135deg, #0a3d9e, #1a52c4);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.45), 0 0 0 3px rgba(255,255,255,0.95);
+    transform: translateY(-50%) scale(1.08);
 }
 .item-box-scroll-btn:active {
-    transform: translateY(-50%) scale(0.96);
+    transform: translateY(-50%) scale(0.94);
+    box-shadow: 0 2px 6px rgba(3,38,113,0.35), 0 0 0 3px rgba(255,255,255,0.9);
+}
+.item-box-scroll-btn:focus { outline: none; }
+.item-box-scroll-btn:focus-visible {
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.95), 0 0 0 5px rgba(10,61,158,0.35);
 }
 .item-box-scroll-btn i {
     line-height: 1;
     pointer-events: none;
+    display: inline-flex;
 }
-.item-box-scroll-prev { left: -4px; }
-.item-box-scroll-next { right: -4px; }
+.item-box-scroll-prev { left: -8px; }
+.item-box-scroll-next { right: -8px; }
 .item-box-scroll-btn.is-visible { display: inline-flex; }
 .vehicle-itemtab .nav-tabs.item-box::-webkit-scrollbar { display: none; }
 .vehicle-itemtab .nav-tabs.item-box .nav-link {

@@ -25,10 +25,15 @@ $(function () {
         if (maxScroll <= TOLERANCE) {
             $prev.removeClass('is-visible');
             $next.removeClass('is-visible');
+            $wrap.removeClass('has-prev has-next');
             return;
         }
-        $prev.toggleClass('is-visible', el.scrollLeft > TOLERANCE);
-        $next.toggleClass('is-visible', el.scrollLeft < (maxScroll - TOLERANCE));
+        var showPrev = el.scrollLeft > TOLERANCE;
+        var showNext = el.scrollLeft < (maxScroll - TOLERANCE);
+        $prev.toggleClass('is-visible', showPrev);
+        $next.toggleClass('is-visible', showNext);
+        $wrap.toggleClass('has-prev', showPrev);
+        $wrap.toggleClass('has-next', showNext);
     }
 
     $prev.on('click', function () {
