@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.3') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.5') }}">
 
 @endsection
 
@@ -2546,7 +2546,273 @@
 
                     <!--Fuel-Book-content-here-start-->
                     <div class="tab-pane fade" id="fuel">
-                        <div class="accordion mt-3" id="accordionExample">
+
+                        {{-- Fuel Expenses & Consumption KPI Row --}}
+                        {{-- <div class="totalrevenue mt-3">
+                            <div class="item-row">
+
+                                <div class="itemcol">
+                                    <p>Total Fuel Expenses</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Cash</h6>
+                                            <span class="number c-01">₹20,000</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Credit</h6>
+                                            <span class="number c-01">₹25,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Total Fuel Consumption</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Quantity</h6>
+                                            <span class="number c-02">1,000 L</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Avg. Rate</h6>
+                                            <span class="number c-02">₹100 / L</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Total Refuels</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Count</h6>
+                                            <span class="number c-03">24</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Avg. Qty</h6>
+                                            <span class="number c-03">42 L</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Mileage (KMPL)</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">This Month</h6>
+                                            <span class="number c-04">4.8</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Last Month</h6>
+                                            <span class="number c-04">4.6</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div> --}}
+
+                        {{-- ============================================================
+                             FUEL BOOK — MINI DASHBOARD (static)
+                             Isolated component (fmd-* namespace). Does NOT reuse
+                             .totalrevenue / .item-row / .itemcol — those carry a
+                             20% fixed width from style.css that broke the grid.
+                             ============================================================ --}}
+                        <div class="fmd mt-3">
+
+                            {{-- Hero KPI strip --}}
+                            <div class="fmd-hero">
+                                <div class="fmd-hero-card fmd-hero--pri">
+                                    <span class="fmd-hero-label">Total Fuel — Amount</span>
+                                    <span class="fmd-hero-value">₹4,50,000</span>
+                                    <span class="fmd-hero-sub">across 4,500 L</span>
+                                </div>
+                                <div class="fmd-hero-card fmd-hero--succ">
+                                    <span class="fmd-hero-label">Total Fuel — Quantity</span>
+                                    <span class="fmd-hero-value">4,500 <span class="fmd-hero-unit">L</span></span>
+                                    <span class="fmd-hero-sub">across 24 refuels</span>
+                                </div>
+                                <div class="fmd-hero-card fmd-hero--warn">
+                                    <span class="fmd-hero-label">Average Fuel Rate</span>
+                                    <span class="fmd-hero-value">₹100.00 <span class="fmd-hero-unit">/ L</span></span>
+                                    <span class="fmd-hero-sub">Total Amount / Total Qty</span>
+                                </div>
+                            </div>
+
+                            {{-- Section: By Payment Method --}}
+                            <div class="fmd-panel mt-3">
+                                <div class="fmd-panel-head">
+                                    <div class="fmd-panel-title">
+                                        <span class="fmd-panel-bullet"></span>
+                                        By Payment Method
+                                    </div>
+                                    <div class="fmd-panel-sub">Split of amount &amp; quantity across payment modes</div>
+                                </div>
+                                <div class="fmd-panel-body">
+                                    <div class="fmd-grid fmd-grid--4">
+
+                                        <div class="fmd-card fmd-card--pri">
+                                            <div class="fmd-card-name">OTP</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,20,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,200 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--succ">
+                                            <div class="fmd-card-name">Market-pe</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹95,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">950 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--warn">
+                                            <div class="fmd-card-name">UPI</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹85,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">850 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--danger">
+                                            <div class="fmd-card-name">On Credit</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,50,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,500 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Section: By Fuel Company --}}
+                            <div class="fmd-panel mt-3">
+                                <div class="fmd-panel-head">
+                                    <div class="fmd-panel-title">
+                                        <span class="fmd-panel-bullet"></span>
+                                        By Fuel Company
+                                    </div>
+                                    <div class="fmd-panel-sub">Spend &amp; quantity per OMC / retail outlet</div>
+                                </div>
+                                <div class="fmd-panel-body">
+                                    <div class="fmd-grid fmd-grid--3">
+
+                                        <div class="fmd-card fmd-card--pri">
+                                            <div class="fmd-card-name">Jio</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹75,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">750 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--warn">
+                                            <div class="fmd-card-name">Nyara</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹68,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">680 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--purp">
+                                            <div class="fmd-card-name">Indian Oil</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,10,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,100 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--danger">
+                                            <div class="fmd-card-name">Bharat Petroleum</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹82,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">820 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--succ">
+                                            <div class="fmd-card-name">HP</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹70,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">700 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--info">
+                                            <div class="fmd-card-name">Kalpataru Fuel Station</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹45,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">450 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {{-- /Fuel Book Mini Dashboard --}}
+
+                        <div class="accordion mt-3" id="accordionFuelBook">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="fuel_book">
                                     <button
@@ -2555,7 +2821,7 @@
                                         data-bs-toggle="collapse"
                                         data-bs-target="#collapse02"
                                         aria-expanded="true"
-                                        aria-controls="collapseOne"
+                                        aria-controls="collapse02"
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
@@ -2570,77 +2836,135 @@
                                     id="collapse02"
                                     class="accordion-collapse collapse show"
                                     aria-labelledby="fuel_book"
-                                    data-bs-parent="#accordionExample">
+                                    data-bs-parent="#accordionFuelBook">
                                     <div class="accordion-body">
-                                        <div class="row">
-                                            
-                                            <div class="col-lg-6">
-                                                <form class="filterbd fualbook_form">
-                                                    <div class="filtersearch-bd align-items-end justify-content-start">
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
 
-                                                         <div class="vehicletype">
-                                                            <label>Filter by Date Range</label>
-                                                            <input type="text" class="form-control" name="daterange"  placeholder="Filter by date range" />
-                                                        </div>
-                                                        <button class="btn btn-primary ms-1 d-flex" type="button"><i class="uil uil-sync me-1"></i>Reset</button>
-                                                        <div class="dropdown export_wrap ms-1">
-                                                          <button class="btn btn-primary dropdown-toggle d-flex" type="button" id="exportBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Export <i class="uil uil-upload ms-1"></i>
-                                                          </button>
-                                                          
-                                                          <ul class="dropdown-menu " aria-labelledby="exportBtn">
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
-                                                          </ul>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                                                <div class="vehicletype">
+                                                    <label>Fuel Date Range</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control daterange"
+                                                        id="fuelbook_daterange"
+                                                        name="fuel_daterange"
+                                                        autocomplete="off"
+                                                        placeholder="Select date range..."
+                                                    />
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Fuel Company</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Indian Oil (IOCL)</option>
+                                                        <option>Hindustan Petroleum (HPCL)</option>
+                                                        <option>Bharat Petroleum (BPCL)</option>
+                                                        <option>Reliance Petroleum</option>
+                                                        <option>Nayara Energy</option>
+                                                        <option>Shell</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Location</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Hyderabad</option>
+                                                        <option>Kolkata</option>
+                                                        <option>Mumbai</option>
+                                                        <option>Delhi</option>
+                                                        <option>Bengaluru</option>
+                                                        <option>Chennai</option>
+                                                        <option>Pune</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Payment Method</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>OTP</option>
+                                                        <option>Market-pe</option>
+                                                        <option>UPI</option>
+                                                        <option>On Credit</option>
+                                                    </select>
+                                                </div>
+
                                             </div>
 
-
-                                            <div class="col-lg-6">
-                                                <div class="expenses_and_quantity">
-                                                    <div class="row item_row">
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                
-                                                                <p>Total Fuel Expenses</p>
-                                                                
-                                                                <div class="amount_sec">
-                                                                  <i class="fa fa-inr"></i>10000
-                                                                </div>
-                                                                
-                                                                <div class="botom_sec">
-                                                                    <span class="bor_pa0"><i class="bi bi-cash"></i>Cash:<i class="fa fa-inr"></i>20000</span>
-                                                                    <span><i class="bi bi-credit-card "></i>Credit:<i class="fa fa-inr"></i>25000</span>
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                <p>Total Fuel Consumption</p>
-                                                                <div class="amount_sec">
-                                                                    <i class="bi bi-fuel-pump"></i>1000 L
-                                                                </div>
-                                                                <div class="botom_sec">
-                                                                    <span class="p-0"><i class="bi bi-graph-up "></i>Average Rate: <i class="fa fa-inr"></i>100 / L</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by Trip ID"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
                                                     </div>
                                                 </div>
-                                            </div>                                                
-                                            
-                                        </div>
+
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by LR Number"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
+                                                    </div>
+                                                </div>
+
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnFuelBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnFuelBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >Excel</a
+                                                            >
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >PDF</a
+                                                            >
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        
+
                         <div class="sr_dashboard0_table">
                             <div class="container-fluid">
                                 <!--<div class="itemtop mb-4">-->

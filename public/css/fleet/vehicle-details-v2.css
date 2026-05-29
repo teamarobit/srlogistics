@@ -1400,6 +1400,258 @@
 }
 
 /* =====================================================
+   FUEL BOOK — MINI DASHBOARD (.fmd-*)
+   Self-contained component. Does NOT reuse the legacy
+   .totalrevenue / .item-row / .itemcol classes — those
+   carry a fixed `width: 20%` from global style.css that
+   collapses every tile.
+
+   Color tokens used (kept in sync with the existing
+   .number .c-0X ramp on this page):
+     pri    #032671  navy   (brand primary)
+     succ   #16a34a  green
+     warn   #E59E04  amber
+     danger #EE2B2B  red
+     purp   #7c3aed  purple
+     info   #4756FF  indigo
+   ===================================================== */
+
+#fuel .fmd {
+    --fmd-pri:    #032671;
+    --fmd-succ:   #16a34a;
+    --fmd-warn:   #E59E04;
+    --fmd-danger: #EE2B2B;
+    --fmd-purp:   #7c3aed;
+    --fmd-info:   #4756FF;
+    --fmd-border: #E8E8E8;
+    --fmd-surf:   #FFFFFF;
+    --fmd-soft:   #F6F8FB;
+    --fmd-text:   #2D2D2D;
+    --fmd-muted:  #6B7280;
+
+    font-family: Inter, sans-serif;
+    color: var(--fmd-text);
+}
+
+/* ---------- Hero KPI strip ---------- */
+#fuel .fmd .fmd-hero {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 0;
+}
+
+#fuel .fmd .fmd-hero-card {
+    background: var(--fmd-surf);
+    border: 1px solid var(--fmd-border);
+    border-left: 4px solid var(--fmd-pri);
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    transition: box-shadow .18s ease, transform .18s ease;
+}
+
+#fuel .fmd .fmd-hero-card:hover {
+    box-shadow: 0 4px 14px rgba(3, 38, 113, 0.08);
+    transform: translateY(-1px);
+}
+
+#fuel .fmd .fmd-hero--pri  { border-left-color: var(--fmd-pri); }
+#fuel .fmd .fmd-hero--succ { border-left-color: var(--fmd-succ); }
+#fuel .fmd .fmd-hero--warn { border-left-color: var(--fmd-warn); }
+
+#fuel .fmd .fmd-hero-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fmd-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+}
+
+#fuel .fmd .fmd-hero-value {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--fmd-pri);
+    margin-top: 2px;
+    word-break: break-word;
+}
+
+#fuel .fmd .fmd-hero--succ .fmd-hero-value { color: var(--fmd-succ); }
+#fuel .fmd .fmd-hero--warn .fmd-hero-value { color: var(--fmd-warn); }
+
+#fuel .fmd .fmd-hero-unit {
+    font-size: 14px;
+    font-weight: 500;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 2px;
+}
+
+#fuel .fmd .fmd-hero-sub {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--fmd-muted);
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+/* ---------- Section panel ---------- */
+#fuel .fmd .fmd-panel {
+    background: var(--fmd-surf);
+    border: 1px solid var(--fmd-border);
+    border-radius: 8px;
+    padding: 14px 16px 16px;
+}
+
+#fuel .fmd .fmd-panel-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 0 10px 0;
+    margin: 0 0 12px 0;
+    border-bottom: 1px solid #F0F2F5;
+}
+
+#fuel .fmd .fmd-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fmd-pri);
+    line-height: 1.2;
+    letter-spacing: 0.1px;
+}
+
+#fuel .fmd .fmd-panel-bullet {
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--fmd-pri);
+}
+
+#fuel .fmd .fmd-panel-sub {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--fmd-muted);
+    line-height: 1.3;
+    padding-left: 12px;
+}
+
+#fuel .fmd .fmd-panel-body {
+    padding: 0;
+}
+
+/* ---------- Grid ---------- */
+#fuel .fmd .fmd-grid {
+    display: grid;
+    gap: 12px;
+    align-items: stretch;
+}
+
+#fuel .fmd .fmd-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#fuel .fmd .fmd-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+/* ---------- KPI mini card ---------- */
+#fuel .fmd .fmd-card {
+    background: var(--fmd-soft);
+    border: 1px solid var(--fmd-border);
+    border-left: 3px solid var(--fmd-pri);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+#fuel .fmd .fmd-card:hover {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(3, 38, 113, 0.06);
+}
+
+#fuel .fmd .fmd-card--pri    { border-left-color: var(--fmd-pri); }
+#fuel .fmd .fmd-card--succ   { border-left-color: var(--fmd-succ); }
+#fuel .fmd .fmd-card--warn   { border-left-color: var(--fmd-warn); }
+#fuel .fmd .fmd-card--danger { border-left-color: var(--fmd-danger); }
+#fuel .fmd .fmd-card--purp   { border-left-color: var(--fmd-purp); }
+#fuel .fmd .fmd-card--info   { border-left-color: var(--fmd-info); }
+
+#fuel .fmd .fmd-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fmd-text);
+    line-height: 1.25;
+    padding: 0 0 6px 0;
+    border-bottom: 1px dashed #E5E7EB;
+    word-break: break-word;
+}
+
+#fuel .fmd .fmd-card-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#fuel .fmd .fmd-stat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+}
+
+#fuel .fmd .fmd-stat-label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--fmd-muted);
+    flex-shrink: 0;
+}
+
+#fuel .fmd .fmd-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--fmd-text);
+    text-align: right;
+    word-break: break-word;
+}
+
+#fuel .fmd .fmd-card--pri    .fmd-stat-value { color: var(--fmd-pri); }
+#fuel .fmd .fmd-card--succ   .fmd-stat-value { color: var(--fmd-succ); }
+#fuel .fmd .fmd-card--warn   .fmd-stat-value { color: var(--fmd-warn); }
+#fuel .fmd .fmd-card--danger .fmd-stat-value { color: var(--fmd-danger); }
+#fuel .fmd .fmd-card--purp   .fmd-stat-value { color: var(--fmd-purp); }
+#fuel .fmd .fmd-card--info   .fmd-stat-value { color: var(--fmd-info); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1399.98px) {
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 991.98px) {
+    #fuel .fmd .fmd-hero    { grid-template-columns: 1fr; }
+    #fuel .fmd .fmd-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #fuel .fmd .fmd-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 575.98px) {
+    #fuel .fmd .fmd-grid--3,
+    #fuel .fmd .fmd-grid--4,
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: 1fr; }
+    #fuel .fmd .fmd-hero-value { font-size: 20px; }
+}
+
+/* =====================================================
    BATTERY VISUAL LAYOUT (bat-*)
    Vehicle Details V1 redesign — Battery section
    ===================================================== */
