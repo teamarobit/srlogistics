@@ -4,6 +4,40 @@
    Does not override any functional styles
 ════════════════════════════════════════════════════════ */
 
+/* Driver History Book — RAG Status pills */
+#driver_history .rag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+#driver_history .rag-pill i {
+    font-size: 10px;
+    line-height: 1;
+}
+#driver_history .rag-pill.rag-green {
+    background: #e6f7ef;
+    color: #0a7d46;
+    border-color: #bfe9d3;
+}
+#driver_history .rag-pill.rag-amber {
+    background: #fff4e0;
+    color: #b76e00;
+    border-color: #ffd89a;
+}
+#driver_history .rag-pill.rag-red {
+    background: #fde8ec;
+    color: #c01a36;
+    border-color: #f7c2cc;
+}
+
 /* ── Version badge ── */
 .v2-version-bar {
     background: linear-gradient(135deg, #032671 0%, #0a3d9e 100%);
