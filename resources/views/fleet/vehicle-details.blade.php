@@ -2367,7 +2367,127 @@
                                     </div>
                                 </div>
 
-                                <p class="text-muted mb-0 mt-3">Toll charges history for this vehicle will appear here.</p>
+                                {{-- Toll Charges Book Table (static design) --}}
+                                <div class="table-responsive mt-3">
+                                    <table class="table custom-driver-table trip-table toll-charges-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S. No</th>
+                                                <th>Fast-tag ID</th>
+                                                <th>Fast-tag Bank Name</th>
+                                                <th>Driver Name &amp; Code</th>
+                                                <th>Trip ID</th>
+                                                <th>LR / Memo Number</th>
+                                                <th>Date &amp; Time</th>
+                                                <th>Toll Name</th>
+                                                <th>Location</th>
+                                                <th>Pin Code</th>
+                                                <th>State</th>
+                                                <th>Amount</th>
+                                                <th>Price Hike</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {{-- Row 1: Vehicle on trip --}}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td>LR#2897</td>
+                                                <td>15-05-2026 <br><small class="text-muted">09:42 AM</small></td>
+                                                <td>Kothur Toll Plaza</td>
+                                                <td>Kothur</td>
+                                                <td>509228</td>
+                                                <td>Telangana</td>
+                                                <td>&#8377;185</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 2: Vehicle on trip - price hike --}}
+                                            <tr>
+                                                <td>2</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td>LR#2897</td>
+                                                <td>15-05-2026 <br><small class="text-muted">02:18 PM</small></td>
+                                                <td>Pune-Mumbai Expressway Toll</td>
+                                                <td>Khalapur</td>
+                                                <td>410202</td>
+                                                <td>Maharashtra</td>
+                                                <td>&#8377;320</td>
+                                                <td><span class="text-danger">+&#8377;30</span></td>
+                                            </tr>
+
+                                            {{-- Row 3: Vehicle empty (no trip) --}}
+                                            <tr>
+                                                <td>3</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td>16-05-2026 <br><small class="text-muted">07:05 AM</small></td>
+                                                <td>Shadnagar Toll Plaza</td>
+                                                <td>Shadnagar</td>
+                                                <td>509216</td>
+                                                <td>Telangana</td>
+                                                <td>&#8377;155</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 4: New trip started --}}
+                                            <tr>
+                                                <td>4</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td>LR#2901</td>
+                                                <td>17-05-2026 <br><small class="text-muted">11:30 AM</small></td>
+                                                <td>Bengaluru-Hosur Toll</td>
+                                                <td>Attibele</td>
+                                                <td>562107</td>
+                                                <td>Karnataka</td>
+                                                <td>&#8377;145</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 5: Price hike --}}
+                                            <tr>
+                                                <td>5</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td>Memo#MO-1124</td>
+                                                <td>18-05-2026 <br><small class="text-muted">05:54 PM</small></td>
+                                                <td>Krishnagiri Toll Plaza</td>
+                                                <td>Krishnagiri</td>
+                                                <td>635001</td>
+                                                <td>Tamil Nadu</td>
+                                                <td>&#8377;210</td>
+                                                <td><span class="text-danger">+&#8377;15</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
