@@ -39,7 +39,10 @@
                       <li><a href="{{ route('tyre.dashboard') }}">Tyre Dashboard</a></li>
                       <li><a href="{{ route('tyre.owner-dashboard') }}">Tyre Owner Dashboard</a></li>
                       <li><a href="{{ route('battery.owner-dashboard') }}">Battery Owner Dashboard</a></li>
-                      {{-- BUG-08: removed "Fitness Status" and "Route Permit Tracker" — both pointed to permit-fitness which is already exposed as "Permit & Fitness Tracker" under Compliance & Insurance. Re-add when dedicated pages exist. --}}
+                      @if(Route::has('fleet.compliance.permit-fitness'))
+                      <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Fitness Status</a></li>
+                      <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Route Permit Tracker</a></li>
+                      @endif
                     </ul>
                   </div>
                   
@@ -57,7 +60,7 @@
                     <ul>
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Driver</li>
                       <li><a href="{{ route('fleetdashboard.drivers') }}">Driver Dashboard</a></li>
-                      {{-- BUG-08: removed "Driver Documents" — pointed to same route as Driver Dashboard. Re-add when a dedicated Driver Documents page exists. --}}
+                      <li><a href="{{ route('fleetdashboard.drivers') }}">Driver Documents</a></li>
                       <li><a href="#">Driver RAG Status</a></li>
                       <li><a href="#">Driver Settlement</a></li>
                     </ul>

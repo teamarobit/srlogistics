@@ -1285,7 +1285,7 @@
 
                                 @endif {{-- /if($totalTyres === 0) --}}
 
-                                @if(false) {{-- Dead code block removed --}}
+                                @if(true)
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -1401,7 +1401,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                @endif {{-- /Dead code block --}}
+                                @endif
                             </div>
                         </div>
                     
