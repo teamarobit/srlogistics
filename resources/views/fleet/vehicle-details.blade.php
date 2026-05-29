@@ -3148,16 +3148,16 @@
                         </div>
                         {{-- End Mini-Dashboard --}}
 
-                        <div class="accordion mt-3" id="accordionExample">
+                        <div class="accordion mt-3" id="accordionExpenseBook">
                             <div class="accordion-item">
-                                <h2 class="accordion-header" id="fuel_book">
+                                <h2 class="accordion-header" id="expense_book_filter">
                                     <button
                                         class="accordion-button filter-options"
                                         type="button"
                                         data-bs-toggle="collapse"
-                                        data-bs-target="#collapse02"
+                                        data-bs-target="#collapseExpenseBook"
                                         aria-expanded="true"
-                                        aria-controls="collapseOne"
+                                        aria-controls="collapseExpenseBook"
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
@@ -3169,95 +3169,129 @@
                                 </h2>
 
                                 <div
-                                    id="collapse02"
+                                    id="collapseExpenseBook"
                                     class="accordion-collapse collapse show"
-                                    aria-labelledby="fuel_book"
-                                    data-bs-parent="#accordionExample"
-                                >
+                                    aria-labelledby="expense_book_filter"
+                                    data-bs-parent="#accordionExpenseBook">
                                     <div class="accordion-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                
-                                                <form class="filterbd fualbook_form">
-                                                    <div class="filtersearch-bd align-items-end justify-content-start">
-                                                        
-                                                        <div class="vehicletype ms-1">
-                                                            <label>Month</label>
-                                                            <select class="form-select">
-                                                                <option>Choose..</option>
-                                                                <option>January 2025</option>
-                                                                <option>February 2024</option>
-                                                                <option>March 2025</option>
-                                                                <option>April 2025</option>
-                                                                <option>May 2025</option>
-                                                                <option>June 2025</option>
-                                                                <option>July 2025</option>
-                                                                <option>August 2024</option>
-                                                                <option>September 2023</option>
-                                                                <option>October 2023</option>
-                                                                <option>November 2024</option>
-                                                                <option>December 2024</option>
-                                                            </select>
-                                                        </div>
-                                                        
-                                                        <div class="vehicletype ms-1">
-                                                            <label>Day</label>
-                                                            <select class="form-select">
-                                                                <option>Choose..</option>
-                                                                <option>Day-1</option>
-                                                                <option>Day-2</option>
-                                                                <option>Day-3</option>
-                                                                <option>Day-4</option>
-                                                                <option>Day-5</option>
-                                                                <option>Day-6</option>
-                                                                <option>Day-7</option>
-                                                                <option>Day-8</option>
-                                                            </select>
-                                                        </div>
-                                                        
-                                                        <button class="btn btn-primary ms-1 d-flex" type="button"><i class="uil uil-sync me-1"></i>Reset</button>
-                                                        <div class="dropdown export_wrap ms-1">
-                                                          <button class="btn btn-primary dropdown-toggle d-flex" type="button" id="exportBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Export <i class="uil uil-upload ms-1"></i>
-                                                          </button>
-                                                          
-                                                          <ul class="dropdown-menu " aria-labelledby="exportBtn">
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
-                                                          </ul>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            
-                                            <div class="col-lg-6">
-                                                <div class="expenses_and_quantity">
-                                                    <div class="row item_row">
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                
-                                                                <p>Total Expenses</p>
-                                                                
-                                                                <div class="amount_sec">
-                                                                  <i class="fa fa-inr"></i>100000
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </div>
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
 
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                <p>Fuel Expenses</p>
-                                                                <div class="amount_sec">
-                                                                    <i class="fa fa-inr"></i>10000
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
+                                                <div class="vehicletype">
+                                                    <label>Expense Date Range</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control daterange"
+                                                        id="expensebook_daterange"
+                                                        name="expense_daterange"
+                                                        autocomplete="off"
+                                                        placeholder="Select date range..."
+                                                    />
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Expense Type</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Maintenance</option>
+                                                        <option>Repair</option>
+                                                        <option>Tyre</option>
+                                                        <option>Battery</option>
+                                                        <option>RTO Document</option>
+                                                        <option>Challan</option>
+                                                        <option>Police</option>
+                                                        <option>Loading</option>
+                                                        <option>Unloading</option>
+                                                        <option>Parking</option>
+                                                        <option>Border Expense</option>
+                                                        <option>Accident Charges</option>
+                                                        <option>Driver Allowance</option>
+                                                        <option>Miscellaneous</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Payment Method</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>Cash</option>
+                                                        <option>UPI</option>
+                                                        <option>Bank Transfer</option>
+                                                        <option>Cheque</option>
+                                                        <option>Credit Card</option>
+                                                        <option>Debit Card</option>
+                                                        <option>On Credit</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by Trip ID"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
                                                     </div>
                                                 </div>
+
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by LR Number"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
+                                                    </div>
+                                                </div>
+
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnExpenseBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnExpenseBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >Excel</a
+                                                            >
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >PDF</a
+                                                            >
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
