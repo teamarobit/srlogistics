@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.6') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.7') }}">
 
 @endsection
 
@@ -1683,7 +1683,14 @@
 
         <div class="vehicle-itemtab pt-4">
             <div class="container-fluid">
-                
+
+                <div class="item-box-scroll-wrap">
+                    <button type="button" class="item-box-scroll-btn item-box-scroll-prev" aria-label="Scroll tabs left">
+                        <i class="uil uil-angle-left-b"></i>
+                    </button>
+                    <button type="button" class="item-box-scroll-btn item-box-scroll-next" aria-label="Scroll tabs right">
+                        <i class="uil uil-angle-right-b"></i>
+                    </button>
                 <ul class="nav nav-tabs item-box">
                     <li class="nav-item">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pl_book">
@@ -1776,6 +1783,7 @@
                         </button>
                     </li>
                 </ul>
+                </div>
 
                 <!-- Tab Content -->
                 <div class="tab-content mt-3">
@@ -7490,6 +7498,7 @@
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.0') }}"></script>
 
 <script>
 
