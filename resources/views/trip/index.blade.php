@@ -32,19 +32,19 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="images/up-right-arrow 1.png" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item2">Active Vehicles</div>
                         
                                     <div class="item3">
-                                        <img src="images/vehicles.png" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                     
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="images/images01.png" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                                 
@@ -58,18 +58,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="images/up-right-arrow 1.png" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item2">Active Vehicles</div>
                         
                                     <div class="item3">
-                                        <img src="images/vehicles.png" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="images/images01.png" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -82,18 +82,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="images/up-right-arrow 1.png" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item2">Active Vehicles</div>
                         
                                     <div class="item3">
-                                        <img src="images/vehicles.png" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="images/images01.png" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -106,18 +106,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="images/up-right-arrow 1.png" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item2">Active Vehicles</div>
                         
                                     <div class="item3">
-                                        <img src="images/vehicles.png" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="images/images01.png" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -130,18 +130,18 @@
                                 </div>
                         
                                 <div class="bottom">
-                                    <div class="item1"><img src="images/up-right-arrow 1.png" /> 99%</div>
+                                    <div class="item1"><img src="{{ asset('images/up-right-arrow 1.png') }}" /> 99%</div>
                         
                                     <div class="item2">Active Vehicles</div>
                         
                                     <div class="item3">
-                                        <img src="images/vehicles.png" />
+                                        <img src="{{ asset('images/vehicles.png') }}" />
                                     </div>
                                 </div>
                         
                                 <div class="item-icon">
                                     <span>
-                                        <img src="images/images01.png" />
+                                        <img src="{{ asset('images/images01.png') }}" />
                                     </span>
                                 </div>
                             </div>
@@ -170,7 +170,7 @@
                                     <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     <div class="item-filter">
                                         <span class="filter-icon">
-                                            <img src="images/icons/filter-01icon.png" alt="icon" />
+                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                         </span>
                                         <p>Filter Options</p>
                                     </div>
@@ -882,7 +882,7 @@
                                     <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     <div class="item-filter">
                                         <span class="filter-icon">
-                                            <img src="images/icons/filter-01icon.png" alt="icon" />
+                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
                                         </span>
                                         <p>Filter Options</p>
                                     </div>

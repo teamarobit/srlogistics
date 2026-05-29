@@ -23,7 +23,7 @@
                         <div class="col-lg-5">
                             <div class="ltblock">
                                 <div class="icon_car">
-                                    <img src="images/icons/car-icon04.png" />
+                                    <img src="{{ asset('images/icons/car-icon04.png') }}" />
                                 </div>
     
                                 <div class="text">
@@ -2516,7 +2516,7 @@
                     <div class="col-lg-5">
                         <div class="ltblock">
                             <div class="icon_car">
-                                <img src="images/icons/car-icon04.png" />
+                                <img src="{{ asset('images/icons/car-icon04.png') }}" />
                             </div>
                             <div class="text">
                                 <div class="topsec mb-1">
