@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.5') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.8') }}">
 
 @endsection
 
@@ -2967,74 +2967,138 @@
 
                         <div class="sr_dashboard0_table">
                             <div class="container-fluid">
-                                <!--<div class="itemtop mb-4">-->
-                                <!--    <span class="sec-title">Driver List</span>-->
-                                <!--</div>-->
-                        
+                                <div class="itemtop mb-3">
+                                    <span class="sec-title">Fuel Book List</span>
+                                </div>
+
                                 <div class="table-responsive">
                                     <table class="table custom-driver-table">
                                         <thead>
                                             <tr>
-                                                <th>Date</th>
-                                                <th style="min-width: 120px">Expenses Type</th>
-                                                <th style="min-width: 120px">Quantity (L)</th>
-                                                <th>Rate(₹/L)</th>
-                                                <th>Payment</th>
-                                                <th>Payment Mode</th>
-                                                <th>Charged To</th>
-                                                <th>Odometer(KM)</th>
-                                                <th></th>
+                                                <th>S.No</th>
+                                                <th style="min-width: 110px">Trip ID</th>
+                                                <th style="min-width: 160px">LR Number &amp; Date</th>
+                                                <th style="min-width: 180px">Route</th>
+                                                <th style="min-width: 180px">Driver Name &amp; Code</th>
+                                                <th style="min-width: 110px">Fuel Date</th>
+                                                <th>Fuel Qty (L)</th>
+                                                <th>Fuel Amount</th>
+                                                <th style="min-width: 130px">Fuel Per L Rate</th>
+                                                <th style="min-width: 160px">Fuel Company</th>
+                                                <th style="min-width: 130px">Location</th>
+                                                <th style="min-width: 130px">Payment Method</th>
+                                                <th style="min-width: 140px">Odo-Meter Reading</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                             <tr>
-                                                <td>08/09/-2025</td>
+                                                <td>1</td>
+                                                <td>TRP-1001</td>
                                                 <td>
-                                                    Fuel Expenses
+                                                    <span class="value">LR-2025-0451</span><br>
+                                                    <small>05/09/2025</small>
                                                 </td>
-                                                
+                                                <td>Hyderabad → Kolkata</td>
+                                                <td>
+                                                    <span class="value">Sujit Paul</span><br>
+                                                    <small>DRV-001</small>
+                                                </td>
+                                                <td>08/09/2025</td>
                                                 <td>85</td>
-                                                
-                                                <td>15000</td>
-                                                
-                                                <td>₹ 30000</td>
-                                                
-                                                <td><span class="value">Online</span></td>
-                                                
-                                                <td><span class="value">Hindustan Petroleum</span></td>
-                                                
-                                                <td>200</td>
-        
-                                                <td class="text-center">
-                                                    <span class="badge bg-success" data-bs-toggle="modal" data-bs-target="#fuelbook1remarks">Remarks</span>
-                                                </td>
+                                                <td>₹ 8,500</td>
+                                                <td>₹ 100.00</td>
+                                                <td>Hindustan Petroleum</td>
+                                                <td>Hyderabad</td>
+                                                <td><span class="value">UPI</span></td>
+                                                <td>1,25,200</td>
                                             </tr>
-                                            
+
                                             <tr>
-                                                <td>08/09/-2025</td>
+                                                <td>2</td>
+                                                <td>TRP-1002</td>
                                                 <td>
-                                                    Fuel Expenses
+                                                    <span class="value">LR-2025-0478</span><br>
+                                                    <small>12/09/2025</small>
                                                 </td>
-                                                
-                                                <td>85</td>
-                                                
-                                                <td>15000</td>
-                                                
-                                                <td>₹ 30000</td>
-                                                
-                                                <td><span class="value">Online</span></td>
-                                                
-                                                <td><span class="value">Hindustan Petroleum</span></td>
-                                                
-                                                <td>200</td>
-        
-                                                <td class="text-center">
-                                                    <span class="badge bg-success" data-bs-toggle="modal" data-bs-target="#fuelbook1remarks">Remarks</span>
+                                                <td>Kolkata → Mumbai</td>
+                                                <td>
+                                                    <span class="value">Ramesh Kumar</span><br>
+                                                    <small>DRV-002</small>
                                                 </td>
+                                                <td>14/09/2025</td>
+                                                <td>120</td>
+                                                <td>₹ 12,240</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Indian Oil (IOCL)</td>
+                                                <td>Nagpur</td>
+                                                <td><span class="value">OTP</span></td>
+                                                <td>1,26,540</td>
                                             </tr>
-                                            
-        
+
+                                            <tr>
+                                                <td>3</td>
+                                                <td>—</td>
+                                                <td>—</td>
+                                                <td><span class="upcoming-trip-pill p-2">Upcoming trip</span></td>
+                                                <td>
+                                                    <span class="value">Mohan Singh</span><br>
+                                                    <small>DRV-003</small>
+                                                </td>
+                                                <td>20/09/2025</td>
+                                                <td>60</td>
+                                                <td>₹ 6,120</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Bharat Petroleum (BPCL)</td>
+                                                <td>Pune</td>
+                                                <td><span class="value">Market-pe</span></td>
+                                                <td>1,27,180</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>4</td>
+                                                <td>TRP-1003</td>
+                                                <td>
+                                                    <span class="value">LR-2025-0502</span><br>
+                                                    <small>22/09/2025</small>
+                                                </td>
+                                                <td>Mumbai → Delhi</td>
+                                                <td>
+                                                    <span class="value">Sujit Paul</span><br>
+                                                    <small>DRV-001</small>
+                                                </td>
+                                                <td>24/09/2025</td>
+                                                <td>95</td>
+                                                <td>₹ 9,690</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Reliance Petroleum</td>
+                                                <td>Vadodara</td>
+                                                <td><span class="value">On Credit</span></td>
+                                                <td>1,28,420</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>5</td>
+                                                <td>TRP-1004</td>
+                                                <td>
+                                                    <span class="value">LR-2025-0531</span><br>
+                                                    <small>28/09/2025</small>
+                                                </td>
+                                                <td>Delhi → Bengaluru</td>
+                                                <td>
+                                                    <span class="value">Ramesh Kumar</span><br>
+                                                    <small>DRV-002</small>
+                                                </td>
+                                                <td>30/09/2025</td>
+                                                <td>110</td>
+                                                <td>₹ 11,330</td>
+                                                <td>₹ 103.00</td>
+                                                <td>Shell</td>
+                                                <td>Jaipur</td>
+                                                <td><span class="value">UPI</span></td>
+                                                <td>1,29,860</td>
+                                            </tr>
+
                                         </tbody>
                                     </table>
                                 </div>
