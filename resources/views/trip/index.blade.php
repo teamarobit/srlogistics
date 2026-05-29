@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/trip/trip.css?v=2.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/index.css?v=1.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -414,7 +414,7 @@
                                                 <td>
                                                     <div class="actions">
                                                         <ul class="edti-delet">
-                                                            <li><a class="item-edit text-success" href="trip-details.php"><i class="uil uil-eye me-2"></i></a></li>
+                                                            <li><a class="item-edit text-success" href="{{ route('trip.details', 1) }}"><i class="uil uil-eye me-2"></i></a></li>
                                                             <li><a class="item-delete text-danger"><i class="uil uil-trash-alt "></i></a></li>
                                                         </ul>
                                                     </div>
@@ -448,7 +448,7 @@
                                                 <td>
                                                     <div class="actions">
                                                         <ul class="edti-delet">
-                                                            <li><a href="trip-details.php" class="item-edit text-success"><i class="uil uil-eye me-2"></i></a></li>
+                                                            <li><a href="{{ route('trip.details', 1) }}" class="item-edit text-success"><i class="uil uil-eye me-2"></i></a></li>
                                                             <li><a class="item-delete text-danger"><i class="uil uil-trash-alt "></i></a></li>
                                                         </ul>
                                                     </div>
@@ -460,7 +460,7 @@
                                 
                                 <!--<div class="vehicle-card color-left01">-->
                                                 
-                                <!--    <a href="trip-details.php" class="info-grid" style="color: #000;">-->
+                                <!--    <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">-->
                                 <!--      <div class="info-item">-->
                                 <!--        <div class="label">Trip Number</div>-->
                                 <!--        <div class="value"><b>56667</b></div>-->
@@ -590,7 +590,7 @@
                                 
                                 <!--    <div class="vehicle-card color-left03">-->
                                                 
-                                <!--    <a href="trip-details.php" style="color: #000;" class="info-grid">-->
+                                <!--    <a href="{{ route('trip.details', 1) }}" style="color: #000;" class="info-grid">-->
                                 <!--      <div class="info-item">-->
                                 <!--        <div class="label">Trip Number</div>-->
                                 <!--        <div class="value"><b>56667</b></div>-->
@@ -656,7 +656,7 @@
                                     
                                 <!--    <div class="vehicle-card color-left01">-->
                                                     
-                                <!--        <a href="trip-details.php" style="color: #000;" class="info-grid">-->
+                                <!--        <a href="{{ route('trip.details', 1) }}" style="color: #000;" class="info-grid">-->
                                 <!--          <div class="info-item">-->
                                 <!--            <div class="label">Trip Number</div>-->
                                 <!--            <div class="value"><b>56667</b></div>-->
@@ -721,7 +721,7 @@
                                 <!--      </div>-->
                                 <!--    <div class="vehicle-card color-left02">-->
                                                     
-                                <!--        <a href="trip-details.php" style="color: #000;" class="info-grid">-->
+                                <!--        <a href="{{ route('trip.details', 1) }}" style="color: #000;" class="info-grid">-->
                                 <!--          <div class="info-item">-->
                                 <!--            <div class="label">Trip Number</div>-->
                                 <!--            <div class="value"><b>56667</b></div>-->
@@ -816,7 +816,7 @@
                                                     </thead>
                                                     <tbody>
                                                         
-                                                        <tr onclick="window.location.href='trip-details.php'" style="cursor:pointer;">
+                                                        <tr onclick="window.location.href='{{ route('trip.details', 1) }}'" style="cursor:pointer;">
                                                             
                                                             <td>
                                                                 <div class="d-flex align-items-center">
@@ -848,7 +848,7 @@
                                                                 <div class="btn_bd mt-2">
                                                                     <ul class="edti-delet">
                                                                         <li>
-                                                                            <a href="trip-details.php" class="info-grid" style="color: #000;"></a>
+                                                                            <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;"></a>
                                                                             <a class="item-edit text-success"><i class="uil uil-eye me-2"></i></a>
                                                                         </li>
                                                                     
@@ -1027,7 +1027,7 @@
                                 
                                 <div class="vehicle-card color-left01">
                                                 
-                                    <a href="trip-details.php" class="info-grid" style="color: #000;">
+                                    <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">
                                         <div class="info-item">
                                             <div class="label">Vehicle Number</div>
                                         <div class="value"><b>WB-12-AB-1237</b></div>
@@ -1076,7 +1076,7 @@
                                 
                                 <div class="vehicle-card color-left02">
                                                 
-                                    <a href="trip-details.php" class="info-grid" style="color: #000;">
+                                    <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">
                                         <div class="info-item">
                                             <div class="label">Vehicle Number</div>
                                         <div class="value"><b>WB-12-AB-1237</b></div>
@@ -1125,7 +1125,7 @@
                                 </div>
                                     <div class="vehicle-card color-left03">
                                                 
-                                    <a href="trip-details.php" class="info-grid" style="color: #000;">
+                                    <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">
                                         <div class="info-item">
                                             <div class="label">Vehicle Number</div>
                                         <div class="value"><b>WB-12-AB-1237</b></div>
@@ -1175,7 +1175,7 @@
                                     
                                     <div class="vehicle-card color-left01">
                                                     
-                                        <a href="trip-details.php" class="info-grid" style="color: #000;">
+                                        <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">
                                         <div class="info-item">
                                             <div class="label">Vehicle Number</div>
                                         <div class="value"><b>WB-12-AB-1237</b></div>
@@ -1224,7 +1224,7 @@
                                         </div>
                                     <div class="vehicle-card color-left02">
                                                     
-                                        <a href="trip-details.php" class="info-grid" style="color: #000;">
+                                        <a href="{{ route('trip.details', 1) }}" class="info-grid" style="color: #000;">
                                         <div class="info-item">
                                             <div class="label">Vehicle Number</div>
                                         <div class="value"><b>WB-12-AB-1237</b></div>
@@ -1503,5 +1503,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/trip.js?v=1.7') }}"></script>
+<script src="{{ asset('customjs/trip/index.js?v=1.7') }}"></script>
 @endsection

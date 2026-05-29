@@ -30,6 +30,10 @@ class TripController extends Controller
         return view('trip.index', compact('routes', 'vehicleTypes', 'vehicleSizes', 'loadVendors', 'customers'));
     }
 
+    public function show($trip){
+        return view('trip.show', compact('trip'));
+    }
+
     /**
      * Store a new trip (AJAX).
      * SD-3: jQuery AJAX — returns JSON.
