@@ -410,7 +410,7 @@
                             </span>
                         </td>
                         <td style="vertical-align: top; text-align:right;width:50%;">
-                            <img src="images/qr-code.png" alt="QR Code" width="30%">
+                            <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" width="30%">
                         </td>
                     </tr>
                 </tbody>
