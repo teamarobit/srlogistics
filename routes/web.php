@@ -806,5 +806,13 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/stock-transfer',       [App\Http\Controllers\WorkshopController::class, 'stockTransfer'])->name('stock-transfer');
     });
 
+    /******************************** Trips Module ******************************************/
 
-});
+    Route::prefix('trips')->name('trip.')->group(function () {
+        Route::get    ('/',                             [App\Http\Controllers\TripController::class, 'index'])->name('index');
+        Route::post   ('/store',                        [App\Http\Controllers\TripController::class, 'store'])->name('store');
+        Route::post   ('/{id}/delete',                  [App\Http\Controllers\TripController::class, 'destroy'])->name('destroy');
+        Route::get    ('/vehicle-sizes/{vehicletype_id}',[App\Http\Controllers\TripController::class, 'getVehicleSizes'])->name('vehicle.sizes');
+    });
+
+}); // end auth middleware group
