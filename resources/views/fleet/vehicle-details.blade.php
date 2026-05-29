@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.6') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.9') }}">
 
 @endsection
 
@@ -1787,13 +1787,256 @@
                 <!-- Tab Content -->
                 <div class="tab-content mt-3">
 
-                    {{-- P&L Book (NEW - static placeholder) --}}
+                    {{-- P&L Book (Static design as per attachment, theme-aligned) --}}
                     <div class="tab-pane fade show active" id="pl_book">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-                                <h5 class="mb-3"><i class="uil uil-chart-line me-2"></i>P&amp;L Book</h5>
-                                <p class="text-muted mb-0">Profit &amp; Loss summary for this vehicle will appear here.</p>
+
+                        {{-- Filter strip + RAG indicator --}}
+                        <div class="plb-filter-strip">
+                            <div class="plb-filter-left">
+                                <span class="plb-filter-icon">
+                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="filter" />
+                                </span>
+                                <div class="plb-filter-fields">
+                                    <div class="plb-field">
+                                        <label>Date Range</label>
+                                        <div class="plb-input-wrap">
+                                            <i class="uil uil-calendar-alt"></i>
+                                            <input type="text"
+                                                   class="daterange plb-daterange"
+                                                   id="pl_daterange"
+                                                   name="pl_daterange"
+                                                   placeholder="Select date range...">
+                                        </div>
+                                    </div>
+                                    <div class="plb-field">
+                                        <label>Driver Name</label>
+                                        <div class="plb-input-wrap plb-select-wrap">
+                                            <i class="uil uil-user"></i>
+                                            <select class="form-select plb-driver-select" id="pl_driver" name="pl_driver">
+                                                <option value="">All Drivers</option>
+                                                @isset($plDrivers)
+                                                    @foreach($plDrivers as $drv)
+                                                        <option value="{{ $drv->id }}">
+                                                            {{ $drv->contact_name }}@if($drv->contact_code) ({{ $drv->contact_code }})@endif
+                                                        </option>
+                                                    @endforeach
+                                                @endisset
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="plb-filter-right">
+                                <span class="plb-rag-label">RAG Status</span>
+                                <div class="plb-rag-pills">
+                                    <span class="plb-rag plb-rag-red"><span class="dot"></span>Red</span>
+                                    <span class="plb-rag plb-rag-yellow"><span class="dot"></span>Yellow</span>
+                                    <span class="plb-rag plb-rag-green is-active"><span class="dot"></span>Green</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- KPI strip — Trip Summary --}}
+                        <div class="plb-kpi-grid">
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon"><i class="uil uil-route"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Total Trips</p>
+                                    <h4>15</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c2"><i class="uil uil-map-marker"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Local Trips</p>
+                                    <h4>10</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c3"><i class="uil uil-arrows-h"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Line Trips</p>
+                                    <h4>5</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c4"><i class="uil uil-clock-three"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Delay Trips</p>
+                                    <h4>2</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c5"><i class="uil uil-calendar-slash"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Empty Days</p>
+                                    <h4>2</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c6"><i class="uil uil-tachometer-fast"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>KM Driven</p>
+                                    <h4>8,000</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Main row: Revenue & Expense + Notes panel --}}
+                        <div class="plb-main-row">
+
+                            <div class="plb-main-col">
+
+                                {{-- Revenue + Expense side-by-side --}}
+                                <div class="plb-finance-grid">
+                                    {{-- Revenue --}}
+                                    <div class="plb-panel plb-panel-rev">
+                                        <div class="plb-panel-head">
+                                            <div class="head-l">
+                                                <span class="panel-icon"><i class="uil uil-money-stack"></i></span>
+                                                <div>
+                                                    <p class="panel-title">Total Revenue</p>
+                                                    <h4 class="panel-amount">₹2,00,000</h4>
+                                                </div>
+                                            </div>
+                                            <span class="panel-trend up"><i class="uil uil-arrow-up"></i></span>
+                                        </div>
+                                        <ul class="plb-panel-list">
+                                            <li>
+                                                <span class="lbl"><span class="bullet rev"></span>Own Booking</span>
+                                                <span class="val">₹1,50,000</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl"><span class="bullet rev"></span>Outside Booking</span>
+                                                <span class="val">₹50,000</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {{-- Expense --}}
+                                    <div class="plb-panel plb-panel-exp">
+                                        <div class="plb-panel-head">
+                                            <div class="head-l">
+                                                <span class="panel-icon"><i class="uil uil-receipt"></i></span>
+                                                <div>
+                                                    <p class="panel-title">Total Expense</p>
+                                                    <h4 class="panel-amount">₹1,77,500</h4>
+                                                </div>
+                                            </div>
+                                            <span class="panel-trend down"><i class="uil uil-arrow-down"></i></span>
+                                        </div>
+                                        <ul class="plb-panel-list scroll">
+                                            <li><span class="lbl"><span class="bullet exp"></span>Diesel</span><span class="val">₹75,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Driver</span><span class="val">₹35,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Fasttag</span><span class="val">₹25,000</span></li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Repair &amp; Maintenance
+                                                    <small class="hint">Repairs, Urea, Schedule service</small>
+                                                </span>
+                                                <span class="val">₹10,000</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Tyre
+                                                    <small class="hint">Purchase, repair, rotation</small>
+                                                </span>
+                                                <span class="val">₹2,500</span>
+                                            </li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Battery</span><span class="val">₹1,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>RTO Document</span><span class="val">₹4,500</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Challan</span><span class="val">₹1,000</span></li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Loading
+                                                    <small class="hint">No Reimbursement only</small>
+                                                </span>
+                                                <span class="val">₹4,800</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Unloading
+                                                    <small class="hint">No Reimbursement only</small>
+                                                </span>
+                                                <span class="val">₹3,000</span>
+                                            </li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Parking</span><span class="val">₹700</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Accident Charges</span><span class="val">₹5,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Border Expense</span><span class="val">₹3,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Customer Deductions</span><span class="val">₹7,000</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {{-- Bottom summary: Profit/Loss + EMI + Final --}}
+                                <div class="plb-summary-grid">
+                                    <div class="plb-summary-card sc-profit">
+                                        <span class="sc-ico"><i class="uil uil-chart-growth"></i></span>
+                                        <div class="sc-body">
+                                            <p>Profit or Loss</p>
+                                            <h3>₹22,500</h3>
+                                            <span class="sc-tag tag-up"><i class="uil uil-arrow-up"></i>Operating Profit</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-summary-card sc-emi">
+                                        <span class="sc-ico"><i class="uil uil-bill"></i></span>
+                                        <div class="sc-body">
+                                            <p>EMI</p>
+                                            <h3>₹70,000</h3>
+                                            <span class="sc-tag tag-neutral">Monthly Installment</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-summary-card sc-final">
+                                        <span class="sc-ico"><i class="uil uil-chart-down"></i></span>
+                                        <div class="sc-body">
+                                            <p>Profit / Loss After EMI</p>
+                                            <h3>-₹47,500</h3>
+                                            <span class="sc-tag tag-down"><i class="uil uil-arrow-down"></i>Net Loss</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{-- Side info panel --}}
+                            <aside class="plb-side">
+                                <div class="plb-side-card">
+                                    <div class="plb-side-head">
+                                        <span class="head-ico"><i class="uil uil-info-circle"></i></span>
+                                        <h6>Amortisation Rule</h6>
+                                    </div>
+                                    <div class="plb-side-body">
+                                        <p>
+                                            Document cost is <strong>divided equally</strong> across the months covered by the policy,
+                                            based on <strong>start &amp; expiry date</strong>.
+                                        </p>
+                                        <div class="plb-callout">
+                                            <span class="callout-tag">Example</span>
+                                            <p>
+                                                <strong>Insurance</strong> — 12 months × <strong>₹60,000</strong>
+                                                = <strong>₹5,000 / month</strong>
+                                                <br><small>(not the full ₹60,000 in one month)</small>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-side-head">
+                                        <span class="head-ico"><i class="uil uil-file-shield-alt"></i></span>
+                                        <h6>Amortised Documents</h6>
+                                    </div>
+                                    <div class="plb-doc-grid">
+                                        <div class="plb-doc"><i class="uil uil-shield-check"></i><span>Insurance</span></div>
+                                        <div class="plb-doc"><i class="uil uil-file-check-alt"></i><span>1 Year Permit</span></div>
+                                        <div class="plb-doc"><i class="uil uil-file-check-alt"></i><span>5 Year Permit</span></div>
+                                        <div class="plb-doc"><i class="uil uil-receipt-alt"></i><span>Tax</span></div>
+                                        <div class="plb-doc"><i class="uil uil-clipboard-notes"></i><span>Fitness</span></div>
+                                        <div class="plb-doc"><i class="uil uil-smile"></i><span>PUCC</span></div>
+                                    </div>
+                                </div>
+                            </aside>
+
                         </div>
                     </div>
 
@@ -6180,6 +6423,7 @@
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.3') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
 
 <script>
 

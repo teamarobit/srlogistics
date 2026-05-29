@@ -259,7 +259,13 @@ class FleetDashboardController extends Controller
     
         $workshops = \App\Models\Workshop::active()->orderBy('ownership')->orderBy('name')->get();
 
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops'));
+        // P&L Book — driver dropdown source (cotype_id = 4 → drivers)
+        $plDrivers = Contact::where('cotype_id', 4)
+            ->where('status', 'Active')
+            ->orderBy('contact_name')
+            ->get(['id', 'contact_name', 'contact_code']);
+
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers'));
     }
 
     public function getVehicleDetailsV2($id)
