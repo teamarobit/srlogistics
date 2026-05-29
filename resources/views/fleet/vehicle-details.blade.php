@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.3') }}">
 
 @endsection
 
@@ -2081,6 +2081,98 @@
                     </div>
 
                     <div class="tab-pane fade" id="trip">
+
+                        {{-- Mini Dashboard — Own Booking vs Outside Booking (Static) --}}
+                        <div class="tbm-dashboard mt-3">
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-own"><i class="uil uil-truck"></i></span>
+                                    <h5>Own Booking</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c1"><i class="uil uil-map-marker"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>No. of Trips</p>
+                                            <h4>24</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c2"><i class="uil uil-money-bill"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Revenue</p>
+                                            <h4>₹8,45,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-receipt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Expense</p>
+                                            <h4>₹3,20,500</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-minus-circle"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Deduction</p>
+                                            <h4>₹18,750</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c5"><i class="uil uil-chart-line"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Profit / Loss</p>
+                                            <h4 class="tbm-profit">₹5,05,750</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-out"><i class="uil uil-exchange"></i></span>
+                                    <h5>Outside Booking</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c1"><i class="uil uil-map-marker"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>No. of Trips</p>
+                                            <h4>9</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c2"><i class="uil uil-money-bill"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Revenue</p>
+                                            <h4>₹2,75,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-receipt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Expense</p>
+                                            <h4>₹1,42,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-minus-circle"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Deduction</p>
+                                            <h4>₹6,500</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c5"><i class="uil uil-chart-line"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Profit / Loss</p>
+                                            <h4 class="tbm-loss">-₹12,500</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="totalrevenue mt-3">
                                <div class="item-row">
 
@@ -6440,7 +6532,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.4') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.5') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>

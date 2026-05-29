@@ -2815,3 +2815,39 @@ $(document).on('click', '#gstForm .submit-btn', function (e) {
     e.preventDefault();
     Toast.fire({ icon: 'info', title: 'VAHAN API integration is not yet configured.' });
 });
+
+/* ------------------------------------------------------------------
+ * Vehicle Details — Tab Persistence
+ * Remembers the last active top-level tab (P&L, Trip, Fuel, etc.)
+ * across page reloads, scoped per vehicle.
+ * ------------------------------------------------------------------ */
+$(function () {
+    var $tabBar = $('.nav.nav-tabs.item-box').first();
+    if (!$tabBar.length) return;
+
+    // Per-vehicle storage key (URL pattern: /fleet-dashboard/vehicle/{id}/details)
+    var m = window.location.pathname.match(/\/vehicle\/(\d+)\//);
+    var vehicleId = m ? m[1] : 'default';
+    var storageKey = 'vdetails:activeTab:' + vehicleId;
+
+    // Restore previously active tab (if any)
+    var savedTarget = null;
+    try { savedTarget = localStorage.getItem(storageKey); } catch (e) { /* ignore */ }
+
+    if (savedTarget) {
+        var $btn = $tabBar.find('button[data-bs-target="' + savedTarget + '"]');
+        if ($btn.length && !$btn.hasClass('active')) {
+            try {
+                var tab = bootstrap.Tab.getOrCreateInstance($btn[0]);
+                tab.show();
+            } catch (e) { $btn.trigger('click'); }
+        }
+    }
+
+    // Save on tab change
+    $tabBar.on('shown.bs.tab', 'button[data-bs-toggle="tab"]', function () {
+        var target = $(this).attr('data-bs-target');
+        if (!target) return;
+        try { localStorage.setItem(storageKey, target); } catch (e) { /* ignore */ }
+    });
+});
