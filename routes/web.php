@@ -814,6 +814,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post   ('/{id}/delete',                  [App\Http\Controllers\TripController::class, 'destroy'])->name('destroy');
         Route::get    ('/vehicle-sizes/{vehicletype_id}',[App\Http\Controllers\TripController::class, 'getVehicleSizes'])->name('vehicle.sizes');
         Route::get    ('/{trip}',[App\Http\Controllers\TripController::class, 'show'])->name('details');
+        
+        Route::get    ('/lr/create',[App\Http\Controllers\TripController::class, 'createLr'])->name('lr.create');
+        Route::get    ('/lr/print',[App\Http\Controllers\TripController::class, 'printLr'])->name('lr.print');
     });
 
 }); // end auth middleware group

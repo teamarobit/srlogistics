@@ -1314,7 +1314,7 @@
                                                                 <i class="uil uil-ellipsis-v"></i>
                                                                 </span>
                                                                 <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                                 </ul>
                                                             </div>
                                                             <div class="row info-grid mb-3">
@@ -1368,7 +1368,7 @@
                                                                 <i class="uil uil-ellipsis-v"></i>
                                                                 </span>
                                                                 <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                                 </ul>
                                                             </div>
                                                             <div class="row info-grid mb-3">
@@ -1423,7 +1423,7 @@
                                                         <h6>LR</h6>
                                                     </div>
                                                     <div class="col-12 col-md-6 text-end">
-                                                        <a href="add-lr.php" class="btn btn-primary"><i class="uil uil-plus me-1"></i>Add LR</a>   
+                                                        <a href="{{ route('trip.lr.create') }}" class="btn btn-primary"><i class="uil uil-plus me-1"></i>Add LR</a>   
                                                     </div>
                                                 </div>
                                                 
@@ -1435,7 +1435,7 @@
                                                                 <i class="uil uil-ellipsis-v"></i>
                                                                 </span>
                                                                 <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                                 </ul>
                                                             </div>
                                                             <div class="row info-grid mb-3">
@@ -3696,7 +3696,7 @@
                                                             <i class="uil uil-ellipsis-v"></i>
                                                             </span>
                                                             <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                             </ul>
                                                         </div>
                                                         <div class="row info-grid mb-3">
@@ -3742,7 +3742,7 @@
                                                             <i class="uil uil-ellipsis-v"></i>
                                                             </span>
                                                             <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                             </ul>
                                                         </div>
                                                         <div class="row info-grid mb-3">
@@ -3789,7 +3789,7 @@
                                                     <h6>LR</h6>
                                                 </div>
                                                 <div class="col-12 col-md-6 text-end">
-                                                    <a href="add-lr.php" class="btn btn-primary"><i class="uil uil-plus me-1"></i>Add LR</a>   
+                                                    <a href="{{ route('trip.lr.create') }}" class="btn btn-primary"><i class="uil uil-plus me-1"></i>Add LR</a>   
                                                 </div>
                                             </div>
                                             <div class="vehiclestable">
@@ -3800,7 +3800,7 @@
                                                             <i class="uil uil-ellipsis-v"></i>
                                                             </span>
                                                             <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                                <li><a class="dropdown-item" href="print-details.php" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}" target="_blank"><i class="uil uil-eye me-1"></i>View Details & Print</a></li>
                                                             </ul>
                                                         </div>
                                                         <div class="row info-grid mb-3">

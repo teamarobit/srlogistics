@@ -124,4 +124,12 @@ class TripController extends Controller
             'message' => 'Trip deleted.',
         ], 200);
     }
+
+    public function createLr(){
+        return view('lr.create');
+    }
+
+    public function printLr(){
+        return view('lr.print');
+    }
 }

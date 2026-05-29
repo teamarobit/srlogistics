@@ -1,0 +1,77 @@
+body{
+    background-color: #fff;
+}
+.form-bg{
+    padding: 20px 30px;
+    background: #f1f1f1;
+    margin-bottom: 20px;
+}
+.btn-theme.head-btn i{
+    background-color: transparent;
+    color: #000;
+}
+.btn{
+    padding: 8px 12px;
+    text-transform: inherit;
+}
+.form-check-input[type=checkbox]:checked {
+    background-color: #1f75a8 !important;
+    border-color: #1f75a8 !important;
+}
+.bottom-head .dropdown-item small{
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: 10px;
+}
+.bottom-head .dropdown-item.active{
+    background: #c8e5fc;
+}
+.bottom-head .dropdown-item.active small{
+    opacity: 1;
+    visibility: visible;
+}
+
+/*tooltip*/
+.tooltip-wrap{
+    position: relative;
+}
+.custom-tooltip{
+    background: #000;
+    color: #fff;
+    padding: 3px 7px;
+    position: absolute;
+    display: inline-block;
+    width: 350px;
+    line-height: 18px;
+    border-radius: 5px;
+    font-size: 11px;
+    top: -45px;
+    left: 10px;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s ease all;
+    z-index: 9;
+}
+.tooltip-wrap:hover > .custom-tooltip{
+    visibility: visible;
+    opacity: 1;
+}
+.bootstrap-tagsinput{
+    height: 38px !important;
+}
+.table tbody td {
+    padding: 5px 10px;
+}
+.table thead tr th{
+    padding: 8px 10px;
+}
+.new-table-row{
+    display: none;
+}
+.delete-table-row{
+    cursor: pointer;
+}
+.view-content p{
+    font-size: 13px;
+}
