@@ -4,7 +4,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.6') }}">
 
@@ -1686,7 +1686,14 @@
                 
                 <ul class="nav nav-tabs item-box">
                     <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#trip">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pl_book">
+                            <span class="icon"><i class="uil uil-chart-line" style="font-size:18px;color:#6c757d;"></i></span>
+                            P&amp;L Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#trip">
                             <span class="icon"><img src="{{ asset('images/icons/trip-bookicon.png') }}" alt="" /></span>
                             Trip Book
                         </button>
@@ -1702,31 +1709,45 @@
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#expenses">
                             <span class="icon"><img src="{{ asset('images/icons/expenses-icon.png') }}" alt="" /></span>
-                            Expenses Book
+                            Expense Book
                         </button>
                     </li>
-                    
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#toll_charges">
+                            <span class="icon"><i class="uil uil-money-bill" style="font-size:24px;color:#6c757d;"></i></span>
+                            Toll Charges Book
+                        </button>
+                    </li>
+
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#maintenance">
                             <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" /></span>
-                            Maintenance
+                            Maintenance Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#challan">
+                            <span class="icon"><i class="uil uil-file-alt" style="font-size:18px;color:#6c757d;"></i></span>
+                            Challan Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
                             <span class="icon"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
-                            Document
+                            Document Book
                         </button>
                     </li>
 
                     <li class="nav-item">
-                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allotment">
-                        <span class="icon"><img src="{{ asset('images/icons/allotment-icon.png') }}" alt=""></span>
-                        Allotment 
-                      </button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
+                            <span class="icon"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
+                            Insurance Book
+                        </button>
                     </li>
-                    
+
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#emi_book">
                             <span class="icon"><img src="{{ asset('images/icons/emi-bookicon.png') }}" alt="" /></span>
@@ -1735,10 +1756,24 @@
                     </li>
 
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
-                            <span class="icon"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
-                            Insurance
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#driver_history">
+                            <span class="icon"><i class="uil uil-history" style="font-size:18px;color:#6c757d;"></i></span>
+                            Driver History Book
                         </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tyre_book">
+                            <span class="icon"><i class="uil uil-dashboard" style="font-size:18px;color:#6c757d;"></i></span>
+                            Tyre Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allotment">
+                        <span class="icon"><img src="{{ asset('images/icons/allotment-icon.png') }}" alt=""></span>
+                        Allotment
+                      </button>
                     </li>
 
                     <li class="nav-item">
@@ -1751,8 +1786,58 @@
 
                 <!-- Tab Content -->
                 <div class="tab-content mt-3">
-                    
-                    <div class="tab-pane fade show active" id="trip">
+
+                    {{-- P&L Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade show active" id="pl_book">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-chart-line me-2"></i>P&amp;L Book</h5>
+                                <p class="text-muted mb-0">Profit &amp; Loss summary for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Toll Charges Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="toll_charges">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-road me-2"></i>Toll Charges Book</h5>
+                                <p class="text-muted mb-0">Toll charges history for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Challan Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="challan">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-file-alt me-2"></i>Challan Book</h5>
+                                <p class="text-muted mb-0">Challan records for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Driver History Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="driver_history">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-history me-2"></i>Driver History Book</h5>
+                                <p class="text-muted mb-0">Driver assignment history for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Tyre Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="tyre_book">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-dashboard me-2"></i>Tyre Book</h5>
+                                <p class="text-muted mb-0">Tyre history and mapping for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="trip">
                         <div class="totalrevenue mt-3">
                                <div class="item-row">
 
