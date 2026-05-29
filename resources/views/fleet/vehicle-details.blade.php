@@ -2343,7 +2343,7 @@
                         <div class="vehiclestable">
                             <div class="itemtop">
                                 <span class="sec-title">Trips List</span>
-                                <a href="#" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#addTrip">
+                                <a href="{{ route('trip.index') }}?open=create" class="addtripbtn">
                                     <i class="uil uil-plus me-1"></i>Add Trip</a>
                             </div>
                             
@@ -2351,76 +2351,100 @@
                                 <table class="table custom-driver-table trip-table">
                                     <thead>
                                         <tr>
-                                            <th>Trip Number</th>
-                                            <th>Start Date & Time</th>
-                                            <th>End Date & Time</th>
-                                            <th>Driver</th>
+                                            <th>S. No</th>
+                                            <th>Trip ID</th>
+                                            <th>LR / Memo Number & Date</th>
                                             <th>Trip Type</th>
-                                            <th>Customer</th>
-                                            <th>LR# / LR Date</th>
+                                            <th>Customer / Load Vendor</th>
                                             <th>Route</th>
-                                            <th>Source</th>
-                                            <th>Destination</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Actions</th>
+                                            <th>Loading Point & Unloading Point</th>
+                                            <th>Trip Start Date & Time</th>
+                                            <th>Trip End Date & Time</th>
+                                            <th>Driver Name & Code</th>
+                                            <th>Trip Status</th>
+                                            <th>Trip RAG Status</th>
                                         </tr>
                                     </thead>
-                            
+
                                     <tbody>
                                         <!-- Row 1 -->
                                         <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>External</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
+                                            <td>1</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56667</a></td>
+                                            <td>LR#2897 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-secondary">Outside Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Load Vendor</small></td>
                                             <td>HYD - KOL</td>
-                                            <td>Kolkata</td>
-                                            <td>Mumbai</td>
-                                            <td><span class="badge badge-warning">Initiated</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                            <td>Kolkata <br><small class="text-muted">→ Mumbai</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-warning d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-clock"></i> Initiated
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="On Time Delivery & No POD Deductions">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#28a745;display:inline-block;"></span>
+                                                    On Time
+                                                </span>
                                             </td>
                                         </tr>
-                            
+
                                         <!-- Row 2 -->
                                         <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>Own</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
+                                            <td>2</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56668</a></td>
+                                            <td>LR#2898 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-primary">Own Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Customer</small></td>
                                             <td>HYD - KOL</td>
-                                            <td>Mumbai</td>
-                                            <td>Hyderabad</td>
-                                            <td><span class="badge badge-info">On Going</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                            <td>Mumbai <br><small class="text-muted">→ Hyderabad</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-info d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-truck"></i> On Going
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="Delayed trip as per SR transit time">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#ffc107;display:inline-block;"></span>
+                                                    Delayed
+                                                </span>
                                             </td>
                                         </tr>
-                            
+
                                         <!-- Row 3 -->
                                         <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>Own</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
+                                            <td>3</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56669</a></td>
+                                            <td>LR#2899 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-primary">Own Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Customer</small></td>
                                             <td>HYD - KOL</td>
-                                            <td>Mumbai</td>
-                                            <td>Hyderabad</td>
-                                            <td><span class="badge badge-success">Completed</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                            <td>Mumbai <br><small class="text-muted">→ Hyderabad</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-success d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-check-circle"></i> Completed
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="Customer delay / POD deductions / Accident / Driver escalation / Vehicle challan / Diesel theft">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#dc3545;display:inline-block;"></span>
+                                                    Critical
+                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -5448,7 +5472,7 @@
     
     
 <!-- HTML Modal -->
-<div class="modal fade" id="addTrip" tabindex="-1">
+{{-- <div class="modal fade" id="addTrip" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5598,7 +5622,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
     
 <div class="modal fade" id="editVehicle" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
