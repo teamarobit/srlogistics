@@ -2504,12 +2504,158 @@
 
                     {{-- Driver History Book (NEW - static placeholder) --}}
                     <div class="tab-pane fade" id="driver_history">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body p-4">
-                                <h5 class="mb-3"><i class="uil uil-history me-2"></i>Driver History Book</h5>
-                                <p class="text-muted mb-0">Driver assignment history for this vehicle will appear here.</p>
+
+                        <div class="filter-options">
+                            <div class="item-filter">
+                                <span class="filter-icon">
+                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                </span>
+                                <p>Filter Options</p>
+                            </div>
+
+                            <form class="filterbd">
+                                <div class="row item-row02 mt-3">
+                                    <div class="col-lg-3 form-group">
+                                        <label for="vehicleType">Bill Status</label>
+                                        <div class="input-wrapper">
+                                            <select class="form-select">
+                                                <option>Choose</option>
+                                                <option>Paid</option>
+                                                <option>Pending</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 form-group">
+                                        <label for="vehicleType">Bill Number</label>
+                                        <div class="input-wrapper">
+                                            <input
+                                                type="text"
+                                                class="form-control itemtext"
+                                            />
+                                            <button type="button" class="clear-btn">
+                                                <i class="uil uil-times-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 form-group d-flex">
+                                        <div class="input-wrapper">
+
+                                            <div class="search_rcnumber">
+                                                <div class="input-lt">
+                                                    <input
+                                                        class="input_search"
+                                                        type="text"
+                                                        placeholder="Search by LR Number, Ref LR Number, route, material.."
+                                                    />
+                                                </div>
+
+                                                <div class="input-reset">
+                                                    <button class="btn refresh-btn"><i class="uil uil-search"></i></button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--<button class="btn fxportbtn" type="button">Export <i class="uil uil-export me-1"></i> </button>-->
+                                        <!--<button class="btn btn-primary d-flex ms-1" type="button"><i class="uil uil-sync me-1"></i>Reset</button>-->
+                                        <!--////-->
+
+                                        <div class="dropdown fxportbtn ms-1">
+                                            <button
+                                                class="btn btn-primary dropdown-toggle d-flex"
+                                                type="button"
+                                                id="exportBtnDriverHistory"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                            >
+                                                Export <i class="uil uil-upload ms-1"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="exportBtnDriverHistory">
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                </li>
+                                                <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <!--////-->
+
+                                    </div>
+
+                                    <!--<div class="col-lg-1 form-group">-->
+                                    <!--  <button class="btn fxportbtn" type="button">Export <i class="uil uil-export me-1"></i> </button>-->
+                                    <!--</div>-->
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="vehiclestable">
+                            <div class="table-responsive">
+                                <table class="table custom-driver-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Vehicle Number</th>
+                                            <th>Issue Date & Time</th>
+                                            <th>Revoke Date & Time</th>
+                                            <th>Number of Trips</th>
+                                            <th>Assigned Driver</th>
+                                            <th>Reason</th>
+                                            <th>Remarks</th>
+                                            <th class="text-center" style="width: 210px;">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- Row 1 -->
+                                        <tr>
+                                            <td>MH-10-AB-1834</td>
+                                            <td>08-09-2025 | FN</td>
+                                            <td>08-01-2025 | AN</td>
+                                            <td>20</td>
+                                            <td>Rakesh Das</td>
+                                            <td>Engine parts messing</td>
+                                            <td>No Malpractice</td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)" class="badge bg-success">Remarks</a>
+                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 2 -->
+                                        <tr>
+                                            <td>MH-10-AB-1834</td>
+                                            <td>08-09-2025 | FN</td>
+                                            <td>08-12-2025 | AN</td>
+                                            <td>20</td>
+                                            <td>Suman Pal</td>
+                                            <td>Engine parts messing</td>
+                                            <td>No Malpractice</td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 3 -->
+                                        <tr>
+                                            <td>MH-10-AB-1834</td>
+                                            <td>07-11-2025 | FN</td>
+                                            <td>08-01-2025 | AN</td>
+                                            <td>20</td>
+                                            <td>Sovan Pal</td>
+                                            <td>Engine parts messing</td>
+                                            <td>No Malpractice</td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+
                     </div>
 
                     {{-- Tyre Book (NEW - static placeholder) --}}
