@@ -105,13 +105,43 @@ $(document).ready(function(){
     
     
     $('.datetime').daterangepicker({
-        singleDatePicker: true,   
-        timePicker: true,         
-        startDate: moment(),      
+        singleDatePicker: true,
+        timePicker: true,
+        startDate: moment(),
         locale: {
-          format: 'MM/DD/YYYY hh:mm A' 
+          format: 'MM/DD/YYYY hh:mm A'
         }
     });
+
+    // Trip Book filter — LR Date Range picker
+    if ($('#tripbook_lr_daterange').length) {
+        $('#tripbook_lr_daterange').daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left',
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear',
+                applyLabel: 'Apply',
+                separator: ' - '
+            },
+            ranges: {
+                'Today':        [moment(), moment()],
+                'Yesterday':    [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days':  [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month':   [moment().startOf('month'), moment().endOf('month')],
+                'Last Month':   [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+
+        $('#tripbook_lr_daterange').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+
+        $('#tripbook_lr_daterange').on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
     
     
     const baseUrl = window.location.origin + window.location.pathname;

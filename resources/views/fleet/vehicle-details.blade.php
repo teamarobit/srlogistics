@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.9') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.1') }}">
 
 @endsection
 
@@ -2199,26 +2199,38 @@
                                     data-bs-parent="#accordionExample"
                                 >
                                     <div class="accordion-body">
-                                        <form class="vehicle_dform">
+                                        <form class="vehicle_dform p-4">
                                             <div class="filtersearch-bd justify-content-between">
                                                 <div class="vehicletype">
-                                                    <label>Start Date</label>
+                                                    <label>LR Date Range</label>
                                                     <input
                                                         type="text"
-                                                        class="form-control"
-                                                        name="daterange"
+                                                        class="form-control daterange"
+                                                        id="tripbook_lr_daterange"
+                                                        name="lr_daterange"
+                                                        autocomplete="off"
                                                         placeholder="Select date range..."
                                                     />
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>End Date</label>
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="daterange"
-                                                        placeholder="Select date range..."
-                                                    />
+                                                    <label>Trip Type</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>Own Booking</option>
+                                                        <option>Outside Booking</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Customer / Load Vendor</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>John Doe (Customer)</option>
+                                                        <option>Acme Logistics (Customer)</option>
+                                                        <option>Bharat Carriers (Load Vendor)</option>
+                                                        <option>Speed Movers (Load Vendor)</option>
+                                                    </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
@@ -2227,25 +2239,37 @@
                                                         <option>Choose..</option>
                                                         <option>HYD - KOL</option>
                                                         <option>DEL - PUN</option>
+                                                        <option>MUM - HYD</option>
+                                                        <option>BLR - CHN</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>Trip Status</label>
-                                                    <select class="form-select">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
                                                         <option>Choose..</option>
-                                                        <option>Initiated</option>
-                                                        <option>On Going</option>
-                                                        <option>Completed</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>Filter By Booking Type</label>
+                                                    <label>Trip RAG Status</label>
                                                     <select class="form-select">
                                                         <option>Choose..</option>
-                                                        <option>Own Booking</option>
-                                                        <option>External Booking</option>
+                                                        <option>On Time (Green)</option>
+                                                        <option>Delayed (Amber)</option>
+                                                        <option>Critical (Red)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>POD Deduction Trips</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>With POD Deduction</option>
+                                                        <option>Without POD Deduction</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -2256,7 +2280,7 @@
                                                         <input
                                                             type="text"
                                                             class="form-control"
-                                                            placeholder="Search by Trip Number"
+                                                            placeholder="Search by Trip ID"
                                                         />
                                                         <span class="input-group-text"
                                                             ><i class="uil uil-search"></i
@@ -2264,33 +2288,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="ms-1" style="width: 220px">
-                                                    <div class="input-group">
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            placeholder="Search by Customer"
-                                                        />
-                                                        <span class="input-group-text"
-                                                            ><i class="uil uil-search"></i
-                                                        ></span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="ms-1" style="width: 220px">
-                                                    <div class="input-group">
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            placeholder="Search by Driver"
-                                                        />
-                                                        <span class="input-group-text"
-                                                            ><i class="uil uil-search"></i
-                                                        ></span>
-                                                        <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
-                                                    </div>
-                                                </div>
-                                                
                                                 <div class="ms-1" style="width: 220px">
                                                     <div class="input-group">
                                                         <input
@@ -2301,7 +2298,6 @@
                                                         <span class="input-group-text"
                                                             ><i class="uil uil-search"></i
                                                         ></span>
-                                                        <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
                                                     </div>
                                                 </div>
 
@@ -2313,13 +2309,13 @@
                                                     <button
                                                         class="btn btn-primary dropdown-toggle d-flex"
                                                         type="button"
-                                                        id="exportBtn"
+                                                        id="exportBtnTripBook"
                                                         data-bs-toggle="dropdown"
                                                         aria-expanded="false"
                                                     >
                                                         Export <i class="uil uil-upload ms-1"></i>
                                                     </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="exportBtn">
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnTripBook">
                                                         <li>
                                                             <a class="dropdown-item" href="javascript:void(0)"
                                                                 >Excel</a
@@ -6444,7 +6440,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.4') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
