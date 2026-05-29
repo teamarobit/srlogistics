@@ -24,7 +24,7 @@
                             <div class="col-12">
 
                                 <h5 class="d-inline-block mb-0">Hisab Category</h5>
-                                <a href="add-hisab-category.php" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Hisab Category</a>
+                                <a href="{{ route('hisab.category.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Hisab Category</a>
                                 <form class="d-inline-block">
                                     <!--<div class="search-wrap d-inline-block ms-2" style="width: 140px;">-->
                                     <!--    <input type="text" class="form-control" placeholder="Serach by Hisab Category" />-->
