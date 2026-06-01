@@ -34,7 +34,7 @@ var PROTOTYPE_MODE = true;
 var PROTO_CONFIG = {
     tripType    : 'Own Booking',      // 'Own Booking' | 'Outside Booking'
     vehicleType : 'Own',              // 'Own' | 'External'
-    tripStatus  : 'Initiated',        // 'Initiated' | 'Vehicle Assigned' | 'Loading' | 'In Transit' | 'Completed' | 'Cancelled'
+    tripStatus  : 'In Transit',        // 'Initiated' | 'Vehicle Assigned' | 'Loading' | 'In Transit' | 'Completed' | 'Cancelled'
     userRole    : 'Admin',            // 'Admin' | 'Tracking'
     hasDamagePod: false               // true | false
 };

@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=4.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=4.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
     <div class="srlog-bdwrapper v2-page td2-bdwrap" id="tripApp"
          data-trip-type="Own Booking"
          data-vehicle-type="Own"
-         data-trip-status="Initiated"
+         data-trip-status="In Transit"
          data-user-role="Admin"
          data-has-damage-pod="0">
 
@@ -38,7 +38,7 @@
                 <div class="v2-id-main">
                     <div class="v2-id-vno">
                         Kolkata – Mumbai
-                        <span class="v2-id-status td2-initiated">Initiated</span>
+                        <span class="v2-id-status td2-in-transit">In Transit</span>
                     </div>
                     <div class="v2-id-sub">
                         Created 25/10/2025 &nbsp;·&nbsp; Anmol Kaur &nbsp;·&nbsp;
@@ -3356,5 +3356,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.2') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.3') }}"></script>
 @endsection

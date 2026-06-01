@@ -2430,8 +2430,9 @@
 ───────────────────────────────────────────────────────────── */
 
 /* ── v2-page status badge variants for trip ── */
-.v2-id-status.td2-initiated  { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-.v2-id-status.td2-ongoing    { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.v2-id-status.td2-initiated   { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.v2-id-status.td2-ongoing     { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.v2-id-status.td2-in-transit  { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
 .v2-id-status.td2-completed  { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
 .v2-id-status.td2-cancelled  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
 
