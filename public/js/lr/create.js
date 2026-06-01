@@ -28,6 +28,36 @@ $(document).ready(function () {
         });
     }
 
+    /* ─────────────────────────────────────────────────────
+       Single date picker — init on any .lr-datepicker input
+       Called on page load + after each new row is added.
+    ───────────────────────────────────────────────────── */
+    function initDatepickers($scope) {
+        $scope.find('.lr-datepicker').each(function () {
+            /* Skip if already initialised */
+            if ($(this).data('daterangepicker')) { return; }
+            $(this).daterangepicker({
+                singleDatePicker: true,
+                autoUpdateInput: false,
+                autoApply: true,
+                opens: 'left',
+                locale: {
+                    format: 'DD MMM YYYY',
+                    cancelLabel: 'Clear'
+                }
+            });
+            $(this).on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD MMM YYYY'));
+            });
+            $(this).on('cancel.daterangepicker', function () {
+                $(this).val('');
+            });
+        });
+    }
+
+    /* Init on page load — header date + first item row */
+    initDatepickers($(document));
+
     /* ── Row index counter (row 0 pre-rendered in HTML) ── */
     var itemRowCount = 1;
 
@@ -84,6 +114,7 @@ $(document).ready(function () {
         itemRowCount++;
         renumberRows();
         recalcTotal();
+        initDatepickers($newRow);
     });
 
     /* ─────────────────────────────────────────────────────

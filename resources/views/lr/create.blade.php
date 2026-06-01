@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/lr/create.css?v=2.2') }}" rel="stylesheet">
+<link href="{{ asset('css/lr/create.css?v=2.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -98,8 +98,8 @@
                             <label class="form-label" for="lr_date">
                                 LR Date <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control" name="lr_date" id="lr_date"
-                                   value="{{ old('lr_date') }}">
+                            <input type="text" class="form-control lr-datepicker" name="lr_date" id="lr_date"
+                                   value="{{ old('lr_date') }}" placeholder="Select date" autocomplete="off" readonly>
                             <span class="text-danger small d-block mt-1 lr-field-error" id="err-lr_date">
                                 @error('lr_date'){{ $message }}@enderror
                             </span>
@@ -227,8 +227,8 @@
                                     <td>
                                         <input type="text"   class="form-control w-100 mb-1"
                                                name="items[0][invoice_number]" placeholder="Invoice No.">
-                                        <input type="date"   class="form-control w-100"
-                                               name="items[0][invoice_date]">
+                                        <input type="text"   class="form-control w-100 lr-datepicker"
+                                               name="items[0][invoice_date]" placeholder="Select date" autocomplete="off" readonly>
                                     </td>
                                     <td>
                                         <input type="text"   class="form-control w-100 mb-1"
@@ -253,12 +253,12 @@
                                     <td>
                                         <input type="text"   class="form-control w-100 mb-1"
                                                name="items[0][eway_bill_number]" placeholder="EWAY Bill No.">
-                                        <input type="date"   class="form-control w-100"
-                                               name="items[0][eway_bill_date]">
+                                        <input type="text"   class="form-control w-100 lr-datepicker"
+                                               name="items[0][eway_bill_date]" placeholder="Select date" autocomplete="off" readonly>
                                     </td>
                                     <td>
-                                        <input type="date"   class="form-control w-100"
-                                               name="items[0][valid_till]">
+                                        <input type="text"   class="form-control w-100 lr-datepicker"
+                                               name="items[0][valid_till]" placeholder="Select date" autocomplete="off" readonly>
                                     </td>
                                     <td class="text-end">
                                         <input type="number" class="form-control w-100 lr-freight-input"
@@ -320,5 +320,5 @@
 
 @section('js')
 {{-- SD-1: All JS in external file. Path: public/js/lr/create.js --}}
-<script src="{{ asset('js/lr/create.js?v=2.0') }}"></script>
+<script src="{{ asset('js/lr/create.js?v=2.1') }}"></script>
 @endsection
