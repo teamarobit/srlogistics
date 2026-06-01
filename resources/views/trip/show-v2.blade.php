@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=3.8') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=4.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -314,7 +314,7 @@
                                     </div>
 
                                     {{-- Section 2: Route Strip --}}
-                                    <div class="td2-section">
+                                    <div class="td2-section td2-section-compact">
                                         <div class="td2-route-strip">
                                             <div class="td2-rs-stop">
                                                 <span class="td2-rs-label">Source</span>

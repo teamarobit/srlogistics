@@ -1085,6 +1085,46 @@
     margin-bottom: 12px;
 }
 
+/* Compact variant — route strip card */
+.td2-section-compact {
+    padding: 10px 20px;
+}
+
+/* Strip: tighter padding, less margin */
+.td2-section-compact .td2-route-strip {
+    padding: 4px 0;
+    margin-bottom: 8px;
+}
+
+/* Stop: hide the position label (SOURCE / STOP 1 / DESTINATION) —
+   dot colour already communicates position; label adds ~14px of height */
+.td2-section-compact .td2-rs-label {
+    display: none;
+}
+.td2-section-compact .td2-rs-stop {
+    gap: 3px;
+    min-width: 60px;
+}
+
+/* Meta fields: smaller text, tighter gap */
+.td2-section-compact .td2-di {
+    gap: 2px;
+}
+.td2-section-compact .td2-di-label {
+    font-size: 9px;
+    line-height: 1.2;
+}
+.td2-section-compact .td2-di-value {
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+/* Reduce Bootstrap g-3 row gutter to g-2 equivalent */
+.td2-section-compact .row.g-3 {
+    --bs-gutter-y: 0.5rem;
+    --bs-gutter-x: 0.75rem;
+}
+
 .td2-section-title {
     font-family: Inter, sans-serif;
     font-weight: 700;
