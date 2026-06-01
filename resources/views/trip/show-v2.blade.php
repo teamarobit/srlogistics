@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=3.7') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=3.8') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -2153,6 +2153,17 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Add Comment --}}
+                        <div class="td2-history-comment-wrap">
+                            <textarea class="form-control form-control-sm td2-history-comment-input"
+                                      id="td2HistoryComment"
+                                      rows="2"
+                                      placeholder="Add a comment…"></textarea>
+                            <button class="td2-history-comment-btn" type="button" id="td2HistoryCommentBtn">
+                                <i class="fa fa-paper-plane-o"></i> Post
+                            </button>
+                        </div>
                     </div>
 
                 </div>{{-- end td2-sidebar --}}
@@ -3345,5 +3356,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.1') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.2') }}"></script>
 @endsection

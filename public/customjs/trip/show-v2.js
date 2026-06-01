@@ -279,6 +279,37 @@ $(document).on('click', '.td2-sos-submit-btn', function () {
 });
 
 /* =============================================================
+   HISTORY — Add Comment
+   ============================================================= */
+$(document).on('click', '#td2HistoryCommentBtn', function () {
+    var text = $('#td2HistoryComment').val().trim();
+    if (!text) {
+        Toast.fire({ icon: 'warning', title: 'Please enter a comment.' });
+        return;
+    }
+
+    var now    = new Date();
+    var date   = now.toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' });
+    var time   = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    var initials = 'ME'; /* placeholder — replace with blade-rendered user initials */
+
+    var $item = $(
+        '<div class="td2-history-item td2-history-item-new">' +
+            '<div class="td2-history-av">' + initials + '</div>' +
+            '<div class="td2-history-detail">' +
+                '<span class="td2-history-name">You</span>' +
+                '<span class="td2-history-date">' + date + ' | ' + time + '</span>' +
+                '<p class="td2-history-text">' + $('<div>').text(text).html() + '</p>' +
+            '</div>' +
+        '</div>'
+    );
+
+    $('.td2-history-list').prepend($item);
+    $('#td2HistoryComment').val('');
+    Toast.fire({ icon: 'success', title: 'Comment added.' });
+});
+
+/* =============================================================
    SPRINT 2 — Vehicle Allocation
    ============================================================= */
 

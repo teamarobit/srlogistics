@@ -884,6 +884,52 @@
     line-height: 1.4;
 }
 
+/* History — comment input */
+.td2-history-comment-wrap {
+    margin-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.td2-history-comment-input {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    border: 1px solid #e2e8f5;
+    border-radius: 8px;
+    resize: none;
+    color: #374151;
+    background: #f8fafc;
+    transition: border-color 0.15s, background 0.15s;
+}
+.td2-history-comment-input:focus {
+    border-color: #a5b4fc;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.08);
+    outline: none;
+}
+
+.td2-history-comment-btn {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    background: #032671;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.td2-history-comment-btn:hover { background: #1a3a8f; }
+.td2-history-comment-btn .fa { font-size: 11px; }
+
 /* ─────────────────────────────────────────────────────────────
    6. RIGHT OVERLAY PANELS
 ───────────────────────────────────────────────────────────── */
