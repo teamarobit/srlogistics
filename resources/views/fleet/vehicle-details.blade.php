@@ -3069,7 +3069,7 @@
                             </div>
                         </div>
 
-                        <div class="totalrevenue mt-3">
+                        {{-- <div class="totalrevenue mt-3">
                                <div class="item-row">
 
                                    <div class="itemcol">
@@ -3160,7 +3160,8 @@
                                </div>
                            </div>
 
-                        <div class="accordion mt-3" id="accordionExample">
+                        
+                           <div class="accordion mt-3" id="accordionExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingOne">
                                     <button
@@ -3321,7 +3322,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!---->
                         <div class="vehiclestable">
@@ -4892,7 +4893,7 @@
 
                     <!--Maintenance-content-here-->
                     <div class="tab-pane fade" id="maintenance">
-                        <div class="totalrevenue mt-3">
+                        {{-- <div class="totalrevenue mt-3">
                             <div class="item-row">
                                 <div class="itemcol">
                                     <p>Total Scheduled</p>
@@ -4914,7 +4915,7 @@
                                     <span class="number c-04">₹0</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         
                         <div class="row mt-4">
                             <div class="col-12">
