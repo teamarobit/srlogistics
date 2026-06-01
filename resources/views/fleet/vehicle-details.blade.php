@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.4') }}">
 
 @endsection
 
@@ -4917,97 +4917,281 @@
                         </div>
                         
                         <div class="row mt-4">
-                            <div class="col-12 col-md-8">
-                                <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                                  <li class="nav-item" role="presentation">
-                                    <button class="nav-link active mb-0" id="pills-maint-tab" data-bs-toggle="pill" data-bs-target="#pills-maint" type="button" role="tab" aria-controls="pills-maint" aria-selected="true">Maintenance</button>
-                                  </li>
-                                  <li class="nav-item" role="presentation">
-                                    <button class="nav-link mb-0" id="pills-repair-tab" data-bs-toggle="pill" data-bs-target="#pills-repair" type="button" role="tab" aria-controls="pills-repair" aria-selected="false">Repair</button>
-                                  </li>
-                                </ul>
-                            </div>
-                            <div class="col-12 col-md-4 text-end">
-                                <a
-                                    href="javascript:void(0)"
-                                    class="btn btn-primary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#add05_maintenance"
-                                    ><i class="uil uil-plus me-1"></i> Schedule Maintenance</a
-                                >
+                            <div class="col-12">
+                                <div class="maint-pills-scroll-wrap">
+                                    <button type="button" class="maint-pills-scroll-btn maint-pills-scroll-prev" aria-label="Scroll tabs left">
+                                        <i class="uil uil-angle-left-b"></i>
+                                    </button>
+                                    <button type="button" class="maint-pills-scroll-btn maint-pills-scroll-next" aria-label="Scroll tabs right">
+                                        <i class="uil uil-angle-right-b"></i>
+                                    </button>
+                                    <ul class="nav nav-pills flex-nowrap gap-2" id="pills-tab" role="tablist">
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link active mb-0" id="pills-truck-repair-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-repair" type="button" role="tab" aria-controls="pills-truck-repair" aria-selected="true">Truck Repair</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-truck-sched-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-sched" type="button" role="tab" aria-controls="pills-truck-sched" aria-selected="false">Truck Scheduled Maintenance</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-truck-acc-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-acc" type="button" role="tab" aria-controls="pills-truck-acc" aria-selected="false">Truck Accidental Repair</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-battery-tab" data-bs-toggle="pill" data-bs-target="#pills-battery" type="button" role="tab" aria-controls="pills-battery" aria-selected="false">Battery – Repair &amp; Maintenance</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-def-tab" data-bs-toggle="pill" data-bs-target="#pills-def" type="button" role="tab" aria-controls="pills-def" aria-selected="false">DEF – Allocation History</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-tirpal-tab" data-bs-toggle="pill" data-bs-target="#pills-tirpal" type="button" role="tab" aria-controls="pills-tirpal" aria-selected="false">Tirpal &amp; Rope – Allocation History</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-tagged-tab" data-bs-toggle="pill" data-bs-target="#pills-tagged" type="button" role="tab" aria-controls="pills-tagged" aria-selected="false">Tagged Assets</button>
+                                      </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                        
-                        
-                        <div class="tab-content" id="pills-tabContent">
-                          <div class="tab-pane fade show active" id="pills-maint" role="tabpanel" aria-labelledby="pills-maint-tab">
-                                <div class="vehiclestable">
-                                    <div class="itemtop">
-                                        <span class="sec-title">Scheduled Maintenance</span>
+
+
+                        <div class="tab-content mt-3" id="pills-tabContent">
+
+                          {{-- 1. Truck Repair --}}
+                          <div class="tab-pane fade show active" id="pills-truck-repair" role="tabpanel" aria-labelledby="pills-truck-repair-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Repair</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Repair</a>
                                     </div>
-                                    
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Driver Name &amp; Code</th>
+                                                    <th>Date</th>
+                                                    <th>Workshop Type</th>
+                                                    <th>Repair</th>
+                                                    <th>Repair Category</th>
+                                                    <th>Repair Work</th>
+                                                    <th>Odometer Reading</th>
+                                                    <th>Repair Days / Hours</th>
+                                                    <th>Repair Warranty (Months)</th>
+                                                    <th>Workshop Name &amp; Location</th>
+                                                    <th class="text-end">Repair Cost (₹)</th>
+                                                    <th>Invoice Number</th>
+                                                    <th>GST Bill Applicable</th>
+                                                    <th>GST Bill Received</th>
+                                                    <th class="text-center">Attachment</th>
+                                                    <th class="text-center">Action</th>
+                                                    <th>Work Done</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Ramesh Kumar <br><small class="text-muted">DRV-1021</small></td>
+                                                    <td>27-08-2025</td>
+                                                    <td>Own <br><a href="javascript:void(0)" class="text-primary"><small>JC-2025-0087</small></a></td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>Mechanical</td>
+                                                    <td>Clutch Plate Replacement</td>
+                                                    <td>1,24,520 KM</td>
+                                                    <td>2 Days</td>
+                                                    <td>6</td>
+                                                    <td>SR Workshop <br><small class="text-muted">Hyderabad</small></td>
+                                                    <td class="text-end">18,500</td>
+                                                    <td>INV-2025-3341</td>
+                                                    <td>Yes</td>
+                                                    <td>Yes</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Dismantled gearbox housing, replaced worn clutch plate &amp;…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Clutch Plate Replacement — Work Done"
+                                                           data-content="Dismantled gearbox housing, replaced worn clutch plate &amp; pressure plate, inspected flywheel, refitted assembly and road-tested for smooth engagement.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Suresh Yadav <br><small class="text-muted">DRV-1034</small></td>
+                                                    <td>15-09-2025</td>
+                                                    <td>External</td>
+                                                    <td><span class="tr-repair-pill is-minor">Minor</span></td>
+                                                    <td>Mechanical</td>
+                                                    <td>Brake Shoe Adjustment</td>
+                                                    <td>1,26,840 KM</td>
+                                                    <td>4 Hours</td>
+                                                    <td>—</td>
+                                                    <td>Joshan LLP <br><small class="text-muted">Vijayawada</small></td>
+                                                    <td class="text-end">2,200</td>
+                                                    <td>INV-JL-7782</td>
+                                                    <td>Yes</td>
+                                                    <td>No</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Adjusted rear brake shoe clearance, cleaned drum,…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Brake Shoe Adjustment — Work Done"
+                                                           data-content="Adjusted rear brake shoe clearance, cleaned drum, checked brake fluid level and tested pedal travel for proper response.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mahesh Reddy <br><small class="text-muted">DRV-1045</small></td>
+                                                    <td>02-10-2025</td>
+                                                    <td>Own <br><a href="javascript:void(0)" class="text-primary"><small>JC-2025-0102</small></a></td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>Electrical</td>
+                                                    <td>Air Compressor Replacement</td>
+                                                    <td>1,28,910 KM</td>
+                                                    <td>1 Day</td>
+                                                    <td>12</td>
+                                                    <td>SR Workshop <br><small class="text-muted">Hyderabad</small></td>
+                                                    <td class="text-end">12,750</td>
+                                                    <td>INV-2025-3398</td>
+                                                    <td>Yes</td>
+                                                    <td>Yes</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Removed faulty air compressor unit, replaced with OEM…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Air Compressor Replacement — Work Done"
+                                                           data-content="Removed faulty air compressor unit, replaced with OEM compressor, recharged air lines, verified pressure cut-in/cut-out and leak-tested entire circuit.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Vinod Singh <br><small class="text-muted">DRV-1052</small></td>
+                                                    <td>18-10-2025</td>
+                                                    <td>External</td>
+                                                    <td><span class="tr-repair-pill is-minor">Minor</span></td>
+                                                    <td>Body Work</td>
+                                                    <td>Cabin Door Dent Removal</td>
+                                                    <td>1,30,210 KM</td>
+                                                    <td>6 Hours</td>
+                                                    <td>—</td>
+                                                    <td>Sai Body Works <br><small class="text-muted">Guntur</small></td>
+                                                    <td class="text-end">3,500</td>
+                                                    <td>INV-SBW-2241</td>
+                                                    <td>No</td>
+                                                    <td>—</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Pulled out dents on driver-side cabin door using slide…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Cabin Door Dent Removal — Work Done"
+                                                           data-content="Pulled out dents on driver-side cabin door using slide hammer, sanded surface, applied primer, repainted to match cab colour and polished.">More</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {{-- Truck Repair · Work Done Modal --}}
+                                <div class="modal fade" id="trWorkDoneModal" tabindex="-1" aria-labelledby="trWorkDoneModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="trWorkDoneModalLabel">Work Done</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p id="trWorkDoneModalBody" class="mb-0">—</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 2. Truck Scheduled Maintenance --}}
+                          <div class="tab-pane fade" id="pills-truck-sched" role="tabpanel" aria-labelledby="pills-truck-sched-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Scheduled Maintenance</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add05_maintenance"><i class="uil uil-plus me-1"></i> Schedule Maintenance</a>
+                                    </div>
+
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
                                                     <th>Maintenance Item</th>
-                                                    <th>Last Date</th>
-                                                    <th>Next Due</th>
-                                                    <th>Odometer (KM)</th>
+                                                    <th>Service Interval</th>
+                                                    <th>Last Service Date</th>
+                                                    <th>Last Service KM</th>
+                                                    <th>Next Due Date</th>
+                                                    <th>Next Due KM</th>
                                                     <th>Status</th>
                                                     <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
-                                    
                                             <tbody>
-                                                <!-- Row 1 -->
+                                                <tr>
+                                                    <td>Engine Oil Change</td>
+                                                    <td>Every 15,000 KM</td>
+                                                    <td>27-08-2025</td>
+                                                    <td>1,15,000</td>
+                                                    <td>15-12-2025</td>
+                                                    <td>1,30,000</td>
+                                                    <td><span class="badge badge-warning">Due Soon</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
                                                 <tr>
                                                     <td>Hub Greasing</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>420</td>
-                                                    <td><span class="badge badge-warning">Pending</span></td>
+                                                    <td>Every 10,000 KM</td>
+                                                    <td>15-07-2025</td>
+                                                    <td>1,10,000</td>
+                                                    <td>20-11-2025</td>
+                                                    <td>1,20,000</td>
+                                                    <td><span class="badge badge-danger">Overdue</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
-                                    
-                                                <!-- Row 2 -->
                                                 <tr>
-                                                    <td>Painting</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>350</td>
+                                                    <td>Air Filter Replacement</td>
+                                                    <td>Every 20,000 KM</td>
+                                                    <td>05-06-2025</td>
+                                                    <td>1,08,000</td>
+                                                    <td>10-01-2026</td>
+                                                    <td>1,28,000</td>
                                                     <td><span class="badge badge-success">Up to Date</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
-                                    
-                                                <!-- Row 3 -->
                                                 <tr>
-                                                    <td>Electric</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>140</td>
+                                                    <td>Painting Touch-Up</td>
+                                                    <td>Yearly</td>
+                                                    <td>27-03-2025</td>
+                                                    <td>1,02,500</td>
+                                                    <td>27-03-2026</td>
+                                                    <td>—</td>
                                                     <td><span class="badge badge-success">Up to Date</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -5015,47 +5199,57 @@
                                     </div>
                                 </div>
                           </div>
-                          <div class="tab-pane fade" id="pills-repair" role="tabpanel" aria-labelledby="pills-repair-tab">
+
+                          {{-- 3. Truck Accidental Repair --}}
+                          <div class="tab-pane fade" id="pills-truck-acc" role="tabpanel" aria-labelledby="pills-truck-acc-tab">
                               <div class="vehiclestable">
-                                    <div class="itemtop">
-                                        <span class="sec-title">Scheduled Repair</span>
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Accidental Repair</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Log Accident</a>
                                     </div>
-                                    
+
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Repair Item</th>
-                                                    <th>Repair Type</th>
-                                                    <th>Repair Start Date</th>
-                                                    <th>Expected Closure Date</th>
-                                                    <th>Actual Closure Date</th>
-                                                    <th>Workshop Name</th>
-                                                    <th>Workshop Location</th>
-                                                    <th>Odometer (KM)</th>
+                                                    <th>Accident Date</th>
+                                                    <th>Location</th>
+                                                    <th>Damage Type</th>
+                                                    <th>Severity</th>
+                                                    <th>Workshop</th>
+                                                    <th>Insurance Claim #</th>
+                                                    <th class="text-end">Repair Cost (₹)</th>
                                                     <th>Status</th>
                                                     <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
-                                    
                                             <tbody>
                                                 <tr>
-                                                    <td>Hub Greasing</td>
-                                                    <td>Major</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>30-08-2025</td>
-                                                    <td>02-09-2025</td>
-                                                    <td>Joshan LLP</td>
-                                                    <td>Hydrabad</td>
-                                                    <td>420</td>
-                                                    <td><span class="badge badge-warning">Pending</span></td>
+                                                    <td>14-07-2023</td>
+                                                    <td>NH-44, Kurnool</td>
+                                                    <td>Front Bumper, Headlight</td>
+                                                    <td><span class="badge badge-warning">Moderate</span></td>
+                                                    <td>Tata SC, Kurnool</td>
+                                                    <td>CLM-2023-0031</td>
+                                                    <td class="text-end">95,000</td>
+                                                    <td><span class="badge badge-success">Settled</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>08-12-2024</td>
+                                                    <td>Outer Ring Road, Hyderabad</td>
+                                                    <td>Side Panel, Rear Axle</td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>SC-HYD (Own)</td>
+                                                    <td>CLM-2024-0048</td>
+                                                    <td class="text-end">2,40,000</td>
+                                                    <td><span class="badge badge-warning">Survey in Progress</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -5063,6 +5257,348 @@
                                     </div>
                                 </div>
                           </div>
+
+                          {{-- 4. Battery – Repair & Maintenance --}}
+                          <div class="tab-pane fade" id="pills-battery" role="tabpanel" aria-labelledby="pills-battery-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Battery – Repair &amp; Maintenance</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Battery Entry</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Action Date</th>
+                                                    <th>Battery Brand</th>
+                                                    <th>Serial No</th>
+                                                    <th>Install Date</th>
+                                                    <th>Warranty Until</th>
+                                                    <th>Action Type</th>
+                                                    <th class="text-end">Cost (₹)</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>10-02-2024</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>New Installation</td>
+                                                    <td class="text-end">14,800</td>
+                                                    <td><span class="badge badge-success">Active</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>22-08-2025</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>Terminal Cleaning &amp; Water Top-up</td>
+                                                    <td class="text-end">350</td>
+                                                    <td><span class="badge badge-success">Done</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>05-11-2025</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>Load Test</td>
+                                                    <td class="text-end">200</td>
+                                                    <td><span class="badge badge-warning">Voltage Low</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 5. DEF – Allocation History --}}
+                          <div class="tab-pane fade" id="pills-def" role="tabpanel" aria-labelledby="pills-def-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">DEF (AdBlue) – Allocation History</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Qty (Litres)</th>
+                                                    <th>Odometer (KM)</th>
+                                                    <th>Supplier / Source</th>
+                                                    <th class="text-end">Rate (₹/L)</th>
+                                                    <th class="text-end">Total Cost (₹)</th>
+                                                    <th>Allocated By</th>
+                                                    <th>Remarks</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>05-09-2025</td>
+                                                    <td>20</td>
+                                                    <td>1,25,400</td>
+                                                    <td>HP Pump – Hyderabad</td>
+                                                    <td class="text-end">85</td>
+                                                    <td class="text-end">1,700</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>Refill at depot</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>28-09-2025</td>
+                                                    <td>15</td>
+                                                    <td>1,27,820</td>
+                                                    <td>IOCL Pump – Vijayawada</td>
+                                                    <td class="text-end">88</td>
+                                                    <td class="text-end">1,320</td>
+                                                    <td>Suresh M. (Driver)</td>
+                                                    <td>Trip allocation</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>20-10-2025</td>
+                                                    <td>25</td>
+                                                    <td>1,29,500</td>
+                                                    <td>Own Depot Stock</td>
+                                                    <td class="text-end">82</td>
+                                                    <td class="text-end">2,050</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>Bulk fill before line trip</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 6. Tirpal & Rope – Allocation History --}}
+                          <div class="tab-pane fade" id="pills-tirpal" role="tabpanel" aria-labelledby="pills-tirpal-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Tirpal &amp; Rope – Allocation History</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate Item</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Allocation Date</th>
+                                                    <th>Item Type</th>
+                                                    <th>Size / Spec</th>
+                                                    <th>Qty</th>
+                                                    <th>Issued To</th>
+                                                    <th>Return Date</th>
+                                                    <th>Condition on Return</th>
+                                                    <th class="text-end">Cost (₹)</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>12-08-2025</td>
+                                                    <td>Tirpal (HDPE)</td>
+                                                    <td>20 ft x 25 ft</td>
+                                                    <td>1</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>28-08-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td class="text-end">3,200</td>
+                                                    <td><span class="badge badge-success">Returned</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>15-09-2025</td>
+                                                    <td>Nylon Rope</td>
+                                                    <td>12 mm x 50 m</td>
+                                                    <td>2</td>
+                                                    <td>Suresh M. (Driver)</td>
+                                                    <td>—</td>
+                                                    <td>—</td>
+                                                    <td class="text-end">1,800</td>
+                                                    <td><span class="badge badge-warning">In Use</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>02-10-2025</td>
+                                                    <td>Tirpal (Canvas)</td>
+                                                    <td>18 ft x 22 ft</td>
+                                                    <td>1</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>20-10-2025</td>
+                                                    <td><span class="badge badge-danger">Torn</span></td>
+                                                    <td class="text-end">2,800</td>
+                                                    <td><span class="badge badge-danger">Damaged</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 7. Tagged Assets --}}
+                          <div class="tab-pane fade" id="pills-tagged" role="tabpanel" aria-labelledby="pills-tagged-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Tagged Assets — Stopper, Jack, Rod, Tools, Fan etc.</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset Name</th>
+                                                    <th>Category</th>
+                                                    <th>Tag / Serial No</th>
+                                                    <th>Qty</th>
+                                                    <th>Tagged Date</th>
+                                                    <th>Issued By</th>
+                                                    <th>Last Verified</th>
+                                                    <th>Condition</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Wheel Stopper</td>
+                                                    <td>Safety</td>
+                                                    <td>STP-001A</td>
+                                                    <td>2</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Hydraulic Jack (10 Ton)</td>
+                                                    <td>Tool</td>
+                                                    <td>JCK-7842</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Wheel Spanner Rod</td>
+                                                    <td>Tool</td>
+                                                    <td>ROD-3321</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-warning">Worn</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Tool Kit (Standard)</td>
+                                                    <td>Tool Box</td>
+                                                    <td>TLK-1108</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cabin Fan (12V)</td>
+                                                    <td>Accessory</td>
+                                                    <td>FAN-2205</td>
+                                                    <td>1</td>
+                                                    <td>14-03-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Working</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>First Aid Box</td>
+                                                    <td>Safety</td>
+                                                    <td>FAB-0091</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-warning">Restock Needed</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
                         </div>
 
                         
@@ -7802,6 +8338,8 @@
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/truck-repair.js?v=1.0') }}"></script>
 
 <script>
 

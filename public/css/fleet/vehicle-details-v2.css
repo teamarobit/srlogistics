@@ -1507,6 +1507,96 @@
     margin-bottom: 0 !important;
 }
 
+/* ── Maintenance Book — single-line pill tabs with prev/next nav buttons ── */
+.maint-pills-scroll-wrap {
+    position: relative;
+}
+.maint-pills-scroll-wrap::before,
+.maint-pills-scroll-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 38px;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity .2s ease;
+    border-radius: 6px;
+}
+.maint-pills-scroll-wrap::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.maint-pills-scroll-wrap::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.maint-pills-scroll-wrap.has-prev::before { opacity: 1; }
+.maint-pills-scroll-wrap.has-next::after  { opacity: 1; }
+
+.maint-pills-scroll-wrap #pills-tab {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+    margin: 0;
+}
+.maint-pills-scroll-wrap #pills-tab::-webkit-scrollbar { display: none; }
+.maint-pills-scroll-wrap #pills-tab .nav-item { flex: 0 0 auto; }
+.maint-pills-scroll-wrap #pills-tab .nav-link {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.maint-pills-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    width: 18px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: linear-gradient(135deg, #032671, #0a3d9e);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.9);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.maint-pills-scroll-btn:hover {
+    background: linear-gradient(135deg, #0a3d9e, #1a52c4);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.45), 0 0 0 3px rgba(255,255,255,0.95);
+    transform: translateY(-50%) scale(1.08);
+}
+.maint-pills-scroll-btn:active {
+    transform: translateY(-50%) scale(0.94);
+    box-shadow: 0 2px 6px rgba(3,38,113,0.35), 0 0 0 3px rgba(255,255,255,0.9);
+}
+.maint-pills-scroll-btn:focus { outline: none; }
+.maint-pills-scroll-btn:focus-visible {
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.95), 0 0 0 5px rgba(10,61,158,0.35);
+}
+.maint-pills-scroll-btn i {
+    line-height: 1;
+    pointer-events: none;
+    display: inline-flex;
+}
+.maint-pills-scroll-prev { left: -8px; }
+.maint-pills-scroll-next { right: -8px; }
+.maint-pills-scroll-btn.is-visible { display: inline-flex; }
+
 /* =====================================================
    FUEL BOOK — MINI DASHBOARD (.fmd-*)
    Self-contained component. Does NOT reuse the legacy
@@ -3320,6 +3410,49 @@
 @media (max-width: 576px) {
     #expenses .exp-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     #expenses .exp-mini-head { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================
+   Truck Repair · Repair Severity Pills (Major / Minor)
+   ============================================================ */
+.tr-repair-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.tr-repair-pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.65);
+}
+.tr-repair-pill.is-major {
+    color: #b42318;
+    background: #fef3f2;
+    border-color: #fecdca;
+}
+.tr-repair-pill.is-major::before {
+    background: #d92d20;
+    box-shadow: 0 0 0 2px #fee4e2;
+}
+.tr-repair-pill.is-minor {
+    color: #b54708;
+    background: #fffaeb;
+    border-color: #fedf89;
+}
+.tr-repair-pill.is-minor::before {
+    background: #f79009;
+    box-shadow: 0 0 0 2px #fef0c7;
 }
 
 /* =====================================================================
