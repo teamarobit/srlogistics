@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/lr/create.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/lr/create.css?v=2.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -9,254 +9,316 @@
 
     @include('includes.header')
 
-    <form class="wrapper mt-5">
-        <div class="container-fluid page-head pt-4">
-            <div class="row">
-                <div class="col-12 col-md-8">
-                    <h5>Add LR</h5>
+    {{-- Full-width page — no sidebar (see frontend-design SKILL: full-width template) --}}
+    <div class="srlog-bdwrapper lr-full-wrap">
+
+        {{-- ══════════════════════════════════════════════════
+             ACTION BAR — sticky, breadcrumb left / buttons right
+        ══════════════════════════════════════════════════ --}}
+        <div class="lr-action-bar d-flex align-items-center justify-content-between">
+            <div>
+                <div class="lr-breadcrumb">
+                    <a href="{{ route('trip.index') }}">Trips</a>
+                    <span class="lr-sep">›</span>
+                    Add LR
                 </div>
-                <div class="col-12 col-md-4 text-end">
-                    <a href="{{ route('trip.lr.print') }}" class="btn btn-primary me-2" style="padding: 8px 30px;">Save</a>
-                    <a href="trip-details.php" class="btn btn-theme me-2" style="padding: 8px 30px;">Close</a>
-                </div>
+                <h5>Add LR</h5>
             </div>
-            
-            
-            <div class="row">
-                <div class="col-12 col-md-6">
-                    <div class="bg-light view-content p-3">
-                        <div class="row">
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <p class="text-secondary mb-1">Source</p>
-                                    <p class="mb-0">Kolkata</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div>
-                                    <p class="text-secondary mb-1">Destination</p>
-                                    <p class="mb-0">Durgapur</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <p class="text-secondary mb-1">Vehicle Number</p>
-                                    <p class="mb-0">WB-12-FV5667</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div>
-                                    <p class="text-secondary mb-1">Vehicle Size</p>
-                                    <p class="mb-0">32-FT SXL</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
+            <div>
+                {{--
+                    SD-3: Submit handled via $.ajax() in create.js.
+                    ACTION TODO: Change form action to route('trip.lr.store')
+                    once that route is registered in routes/web.php.
+                --}}
+                <button type="submit" form="lrCreateForm" id="lr-save-btn"
+                        class="btn btn-primary me-2" style="padding:8px 28px;">
+                    Save LR
+                </button>
+                <a href="{{ route('trip.index') }}" class="btn btn-theme" style="padding:8px 28px;">
+                    Close
+                </a>
             </div>
-            
-            <div class="row form-group mt-3 mb-0">
-                <div class="col-12 col-md-1">
-                    <label>LR #</label>
-                </div>
-                <div class="col-12 col-md-2">
-                    <input type="text" class="form-control">
-                </div>
-                <div class="col-12 col-md-1">
-                    <label>LR Party #</label>
-                </div>
-                <div class="col-12 col-md-2">
-                    <input type="text" class="form-control">
-                </div>
-                <div class="col-12 col-md-1">
-                    <label>LR Date</label>
-                </div>
-                <div class="col-12 col-md-2">
-                    <input type="date" class="form-control">
-                </div>
-                </div>
-            
-            <div class="row">
-                <div class="col-12">
-                    <div class="mt-3">
-                        <div class="row form-group">
-                        <div class="col-12 col-md-1">
-                            <label>Gross Weight</label>
-                        </div>
-                        <div class="col-12 col-md-2">
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="col-12 col-md-1">
-                            <label>Seal Number</label>
-                        </div>
-                        <div class="col-12 col-md-2">
-                            <input type="text" class="form-control" value="" data-role="tagsinput">
-                        </div>
-                        <div class="col-12 col-md-1">
-                            <label>Transport Mode</label>
-                        </div>
-                        <div class="col-12 col-md-2">
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="col-12 col-md-1">
-                            <label>Tarpaulin</label>
-                        </div>
-                        <div class="col-12 col-md-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="tarpulin" id="vl1" value="option1">
-                                <label class="form-check-label" for="vl1">Yes</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="tarpulin" id="vl2" value="option2">
-                                <label class="form-check-label" for="vl2">No</label>
-                            </div>
-                        </div>
-                        </div>
-                        
-                        <hr>
-                        
-                        <div class="row form-group">
-                            <div class="col-12 col-md-1"></div>
-                            <div class="col-12 col-md-3">
-                                <p class="text-dark mb-1">Consigner Name & Address </p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Britania Kolkata</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">13946 Desiree Burgs Suite 113</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Port Clintonborough</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Georgia 974-395</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Phone: (006)-336-077</p>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <p class="text-dark mb-1">Consignee Name & Address </p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Samsung Hydrabad</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">13946 Desiree Burgs Suite 113</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Port Clintonborough</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Georgia 974-395</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Phone: (006)-336-077</p>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <p class="text-dark mb-1">Ship to Party Details </p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Samsung Hydrabad</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">13946 Desiree Burgs Suite 113</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Port Clintonborough</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Georgia 974-395</p>
-                                <p class="mb-0 text-secondary" style="font-size: 13px;">Phone: (006)-336-077</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 mt-0">
-                    <div class="right-side-wrap">
-                        <div class="row">
-                            <div class="col-12">
-                                <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="pills-item-tab" data-bs-toggle="pill" data-bs-target="#pills-item" type="button" role="tab" aria-controls="pills-item" aria-selected="true">Items</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-item" role="tabpanel" aria-labelledby="pills-item-tab">
-                            <div class="table-responsive mt-0">
-                                <table class="table table-hover invoice-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                S.N
-                                            </th>
-                                            <th>Invoice Number<br/><span class="text-secondary">Invoice Date</span></th>
-                                            <th>Product Name<br/><span class="text-secondary">Description</span></th>
-                                            <th>No. of Units</th>
-                                            <!--<th>Total Amount</th>-->
-                                            <th>Total CFT Volume<br/><span class="text-secondary">Weight (MT)</span></th>
-                                            <th>Goods Value (₹)</th>
-                                            <th>EWAY Bill No.<br/><span class="text-secondary">EWAY Bill Date</span></th>
-                                            <th>Valid Till</th>
-                                            <th class="text-end">Freight Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" style="width: 120px;">
-                                                <input type="date" class="form-control mt-1" style="width: 120px;">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" style="width: 120px;">
-                                                <textarea type="textarea" class="form-control mt-1" style="width: 120px;" rows="1"></textarea>
-                                            </td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"><input type="text" class="form-control mt-1" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"><input type="date" class="form-control mt-1" style="width: 120px;"></td>
-                                            <td><input type="date" class="form-control" style="width: 120px;"></td>
-                                            <td class="text-end"></td>
-                                        </tr>
-                                        <tr class="new-table-row">
-                                            <td>
-                                                2
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" style="width: 120px;">
-                                                <input type="date" class="form-control mt-1" style="width: 120px;">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control" style="width: 120px;">
-                                                <textarea type="textarea" class="form-control mt-1" style="width: 120px;" rows="1"></textarea>
-                                            </td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"><input type="text" class="form-control mt-1" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"></td>
-                                            <td><input type="text" class="form-control" style="width: 120px;"><input type="date" class="form-control mt-1" style="width: 120px;"></td>
-                                            <td><input type="date" class="form-control" style="width: 120px;"></td>
-                                            <td class="text-end"><i class="uil uil-trash-alt delete-table-row text-danger ms-4"></i></td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="8" class=" bg-light"><h6>Total:</h6></td>
-                                            <td class="text-end bg-light"><h6>10,000.00</h6></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="mt-3">
-                                <a href="javascript:void(0)" class="btn btn-success add-item"><i class="uil uil-plus me-1"></i> Add Item</a>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                        
-                <div class="row mt-4">
-                    <div class="col-12 col-md-4">
-                        <label>Notice</label>
-                        <textarea class="form-control" rows="3" placeholder=""></textarea>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label>Rules</label>
-                        <textarea class="form-control" rows="3" placeholder=""></textarea>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label>Remarks</label>
-                        <textarea class="form-control" rows="3" placeholder=""></textarea>
-                    </div>
-                </div>
-            </div>
-            
         </div>
-    </form>
+
+        {{-- ══════════════════════════════════════════════════
+             MAIN FORM
+             SD-1: No inline JS. All logic in js/lr/create.js.
+             SD-3: Submit via $.ajax() — action="#" until store route exists.
+        ══════════════════════════════════════════════════ --}}
+        <form id="lrCreateForm" action="#" method="POST" novalidate>
+            @csrf
+
+            <div class="lr-content-pad">
+
+                {{-- ── CARD 1: Trip Context ──────────────────── --}}
+                <div class="lr-trip-banner">
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Source</span>
+                        <span class="lr-trip-chip-value">Kolkata</span>
+                    </div>
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Destination</span>
+                        <span class="lr-trip-chip-value">Durgapur</span>
+                    </div>
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Vehicle Number</span>
+                        <span class="lr-trip-chip-value">WB-12-FV5667</span>
+                    </div>
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Vehicle Size</span>
+                        <span class="lr-trip-chip-value">32-FT SXL</span>
+                    </div>
+                </div>
+
+                {{-- ── CARD 2: LR Details ────────────────────── --}}
+                <div class="lr-form-card">
+                    <p class="lr-section-title">LR Details</p>
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_number">
+                                LR # <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="lr_number" id="lr_number"
+                                   value="{{ old('lr_number') }}" maxlength="50" placeholder="e.g. LR-2025-001"
+                                   autocomplete="off">
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-lr_number">
+                                @error('lr_number'){{ $message }}@enderror
+                            </span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_party_number">LR Party #</label>
+                            <input type="text" class="form-control" name="lr_party_number" id="lr_party_number"
+                                   value="{{ old('lr_party_number') }}" maxlength="50" autocomplete="off">
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-lr_party_number"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_date">
+                                LR Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" name="lr_date" id="lr_date"
+                                   value="{{ old('lr_date') }}">
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-lr_date">
+                                @error('lr_date'){{ $message }}@enderror
+                            </span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="lr_gross_weight">Gross Weight</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="gross_weight" id="lr_gross_weight"
+                                       value="{{ old('gross_weight') }}" step="0.01" min="0" placeholder="0.00">
+                                <span class="input-group-text">MT</span>
+                            </div>
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-gross_weight"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="lr_seal_number">Seal Number(s)</label>
+                            <input type="text" class="form-control" name="seal_numbers" id="lr_seal_number"
+                                   value="{{ old('seal_numbers') }}" data-role="tagsinput"
+                                   placeholder="Type and press Enter or comma">
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-seal_numbers"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="lr_transport_mode">Transport Mode</label>
+                            <select class="form-select" name="transport_mode" id="lr_transport_mode">
+                                <option value="">Select mode</option>
+                                <option value="Road" {{ old('transport_mode') === 'Road' ? 'selected' : '' }}>Road</option>
+                                <option value="Rail" {{ old('transport_mode') === 'Rail' ? 'selected' : '' }}>Rail</option>
+                                <option value="Air"  {{ old('transport_mode') === 'Air'  ? 'selected' : '' }}>Air</option>
+                                <option value="Sea"  {{ old('transport_mode') === 'Sea'  ? 'selected' : '' }}>Sea</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Tarpaulin</label>
+                            <div class="d-flex align-items-center gap-3 mt-1 pt-1">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="radio" name="tarpaulin"
+                                           id="tarp_yes" value="Yes"
+                                           {{ old('tarpaulin') === 'Yes' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="tarp_yes">Yes</label>
+                                </div>
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="radio" name="tarpaulin"
+                                           id="tarp_no" value="No"
+                                           {{ old('tarpaulin', 'No') === 'No' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="tarp_no">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>{{-- /lr-form-card LR Details --}}
+
+                {{-- ── CARD 3: Parties ───────────────────────── --}}
+                <div class="lr-form-card">
+                    <p class="lr-section-title">Parties</p>
+                    <div class="row">
+                        <div class="col-md-4 lr-party-col">
+                            <p class="lr-party-label">Consigner Name &amp; Address</p>
+                            <p class="lr-party-line">Britania Kolkata</p>
+                            <p class="lr-party-line">13946 Desiree Burgs Suite 113</p>
+                            <p class="lr-party-line">Port Clintonborough</p>
+                            <p class="lr-party-line">Georgia 974-395</p>
+                            <p class="lr-party-line mb-0">Phone: (006)-336-077</p>
+                        </div>
+                        <div class="col-md-4 lr-party-col">
+                            <p class="lr-party-label">Consignee Name &amp; Address</p>
+                            <p class="lr-party-line">Samsung Hydrabad</p>
+                            <p class="lr-party-line">13946 Desiree Burgs Suite 113</p>
+                            <p class="lr-party-line">Port Clintonborough</p>
+                            <p class="lr-party-line">Georgia 974-395</p>
+                            <p class="lr-party-line mb-0">Phone: (006)-336-077</p>
+                        </div>
+                        <div class="col-md-4 lr-party-col">
+                            <p class="lr-party-label">Ship to Party Details</p>
+                            <p class="lr-party-line">Samsung Hydrabad</p>
+                            <p class="lr-party-line">13946 Desiree Burgs Suite 113</p>
+                            <p class="lr-party-line">Port Clintonborough</p>
+                            <p class="lr-party-line">Georgia 974-395</p>
+                            <p class="lr-party-line mb-0">Phone: (006)-336-077</p>
+                        </div>
+                    </div>
+                </div>{{-- /lr-form-card Parties --}}
+
+                {{-- ── CARD 4: Items Table ───────────────────── --}}
+                <div class="lr-items-card">
+                    <div class="lr-items-card-head">
+                        <p class="lr-section-title">Items</p>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table lr-items-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:42px;">S.N</th>
+                                    <th style="width:148px;">
+                                        Invoice Number
+                                        <span class="th-sub">Invoice Date</span>
+                                    </th>
+                                    <th style="width:160px;">
+                                        Product Name
+                                        <span class="th-sub">Description</span>
+                                    </th>
+                                    <th style="width:88px;">No. of Units</th>
+                                    <th style="width:128px;">
+                                        CFT Volume
+                                        <span class="th-sub">Weight (MT)</span>
+                                    </th>
+                                    <th style="width:110px;">Goods Value (₹)</th>
+                                    <th style="width:158px;">
+                                        EWAY Bill No.
+                                        <span class="th-sub">EWAY Bill Date</span>
+                                    </th>
+                                    <th style="width:120px;">Valid Till</th>
+                                    <th class="text-end" style="width:118px;">Freight Amt (₹)</th>
+                                    <th style="width:42px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="lr-items-tbody">
+                                {{-- Row 0 — always present, no delete icon --}}
+                                <tr>
+                                    <td class="lr-sn">1</td>
+                                    <td>
+                                        <input type="text"   class="form-control w-100 mb-1"
+                                               name="items[0][invoice_number]" placeholder="Invoice No.">
+                                        <input type="date"   class="form-control w-100"
+                                               name="items[0][invoice_date]">
+                                    </td>
+                                    <td>
+                                        <input type="text"   class="form-control w-100 mb-1"
+                                               name="items[0][product_name]" placeholder="Product name">
+                                        <textarea           class="form-control w-100"
+                                               name="items[0][description]" rows="1" placeholder="Description"></textarea>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control w-100"
+                                               name="items[0][units]" min="0" step="1" placeholder="0">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control w-100 mb-1"
+                                               name="items[0][cft_volume]" min="0" step="0.01" placeholder="0.00">
+                                        <input type="number" class="form-control w-100"
+                                               name="items[0][weight_mt]" min="0" step="0.01" placeholder="0.00">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control w-100"
+                                               name="items[0][goods_value]" min="0" step="0.01" placeholder="0.00">
+                                    </td>
+                                    <td>
+                                        <input type="text"   class="form-control w-100 mb-1"
+                                               name="items[0][eway_bill_number]" placeholder="EWAY Bill No.">
+                                        <input type="date"   class="form-control w-100"
+                                               name="items[0][eway_bill_date]">
+                                    </td>
+                                    <td>
+                                        <input type="date"   class="form-control w-100"
+                                               name="items[0][valid_till]">
+                                    </td>
+                                    <td class="text-end">
+                                        <input type="number" class="form-control w-100 lr-freight-input"
+                                               name="items[0][freight_amount]" min="0" step="0.01" placeholder="0.00">
+                                    </td>
+                                    <td class="lr-delete-wrap">
+                                        {{-- No delete icon on row 1 --}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="8" class="text-end pe-3">Total Freight:</td>
+                                    <td class="text-end">
+                                        <span id="lr-freight-total">0.00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="lr-items-card-foot">
+                        <button type="button" id="lr-add-item" class="btn btn-success btn-sm">
+                            <i class="uil uil-plus me-1"></i> Add Item
+                        </button>
+                    </div>
+                </div>{{-- /lr-items-card --}}
+
+                {{-- ── CARD 5: Notes ────────────────────────── --}}
+                <div class="lr-form-card">
+                    <p class="lr-section-title">Notes</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_notice">Notice</label>
+                            <textarea class="form-control" name="notice" id="lr_notice"
+                                      rows="3">{{ old('notice') }}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_rules">Rules</label>
+                            <textarea class="form-control" name="rules" id="lr_rules"
+                                      rows="3">{{ old('rules') }}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="lr_remarks">Remarks</label>
+                            <textarea class="form-control" name="remarks" id="lr_remarks"
+                                      rows="3">{{ old('remarks') }}</textarea>
+                        </div>
+                    </div>
+                </div>{{-- /lr-form-card Notes --}}
+
+            </div>{{-- /lr-content-pad --}}
+        </form>
+
+    </div>{{-- /srlog-bdwrapper lr-full-wrap --}}
 
 </div>{{-- /layout-wrapper --}}
-
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/lr/create.js?v=1.0') }}"></script>
+{{-- SD-1: All JS in external file. Path: public/js/lr/create.js --}}
+<script src="{{ asset('js/lr/create.js?v=2.0') }}"></script>
 @endsection

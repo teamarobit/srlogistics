@@ -1,77 +1,299 @@
-body{
-    background-color: #fff;
-}
-.form-bg{
-    padding: 20px 30px;
-    background: #f1f1f1;
-    margin-bottom: 20px;
-}
-.btn-theme.head-btn i{
-    background-color: transparent;
-    color: #000;
-}
-.btn{
-    padding: 8px 12px;
-    text-transform: inherit;
-}
-.form-check-input[type=checkbox]:checked {
-    background-color: #1f75a8 !important;
-    border-color: #1f75a8 !important;
-}
-.bottom-head .dropdown-item small{
-    opacity: 0;
-    visibility: hidden;
-    position: absolute;
-    right: 10px;
-}
-.bottom-head .dropdown-item.active{
-    background: #c8e5fc;
-}
-.bottom-head .dropdown-item.active small{
-    opacity: 1;
-    visibility: visible;
+/* =========================================================
+   LR Create — create.css  v2.0
+   SR Logistics — Lorry Receipt create page
+   Redesigned: 2026-06-01
+   ========================================================= */
+
+body { background-color: #fff; }
+
+/* ── Full-width wrapper override ────────────────────────── */
+.lr-full-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-top: 70px;
+    padding-bottom: 40px;
 }
 
-/*tooltip*/
-.tooltip-wrap{
-    position: relative;
+/* ── Sticky action bar ───────────────────────────────────── */
+.lr-action-bar {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background: #fff;
+    border-bottom: 1px solid #e8ecf4;
+    padding: 12px 28px;
 }
-.custom-tooltip{
-    background: #000;
-    color: #fff;
-    padding: 3px 7px;
-    position: absolute;
-    display: inline-block;
-    width: 350px;
-    line-height: 18px;
-    border-radius: 5px;
+
+/* ── Breadcrumb ──────────────────────────────────────────── */
+.lr-breadcrumb {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+.lr-breadcrumb a { color: #032671; text-decoration: none; }
+.lr-breadcrumb a:hover { text-decoration: underline; }
+.lr-breadcrumb .lr-sep { margin: 0 5px; }
+
+/* ── Page title ──────────────────────────────────────────── */
+.lr-action-bar h5 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2533;
+    margin: 0;
+}
+
+/* ── Content area ────────────────────────────────────────── */
+.lr-content-pad {
+    padding: 24px 28px 32px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TRIP CONTEXT BANNER
+   ══════════════════════════════════════════════════════════ */
+.lr-trip-banner {
+    background: #f0f4ff;
+    border: 1px solid #c5d3f0;
+    border-radius: 10px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.lr-trip-chip {
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+    border-right: 1px solid #c5d3f0;
+}
+.lr-trip-chip:first-child { padding-left: 0; }
+.lr-trip-chip:last-child  { border-right: none; }
+
+.lr-trip-chip-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #6b7a99;
+    margin-bottom: 3px;
+}
+.lr-trip-chip-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #032671;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FORM CARDS
+   ══════════════════════════════════════════════════════════ */
+.lr-form-card {
+    background: #fff;
+    border: 1px solid #e8ecf4;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+}
+
+/* ── Section title ───────────────────────────────────────── */
+.lr-section-title {
     font-size: 11px;
-    top: -45px;
-    left: 10px;
-    visibility: hidden;
-    opacity: 0;
-    transition: 0.3s ease all;
-    z-index: 9;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #032671;
+    border-bottom: 1px solid #e8ecf4;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    margin-top: 0;
 }
-.tooltip-wrap:hover > .custom-tooltip{
-    visibility: visible;
-    opacity: 1;
-}
-.bootstrap-tagsinput{
-    height: 38px !important;
-}
-.table tbody td {
-    padding: 5px 10px;
-}
-.table thead tr th{
-    padding: 8px 10px;
-}
-.new-table-row{
-    display: none;
-}
-.delete-table-row{
-    cursor: pointer;
-}
-.view-content p{
+
+/* ── Form labels ─────────────────────────────────────────── */
+.lr-form-card .form-label {
     font-size: 13px;
+    font-weight: 600;
+    color: #1a2533;
+    margin-bottom: 5px;
+}
+
+/* ── Input / select focus ────────────────────────────────── */
+.lr-form-card .form-control:focus,
+.lr-form-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 0.18rem rgba(3, 38, 113, 0.12);
+}
+
+/* ── Input group addon ───────────────────────────────────── */
+.lr-form-card .input-group-text {
+    font-size: 12px;
+    color: #6b7a99;
+    background: #f5f8ff;
+    border-color: #dee2e6;
+}
+
+/* ── Radio / check labels ────────────────────────────────── */
+.lr-form-card .form-check-label {
+    font-size: 13px;
+    color: #1a2533;
+}
+
+/* ── bootstrap-tagsinput ─────────────────────────────────── */
+.bootstrap-tagsinput {
+    min-height: 38px;
+    padding: 4px 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    width: 100%;
+    display: block;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.bootstrap-tagsinput input { min-width: 80px; }
+.bootstrap-tagsinput .tag {
+    background: #032671;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    margin: 2px 2px 2px 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PARTIES PANEL
+   ══════════════════════════════════════════════════════════ */
+.lr-party-col { padding-right: 24px; }
+.lr-party-col + .lr-party-col {
+    padding-left: 24px;
+    border-left: 1px dashed #dce5f3;
+}
+.lr-party-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #032671;
+    margin-bottom: 10px;
+}
+.lr-party-line {
+    font-size: 13px;
+    color: #5a6a85;
+    margin-bottom: 2px;
+    line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ITEMS TABLE CARD
+   ══════════════════════════════════════════════════════════ */
+.lr-items-card {
+    background: #fff;
+    border: 1px solid #e8ecf4;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.lr-items-card-head {
+    padding: 20px 24px 0;
+}
+.lr-items-card-foot {
+    padding: 14px 24px;
+    border-top: 1px solid #e8ecf4;
+}
+
+.lr-items-table { margin-bottom: 0; }
+
+.lr-items-table thead tr th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #032671;
+    background: #f5f8ff;
+    border-bottom: 2px solid #dce5f3;
+    border-top: none;
+    padding: 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.lr-items-table thead tr th .th-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: #8898b8;
+    display: block;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 1px;
+}
+.lr-items-table tbody tr td {
+    padding: 8px 10px;
+    vertical-align: middle;
+    border-color: #f0f4ff;
+}
+.lr-items-table tbody tr:hover td { background: #fafbff; }
+
+.lr-items-table .form-control {
+    font-size: 13px;
+    padding: 5px 8px;
+    border-color: #dce5f3;
+    height: auto;
+    min-width: 0;
+}
+.lr-items-table .form-control:focus {
+    border-color: #032671;
+    box-shadow: none;
+}
+.lr-items-table textarea.form-control { resize: none; }
+
+.lr-items-table tfoot tr td {
+    background: #f5f8ff;
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    border-top: 2px solid #dce5f3;
+    padding: 10px;
+}
+
+/* ── Serial number ───────────────────────────────────────── */
+.lr-sn {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5a6a85;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ── Delete icon ─────────────────────────────────────────── */
+.lr-delete-wrap { text-align: center; }
+.lr-delete-row {
+    cursor: pointer;
+    color: #dc3545;
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.lr-delete-row:hover { background: #fff0f2; }
+
+/* ── Freight input ───────────────────────────────────────── */
+.lr-freight-input { text-align: right; }
+
+/* ── Freight total ───────────────────────────────────────── */
+#lr-freight-total {
+    font-size: 15px;
+    font-weight: 700;
+    color: #032671;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+    .lr-trip-banner  { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .lr-trip-chip    { border-right: none; padding: 0; }
+    .lr-party-col + .lr-party-col { border-left: none; padding-left: 0; margin-top: 20px; }
+    .lr-action-bar   { padding: 10px 16px; }
+    .lr-content-pad  { padding: 16px; }
+    .lr-form-card    { padding: 18px 16px; }
 }
