@@ -5182,7 +5182,7 @@
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                     <td>
-                                                        <span class="tr-workdone-short">Dismantled gearbox housing, replaced worn clutch plate &amp;…</span>
+                                                        <span class="tr-workdone-short">Dismantled gearbox housing,…</span>
                                                         <a href="javascript:void(0)" class="tr-workdone-more text-primary"
                                                            data-title="Clutch Plate Replacement — Work Done"
                                                            data-content="Dismantled gearbox housing, replaced worn clutch plate &amp; pressure plate, inspected flywheel, refitted assembly and road-tested for smooth engagement.">More</a>
@@ -5209,7 +5209,7 @@
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                     <td>
-                                                        <span class="tr-workdone-short">Adjusted rear brake shoe clearance, cleaned drum,…</span>
+                                                        <span class="tr-workdone-short">Adjusted rear brake shoe…</span>
                                                         <a href="javascript:void(0)" class="tr-workdone-more text-primary"
                                                            data-title="Brake Shoe Adjustment — Work Done"
                                                            data-content="Adjusted rear brake shoe clearance, cleaned drum, checked brake fluid level and tested pedal travel for proper response.">More</a>
@@ -5236,7 +5236,7 @@
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                     <td>
-                                                        <span class="tr-workdone-short">Removed faulty air compressor unit, replaced with OEM…</span>
+                                                        <span class="tr-workdone-short">Removed faulty air compressor…</span>
                                                         <a href="javascript:void(0)" class="tr-workdone-more text-primary"
                                                            data-title="Air Compressor Replacement — Work Done"
                                                            data-content="Removed faulty air compressor unit, replaced with OEM compressor, recharged air lines, verified pressure cut-in/cut-out and leak-tested entire circuit.">More</a>
@@ -5263,7 +5263,7 @@
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                     <td>
-                                                        <span class="tr-workdone-short">Pulled out dents on driver-side cabin door using slide…</span>
+                                                        <span class="tr-workdone-short">Pulled out dents on driver-side…</span>
                                                         <a href="javascript:void(0)" class="tr-workdone-more text-primary"
                                                            data-title="Cabin Door Dent Removal — Work Done"
                                                            data-content="Pulled out dents on driver-side cabin door using slide hammer, sanded surface, applied primer, repainted to match cab colour and polished.">More</a>
