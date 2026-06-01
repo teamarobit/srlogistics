@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=6.9') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.0') }}">
 
 @endsection
 
@@ -2665,6 +2665,33 @@
 
                     {{-- Tyre Book (NEW - static placeholder) --}}
                     <div class="tab-pane fade" id="tyre_book">
+
+                        {{-- Mini Dashboard — Maintenance & Repair Cost (Static) --}}
+                        <div class="tbm-dashboard mt-3 mb-3">
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-own"><i class="uil uil-wrench"></i></span>
+                                    <h5>Maintenance &amp; Repair Cost</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-calendar-alt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Scheduled Maintenance Cost</p>
+                                            <h4>₹0</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-setting"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Repair Cost</p>
+                                            <h4>₹0</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
                                 <h5 class="mb-3"><i class="uil uil-dashboard me-2"></i>Tyre Book</h5>
