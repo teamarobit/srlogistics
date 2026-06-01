@@ -1,0 +1,3036 @@
+/* =============================================================
+   Trip Details v2 — show-v2.css
+   CSS prefix: td2-
+   v2.0 | 2026-06-01 — Redesign: stepper, clean tab nav, dedup
+   ============================================================= */
+
+/* ─────────────────────────────────────────────────────────────
+   1. PAGE WRAPPER
+───────────────────────────────────────────────────────────── */
+.td2-bdwrap {
+    margin: 0;
+    /* No padding override — srlog-bdwrapper provides padding-top:60px for fixed nav */
+    font-family: Inter, sans-serif;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. TOPBAR
+───────────────────────────────────────────────────────────── */
+.td2-topbar {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    box-shadow: 0px 1px 3.3px 0px #00000040;
+}
+
+/* Breadcrumb row */
+.td2-crumb-row {
+    margin: 0;
+    padding: 0 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.td2-crumb-title {
+    margin: 0;
+    padding: 11px 0;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 23px;
+    letter-spacing: 0.02em;
+    color: #111827;
+}
+
+/* Identity + Actions row */
+.td2-info-row {
+    margin: 0;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Identity block */
+.td2-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.td2-identity-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #F5F2F9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.td2-identity-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.td2-identity-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.td2-route-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.td2-route-name {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: #111827;
+}
+
+/* Status chips */
+.td2-status-chip {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 50px;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 10px;
+    line-height: 17px;
+    letter-spacing: 0;
+    color: #fff;
+    cursor: default;
+}
+
+.td2-status-initiated  { background: #198754; }
+.td2-status-ongoing    { background: #0d6efd; }
+.td2-status-completed  { background: #032671; }
+.td2-status-cancelled  { background: #dc3545; }
+
+/* Meta row */
+.td2-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.td2-meta-item {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.td2-meta-sep {
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+/* Allocation chip */
+.td2-alloc-row {
+    display: flex;
+    align-items: center;
+}
+
+.td2-alloc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px 5px 10px;
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    color: #2D2D2D;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0;
+    background: #C8F3FF;
+    border: 1.5px dashed #4dc8f0;
+    border-radius: 6px;
+}
+
+.td2-alloc-status {
+    font-weight: 600;
+    color: #dc7a00;
+}
+
+/* Action buttons */
+.td2-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.td2-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 10px;
+    border: none;
+    border-radius: 6px;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.td2-action-btn:hover { opacity: 0.85; }
+
+.td2-action-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.td2-action-label {
+    font-size: 12px;
+}
+
+.td2-action-attach {
+    background: #e8eef8;
+    color: #032671;
+}
+.td2-action-attach .td2-action-icon {
+    background: #c7d5ef;
+    color: #032671;
+}
+
+.td2-action-track {
+    background: #e8f5e9;
+    color: #198754;
+}
+.td2-action-track .td2-action-icon {
+    background: #c8e6c9;
+    color: #198754;
+}
+
+.td2-action-settle {
+    background: #d1fae5;
+    color: #065f46;
+}
+.td2-action-settle .td2-action-icon {
+    background: #a7f3d0;
+    color: #065f46;
+}
+
+.td2-action-cancel {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.td2-action-cancel .td2-action-icon {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.td2-action-settle.opacity-50 {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2B. TRIP LIFECYCLE STEPPER (new in v2.0)
+───────────────────────────────────────────────────────────── */
+.td2-stepper-row {
+    padding: 0 24px;
+    border-top: 1px solid #f0f3f9;
+    background: #fafbff;
+}
+
+.td2-stepper {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    gap: 0;
+    overflow-x: auto;
+}
+
+.td2-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 90px;
+    position: relative;
+}
+
+.td2-step-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    background: #fff;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    z-index: 1;
+}
+
+.td2-step-label {
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-align: center;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+
+/* Done step */
+.td2-step-done .td2-step-dot {
+    border-color: #198754;
+    background: #198754;
+}
+.td2-step-done .td2-step-label {
+    color: #198754;
+    font-weight: 600;
+}
+.td2-step-done .td2-step-dot::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translate(-1px, -1px);
+    position: absolute;
+    top: 0;
+    left: 3px;
+}
+
+/* Active step */
+.td2-step-active .td2-step-dot {
+    border-color: #032671;
+    background: #032671;
+    box-shadow: 0 0 0 3px rgba(3, 38, 113, 0.15);
+}
+.td2-step-active .td2-step-label {
+    color: #032671;
+    font-weight: 700;
+}
+
+/* Pending step (default, future) */
+.td2-step-pending .td2-step-dot {
+    border-color: #e5e7eb;
+    background: #f9fafb;
+}
+.td2-step-pending .td2-step-label {
+    color: #d1d5db;
+}
+
+/* Connector line between steps */
+.td2-step-line {
+    flex: 1;
+    height: 2px;
+    background: #e5e7eb;
+    margin-bottom: 14px; /* align with dots */
+    transition: background 0.2s;
+    min-width: 20px;
+}
+
+.td2-step-line-done {
+    background: #198754;
+}
+
+/* Cancelled stepper state */
+.td2-stepper-cancelled .td2-step-dot {
+    border-color: #dc3545;
+    background: #dc3545;
+}
+.td2-stepper-cancelled .td2-step-label {
+    color: #dc3545;
+}
+.td2-stepper-cancelled .td2-step-line {
+    background: #fecaca;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. BODY — MAIN LAYOUT
+───────────────────────────────────────────────────────────── */
+.td2-body {
+    background: #EFEAF5;
+    padding: 0;
+    min-height: calc(100vh - 180px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. HORIZONTAL TAB NAV
+───────────────────────────────────────────────────────────── */
+
+/* Sticky wrapper */
+.td2-htab-wrap {
+    position: sticky;
+    top: 206px; /* 60px fixed nav + 146px header zone */
+    z-index: 190;
+    background: #fff;
+    border-bottom: 2px solid #e2e8f5;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+}
+.td2-htab-wrap::-webkit-scrollbar { display: none; }
+
+/* Nav list — single horizontal row, no wrap */
+.td2-htab-wrap ul.nav {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0 8px;
+    gap: 0;
+    min-width: max-content;
+}
+
+/* Tab buttons */
+.td2-htab-wrap .td2-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 18px;
+    height: 42px;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    position: relative;
+    top: 2px; /* align border-bottom flush with wrapper border */
+}
+
+.td2-htab-wrap .td2-tab:hover {
+    color: #032671;
+    border-bottom-color: #bdb4e8;
+    background: transparent;
+}
+
+.td2-htab-wrap .td2-tab.active {
+    color: #032671;
+    font-weight: 700;
+    border-bottom-color: #032671;
+    background: transparent;
+}
+
+/* Financial tabs — Font Awesome icon + amber tint */
+.td2-htab-wrap .td2-fin-tab {
+    color: #6b7280;
+}
+.td2-htab-wrap .td2-fin-tab .fa {
+    font-size: 12px;
+    margin-right: 5px;
+    color: #d97706;
+    opacity: 0.85;
+    transition: color 0.15s, opacity 0.15s;
+}
+.td2-htab-wrap .td2-fin-tab:hover,
+.td2-htab-wrap .td2-fin-tab.active {
+    color: #032671;
+    border-bottom-color: #032671;
+}
+.td2-htab-wrap .td2-fin-tab:hover .fa,
+.td2-htab-wrap .td2-fin-tab.active .fa {
+    color: #032671;
+    opacity: 1;
+}
+
+/* ── Group labels — read-only pill tags, NOT clickable tabs ── */
+.td2-htab-wrap .td2-tab-group-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    align-self: center;
+    flex-shrink: 0;
+    pointer-events: none;
+    cursor: default;
+    user-select: none;
+}
+.td2-htab-wrap .td2-tab-group-label i {
+    font-size: 13px;
+}
+
+/* Operations — navy pill */
+.td2-htab-wrap .td2-group-ops {
+    background: #eef2ff;
+    color: #032671;
+    border: 1px solid #c7d2fe;
+    margin-right: 4px;
+}
+
+/* Settlement — amber pill */
+.td2-htab-wrap .td2-group-fin {
+    background: #fff8f0;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    margin-left: 10px;
+    margin-right: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4B. TAB SECTION (legacy vertical nav — kept for reference)
+───────────────────────────────────────────────────────────── */
+.td2-tab-wrap {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 180px);
+}
+
+/* Nav <ul> / <li> resets */
+.td2-tabnav ul.nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.td2-tabnav li.nav-item {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Tab Navigation (left vertical strip) */
+.td2-tabnav {
+    width: 180px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid #e9ecef;
+    padding: 16px 0 20px;
+}
+
+.td2-tabnav .nav-link {
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    padding: 10px 18px;
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #374151;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.td2-tabnav .nav-link:hover {
+    background: #f3f0fb;
+    color: #032671;
+    border-left-color: #bdb4e8;
+}
+
+.td2-tabnav .nav-link.active {
+    background: #EFEAF5;
+    color: #032671;
+    font-weight: 600;
+    border-left: 3px solid #032671;
+}
+
+/* ── Financial section header (new in v2.0) ── */
+.td2-tabnav-section {
+    padding: 14px 14px 6px;
+    font-family: Inter, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.td2-tabnav-section::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f0f0f0;
+}
+
+/* Financial tab pills — cleaned up in v2.0 */
+.td2-tabnav .td2-fin-tab {
+    border-left: 3px solid transparent;
+    background: transparent;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 14px 9px 15px;
+    position: relative;
+}
+
+.td2-tabnav .td2-fin-tab::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #032671;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+    opacity: 0.4;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+}
+
+.td2-tabnav .td2-fin-tab:hover {
+    background: #f3f0fb;
+    color: #032671;
+    border-left-color: #bdb4e8;
+}
+
+.td2-tabnav .td2-fin-tab:hover::before {
+    opacity: 0.8;
+}
+
+.td2-tabnav .td2-fin-tab.active {
+    background: #EFEAF5;
+    color: #032671;
+    font-weight: 600;
+    border-left: 3px solid #032671;
+}
+
+.td2-tabnav .td2-fin-tab.active::before {
+    opacity: 1;
+}
+
+/* Tab Content area */
+.td2-tabcontent {
+    flex: 1;
+    padding: 0;
+    background: #EFEAF5;
+}
+
+.td2-tabcontent .tab-pane {
+    padding: 0;
+}
+
+/* Tab pane header */
+.td2-pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 12px;
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.td2-pane-title {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #111827;
+}
+
+.td2-pane-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Icon button (pencil edit etc) */
+.td2-icon-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f9fafb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.td2-icon-btn:hover {
+    background: #e8eef8;
+    color: #032671;
+    border-color: #c7d5ef;
+}
+
+/* Tab pane body */
+.td2-pane-body {
+    padding: 20px 24px;
+}
+
+/* Sprint placeholder */
+.td2-sprint-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1.5px dashed #d1d5db;
+    color: #9ca3af;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.td2-sprint-note i {
+    font-size: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   5. RIGHT SIDEBAR
+───────────────────────────────────────────────────────────── */
+.td2-sidebar {
+    background: #f8f9fa;
+    border-left: 1px solid #e9ecef;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.td2-scard {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.td2-scard-label {
+    margin: 0 0 10px 0;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #374151;
+}
+
+.td2-scard-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.td2-scard-header-row .td2-scard-label {
+    margin-bottom: 0;
+}
+
+/* SOS */
+.td2-sos-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 50px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.td2-sos-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.td2-sos-lbl {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.td2-sos-other-input {
+    display: none;
+    margin-top: 4px;
+}
+
+/* Compliance */
+.td2-compliance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+}
+
+.td2-compliance-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.td2-ci-ok {
+    color: #198754;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.td2-ci-key {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+    flex: 1;
+}
+
+.td2-ci-val {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.td2-ci-high {
+    color: #198754;
+}
+
+/* History */
+.td2-history-viewall {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #032671;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.td2-history-viewall:hover {
+    text-decoration: underline;
+}
+
+.td2-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.td2-history-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.td2-history-av {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #032671;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.td2-history-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.td2-history-name {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.td2-history-date {
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+.td2-history-text {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   6. RIGHT OVERLAY PANELS
+───────────────────────────────────────────────────────────── */
+.td2-overlay {
+    position: fixed;
+    top: 0;
+    right: -500px;
+    width: 480px;
+    height: 100vh;
+    background: #fff;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.35s ease;
+    overflow: hidden;
+}
+
+.td2-overlay.show {
+    right: 0;
+}
+
+.td2-overlay.bill-popup {
+    width: calc(100vw - 350px);
+    right: calc(-100vw + 350px - 20px);
+    top: 237px;
+    height: calc(100vh - 237px);
+}
+
+.td2-overlay.bill-popup.show {
+    right: 0;
+}
+
+.td2-overlay-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.td2-overlay-title {
+    margin: 0;
+    flex: 1;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #111827;
+}
+
+.td2-overlay-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #e9ecef;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.td2-overlay-close:hover {
+    background: #dee2e6;
+    color: #374151;
+}
+
+.td2-overlay-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   7. RESPONSIVE
+───────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+    .td2-tab-wrap {
+        flex-direction: column;
+    }
+
+    .td2-tabnav {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 10px 0;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .td2-tabnav .nav-link {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        padding: 8px 14px;
+    }
+
+    .td2-tabnav .nav-link.active {
+        border-left: none;
+        border-bottom: 3px solid #032671;
+    }
+
+    .td2-tabnav .td2-fin-tab {
+        margin: 0;
+        width: auto;
+    }
+
+    .td2-tabnav-section {
+        display: none;
+    }
+
+    .td2-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .td2-actions {
+        flex-wrap: wrap;
+    }
+
+    .td2-overlay {
+        width: 100vw;
+        right: -100vw;
+    }
+
+    .td2-overlay.show {
+        right: 0;
+    }
+
+    .td2-stepper-row {
+        overflow-x: auto;
+    }
+
+    .td2-stepper {
+        min-width: 480px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   8. SPRINT 2 — Trip Initiation Tab
+───────────────────────────────────────────────────────────── */
+.td2-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+}
+
+.td2-section-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 14px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.td2-di {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.td2-di-label {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.td2-di-value {
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.td2-comment-text {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* RAG badges */
+.td2-rag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.td2-rag-red    { background: #fee2e2; color: #991b1b; }
+.td2-rag-yellow { background: #fef3c7; color: #92400e; }
+.td2-rag-green  { background: #d1fae5; color: #065f46; }
+
+/* Priority */
+.td2-priority {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.td2-priority-normal { background: #dbeafe; color: #1e40af; }
+.td2-priority-urgent { background: #fee2e2; color: #991b1b; }
+
+/* Tarpaulin tick */
+.td2-tarp-yes {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #065f46;
+}
+.td2-tarp-no {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #991b1b;
+}
+
+/* Route strip */
+.td2-route-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 16px 0;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 16px;
+}
+
+.td2-rs-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 70px;
+}
+
+.td2-rs-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px currentColor;
+}
+.td2-rs-dot-source { color: #032671; background: #032671; }
+.td2-rs-dot-mid    { color: #f59e0b; background: #f59e0b; }
+.td2-rs-dot-dest   { color: #059669; background: #059669; }
+
+.td2-rs-label {
+    font-size: 9px;
+    font-weight: 400;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.td2-rs-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.td2-rs-arrow {
+    color: #d1d5db;
+    font-size: 18px;
+    line-height: 1;
+    margin-top: -4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   9. SPRINT 2 — Vehicle Allocation Tab
+───────────────────────────────────────────────────────────── */
+
+/* Accordion */
+.td2-veh-accordion .accordion-button {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: #111827;
+    background: #f8f9fa;
+    padding: 12px 18px;
+}
+.td2-veh-accordion .accordion-button:not(.collapsed) {
+    background: #eef2ff;
+    color: #032671;
+    box-shadow: none;
+}
+
+/* Vehicle cards */
+.td2-veh-card-wrap {
+    padding: 0 16px 12px;
+}
+
+.td2-veh-radio {
+    display: none;
+}
+
+.td2-veh-card {
+    display: block;
+    padding: 14px 18px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+}
+
+.td2-veh-card:hover {
+    border-color: #a5b4fc;
+    background: #f5f3ff;
+}
+
+.td2-veh-radio:checked + .td2-veh-card {
+    border-color: #032671;
+    background: #eef2ff;
+}
+
+.td2-vc-num {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #032671;
+    margin-bottom: 10px;
+}
+
+.td2-vc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 12px;
+    margin-bottom: 10px;
+}
+
+.td2-vc-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.td2-vc-label {
+    font-size: 10px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.td2-vc-val {
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.td2-vc-mapbtn {
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid #032671;
+    border-radius: 50px;
+    background: transparent;
+    color: #032671;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.td2-vc-mapbtn:hover {
+    background: #032671;
+    color: #fff;
+}
+
+.td2-veh-status-empty  { color: #065f46; font-weight: 600; font-size: 12px; }
+.td2-veh-status-onway  { color: #92400e; font-weight: 600; font-size: 12px; }
+
+/* OR divider */
+.td2-or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 600;
+}
+.td2-or-divider::before,
+.td2-or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e9ecef;
+}
+
+/* Vehicle type toggle */
+.td2-veh-type-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.td2-vtype-radio { display: none; }
+
+.td2-vtype-label {
+    padding: 8px 20px;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    background: #f9fafb;
+    transition: background 0.15s, color 0.15s;
+    border-right: 1px solid #e9ecef;
+}
+.td2-vtype-label:last-child { border-right: none; }
+
+.td2-vtype-radio:checked + .td2-vtype-label {
+    background: #032671;
+    color: #fff;
+}
+
+.td2-if-ext { display: none; }
+
+/* VAHAN toggle button */
+.td2-vahan-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+}
+.td2-vahan-toggle:hover { background: #e9ecef; }
+
+/* VAHAN table */
+.td2-vahan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px;
+    font-size: 12px;
+}
+.td2-vahan-table th {
+    background: #f8f9fa;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border: 1px solid #e9ecef;
+    width: 20%;
+}
+.td2-vahan-table td {
+    padding: 6px 10px;
+    border: 1px solid #e9ecef;
+    color: #111827;
+    width: 30%;
+}
+
+/* Driver detail card */
+.td2-driver-detail {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   10. SPRINT 3 — Vehicle Status
+───────────────────────────────────────────────────────────── */
+.td2-vstage {
+    padding: 18px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.td2-vstage:last-child { border-bottom: none; }
+
+.td2-vstage-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.td2-vstage-icon-done    { color: #198754; font-size: 18px; }
+.td2-vstage-icon-pending { color: #9ca3af; font-size: 18px; }
+
+.td2-vstage-name {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #111827;
+    flex: 1;
+}
+
+.td2-vstage-time {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.td2-vstage-change {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #032671;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.td2-vstage-gps-note {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: normal;
+    margin: 6px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.td2-vstage-gps-note .fa {
+    color: #d97706;
+    font-size: 12px;
+}
+
+/* Map embed container */
+.td2-map-embed {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f5;
+    margin-top: 4px;
+    background: #f8fafc;
+}
+
+/* Prototype context badge above the iframe */
+.td2-map-proto-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #032671;
+    color: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.td2-map-proto-badge .fa {
+    font-size: 12px;
+    opacity: 0.85;
+}
+.td2-map-proto-badge.td2-map-proto-pending {
+    background: #6b7280;
+}
+.td2-map-proto-tag {
+    margin-left: auto;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.td2-map-embed iframe {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   11. SPRINT 3 — Document Cards (Eway + LR)
+───────────────────────────────────────────────────────────── */
+.td2-docs-section {
+    margin-bottom: 24px;
+}
+
+.td2-docs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.td2-docs-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #111827;
+    margin: 0;
+}
+
+.td2-doc-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 10px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+}
+
+.td2-card-accent {
+    width: 4px;
+    flex-shrink: 0;
+}
+.td2-card-accent-orange { background: #f59e0b; }
+.td2-card-accent-blue   { background: #3b82f6; }
+.td2-card-accent-green  { background: #10b981; }
+
+.td2-doc-card-body {
+    flex: 1;
+    padding: 14px 16px;
+}
+
+.td2-doc-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 12px;
+    margin-bottom: 8px;
+}
+
+.td2-doc-row-2 { grid-template-columns: repeat(2, 1fr); }
+.td2-doc-row-3 { grid-template-columns: repeat(3, 1fr); }
+
+.td2-doc-label {
+    font-size: 10px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.td2-doc-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Dot menu */
+.td2-dot-menu-wrap {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.td2-dot-trigger {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #9ca3af;
+    line-height: 1;
+    border-radius: 4px;
+}
+.td2-dot-trigger:hover { background: #f3f4f6; color: #374151; }
+
+/* ─────────────────────────────────────────────────────────────
+   12. SPRINT 3 — POD Cards
+───────────────────────────────────────────────────────────── */
+.td2-pod-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+}
+
+.td2-pod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 14px;
+    margin-bottom: 16px;
+}
+
+.td2-party-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.td2-party-block {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.td2-party-label {
+    font-size: 10px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+
+.td2-party-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.td2-party-addr {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   13. SPRINT 4 — Trip Payout
+───────────────────────────────────────────────────────────── */
+.td2-payout-subhead {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 16px 0;
+    padding: 10px 14px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #032671;
+}
+
+.td2-stat-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border: 1px solid #e9ecef;
+    height: 100%;
+}
+
+.td2-stat-card-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.td2-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #f9fafb;
+}
+.td2-stat-row:last-child { border-bottom: none; }
+
+.td2-stat-label {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.td2-stat-val {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.td2-stat-total .td2-stat-label,
+.td2-stat-total .td2-stat-val {
+    font-weight: 700;
+    color: #032671;
+    font-size: 14px;
+}
+
+.td2-payout-disclaimer {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #92400e;
+    background: #fef3c7;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+    margin-top: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   14. SPRINT 4 — Expenses
+───────────────────────────────────────────────────────────── */
+.td2-exp-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e9ecef;
+    border-left: 4px solid #032671;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.td2-exp-head {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.td2-exp-amt {
+    font-family: Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.td2-exp-total-card {
+    background: #032671;
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.td2-exp-total-label {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0e7ff;
+}
+
+.td2-exp-total-amt {
+    font-family: Inter, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   15. SPRINT 4 — Profit or Loss
+───────────────────────────────────────────────────────────── */
+.td2-pl-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.td2-pl-section-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 10px 0;
+}
+
+.td2-pl-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #f9fafb;
+    font-size: 13px;
+}
+.td2-pl-row:last-child { border-bottom: none; }
+
+.td2-pl-label { color: #6b7280; }
+.td2-pl-val   { font-weight: 600; color: #111827; }
+
+.td2-pl-subtotal {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0 4px;
+    margin-top: 4px;
+    border-top: 2px solid #e9ecef;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #111827;
+}
+
+.td2-pl-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.td2-pl-profit { background: #d1fae5; color: #065f46; }
+.td2-pl-loss   { background: #fee2e2; color: #991b1b; }
+
+.td2-pl-totals .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    padding: 10px 16px;
+}
+
+.td2-pl-due {
+    font-weight: 700;
+    color: #032671;
+    font-size: 14px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   16. SPRINT 4 — Shared: tables, conditional note, lock note
+───────────────────────────────────────────────────────────── */
+.td2-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+}
+
+.td2-table thead th {
+    background: #f8f9fa;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.td2-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.td2-table tbody tr:last-child td { border-bottom: none; }
+.td2-table tbody tr:hover td { background: #f8faff; }
+
+.td2-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.td2-section-head-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #111827;
+    margin: 0;
+}
+
+.td2-conditional-note {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.td2-lock-note {
+    padding: 8px 14px;
+    background: #fef3c7;
+    border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #92400e;
+    margin-bottom: 14px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   17. SPRINT 4 — Memo
+───────────────────────────────────────────────────────────── */
+.td2-memo-form .form-label {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   18. SPRINT 4 — Broker Payment
+───────────────────────────────────────────────────────────── */
+.td2-broker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 12px;
+}
+.td2-broker-row:last-child { border-bottom: none; }
+
+.td2-broker-label {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    color: #374151;
+    flex: 1;
+}
+
+.td2-broker-input {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.td2-broker-locked {
+    background: #f9fafb;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.td2-broker-net-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.td2-broker-net-row:last-child {
+    border-bottom: none;
+    font-weight: 700;
+    font-size: 15px;
+    color: #032671;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   19. DOC LABEL alias (shared between Sprint 3 and 4)
+───────────────────────────────────────────────────────────── */
+.td2-doc-label {
+    font-size: 10px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   20. view-booking-det utility
+───────────────────────────────────────────────────────────── */
+.td2-view-booking-det {
+    margin-top: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SPRINT 5 — Attachments Panel
+───────────────────────────────────────────────────────────── */
+.td2-upload-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 28px 20px;
+    text-align: center;
+    background: #fafbff;
+    margin-bottom: 18px;
+    transition: border-color 0.2s, background 0.2s;
+}
+.td2-upload-zone.dragover {
+    border-color: #032671;
+    background: #eef2ff;
+}
+
+.td2-upload-icon {
+    font-size: 36px;
+    color: #9ca3af;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.td2-upload-text {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 10px;
+}
+
+.td2-upload-label {
+    cursor: pointer;
+}
+
+.td2-upload-hint {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 8px 0 0;
+}
+
+/* File list */
+.td2-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.td2-file-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+.td2-file-item:hover {
+    background: #f3f4f6;
+}
+
+.td2-file-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.td2-ficon-pdf { background: #fee2e2; color: #dc2626; }
+.td2-ficon-img { background: #dbeafe; color: #2563eb; }
+.td2-ficon-doc { background: #d1fae5; color: #059669; }
+
+.td2-file-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.td2-file-name {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.td2-file-meta {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.td2-file-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.td2-file-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background: #e9ecef;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.td2-file-btn:hover  { background: #032671; color: #fff; }
+.td2-file-del:hover  { background: #dc3545; color: #fff; }
+
+/* ─────────────────────────────────────────────────────────────
+   SPRINT 5 — Vehicle Details Panel
+───────────────────────────────────────────────────────────── */
+.td2-vd-identity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 16px;
+    background: #032671;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.td2-vd-reg {
+    font-family: Inter, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.06em;
+}
+
+.td2-vd-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.td2-vd-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.td2-vd-chip-empty { background: #d1fae5; color: #065f46; }
+.td2-vd-chip-loc   { background: rgba(255,255,255,0.2); color: #fff; }
+
+.td2-vd-section {
+    margin-bottom: 18px;
+}
+
+.td2-vd-section-title {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.td2-vd-comp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.td2-vd-comp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+}
+.td2-vd-comp-item i { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.td2-vd-ok   { background: #f0fdf4; color: #065f46; }
+.td2-vd-warn { background: #fffbeb; color: #92400e; }
+
+.td2-vd-comp-lbl {
+    display: block;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.td2-vd-comp-val {
+    display: block;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SPRINT 5 — Bill Entry Panel
+───────────────────────────────────────────────────────────── */
+.td2-bill-refbar {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #032671;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #374151;
+    margin-bottom: 16px;
+}
+
+.td2-bill-col-title {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid;
+}
+.td2-bill-income-title  { color: #065f46; border-color: #10b981; }
+.td2-bill-expense-title { color: #991b1b; border-color: #ef4444; }
+
+.td2-bill-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f9fafb;
+}
+.td2-bill-row:last-of-type { border-bottom: none; }
+
+.td2-bill-lbl {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #6b7280;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.td2-bill-row .input-group {
+    width: 130px;
+    flex-shrink: 0;
+}
+
+.td2-bill-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 0;
+    margin-top: 4px;
+    border-top: 2px solid;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+}
+.td2-bill-income-sub  { border-color: #10b981; color: #065f46; }
+.td2-bill-expense-sub { border-color: #ef4444; color: #991b1b; }
+
+.td2-bill-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+}
+.td2-bill-profit { background: #d1fae5; color: #065f46; }
+.td2-bill-loss   { background: #fee2e2; color: #991b1b; }
+
+/* ─────────────────────────────────────────────────────────────
+   SPRINT 5 — Review Modal (star rating)
+───────────────────────────────────────────────────────────── */
+.td2-star-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.td2-star {
+    font-size: 22px;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.td2-star:hover,
+.td2-star.active {
+    color: #f59e0b;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SPRINT 5 — Full History Modal
+───────────────────────────────────────────────────────────── */
+.td2-history-full {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.td2-hf-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.td2-hf-item:last-child { border-bottom: none; }
+
+/* ─────────────────────────────────────────────────────────────
+   v3.0 — LAYOUT OVERHAUL (2026-06-01)
+   Matches system v2-page standard (tyre/fleet pages).
+   Replaces vertical left tab nav → horizontal nav-pills.
+   Removes min-height forcing that caused empty space.
+───────────────────────────────────────────────────────────── */
+
+/* ── v2-page status badge variants for trip ── */
+.v2-id-status.td2-initiated  { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.v2-id-status.td2-ongoing    { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.v2-id-status.td2-completed  { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.v2-id-status.td2-cancelled  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* Override large icon to match v2-id-bar compact icon */
+.td2-bdwrap .v2-id-icon-wrap {
+    background: linear-gradient(135deg, #032671 0%, #1a56db 100%);
+}
+
+/* Remove the separate crumb row — v2-id-bar is the single header */
+.td2-crumb-row { display: none !important; }
+
+/* Compact the info-row as it's now replaced by v2-id-bar */
+.td2-info-row { display: none !important; }
+
+/* Stepper row — remove top border since it now sits inside v2-header-zone */
+.td2-stepper-row { border-top: 1px solid #edf0f9; }
+
+/* ── BODY: remove min-height forcing ── */
+.td2-body {
+    background: #f0f3fa;
+    min-height: 0 !important;
+    padding-bottom: 32px;
+}
+
+/* ── HORIZONTAL TAB NAV ── */
+.td2-htab-wrap {
+    background: #fff;
+    border-bottom: 2px solid #e2e8f5;
+    padding: 0 20px;
+    position: sticky;
+    top: 60px;
+    z-index: 100;
+}
+
+.td2-htab-wrap .nav-pills {
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 6px 0 0;
+}
+
+.td2-htab-wrap .nav-pills::-webkit-scrollbar { display: none; }
+
+.td2-htab-wrap .nav-link {
+    border-radius: 0;
+    border-bottom: 3px solid transparent;
+    padding: 8px 14px;
+    font-family: Inter, sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #475569;
+    white-space: nowrap;
+    background: transparent;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.td2-htab-wrap .nav-link:hover {
+    color: #032671;
+    border-bottom-color: #c7d5ef;
+    background: transparent;
+}
+
+.td2-htab-wrap .nav-link.active {
+    color: #032671;
+    font-weight: 700;
+    border-bottom-color: #032671;
+    background: transparent;
+}
+
+/* Financial tabs in horizontal bar — dot prefix */
+.td2-htab-wrap .td2-fin-tab::before {
+    content: '•';
+    margin-right: 5px;
+    color: #032671;
+    opacity: 0.5;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.td2-htab-wrap .td2-fin-tab.active::before { opacity: 1; }
+
+/* Horizontal tab section separator */
+.td2-htab-sep {
+    padding: 8px 6px 0;
+    color: #d1d5db;
+    font-size: 14px;
+    align-self: flex-end;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+/* ── TAB CONTENT AREA ── */
+.td2-hcontent {
+    flex: 1;
+    min-width: 0;
+}
+
+.td2-hcontent .tab-content { background: transparent; }
+.td2-hcontent .tab-pane   { padding: 0; }
+
+/* ── PANE HEADER — compact ── */
+.td2-pane-header {
+    padding: 12px 20px 10px;
+}
+
+.td2-pane-body {
+    padding: 16px 20px;
+}
+
+/* ── SECTIONS — compact ── */
+.td2-section {
+    padding: 16px 18px;
+    margin-bottom: 10px;
+}
+
+/* ── DATA ITEM — tighter ── */
+.td2-di-value {
+    font-size: 13px;
+}
+
+/* ── VERTICAL TAB NAV — hide it (replaced by horizontal) ── */
+.td2-tab-wrap  { min-height: 0 !important; }
+.td2-tabnav    { display: none !important; }
+.td2-tabcontent { flex: 1; background: transparent; }
+
+/* ── SIDEBAR — reset top padding ── */
+.td2-sidebar {
+    background: #fff;
+    border-left: 1px solid #e2e8f5;
+    padding: 14px 10px;
+}
+
+/* ── BODY ROW ── */
+.td2-body .row.g-0 { align-items: flex-start; }
+
+@media (max-width: 991px) {
+    .td2-htab-wrap { top: 0; }
+    .td2-htab-wrap .nav-pills { padding: 4px 0 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   v3.1 — STICKY HERO FIX (2026-06-01)
+   v2-header-zone sticks just below fixed nav so identity bar
+   and stepper are always visible. Tab nav adjusts offset.
+───────────────────────────────────────────────────────────── */
+
+/* Make the trip hero sticky — override vehicle-details-v2.css scoped to trip page */
+.td2-bdwrap .v2-header-zone {
+    position: sticky;
+    top: 60px;        /* clears fixed nav (~60px) */
+    z-index: 200;
+}
+
+/* Tab nav sticks below the sticky hero (60 + 146 = 206px) */
+.td2-htab-wrap {
+    top: 206px;
+    z-index: 199;
+}
+
+/* Ensure content doesn't jump under sticky layers */
+.td2-hcontent {
+    padding-top: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   v3.2 — SPACING & ALIGNMENT FIXES (2026-06-01)
+   After BA spacing audit — all measurements from live DOM.
+───────────────────────────────────────────────────────────── */
+
+/* 1. Breathing room below sticky tab nav (was 1px gap) */
+.td2-body > .row.g-0 {
+    padding-top: 10px;
+}
+
+/* 2. Normalize horizontal padding across hero / stepper / tab nav → 24px */
+.td2-bdwrap .v2-id-bar {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.td2-stepper-row {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.td2-htab-wrap {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+/* 3. Normalize pane content left padding to match horizontal grid (24px) */
+.td2-pane-header {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 10px;
+    padding-bottom: 8px;
+}
+
+.td2-pane-body {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+/* 4. Section cards — match 24px horizontal, compact vertical */
+.td2-section {
+    padding: 14px 24px;
+    margin-bottom: 8px;
+}
+
+/* 5. Content area background — match body bg for clean look */
+.td2-hcontent .tab-content {
+    background: #f0f3fa;
+}
+
+.td2-hcontent .tab-pane {
+    padding: 0;
+}
+
+/* 6. Sidebar top aligned with content row */
+.td2-sidebar {
+    padding-top: 10px;
+}
+
+/* 7. Tighten sidebar card padding slightly */
+.td2-scard {
+    padding: 12px 14px;
+}
+
+/* 8. Section title bottom margin tighter */
+.td2-section-title {
+    margin-bottom: 12px;
+    padding-bottom: 7px;
+}
+
+/* 9. Data item label → value gap tighter */
+.td2-di {
+    gap: 2px;
+}
+
+/* 10. Compact pane title font size slightly */
+.td2-pane-title {
+    font-size: 14px;
+}
+
+/* 11. Info grid (row.g-3) → tighten to g-2 equivalent */
+.td2-pane-body .row.g-3 {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SOS — FLOATING ACTION BUTTON + PANEL + HISTORY
+   (v3.3 — 2026-06-01)
+───────────────────────────────────────────────────────────── */
+
+/* ── Floating SOS FAB ── */
+.td2-sos-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    z-index: 1040;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.td2-sos-fab-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(220,38,38,0.5);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: Inter, sans-serif;
+}
+
+.td2-sos-fab-btn:hover {
+    background: #b91c1c;
+    transform: scale(1.08);
+    box-shadow: 0 6px 22px rgba(220,38,38,0.65);
+}
+
+.td2-sos-fab-btn i {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.td2-sos-fab-label {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1;
+}
+
+/* Pulse animation when SOS is active */
+.td2-sos-fab-btn.td2-sos-active {
+    animation: td2-sos-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes td2-sos-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(220,38,38,0.7); }
+    70%  { box-shadow: 0 0 0 14px rgba(220,38,38,0); }
+    100% { box-shadow: 0 0 0 0   rgba(220,38,38,0); }
+}
+
+/* Active count badge */
+.td2-sos-fab-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fbbf24;
+    color: #78350f;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    line-height: 1;
+}
+
+/* ── SOS Slide Panel ── */
+.td2-sos-panel {
+    width: 380px;
+    right: -400px;
+}
+
+.td2-sos-panel.show {
+    right: 0;
+}
+
+/* Active alert banner */
+.td2-sos-active-alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.td2-sos-active-alert i { font-size: 16px; }
+
+/* Context strip */
+.td2-sos-context {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid #f3f4f6;
+}
+
+.td2-sos-context-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.td2-sos-ctx-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    width: 50px;
+    flex-shrink: 0;
+}
+
+.td2-sos-ctx-val {
+    color: #111827;
+    font-weight: 500;
+}
+
+/* Instructions */
+.td2-sos-instr {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0 0 10px;
+    font-style: italic;
+}
+
+/* Hashtag chip grid */
+.td2-sos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.td2-sos-chip {
+    cursor: pointer;
+    margin: 0;
+}
+
+.td2-sos-chip input[type="checkbox"] {
+    display: none;
+}
+
+.td2-sos-chip span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    background: #f9fafb;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    user-select: none;
+}
+
+.td2-sos-chip span i {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.td2-sos-chip input:checked + span {
+    border-color: #dc2626;
+    background: #fff1f2;
+    color: #991b1b;
+}
+
+.td2-sos-chip input:checked + span i {
+    color: #dc2626;
+}
+
+.td2-sos-chip:hover span {
+    border-color: #fca5a5;
+    background: #fff8f8;
+}
+
+/* Manual text input */
+.td2-sos-manual-wrap {
+    margin-bottom: 16px;
+}
+
+.td2-sos-manual-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.td2-sos-manual-lbl i {
+    color: #6b7280;
+    margin-right: 4px;
+}
+
+/* ── SOS History Modal ── */
+.td2-sos-stats {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.td2-sos-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 8px;
+    border-right: 1px solid #f3f4f6;
+}
+
+.td2-sos-stat:last-child { border-right: none; }
+
+.td2-sos-stat-num {
+    font-family: Inter, sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #111827;
+    line-height: 1;
+}
+
+.td2-sos-stat-active .td2-sos-stat-num  { color: #dc2626; }
+.td2-sos-stat-resolved .td2-sos-stat-num { color: #16a34a; }
+
+.td2-sos-stat-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+.td2-sos-history-list {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.td2-sos-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.td2-sos-empty-state i {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #d1d5db;
+}
+
+.td2-sos-empty-state p {
+    font-size: 13px;
+    margin: 0;
+}
+
+/* SOS event card */
+.td2-sos-event {
+    border: 1px solid #fee2e2;
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.td2-sos-event.td2-sos-resolved {
+    border-left-color: #16a34a;
+    border-color: #dcfce7;
+}
+
+.td2-sos-event-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #fff8f8;
+    gap: 8px;
+}
+
+.td2-sos-event.td2-sos-resolved .td2-sos-event-header {
+    background: #f0fdf4;
+}
+
+.td2-sos-event-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1;
+}
+
+.td2-sos-event-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 50px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: Inter, sans-serif;
+}
+
+.td2-sos-event.td2-sos-resolved .td2-sos-event-tag {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.td2-sos-event-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 50px;
+    flex-shrink: 0;
+}
+
+.td2-sos-status-active   { background: #fee2e2; color: #991b1b; }
+.td2-sos-status-resolved { background: #dcfce7; color: #15803d; }
+
+.td2-sos-event-resolve-btn {
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid #16a34a;
+    border-radius: 50px;
+    background: transparent;
+    color: #16a34a;
+    cursor: pointer;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.td2-sos-event-resolve-btn:hover {
+    background: #16a34a;
+    color: #fff;
+}
+
+.td2-sos-event-body {
+    padding: 8px 14px 12px;
+}
+
+.td2-sos-event-meta {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.td2-sos-event-note {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #374151;
+    margin: 0;
+    font-style: italic;
+}
+
+.td2-sos-event-resolution {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #f0fdf4;
+    border-radius: 6px;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #15803d;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   TAB GROUP LABELS — Operations (blue) & Settlement (amber)
+   BA-spec v3.4 | 2026-06-01
+───────────────────────────────────────────────────────────── */
+
+/* Inline group label chip */
+.td2-tab-group-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px 5px 8px;
+    font-family: Inter, sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    white-space: nowrap;
+    align-self: center;
+    margin-right: 2px;
+    margin-bottom: 6px;     /* visual alignment with tab underline */
+    cursor: default;
+    flex-shrink: 0;
+}
+
+.td2-tab-group-label i {
+    font-size: 11px;
+}
+
+/* Operations group — dark blue */
+.td2-group-ops {
+    background: #eff3ff;
+    color: #032671;
+    border: 1px solid #c7d5ef;
+}
+
+/* Settlement group — amber */
+.td2-group-fin {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fcd34d;
+    margin-left: 10px;
+}
+
+/* Operations tabs — active underline = dark blue (already default) */
+.td2-htab-wrap .td2-ops-tab.active {
+    color: #032671;
+    border-bottom-color: #032671;
+    font-weight: 700;
+}
+
+/* Operations tabs — hover */
+.td2-htab-wrap .td2-ops-tab:hover {
+    color: #032671;
+    border-bottom-color: #a5b4fc;
+}
+
+/* Settlement tabs — active underline = amber (override the default blue) */
+.td2-htab-wrap .td2-fin-tab.active {
+    color: #b45309;
+    border-bottom-color: #b45309;
+    font-weight: 700;
+}
+
+/* Settlement tabs — hover */
+.td2-htab-wrap .td2-fin-tab:hover {
+    color: #b45309;
+    border-bottom-color: #fcd34d;
+}
+
+/* Settlement dot prefix — amber instead of blue */
+.td2-htab-wrap .td2-fin-tab::before {
+    color: #b45309;
+}
+
+/* Hide group labels on tablet scroll (they stack oddly) */
+@media (max-width: 991px) {
+    .td2-tab-group-label { display: none; }
+}

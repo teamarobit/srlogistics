@@ -31,7 +31,8 @@ class TripController extends Controller
     }
 
     public function show($trip){
-        return view('trip.show', compact('trip'));
+        // return view('trip.show', compact('trip')); // v1 — kept for reference
+        return view('trip.show-v2', compact('trip'));
     }
 
     /**
