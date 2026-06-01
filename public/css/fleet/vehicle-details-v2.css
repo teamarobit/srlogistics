@@ -3415,44 +3415,49 @@
 /* ============================================================
    Truck Repair · Repair Severity Pills (Major / Minor)
    ============================================================ */
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill,
 .tr-repair-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px 4px 8px;
-    border-radius: 999px;
-    font-size: 11.5px;
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: 0.2px;
-    border: 1px solid transparent;
-    white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 5px 12px !important;
+    border-radius: 999px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.2px !important;
+    border: 1px solid transparent !important;
+    white-space: nowrap !important;
+    min-height: 22px !important;
+    vertical-align: middle !important;
 }
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill::before,
 .tr-repair-pill::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.65);
+    content: "" !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    padding: 0 !important;
 }
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill.is-major,
 .tr-repair-pill.is-major {
-    color: #b42318;
-    background: #fef3f2;
-    border-color: #fecdca;
+    color: #b42318 !important;
+    background: #fef3f2 !important;
+    border-color: #fecdca !important;
 }
 .tr-repair-pill.is-major::before {
-    background: #d92d20;
-    box-shadow: 0 0 0 2px #fee4e2;
+    background: #d92d20 !important;
 }
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill.is-minor,
 .tr-repair-pill.is-minor {
-    color: #b54708;
-    background: #fffaeb;
-    border-color: #fedf89;
+    color: #b54708 !important;
+    background: #fffaeb !important;
+    border-color: #fedf89 !important;
 }
 .tr-repair-pill.is-minor::before {
-    background: #f79009;
-    box-shadow: 0 0 0 2px #fef0c7;
+    background: #f79009 !important;
 }
 
 /* =====================================================================
@@ -3598,4 +3603,104 @@
     background: rgba(107, 114, 128, 0.08);
     color: #6b7280;
     border-color: rgba(107, 114, 128, 0.18);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   Truck Repair — Mini Dashboard KPI Strip (static)
+   Scope: #pills-truck-repair .tr-kpi-strip
+   ═══════════════════════════════════════════════════════ */
+#pills-truck-repair .tr-kpi-strip {
+    margin-top: 2px;
+}
+
+#pills-truck-repair .tr-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #ffffff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(20, 28, 60, 0.04);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+    min-height: 84px;
+}
+#pills-truck-repair .tr-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(20, 28, 60, 0.08);
+    transform: translateY(-1px);
+}
+
+#pills-truck-repair .tr-kpi-icon {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+}
+
+#pills-truck-repair .tr-kpi-body {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+#pills-truck-repair .tr-kpi-label {
+    margin: 0 0 4px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+#pills-truck-repair .tr-kpi-value {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a2042;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Accent variants */
+#pills-truck-repair .tr-kpi-primary {
+    border-left: 4px solid #2f6fed;
+}
+#pills-truck-repair .tr-kpi-primary .tr-kpi-icon {
+    background: #E8F0FE;
+    color: #2f6fed;
+}
+
+#pills-truck-repair .tr-kpi-warning {
+    border-left: 4px solid #E89B16;
+}
+#pills-truck-repair .tr-kpi-warning .tr-kpi-icon {
+    background: #FDF3E0;
+    color: #E89B16;
+}
+
+#pills-truck-repair .tr-kpi-success {
+    border-left: 4px solid #1F9D55;
+}
+#pills-truck-repair .tr-kpi-success .tr-kpi-icon {
+    background: #E2F5EC;
+    color: #1F9D55;
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+    #pills-truck-repair .tr-kpi-card {
+        padding: 14px 14px;
+        min-height: 76px;
+    }
+    #pills-truck-repair .tr-kpi-value {
+        font-size: 18px;
+    }
 }

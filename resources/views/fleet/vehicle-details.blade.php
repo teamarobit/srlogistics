@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.4') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.8') }}">
 
 @endsection
 
@@ -4957,6 +4957,45 @@
 
                           {{-- 1. Truck Repair --}}
                           <div class="tab-pane fade show active" id="pills-truck-repair" role="tabpanel" aria-labelledby="pills-truck-repair-tab">
+
+                              {{-- ═══ Mini Dashboard — Truck Repair KPIs (static) ═══ --}}
+                              <div class="tr-kpi-strip row g-3 mb-3">
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-primary">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-tools"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Repair Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-warning">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-gear-fill"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Spare Parts Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-success">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-person-gear"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Labour Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              {{-- ═══ End Mini Dashboard ═══ --}}
+
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
                                         <span class="sec-title">Truck Repair</span>
