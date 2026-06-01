@@ -101,7 +101,7 @@
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/vehicle-details.png') }}"></span>Trip Planning</li>
-                      <li><a href="{{ route('trip.index') }}?open=create">Create Trip</a></li>
+                      <li><a href="{{ route('trip.create') }}">Create Trip</a></li>
                       <li><a href="{{ route('trip.index') }}">Trip Tracking</a></li>
                       <li><a href="#">Vehicle & Trip Approval</a></li>
                       <li><a href="#">Eways</a></li>

@@ -363,7 +363,7 @@
                                 
                                 <div class="itemtop">
                                     <span class="sec-title">Trips List</span>
-                                    <a href="javascript:void(0)" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#createTripModal"><i class="uil uil-plus me-1"></i>Add Trip</a>
+                                    <a href="{{ route('trip.create') }}" class="addtripbtn"><i class="uil uil-plus me-1"></i>Add Trip</a>
                                 </div>
                             
                                 <!-- Card 1 -->
@@ -794,7 +794,7 @@
                                         <div class="container-fluid">
                                             <div class="itemtop">
                                                 <span class="sec-title">Trips List</span>
-                                                <a href="javascript:void(0)" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#createTripModal"><i class="uil uil-plus me-1"></i>Add Trip</a>
+                                                <a href="{{ route('trip.create') }}" class="addtripbtn" ><i class="uil uil-plus me-1"></i>Add Trip</a>
                                             </div>
                                     
                                             <div class="table-responsive">
@@ -1020,7 +1020,7 @@
                                 
                                 <div class="itemtop">
                                     <span class="sec-title">Trips List</span>
-                                    <a href="javascript:void(0)" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#createTripModal"><i class="uil uil-plus me-1"></i>Add Trip</a>
+                                    <a href="{{ route('trip.create') }}" class="addtripbtn"><i class="uil uil-plus me-1"></i>Add Trip</a>
                                 </div>
                             
                                 <!-- Card 1 -->
