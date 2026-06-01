@@ -14,6 +14,66 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
+   1B. IDENTITY BAR — trip-specific overrides
+   Compresses the system v2-id-bar into a single row.
+   vehicle-details-v2.css defines the base styles.
+───────────────────────────────────────────────────────────── */
+.td2-bdwrap .v2-id-bar {
+    padding: 8px 20px;
+    gap: 12px;
+    flex-wrap: nowrap; /* force single row */
+    align-items: center;
+}
+
+/* Smaller icon */
+.td2-bdwrap .v2-id-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+}
+.td2-bdwrap .v2-id-icon-wrap img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Route title + sub */
+.td2-bdwrap .v2-id-vno {
+    font-size: 15px;
+    gap: 7px;
+}
+.td2-bdwrap .v2-id-sub {
+    font-size: 10.5px;
+}
+
+/* Narrow separator */
+.td2-bdwrap .v2-id-sep {
+    height: 24px;
+}
+
+/* Narrower info fields */
+.td2-bdwrap .v2-id-field {
+    min-width: 72px;
+}
+.td2-bdwrap .v2-id-field-label {
+    font-size: 8px;
+}
+.td2-bdwrap .v2-id-field-value {
+    font-size: 12px;
+}
+
+/* Action buttons — compact, colour-coded, icon+text */
+.td2-bdwrap .v2-id-actions {
+    gap: 6px;
+    flex-shrink: 0;
+}
+.td2-bdwrap .v2-id-tag-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    gap: 4px;
+    border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────
    2. TOPBAR
 ───────────────────────────────────────────────────────────── */
 .td2-topbar {
