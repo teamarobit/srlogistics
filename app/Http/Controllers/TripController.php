@@ -30,6 +30,20 @@ class TripController extends Controller
         return view('trip.index', compact('routes', 'vehicleTypes', 'vehicleSizes', 'loadVendors', 'customers'));
     }
 
+    /**
+     * Show the create-trip page (full page, not modal).
+     */
+    public function create(): View
+    {
+        $routes       = RouteModel::orderBy('id')->get();
+        $vehicleTypes = Vehicletype::orderBy('name')->get();
+        $vehicleSizes = Vehicletypesize::orderBy('name')->get();
+        $loadVendors  = Contact::where('cotype_id', 2)->orderBy('contact_name')->get();
+        $customers    = Contact::where('cotype_id', 1)->orderBy('contact_name')->get();
+
+        return view('trip.create', compact('routes', 'vehicleTypes', 'vehicleSizes', 'loadVendors', 'customers'));
+    }
+
     public function show($trip){
         // return view('trip.show', compact('trip')); // v1 — kept for reference
         return view('trip.show-v2', compact('trip'));
