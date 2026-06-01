@@ -4996,6 +4996,140 @@
                               </div>
                               {{-- ═══ End Mini Dashboard ═══ --}}
 
+                              {{-- Filter Card (static) --}}
+                              <div class="accordion mt-3" id="accordionTruckRepair">
+                                  <div class="accordion-item">
+                                      <h2 class="accordion-header" id="truck_repair_filter">
+                                          <button
+                                              class="accordion-button filter-options"
+                                              type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTruckRepair"
+                                              aria-expanded="true"
+                                              aria-controls="collapseTruckRepair"
+                                          >
+                                              <div class="item-filter">
+                                                  <span class="filter-icon">
+                                                      <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                  </span>
+                                                  <p>Filter Options</p>
+                                              </div>
+                                          </button>
+                                      </h2>
+
+                                      <div
+                                          id="collapseTruckRepair"
+                                          class="accordion-collapse collapse show"
+                                          aria-labelledby="truck_repair_filter"
+                                          data-bs-parent="#accordionTruckRepair">
+                                          <div class="accordion-body">
+                                              <form class="vehicle_dform p-4">
+                                                  <div class="filtersearch-bd justify-content-between">
+
+                                                      <div class="vehicletype">
+                                                          <label>Repair</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Major</option>
+                                                              <option>Minor</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Repair Category</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Mechanical</option>
+                                                              <option>Electrical</option>
+                                                              <option>Body Work</option>
+                                                              <option>Tyre</option>
+                                                              <option>Hydraulic</option>
+                                                              <option>Other</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Work Done</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Clutch Plate Replacement</option>
+                                                              <option>Brake Shoe Adjustment</option>
+                                                              <option>Air Compressor Replacement</option>
+                                                              <option>Cabin Door Dent Removal</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Workshop Name</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>SR Workshop</option>
+                                                              <option>Joshan LLP</option>
+                                                              <option>Sai Body Works</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Repair Warranty</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Under Warranty</option>
+                                                              <option>Expired</option>
+                                                              <option>Not Applicable</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>GST Applicable</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Yes</option>
+                                                              <option>No</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>GST Bill Received</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Yes</option>
+                                                              <option>No</option>
+                                                          </select>
+                                                      </div>
+
+                                                  </div>
+
+                                                  <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                      <button class="btn btn-primary ms-1" type="button">
+                                                          <i class="uil uil-sync me-1"></i>Reset
+                                                      </button>
+
+                                                      <div class="dropdown ms-1">
+                                                          <button
+                                                              class="btn btn-primary dropdown-toggle d-flex"
+                                                              type="button"
+                                                              id="exportBtnTruckRepair"
+                                                              data-bs-toggle="dropdown"
+                                                              aria-expanded="false"
+                                                          >
+                                                              Export <i class="uil uil-upload ms-1"></i>
+                                                          </button>
+                                                          <ul class="dropdown-menu" aria-labelledby="exportBtnTruckRepair">
+                                                              <li>
+                                                                  <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                              </li>
+                                                              <li>
+                                                                  <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                              </li>
+                                                          </ul>
+                                                      </div>
+                                                  </div>
+                                              </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
                                         <span class="sec-title">Truck Repair</span>
