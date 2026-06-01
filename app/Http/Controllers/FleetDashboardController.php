@@ -17,6 +17,7 @@ use App\Models\Trackingvehicle;
 
 use App\Models\Fleetstatus;
 use App\Models\Contact;
+use App\Models\State;
 use App\Models\Vehicleallocation;
 
 use App\Models\Gpsprovider;
@@ -270,7 +271,12 @@ class FleetDashboardController extends Controller
         $expenseTypes = Expense::where('status', 'Active')
             ->get(['id', 'name']);
 
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers', 'expenseTypes'));
+        // Challan Book — filter dropdowns
+        $states = State::where('country_id', 101)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers', 'expenseTypes', 'states'));
     }
 
     public function getVehicleDetailsV2($id)

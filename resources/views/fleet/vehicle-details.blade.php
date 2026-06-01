@@ -2495,7 +2495,129 @@
 
                     {{-- Challan Book (NEW - static design only) --}}
                     <div class="tab-pane fade" id="challan">
-                        <div class="card border-0 shadow-sm">
+
+                        {{-- Filter Card (static) --}}
+                        <div class="accordion mt-3" id="accordionChallanBook">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="challan_filter">
+                                    <button
+                                        class="accordion-button filter-options"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapseChallanBook"
+                                        aria-expanded="true"
+                                        aria-controls="collapseChallanBook"
+                                    >
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+
+                                <div
+                                    id="collapseChallanBook"
+                                    class="accordion-collapse collapse show"
+                                    aria-labelledby="challan_filter"
+                                    data-bs-parent="#accordionChallanBook">
+                                    <div class="accordion-body">
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
+
+                                                <div class="vehicletype">
+                                                    <label>State</label>
+                                                    <select class="form-select select2" id="challan_state">
+                                                        <option value="">Choose..</option>
+                                                        @foreach($states as $state)
+                                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2" id="challan_driver">
+                                                        <option value="">Choose..</option>
+                                                        @foreach($plDrivers as $drv)
+                                                            <option value="{{ $drv->id }}">{{ $drv->contact_name }}{{ $drv->contact_code ? ' (' . $drv->contact_code . ')' : '' }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Challan RAG Status</label>
+                                                    <select class="form-select select2" id="challan_rag">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Green">Green (Below &#8377;2,000)</option>
+                                                        <option value="Yellow">Yellow (&#8377;2,000 - &#8377;5,000)</option>
+                                                        <option value="Red">Red (Above &#8377;5,000)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Challan Status</label>
+                                                    <select class="form-select select2" id="challan_status">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Paid">Paid</option>
+                                                        <option value="Unpaid">Unpaid</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Sent to Court</label>
+                                                    <select class="form-select select2" id="challan_court">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Yes">Yes</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Borne By</label>
+                                                    <select class="form-select select2" id="challan_borne">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Driver">Driver</option>
+                                                        <option value="SR">SR</option>
+                                                        <option value="Both">Both 50/50</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnChallanBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnChallanBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mt-3">
                             <div class="card-body p-4">
                                 <h5 class="mb-3"><i class="uil uil-file-alt me-2"></i>Challan Book</h5>
 
