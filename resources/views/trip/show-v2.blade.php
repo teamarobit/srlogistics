@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=3.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=3.7') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -896,6 +896,7 @@
                                     <h5 class="td2-pane-title">Vehicle Status</h5>
                                 </div>
                                 <div class="td2-pane-body">
+                                <div class="td2-vstage-list">
 
                                     {{-- ─── Stage 1: Reported at Loading Point ─── --}}
                                     <div class="td2-vstage td2-vstage-done">
@@ -907,20 +908,22 @@
                                                data-bs-toggle="modal"
                                                data-bs-target="#changeStatus">Change</a>
                                         </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="td2-doc-label">Halting</label>
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" class="form-control" placeholder="0">
-                                                    <span class="input-group-text">Day</span>
+                                        <div class="td2-vstage-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="td2-doc-label">Halting</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control" placeholder="0">
+                                                        <span class="input-group-text">Day</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="td2-doc-label">Manual Entry</label>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
-                                                <label class="td2-doc-label">Manual Entry</label>
-                                                <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                            </div>
+                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         </div>
-                                        <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         <div class="td2-map-embed">
                                             <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Loading Point — Kolkata</div>
                                             <iframe
@@ -938,20 +941,22 @@
                                             <span class="td2-vstage-name">On the Way</span>
                                             <span class="td2-vstage-time">12/01/2026 02:00 PM</span>
                                         </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="td2-doc-label">Halting</label>
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" class="form-control" placeholder="0">
-                                                    <span class="input-group-text">Day</span>
+                                        <div class="td2-vstage-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="td2-doc-label">Halting</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control" placeholder="0">
+                                                        <span class="input-group-text">Day</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="td2-doc-label">Manual Entry</label>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
-                                                <label class="td2-doc-label">Manual Entry</label>
-                                                <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                            </div>
+                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         </div>
-                                        <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         <div class="td2-map-embed">
                                             <div class="td2-map-proto-badge"><i class="fa fa-truck"></i> En Route — Patna (last known)</div>
                                             <iframe
@@ -969,20 +974,22 @@
                                             <span class="td2-vstage-name">Reported at Unloading Point</span>
                                             <span class="td2-vstage-time">22/01/2026 08:00 AM</span>
                                         </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="td2-doc-label">Halting</label>
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" class="form-control" placeholder="0">
-                                                    <span class="input-group-text">Day</span>
+                                        <div class="td2-vstage-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="td2-doc-label">Halting</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control" placeholder="0">
+                                                        <span class="input-group-text">Day</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="td2-doc-label">Manual Entry</label>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
-                                                <label class="td2-doc-label">Manual Entry</label>
-                                                <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                            </div>
+                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         </div>
-                                        <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         <div class="td2-map-embed">
                                             <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Unloading Point — Mumbai</div>
                                             <iframe
@@ -1000,20 +1007,22 @@
                                             <span class="td2-vstage-name">Unloading <small class="fw-normal text-muted">(Manual Entry)</small></span>
                                             <span class="td2-vstage-time">23/01/2026 10:00 AM</span>
                                         </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="td2-doc-label">Halting</label>
-                                                <div class="input-group input-group-sm">
-                                                    <input type="number" class="form-control" placeholder="0">
-                                                    <span class="input-group-text">Day</span>
+                                        <div class="td2-vstage-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="td2-doc-label">Halting</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control" placeholder="0">
+                                                        <span class="input-group-text">Day</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="td2-doc-label">Manual Entry</label>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
-                                                <label class="td2-doc-label">Manual Entry</label>
-                                                <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                            </div>
+                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         </div>
-                                        <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
                                         <div class="td2-map-embed">
                                             <div class="td2-map-proto-badge td2-map-proto-pending"><i class="fa fa-clock-o"></i> Unloading — Pending GPS fix</div>
                                             <iframe
@@ -1024,7 +1033,8 @@
                                         </div>
                                     </div>
 
-                                </div>
+                                </div>{{-- /.td2-vstage-list --}}
+                                </div>{{-- /.td2-pane-body --}}
                             </div>
 
                             {{-- ─── TAB 4: Eway + LR ─── --}}

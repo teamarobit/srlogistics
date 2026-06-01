@@ -1379,35 +1379,68 @@
 /* ─────────────────────────────────────────────────────────────
    10. SPRINT 3 — Vehicle Status
 ───────────────────────────────────────────────────────────── */
-.td2-vstage {
-    padding: 18px 0;
-    border-bottom: 1px solid #f3f4f6;
+/* ── Vehicle Status stage cards ── */
+.td2-vstage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
-.td2-vstage:last-child { border-bottom: none; }
 
+.td2-vstage {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e9edf5;
+    /* Left accent via inset box-shadow — stays inside content box, never overlaps children */
+    box-shadow: inset 4px 0 0 #d1d5db, 0 1px 6px rgba(3,38,113,0.06);
+    overflow: hidden;
+}
+
+/* Done stage — green left accent */
+.td2-vstage-done {
+    box-shadow: inset 4px 0 0 #16a34a, 0 1px 6px rgba(3,38,113,0.06);
+}
+
+/* Pending stage — grey left accent */
+.td2-vstage-pending {
+    box-shadow: inset 4px 0 0 #d1d5db, 0 1px 6px rgba(3,38,113,0.06);
+    opacity: 0.85;
+}
+
+/* Stage header bar — light tinted background */
 .td2-vstage-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-bottom: 1px solid #edf0f7;
     flex-wrap: wrap;
 }
 
-.td2-vstage-icon-done    { color: #198754; font-size: 18px; }
-.td2-vstage-icon-pending { color: #9ca3af; font-size: 18px; }
+.td2-vstage-done .td2-vstage-header {
+    background: #f0fdf4;
+    border-bottom-color: #dcfce7;
+}
+
+.td2-vstage-icon-done    { color: #16a34a; font-size: 18px; flex-shrink: 0; }
+.td2-vstage-icon-pending { color: #9ca3af; font-size: 18px; flex-shrink: 0; }
 
 .td2-vstage-name {
     font-family: Inter, sans-serif;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13.5px;
     color: #111827;
     flex: 1;
 }
 
 .td2-vstage-time {
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 11.5px;
     color: #6b7280;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 2px 8px;
 }
 
 .td2-vstage-change {
@@ -1417,13 +1450,24 @@
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
+    padding: 2px 10px;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    background: #eef2ff;
+    transition: background 0.15s;
+}
+.td2-vstage-change:hover { background: #e0e7ff; }
+
+/* Stage body — inputs + GPS note */
+.td2-vstage-body {
+    padding: 16px 18px 10px;
 }
 
 .td2-vstage-gps-note {
     font-size: 11px;
     color: #6b7280;
     font-style: normal;
-    margin: 6px 0 10px;
+    margin: 10px 0 12px;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -1433,13 +1477,13 @@
     font-size: 12px;
 }
 
-/* Map embed container */
+/* Map embed container — sits naturally at bottom of card;
+   parent card's overflow:hidden + border-radius clips corners */
 .td2-map-embed {
-    border-radius: 10px;
     overflow: hidden;
-    border: 1px solid #e2e8f5;
-    margin-top: 4px;
+    border-top: 1px solid #e2e8f5;
     background: #f8fafc;
+    margin-top: 4px;
 }
 
 /* Prototype context badge above the iframe */
@@ -1447,7 +1491,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 6px 14px 6px 18px;
     background: #032671;
     color: #fff;
     font-family: Inter, sans-serif;
