@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.1') }}">
 
 @endsection
 
@@ -2493,12 +2493,166 @@
                         </div>
                     </div>
 
-                    {{-- Challan Book (NEW - static placeholder) --}}
+                    {{-- Challan Book (NEW - static design only) --}}
                     <div class="tab-pane fade" id="challan">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-4">
                                 <h5 class="mb-3"><i class="uil uil-file-alt me-2"></i>Challan Book</h5>
-                                <p class="text-muted mb-0">Challan records for this vehicle will appear here.</p>
+
+                                {{-- Challan Book Table (static design) --}}
+                                <div class="table-responsive mt-3">
+                                    <table class="table custom-driver-table trip-table challan-book-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S. No</th>
+                                                <th>Driver Name &amp; Code</th>
+                                                <th>Driver License</th>
+                                                <th>Challan Number</th>
+                                                <th>Challan Amount</th>
+                                                <th>Challan Reason</th>
+                                                <th>Borne By</th>
+                                                <th>Challan Date</th>
+                                                <th>Challan Place</th>
+                                                <th>Challan State</th>
+                                                <th>State Code</th>
+                                                <th>Trip Number</th>
+                                                <th>Challan Status</th>
+                                                <th>Offence Details</th>
+                                                <th>Sent to Reg. Court</th>
+                                                <th>Sent to Court On</th>
+                                                <th>Court Name</th>
+                                                <th>Court Address</th>
+                                                <th>Date of Proceeding</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {{-- Row 1: Borne by Driver, on a trip, paid --}}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>WB-2020-0001234</td>
+                                                <td>CH-23045678</td>
+                                                <td>&#8377;1,500</td>
+                                                <td>Over-speeding</td>
+                                                <td><span class="ch-pill ch-pill-driver p-2">Driver</span></td>
+                                                <td>12-04-2026 <br><small class="text-muted">11:24 AM</small></td>
+                                                <td>NH-44, Kothur</td>
+                                                <td>Telangana</td>
+                                                <td>TS</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-paid p-2">Paid</span></td>
+                                                <td>Vehicle exceeded 80 km/h on highway stretch.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 2: Borne by SR, on a trip, pending --}}
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>MH-2019-0005678</td>
+                                                <td>CH-23045912</td>
+                                                <td>&#8377;2,000</td>
+                                                <td>Overloading</td>
+                                                <td><span class="ch-pill ch-pill-sr p-2">SR</span></td>
+                                                <td>22-04-2026 <br><small class="text-muted">03:45 PM</small></td>
+                                                <td>Khalapur Toll</td>
+                                                <td>Maharashtra</td>
+                                                <td>MH</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-pending p-2">Pending</span></td>
+                                                <td>Gross vehicle weight exceeded permissible limit by 1.2 T.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 3: Borne 50/50, no trip (empty), pending --}}
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Mohan Singh <br><small class="text-muted">DRV-003</small></td>
+                                                <td>KA-2021-0009012</td>
+                                                <td>CH-23046204</td>
+                                                <td>&#8377;500</td>
+                                                <td>Signal Jump</td>
+                                                <td><span class="ch-pill ch-pill-split p-2">Both 50/50</span></td>
+                                                <td>02-05-2026 <br><small class="text-muted">08:10 AM</small></td>
+                                                <td>Attibele Junction</td>
+                                                <td>Karnataka</td>
+                                                <td>KA</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="ch-pill ch-pill-pending p-2">Pending</span></td>
+                                                <td>Crossed signal during red phase at junction CCTV-014.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 4: Sent to Regional Court (Yes) - all court fields filled --}}
+                                            <tr>
+                                                <td>4</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>WB-2020-0001234</td>
+                                                <td>CH-23046890</td>
+                                                <td>&#8377;10,000</td>
+                                                <td>Driving without valid permit</td>
+                                                <td><span class="ch-pill ch-pill-driver p-2">Driver</span></td>
+                                                <td>14-05-2026 <br><small class="text-muted">06:30 PM</small></td>
+                                                <td>Krishnagiri Check Post</td>
+                                                <td>Tamil Nadu</td>
+                                                <td>TN</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56672</a>
+                                                    <br><small class="text-muted">LR#2905</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-court p-2">Sent to Court</span></td>
+                                                <td>Inter-state permit not produced at check post; vehicle detained.</td>
+                                                <td><span class="ch-pill ch-pill-yes p-2">Yes</span></td>
+                                                <td>18-05-2026</td>
+                                                <td>JMFC Court, Krishnagiri</td>
+                                                <td>Court Complex, Collectorate Rd, Krishnagiri, TN — 635001</td>
+                                                <td>05-06-2026 <br><small class="text-muted">10:30 AM</small></td>
+                                            </tr>
+
+                                            {{-- Row 5: Sent to Court (Yes) - 50/50 split --}}
+                                            <tr>
+                                                <td>5</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>MH-2019-0005678</td>
+                                                <td>CH-23047155</td>
+                                                <td>&#8377;5,000</td>
+                                                <td>Dangerous driving</td>
+                                                <td><span class="ch-pill ch-pill-split p-2">Both 50/50</span></td>
+                                                <td>20-05-2026 <br><small class="text-muted">09:15 PM</small></td>
+                                                <td>Shadnagar</td>
+                                                <td>Telangana</td>
+                                                <td>TS</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="ch-pill ch-pill-court p-2">Sent to Court</span></td>
+                                                <td>Lane cutting and rash overtake reported by traffic police.</td>
+                                                <td><span class="ch-pill ch-pill-yes p-2">Yes</span></td>
+                                                <td>25-05-2026</td>
+                                                <td>Traffic Court, Shadnagar</td>
+                                                <td>RTA Bhavan, Old Hyd Rd, Shadnagar, TS — 509216</td>
+                                                <td>12-06-2026 <br><small class="text-muted">11:00 AM</small></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
