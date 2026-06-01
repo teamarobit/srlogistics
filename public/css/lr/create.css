@@ -53,19 +53,20 @@ body { background-color: #fff; }
 .lr-trip-banner {
     background: #f0f4ff;
     border: 1px solid #c5d3f0;
-    border-radius: 10px;
-    padding: 16px 24px;
+    border-radius: 6px;
+    padding: 6px 16px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .lr-trip-chip {
     display: flex;
-    flex-direction: column;
-    padding: 0 24px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
     border-right: 1px solid #c5d3f0;
 }
 .lr-trip-chip:first-child { padding-left: 0; }
@@ -73,16 +74,18 @@ body { background-color: #fff; }
 
 .lr-trip-chip-label {
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #6b7a99;
-    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+    color: #8898b8;
+    margin-bottom: 0;
+    white-space: nowrap;
 }
 .lr-trip-chip-value {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
     color: #032671;
+    white-space: nowrap;
 }
 
 /* ══════════════════════════════════════════════════════════
