@@ -439,7 +439,7 @@
 /* Sticky wrapper */
 .td2-htab-wrap {
     position: sticky;
-    top: 206px; /* 60px fixed nav + 146px header zone */
+    top: 194px; /* 60px fixed nav + 134px header zone (id-bar 70px + stepper 63px) */
     z-index: 190;
     background: #fff;
     border-bottom: 2px solid #e2e8f5;
@@ -548,13 +548,30 @@
     margin-right: 4px;
 }
 
-/* Settlement — amber pill */
+/* Settlement — amber pill, visually separated from ops group */
 .td2-htab-wrap .td2-group-fin {
     background: #fff8f0;
     color: #b45309;
     border: 1px solid #fde68a;
-    margin-left: 10px;
+    margin-left: 24px;
     margin-right: 4px;
+    border-left: 3px solid #fde68a; /* stronger left accent to reinforce group boundary */
+    padding-left: 10px;
+}
+
+/* Vertical rule between the two groups */
+.td2-htab-wrap .td2-group-fin::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 22px;
+    background: #e2e8f5;
+}
+.td2-htab-wrap .td2-tab-group-label {
+    position: relative;
 }
 
 /* ─────────────────────────────────────────────────────────────
