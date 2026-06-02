@@ -1,6 +1,9 @@
 /**
  * Warehouse Master — Edit Page JS
- * SR Logistics | public/js/Warehouse/edit.js v1.2
+ * SR Logistics | public/js/Warehouse/edit.js v1.3
+ *
+ * v1.3 (2026-05-25): BUG-004 — layout already loads intl-tel-input v17.0.3
+ *                    (js + utils). Removed utilsScript to avoid third version.
  *
  * Blade config via data-* on #whEditForm:
  *   data-cities-url   — URL template with __STATE_ID__ placeholder
@@ -39,11 +42,14 @@ $(function () {
     var itiPhone = null;
     var phoneEl  = document.getElementById('wh_contact_number');
     if (phoneEl && typeof window.intlTelInput === 'function') {
+        // BUG-004 fix: layout loads two iti versions and v25.15.0 is the one
+        // that ends up as window.intlTelInput. Point utilsScript at v25's utils
+        // so getNumber() returns the full E.164 string (otherwise it returns "").
         itiPhone = window.intlTelInput(phoneEl, {
             initialCountry:   'in',            // +91 India default
             separateDialCode: true,
             preferredCountries: ['in'],
-            utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js',
+            utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js',
         });
         // If saved number is in E.164 (+91…) or plain format, set it
         var savedNumber = phoneEl.value;
@@ -143,9 +149,19 @@ $(function () {
         e.preventDefault();
         clearValidationErrors();
 
-        // SD-13: set full E.164 number (+919876543210) before serialize
+        // SD-13: set full E.164 number (+919876543210) before serialize.
+        // BUG-004 followup: global layout loads two iti versions; getNumber()
+        // can return empty when utils version mismatches. Fall back to manual
+        // build from dialCode + cleaned digits.
         if (itiPhone) {
-            $('#wh_contact_number').val(itiPhone.getNumber());
+            var e164 = '';
+            try { e164 = itiPhone.getNumber() || ''; } catch (err) { e164 = ''; }
+            var rawDigits = ($('#wh_contact_number').val() || '').replace(/\D/g, '');
+            if (!e164 && rawDigits && typeof itiPhone.getSelectedCountryData === 'function') {
+                var cd = itiPhone.getSelectedCountryData() || {};
+                if (cd.dialCode) e164 = '+' + cd.dialCode + rawDigits;
+            }
+            if (e164) $('#wh_contact_number').val(e164);
         }
 
         var $btn = $('#btnSave');

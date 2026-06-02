@@ -52,11 +52,7 @@ $(document).ready(function() {
     
                 const errors = response.data || {};
                 Object.entries(errors).forEach(([field, messages]) => {
-                    const $input = $(`[name="${field}"]`);
-                    if ($input.length) {
-                        $input.addClass('is-invalid');
-                        $(`#edit_${field}_error`).text(messages[0]);
-                    }
+                    $(`#edit_${field}_error`).text(messages[0]);
                 });
             }
         });

@@ -111,6 +111,6 @@
 var SKILLSETS = "{{ route('skillset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/skillset/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/skillset/edit.js?v=1.1')}}"></script>
 
 @endsection

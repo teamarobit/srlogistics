@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/gps-create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/gps-create.css?v=2.0') }}">
 
 
 @endsection
@@ -96,11 +96,8 @@
 
 @section('js')
 
-<script>
-var LISTING      = "{{route('gpsprovider.index')}}";
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/provider/gps/create.js')}}"></script>
+<div id="page-config" data-listing="{{ route('gpsprovider.index') }}"></div>
+<script type="text/javascript" src="{{ asset('customjs/provider/gps/create.js?v=2.0') }}"></script>
 
 @endsection
 

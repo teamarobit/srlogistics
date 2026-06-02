@@ -103,7 +103,12 @@ body { background-color: #fff; }
     padding-top: 8px;
     border-top: 1px solid #e8ecf4;
     margin-top: 24px;
+    /* BUG-002 fix: keep footer above Select2/iti dropdown wrappers so Cancel
+       is always click-targetable even when a dropdown is open behind it. */
+    position: relative;
+    z-index: 2;
 }
+.wh-form-footer .btn { position: relative; z-index: 3; }
 
 /* ── City help text ──────────────────────────────────────── */
 .wh-city-hint {

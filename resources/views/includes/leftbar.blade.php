@@ -25,7 +25,7 @@
                                     }
                                 @endphp
 
-                                <p style="background-color: #a2ffe0;"><a href="{{ route('contact.'.$menucotype->slug . '.index') }}" style="color: #261f35; font-size: 13px;">{{ $plural }}</a></p>
+                                <p style="background-color: #a2ffe0;"><a href="{{ route('contact.'.$menucotype->slug . '.index') }}" style="color: #261f35; font-size: 13px;">{{ $plural }} <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
 
                             @endforeach
                         @endif
@@ -41,17 +41,24 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree" >
                 <a class="accordion-button no-dd" href="{{ route('contact.customer.contract.list') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-file-contract me-2"></i> Contract Master</a>
+                <i class="uil uil-file-contract me-2"></i> Contract Master <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
         
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree" >
+                <a class="accordion-button no-dd" href="{{ route('hisab.category.index') }}">
+                <i class="uil uil-file-contract me-2"></i> Hisab Category</a>
+            </h2>
+        </div>
+
         <!--///////////////////////////-->
         @if(Route::has('department.index'))
         <div class="accordion-item" >
             <h2 class="accordion-header" id="headingThree" >
-                <a class="accordion-button no-dd" href="{{ route('department.index') }}" style="background-color: #a2ffe0;"> 
-                <i class="uil uil-car me-2"></i> Department</a>
+                <a class="accordion-button no-dd" href="{{ route('department.index') }}" style="background-color: #a2ffe0;">
+                <i class="uil uil-car me-2"></i> Department <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -60,7 +67,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree">
                 <a class="accordion-button no-dd" href="{{ route('designation.index') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-briefcase me-2"></i> Designation </a>
+                <i class="uil uil-briefcase me-2"></i> Designation <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -70,7 +77,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree">
                 <a class="accordion-button no-dd" href="{{ route('jobrank.index') }}" style="background-color: #a2ffe0;">
-                <i class="uil uil-briefcase me-2"></i> Job Rank </a>
+                <i class="uil uil-briefcase me-2"></i> Job Rank <span style="color:#28a745; font-weight:bold;">✓</span></a>
             </h2>
         </div>
         @endif
@@ -89,27 +96,27 @@
                 <div class="accordion-body">
                 
                     @if(Route::has('vehiclemanagement.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclemanagement.index') }}" style="color:#261F35; font-size:13px;">Vehicle Management</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclemanagement.index') }}" style="color:#261F35; font-size:13px;">Vehicle Management <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehicletype.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletype.index') }}" style="color:#261F35; font-size:13px;">Vehicle Type</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletype.index') }}" style="color:#261F35; font-size:13px;">Vehicle Type <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehiclegroup.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclegroup.index') }}" style="color:#261F35; font-size:13px;">Vehicle Group</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclegroup.index') }}" style="color:#261F35; font-size:13px;">Vehicle Group <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehiclestatus.index')) 
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclestatus.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Status</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehiclestatus.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Status <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                     
                     @if(Route::has('vehicletracking.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicletracking.index') }}" style="color: #261f35; font-size: 13px;">Vehicle Group Tracking <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                       
                     @if(Route::has('vehicleownership.index')) 
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('vehicleownership.index') }}" style="color: #261f35; font-size: 13px;">Ownership Type <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
                 
                 </div>
@@ -128,15 +135,15 @@
                 <!--<p><a href="location-list.php" style="color: #261F35; font-size: 13px;">Location List</a></p>-->
                 
                 @if(Route::has('route.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('route.index') }}" style="color:#261F35; font-size:13px;">Routes</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('route.index') }}" class="{{ request()->routeIs('route.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('route.*') ? 'font-weight:bold;' : '' }}">Routes <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
-                
+
                 @if(Route::has('branch.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" style="color:#261F35; font-size:13px;">Branch</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('branch.index') }}" class="{{ request()->routeIs('branch.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('branch.*') ? 'font-weight:bold;' : '' }}">Branch <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
-                
+
                 @if(Route::has('locationpoint.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('locationpoint.index') }}" style="color:#261F35; font-size:13px;">Location Points</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('locationpoint.index') }}" class="{{ request()->routeIs('locationpoint.*') ? 'active-nav' : '' }}" style="color:#261F35; font-size:13px; {{ request()->routeIs('locationpoint.*') ? 'font-weight:bold;' : '' }}">Location Points <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 
@@ -148,7 +155,12 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="warehouseH">
                 <a class="accordion-button no-dd" href="{{ route('warehouse.master.index') }}" style="background-color: #a2ffe0;">
+<<<<<<< HEAD
                     <i class="uil uil-truck me-2"></i> Warehouse Master
+=======
+                    <i class="uil uil-warehouse me-2"></i> Warehouse Master
+                    <span style="color:#28a745; font-weight:bold;">✓</span>
+>>>>>>> 409a53bb4e25279e903c697f24369bbd5b80febd
                 </a>
             </h2>
         </div>
@@ -168,7 +180,7 @@
                     @endif
 
                     @if(Route::has('skillset.index'))
-                    <p style="background-color: #a2ffe0;"><a href="{{ route('skillset.index') }}" style="color: #261f35; font-size: 13px;">Skill Set</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('skillset.index') }}" style="color: #261f35; font-size: 13px;">Skill Set <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
 
                     @if(Route::has('ws.master.services'))
@@ -180,11 +192,11 @@
                     @endif
 
                     @if(Route::has('ws.master.spare-parts'))
-                    <p><a href="{{ route('ws.master.spare-parts') }}" style="color: #261f35; font-size: 13px;">Spare Parts</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('ws.master.spare-parts') }}" style="color:#261F35; font-size:13px;">Spare Parts <span style="color:#28a745; font-weight:bold;">&check;</span></a></p>
                     @endif
 
                     @if(Route::has('ws.master.spare-part-categories'))
-                    <p><a href="{{ route('ws.master.spare-part-categories') }}" style="color: #261f35; font-size: 13px;">Spare Part Categories</a></p>
+                    <p style="background-color: #a2ffe0;"><a href="{{ route('ws.master.spare-part-categories') }}" style="color:#261F35; font-size:13px;">Spare Part Categories <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                     @endif
 
                     @if(Route::has('ws.master.maintenance-items'))
@@ -258,7 +270,7 @@
                 <!--<p><a href="#" style="color: #261f35; font-size: 13px;">Operational Overheads</a></p>-->
                 
                 @if(Route::has('expense.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('expense.index') }}" style="color: #261f35; font-size: 13px;">Expense Type Master</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('expense.index') }}" style="color: #261f35; font-size: 13px;">Expense Type Master <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 
@@ -266,7 +278,7 @@
                 <p><a href="#" style="color: #261f35; font-size: 13px;">Chart of Accounts</a></p>
                 
                 @if(Route::has('asset.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('asset.index') }}" style="color: #261f35; font-size: 13px;">Asset Master</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('asset.index') }}" style="color: #261f35; font-size: 13px;">Asset Master <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
             </div>
         </div>
@@ -288,11 +300,11 @@
                 <p><a href="fuel-station-list.php" style="color: #261f35; font-size: 13px;">Fuel Station</a></p>
                 
                 @if(Route::has('tollstation.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('tollstation.index') }}" style="color: #261f35; font-size: 13px;">Toll Station</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('tollstation.index') }}" style="color: #261f35; font-size: 13px;">Toll Station <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('rto.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('rto.index') }}" style="color: #261f35; font-size: 13px;">RTO Checkpoint</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('rto.index') }}" style="color: #261f35; font-size: 13px;">RTO Checkpoint <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 <p><a href="#" style="color: #261f35; font-size: 13px;">POD Master</a></p>
@@ -314,15 +326,15 @@
             <div class="accordion-body">
                 
                 @if(Route::has('gpsprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('gpsprovider.index') }}" style="color: #261f35; font-size: 13px;">GPS Provider</a></p>
+                <p style="background-color: #a2ffe0;"><a href="{{ route('gpsprovider.index') }}" style="color: #261f35; font-size: 13px;">GPS Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('fasttagprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('fasttagprovider.index') }}" style="color: #261f35; font-size: 13px;">Fastag Provider</a></p>
+                <p style="background-color: #a2ffe0;" class="{{ Route::is('fasttagprovider.*') ? 'active' : '' }}"><a href="{{ route('fasttagprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('fasttagprovider.*') ? 'font-weight:700; ' : '' }}">Fasttag Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
                 @if(Route::has('digilockprovider.index'))
-                <p style="background-color: #a2ffe0;"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px;">Digital Lock Provider</a></p>
+                <p style="background-color: #a2ffe0;" class="{{ Route::is('digilockprovider.*') ? 'active' : '' }}"><a href="{{ route('digilockprovider.index') }}" style="color: #261f35; font-size: 13px; {{ Route::is('digilockprovider.*') ? 'font-weight:700; ' : '' }}">Digital Lock Provider <span style="color:#28a745; font-weight:bold;">✓</span></a></p>
                 @endif
                 
             </div>

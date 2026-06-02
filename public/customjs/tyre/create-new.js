@@ -44,6 +44,15 @@ function tcnShowValidationErrors(errors) {
     tcnClearValidationErrors();
     $.each(errors, function (field, messages) {
         var baseField = field.split('.')[0];
+
+        // SD-4: Dropzone has no <input name="files"> in DOM — target the zone div directly
+        if (baseField === 'files') {
+            $('<span class="text-danger small d-block mt-1 field-error"></span>')
+                .text(messages[0])
+                .insertAfter($('#tcnDropzone'));
+            return;
+        }
+
         var $input = $('[name="' + baseField + '"]').first();
         if (!$input.length) {
             $input = $('[name="' + baseField + '[]"]').first();
@@ -157,6 +166,8 @@ function tcnInitDropzone() {
     tcnDzInstance.on('error', function (file, message) {
         tcnDzInstance.removeFile(file);
         var msg = typeof message === 'string' ? message : (message.error || 'Invalid file.');
+        // Suppress — maxfilesexceeded fires its own Toast for this case
+        if (msg === 'You can not upload any more files.') return;
         Toast.fire({ icon: 'error', title: msg });
     });
 }

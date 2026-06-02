@@ -40,11 +40,13 @@
                              : ($remainingWarrantyMonths > 0 ? 'amber' : 'red');
             }
 
-            /* ── Status badge ── */
-            $statusBadgeClass = match($tyre->tyre_status ?? '') {
-                'Active', 'Ready to Use' => 'active',
-                'Scrap', 'Yet to Decide' => 'inactive',
-                default => 'active',
+            /* ── Status badge (BUG-006: derive status from location when tyre_status is NULL) ── */
+            $resolvedStatus = $tyre->tyre_status
+                ?? ($tyre->location === 'Vehicle' ? 'Allocated' : 'Ready to Use');
+            $statusBadgeClass = match($resolvedStatus) {
+                'Active', 'Ready to Use', 'Allocated' => 'active',
+                'Scrap', 'Yet to Decide'              => 'inactive',
+                default                               => 'active',
             };
         @endphp
 
@@ -63,7 +65,7 @@
                     <div class="v2-id-vno">
                         {{ $tyre->tyre_serial_number ?? '—' }}
                         <span class="v2-id-status {{ $statusBadgeClass }}">
-                            {{ $tyre->tyre_status ?? 'Active' }}
+                            {{ $resolvedStatus }}
                         </span>
                     </div>
                     <div class="v2-id-sub">
@@ -213,7 +215,7 @@
                         <span class="v2-intel-lbl">Remaining Warranty</span>
                         @if($remainingWarrantyMonths !== null)
                             <span class="v2-intel-val {{ $remainingWarrantyMonths > 0 ? 'ok' : 'danger' }}">
-                                {{ $remainingWarrantyMonths > 0 ? round($remainingWarrantyMonths, 1) . ' months' : 'Expired' }}
+                                {{ $remainingWarrantyMonths > 0 ? $remainingWarrantyMonths . ' months' : 'Expired' }}
                             </span>
                         @else
                             <span class="v2-intel-val" style="color:#9098b1;">—</span>
@@ -352,7 +354,7 @@
                                                         <span class="text-secondary d-block">
                                                             @if($remainingWarrantyMonths !== null)
                                                                 @if($remainingWarrantyMonths > 0)
-                                                                    <span class="badge badge-success">{{ round($remainingWarrantyMonths, 1) }} months</span>
+                                                                    <span class="badge badge-success">{{ $remainingWarrantyMonths }} months</span>
                                                                 @else
                                                                     <span class="badge badge-danger">Expired</span>
                                                                 @endif
@@ -960,7 +962,7 @@
                                             @forelse($vehicleAllocations as $va)
                                             @php
                                                 $vehNo    = $va->vehicle->basicinfo->vehicle_number ?? '—';
-                                                $tyrePosName = $va->tyreposition->name ?? '—';
+                                                $tyrePosName = $va->tyreposition?->description ?? $va->tyreposition?->code ?? '—';
                                                 $driver   = $va->vehicle->driverAllocation->contact ?? null;
                                                 $driverName = $driver ? $driver->contact_name : '—';
                                                 $driverCode = $driver ? ($driver->contact_code ?? '') : '';
@@ -971,9 +973,9 @@
                                                 // Allocated Period
                                                 if ($start) {
                                                     $endRef = $end ?? \Carbon\Carbon::today();
-                                                    $days   = $start->diffInDays($endRef);
-                                                    $months = $start->diffInMonths($endRef);
-                                                    $years  = $start->diffInYears($endRef);
+                                                    $days   = (int) $start->diffInDays($endRef);
+                                                    $months = (int) $start->diffInMonths($endRef);
+                                                    $years  = (int) $start->diffInYears($endRef);
                                                     $periodStr = $days . ' Days';
                                                     if ($months > 0) $periodStr .= ' / ' . $months . ' Months';
                                                     if ($years  > 0) $periodStr .= ' / ' . $years  . ' Years';
@@ -1748,7 +1750,7 @@
                                                     
                                                     <td><span class="value">{{ $mediadocument->document_number }}</span></td>
                                                     
-                                                    <td><span class="value">{{ date('d/m/Y', strtotime($mediadocument->issue_date)) }}</span></td>
+                                                    <td><span class="value">{{ $mediadocument->issue_date ? date('d/m/Y', strtotime($mediadocument->issue_date)) : '-' }}</span></td>
                                                     
                                                     <td><span class="value">{{ $mediadocument->expiry_date ? date('d/m/Y', strtotime($mediadocument->expiry_date)) : '-' }}</span></td>
                                                     
@@ -1762,7 +1764,7 @@
                                                                 <span class="badge badge-danger">Expired</span>
                                                             @endif
                                                         @else
-                                                            <span class="badge badge-secondary">N/A</span>
+                                                            <span class="badge badge-success">Active</span>
                                                         @endif
                                                     </td>
                                                     
@@ -2018,7 +2020,7 @@
                         </div>
 
                         <div class="col-12 col-md-6 form-group">
-                            <label>Issue Date</label>
+                            <label>Issue Date <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input class="date form-control" type="text" id="doc_issue_date" name="issue_date" readonly />
 
@@ -2156,7 +2158,7 @@
                         </div>
 
                         <div class="col-12 col-md-6 form-group">
-                            <label>Issue Date</label>
+                            <label>Issue Date <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input class="date form-control" type="text" id="edit_doc_issue_date" name="issue_date" readonly />
 
@@ -2295,194 +2297,16 @@
      data-pdf-logo="{{ asset('images/pdf_file.png') }}"
      data-other-logo="{{ asset('images/other_file.svg') }}"
      data-csrf="{{ csrf_token() }}"
+     data-maint-store-url="{{ route('tyre.maintenance.store', $tyre->id) }}"
+     data-tyre-serial="{{ $tyre->tyre_serial_number }}"
      style="display:none;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="{{ asset('customjs/tyre/show.js?v=2.2') }}"></script>
 {{-- Movement Log tab JS (SD-1: external file only) --}}
 <script src="{{ asset('js/tyre/show.js?v=1.0') }}"></script>
 
-<script>
-// ═══════════════════════════════════════════════════════════════════════════
-//  Schedule Maintenance Modal JS
-// ═══════════════════════════════════════════════════════════════════════════
-(function () {
-    'use strict';
-
-    const STORE_URL  = "{{ route('tyre.maintenance.store', $tyre->id) }}";
-    const CSRF       = "{{ csrf_token() }}";
-
-    const $modal     = $('#add05_maintenance');
-    const $form      = $('#maintForm');
-    const $saveBtn   = $('#maintSaveBtn');
-    const $saveTxt   = $('#maintSaveBtnText');
-    const $saveSpn   = $('#maintSaveBtnSpinner');
-
-    // ── Badge helper ───────────────────────────────────────────────────────
-    function badgeClass(status) {
-        const map = { Scheduled: 'badge-primary', Pending: 'badge-warning', Done: 'badge-success', Overdue: 'badge-danger' };
-        return map[status] || 'badge-secondary';
-    }
-
-    // ── Reset form to "Add" mode ───────────────────────────────────────────
-    function resetModal() {
-        $form[0].reset();
-        $('#maint_schedule_id').val('');
-        $('#maint_method_override').val('store');
-        $form.attr('action', STORE_URL);
-        $saveTxt.text('Save Schedule');
-        $('#maintModalLabel').html('<i class="uil uil-wrench me-2"></i>Schedule Maintenance &mdash; <span class="text-muted fw-normal fs-6">{{ $tyre->tyre_serial_number }}</span>');
-        clearErrors();
-    }
-
-    function clearErrors() {
-        $('#maint_item_err').addClass('d-none').text('');
-    }
-
-    // ── Loading state ──────────────────────────────────────────────────────
-    function setBusy(busy) {
-        $saveBtn.prop('disabled', busy);
-        $saveSpn.toggleClass('d-none', !busy);
-    }
-
-    // ── Reset on open (only when NOT triggered by edit btn) ───────────────
-    $modal.on('show.bs.modal', function (e) {
-        if (!$(e.relatedTarget).hasClass('maint-edit-btn')) {
-            resetModal();
-        }
-    });
-
-    // ── Edit button click: pre-fill form ──────────────────────────────────
-    $(document).on('click', '.maint-edit-btn', function () {
-        const d = $(this).data();
-        resetModal();
-
-        $('#maint_schedule_id').val(d.id);
-        $('#maint_method_override').val('update');
-        $form.attr('action', d.updateUrl);
-
-        $('#maint_item').val(d.item);
-        $('#maint_last_done').val(d.last);
-        $('#maint_next_due').val(d.next);
-        $('#maint_odometer').val(d.odometer);
-        $('#maint_status').val(d.status);
-        $('#maint_notes').val(d.notes);
-
-        $saveTxt.text('Update Schedule');
-        $('#maintModalLabel').html('<i class="uil uil-pen me-2"></i>Edit Maintenance &mdash; <span class="text-muted fw-normal fs-6">{{ $tyre->tyre_serial_number }}</span>');
-
-        $modal.modal('show');
-    });
-
-    // ── Save / Update ──────────────────────────────────────────────────────
-    $saveBtn.on('click', function () {
-        clearErrors();
-
-        const item = $('#maint_item').val().trim();
-        if (!item) {
-            $('#maint_item_err').removeClass('d-none').text('Maintenance item is required.');
-            return;
-        }
-
-        const isUpdate   = $('#maint_method_override').val() === 'update';
-        const actionUrl  = $form.attr('action');
-        const scheduleId = $('#maint_schedule_id').val();
-
-        const payload = {
-            _token:           CSRF,
-            maintenance_item: item,
-            last_done_date:   $('#maint_last_done').val(),
-            next_due_date:    $('#maint_next_due').val(),
-            odometer_km:      $('#maint_odometer').val(),
-            status:           $('#maint_status').val(),
-            notes:            $('#maint_notes').val(),
-        };
-
-        setBusy(true);
-
-        $.ajax({
-            url:    actionUrl,
-            method: 'POST',
-            data:   payload,
-            success: function (res) {
-                setBusy(false);
-                $modal.modal('hide');
-                toastr.success(res.message || 'Saved successfully.');
-
-                if (isUpdate) {
-                    // Update the existing row in place
-                    const $row = $('#maint-row-' + scheduleId);
-                    $row.find('td:eq(0)').text(payload.maintenance_item);
-                    $row.find('td:eq(1)').text(payload.last_done_date ? formatDateDMY(payload.last_done_date) : '—');
-                    $row.find('td:eq(2)').text(payload.next_due_date  ? formatDateDMY(payload.next_due_date)  : '—');
-                    $row.find('td:eq(3)').text(payload.odometer_km    ? Number(payload.odometer_km).toLocaleString() : '—');
-                    $row.find('td:eq(4)').html('<span class="badge ' + badgeClass(payload.status) + '">' + payload.status + '</span>');
-                    // Refresh data-* attrs on edit btn
-                    $row.find('.maint-edit-btn')
-                        .data('item',     payload.maintenance_item)
-                        .data('last',     payload.last_done_date)
-                        .data('next',     payload.next_due_date)
-                        .data('odometer', payload.odometer_km)
-                        .data('status',   payload.status)
-                        .data('notes',    payload.notes)
-                        .attr('data-item',     payload.maintenance_item)
-                        .attr('data-last',     payload.last_done_date)
-                        .attr('data-next',     payload.next_due_date)
-                        .attr('data-odometer', payload.odometer_km)
-                        .attr('data-status',   payload.status)
-                        .attr('data-notes',    payload.notes);
-                } else {
-                    // Reload to get the new row with correct id
-                    setTimeout(function () { location.reload(); }, 600);
-                }
-            },
-            error: function (xhr) {
-                setBusy(false);
-                const msg = xhr.responseJSON?.message || 'Something went wrong.';
-                toastr.error(msg);
-            }
-        });
-    });
-
-    // ── Delete ─────────────────────────────────────────────────────────────
-    $(document).on('click', '.maint-delete-btn', function () {
-        const scheduleId  = $(this).data('id');
-        const deleteUrl   = $(this).data('deleteUrl');
-
-        if (!confirm('Delete this maintenance schedule?')) return;
-
-        $.ajax({
-            url:    deleteUrl,
-            method: 'POST',
-            data:   { _token: CSRF },
-            success: function (res) {
-                toastr.success(res.message || 'Deleted.');
-                $('#maint-row-' + scheduleId).fadeOut(300, function () {
-                    $(this).remove();
-                    // Show empty row if tbody is now empty
-                    if ($('tbody .maint-edit-btn').length === 0) {
-                        $('tbody').append(
-                            '<tr id="maint-empty-row"><td colspan="6" class="text-center text-muted py-4">' +
-                            '<i class="uil uil-calendar-slash fs-4 d-block mb-1"></i>' +
-                            'No maintenance schedules yet. Click <strong>Schedule Maintenance</strong> to add one.</td></tr>'
-                        );
-                    }
-                });
-            },
-            error: function (xhr) {
-                toastr.error(xhr.responseJSON?.message || 'Could not delete.');
-            }
-        });
-    });
-
-    // ── Date format helper (YYYY-MM-DD → DD-MM-YYYY) ──────────────────────
-    function formatDateDMY(ymd) {
-        if (!ymd) return '—';
-        const parts = ymd.split('-');
-        return parts.length === 3 ? parts[2] + '-' + parts[1] + '-' + parts[0] : ymd;
-    }
-
-})();
-</script>
+{{-- Schedule Maintenance modal JS (SD-1: external file only) --}}
+<script src="{{ asset('js/tyre/maintenance.js?v=1.0') }}"></script>
 
 @endsection
 

@@ -9,7 +9,7 @@
         </div>
         <div class="col-12 col-md-6">
             <select class="form-select atypin" name="coattachtypes[]" id="coattachtypes_{{ $rowindex }}">
-                <option value="">Select ID</option>
+                <option value="">Select Document Type</option>
                 @if( $coattachtypes->count())
                     @foreach( $coattachtypes as $type)
                        <option value="{{$type->id}}">{{$type->name}}</option>

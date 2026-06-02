@@ -147,7 +147,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <label class="badd-label">Tube Type</label>
+                                        <label class="badd-label">Tube Type <span class="text-danger">*</span></label>
                                         <div class="tcn-radio-row">
                                             <label class="tcn-radio-chip {{ $tyre->tube_type === 'Tubeless' ? 'active' : '' }}">
                                                 <input type="radio" name="tube_type" value="Tubeless" {{ $tyre->tube_type === 'Tubeless' ? 'checked' : '' }}>
@@ -158,6 +158,11 @@
                                                 <span>Tube</span>
                                             </label>
                                         </div>
+                                        @if(! $tyre->tube_type)
+                                            <span class="text-warning small d-block mt-1">
+                                                <i class="uil uil-exclamation-triangle me-1"></i>Tube type not set — please select one.
+                                            </span>
+                                        @endif
                                     </div>
 
                                 </div>
@@ -202,7 +207,7 @@
                                             <span class="input-group-text badd-unit">₹</span>
                                             <input type="number" class="form-control badd-input" name="tyre_taxable_amount" id="tceTaxable"
                                                    placeholder="0.00" min="0" step="0.01"
-                                                   value="{{ $tyre->tyre_price ?? '' }}">
+                                                   value="{{ $tyre->tyre_price ? round($tyre->tyre_price / 1.28, 2) : '' }}">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-4">
@@ -247,6 +252,11 @@
                                     <div class="col-12">
                                         <label class="badd-label">Flap / Tube</label>
                                         <div class="tcn-radio-row" id="tceFlapTubeRow">
+                                            <label class="tcn-radio-chip {{ ! $tyre->flap_tube_type ? 'active' : '' }}" id="tceFlapTubeNoneChip">
+                                                <input type="radio" name="flap_tube_type" value="" id="tceFlapTubeNoneRadio"
+                                                       {{ ! $tyre->flap_tube_type ? 'checked' : '' }}>
+                                                <span>None</span>
+                                            </label>
                                             <label class="tcn-radio-chip {{ $tyre->flap_tube_type === 'Flap' ? 'active' : '' }}" id="tceFlapChip">
                                                 <input type="radio" name="flap_tube_type" value="Flap" id="tceFlapRadio"
                                                        {{ $tyre->flap_tube_type === 'Flap' ? 'checked' : '' }}>
@@ -316,7 +326,7 @@
                                         <label class="badd-label" for="tceFixedRunKm">Fixed Run KM <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="number" class="form-control badd-input" name="fixed_run_km" id="tceFixedRunKm"
-                                                   value="{{ $tyre->fixed_run_km ?? 80000 }}" min="0">
+                                                   value="{{ intval($tyre->fixed_run_km ?? 80000) }}" min="0" step="1">
                                             <span class="input-group-text badd-unit">km</span>
                                         </div>
                                     </div>
@@ -332,7 +342,7 @@
                                         <label class="badd-label" for="tceActualRunKm">Actual Run KM</label>
                                         <div class="input-group">
                                             <input type="number" class="form-control badd-input" name="actual_run_km" id="tceActualRunKm"
-                                                   value="{{ $tyre->actual_run_km ?? 0 }}" min="0">
+                                                   value="{{ intval($tyre->actual_run_km ?? 0) }}" min="0" step="1">
                                             <span class="input-group-text badd-unit">km</span>
                                         </div>
                                     </div>
@@ -382,7 +392,7 @@
                                         <label class="badd-label" for="tceAlignIntervalKm">Alignment Interval KM</label>
                                         <div class="input-group">
                                             <input type="number" class="form-control badd-input" name="alignment_interval_km" id="tceAlignIntervalKm"
-                                                   value="{{ $tyre->alignment_interval_km ?? 10000 }}" min="1">
+                                                   value="{{ intval($tyre->alignment_interval_km ?? 10000) }}" min="1" step="1">
                                             <span class="input-group-text badd-unit">km</span>
                                         </div>
                                         <div class="tcn-reminder-row mt-2">
@@ -398,7 +408,7 @@
                                         <label class="badd-label" for="tceRotIntervalKm">Rotation Interval KM</label>
                                         <div class="input-group">
                                             <input type="number" class="form-control badd-input" name="rotation_interval_km" id="tceRotIntervalKm"
-                                                   value="{{ $tyre->rotation_interval_km ?? 10000 }}" min="1">
+                                                   value="{{ intval($tyre->rotation_interval_km ?? 10000) }}" min="1" step="1">
                                             <span class="input-group-text badd-unit">km</span>
                                         </div>
                                         <div class="tcn-reminder-row mt-2">
@@ -421,18 +431,13 @@
                             </div>
                             <div class="p-3 p-md-4">
                                 @php
-                                    $existingImages = array_filter([
-                                        $tyre->tyre_image1 ?? null,
-                                        $tyre->tyre_image2 ?? null,
-                                        $tyre->tyre_image3 ?? null,
-                                        $tyre->tyre_image4 ?? null,
-                                    ]);
+                                    $existingImages = $tyre->images;
                                 @endphp
-                                @if(count($existingImages) > 0)
+                                @if($existingImages->isNotEmpty())
                                     <div class="row g-2 mb-3">
                                         @foreach($existingImages as $img)
                                             <div class="col-6 col-md-3">
-                                                <img src="{{ asset('medias/tyres/' . $img) }}"
+                                                <img src="{{ asset('medias/' . $img->file_path) }}"
                                                      class="img-fluid rounded border" style="height:100px;object-fit:cover;width:100%;"
                                                      alt="Tyre image">
                                             </div>
@@ -517,7 +522,7 @@
 
                                 <label class="badd-label mt-3">Allocated Vehicle</label>
                                 <input type="text" class="form-control badd-input"
-                                       value="{{ $tyre->vehicle_id ? 'Vehicle #' . $tyre->vehicle_id : '—' }}"
+                                       value="{{ $tyre->allocated_vehicle_id ? ($tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? 'Vehicle #' . $tyre->allocated_vehicle_id) : '—' }}"
                                        disabled readonly>
                                 <div class="form-text text-muted">Managed via the Allocate flow</div>
 
@@ -560,5 +565,5 @@
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('customjs/tyre/edit.js?v=2.0') }}"></script>
+<script src="{{ asset('customjs/tyre/edit.js?v=2.2') }}"></script>
 @endsection

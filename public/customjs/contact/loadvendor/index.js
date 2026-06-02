@@ -16,21 +16,36 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name , #search_location , #search_rag, #search_size').on('change blur', function () { 
+    // Re-init filter selects with descriptive placeholders (destroy first to override global "Please Select")
+    $('#search_location').select2('destroy').select2({ placeholder: 'Filter by Location', allowClear: true });
+    $('#search_rag').select2('destroy').select2({ placeholder: 'Filter by RAG Status', allowClear: true });
+    $('#search_size').select2('destroy').select2({ placeholder: 'Filter by Size', allowClear: true });
+
+    $('#search_name , #search_location , #search_rag, #search_size').on('change blur', function () {
         $('#searchform').submit();
     });
     
     
+    function toggleBulkDeleteBtn() {
+        if ($('.rowCheckbox:checked').length > 0) {
+            $('#bulkDeleteBtn').show();
+        } else {
+            $('#bulkDeleteBtn').hide();
+        }
+    }
+
     $(document).on('change', '#selectAll', function () {
         $('.rowCheckbox').prop('checked', this.checked);
+        toggleBulkDeleteBtn();
     });
-    
+
     $(document).on('change', '.rowCheckbox', function () {
         if ($('.rowCheckbox:checked').length == $('.rowCheckbox').length) {
             $('#selectAll').prop('checked', true);
         } else {
             $('#selectAll').prop('checked', false);
         }
+        toggleBulkDeleteBtn();
     });
 
 
@@ -192,25 +207,6 @@ $(document).ready(function(){
                     },
                     error: function (xhr) {
                         var response = $.parseJSON(xhr.responseText);
-                        Toast.fire({
-                            icon: 'error',
-                            title: response.message || 'An error occurred.'
-                        });
-                    }
-                });
-            } else {
-                Toast.fire({
-                    icon: 'info',
-                    title: 'No action taken.'
-                });
-            }
-        });
-    });*/
 
-    
-    
-    
-    
-    
+*/
 });
-

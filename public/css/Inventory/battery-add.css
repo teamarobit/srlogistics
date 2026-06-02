@@ -159,7 +159,7 @@
 .badd-sticky-footer {
     position: sticky; bottom: 0;
     background: #fff; border-top: 1px solid #e8ecf4;
-    z-index: 99; margin: 0 -24px -32px; padding: 0 24px;
+    z-index: 99; margin: 0 -20px -32px; padding: 0 20px;
 }
 .badd-footer-inner {
     display: flex; align-items: center;

@@ -625,6 +625,7 @@ $(document).ready(function(){
         // Future date check
         if (dobDate > today) {
             errorBox.text('Date of birth cannot be a future date').removeClass('d-none');
+            $('[data-target="dob"]').val('');
             $(this).val('');
             return false;
         }
@@ -632,7 +633,7 @@ $(document).ready(function(){
         // Age calculation
         let age = today.getFullYear() - dobDate.getFullYear();
         let monthDiff = today.getMonth() - dobDate.getMonth();
-        
+
         $('#age').val(age);
 
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
@@ -642,6 +643,7 @@ $(document).ready(function(){
         // Minimum age validation
         if (age < 18) {
             errorBox.text('Age must be at least 18 years').removeClass('d-none');
+            $('[data-target="dob"]').val('');
             $(this).val('');
             return false;
         }
@@ -662,6 +664,7 @@ $(document).ready(function(){
 
         if (doj > today) {
             $('#add_doj_error').text('Date of joining cannot be future date');
+            $('[data-target="doj"]').val('');
             $(this).val('');
             $('#associated_since').val('');
             return;
@@ -1672,12 +1675,28 @@ $(document).ready(function(){
     
     
     
-    
-    
-    
-    
-    
-    
+
+
+});
+
+// Date picker — DD/MM/YYYY display + hidden YYYY-MM-DD field (separate ready)
+$(document).ready(function () {
+    $('.app-date-display').each(function () {
+        var $display = $(this);
+        var $hidden  = $('#' + $display.data('target'));
+        var maxDate  = $display.data('max-today') ? moment() : undefined;
+
+        $display.daterangepicker({
+            singleDatePicker : true,
+            showDropdowns    : true,
+            autoUpdateInput  : false,
+            maxDate          : maxDate,
+            locale           : { format: 'DD/MM/YYYY' }
+        }, function (start) {
+            $display.val(start.format('DD/MM/YYYY'));
+            $hidden.val(start.format('YYYY-MM-DD')).trigger('change');
+        });
+    });
 });
 
 

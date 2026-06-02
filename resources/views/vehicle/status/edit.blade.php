@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input type="text" name="vehiclestatus_name" value="{{ old('vehiclestatus_name', $editData->name) }}" class="form-control">
-                                    <small class="error text-danger" id="edit_vehicletype_name_error"></small>
+                                    <small class="error text-danger" id="edit_vehiclestatus_name_error"></small>
                                 </div>
                             </div>
                           
@@ -110,7 +110,7 @@
     var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/status/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/status/edit.js?v=1.1')}}"></script>
 
 @endsection
 

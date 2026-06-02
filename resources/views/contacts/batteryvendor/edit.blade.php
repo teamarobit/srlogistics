@@ -388,7 +388,8 @@
                                             <label>Registration Date</label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input name="company_registration_date" value="{{ $contact->company_registration_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                            <input type="text" class="form-control app-date-display" data-target="company_registration_date" value="{{ $contact->company_registration_date ? \Carbon\Carbon::parse($contact->company_registration_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                            <input type="hidden" name="company_registration_date" id="company_registration_date" value="{{ $contact->company_registration_date ?? '' }}">
                                             <small class="error text-danger" id="edit_company_registration_date_error"></small>
                                         </div>
                                     </div>
@@ -398,7 +399,8 @@
                                             <label>Working with {{optional(Auth::user()->organisation)->short_name}} Since</label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input name="working_since" value="{{ $contact->working_since ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                            <input type="text" class="form-control app-date-display" data-target="working_since" value="{{ $contact->working_since ? \Carbon\Carbon::parse($contact->working_since)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                            <input type="hidden" name="working_since" id="working_since" value="{{ $contact->working_since ?? '' }}">
                                             <small class="error text-danger" id="edit_working_since_error"></small>
                                         </div>
                                     </div>
@@ -824,19 +826,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {{--@forelse($tyres as $key => $tyre)
+                                                @forelse($batteries as $key => $battery)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $tyre->tyre_condition }}</td>
-                                                        <td>{{ $tyre->tyre_brand }}</td>
-                                                        <td>{{ $tyre->tyre_model }}</td>
-                                                        <td>{{ $tyre->tyre_type }}</td>
-                                                        <td>{{ $tyre->tyre_serial_number }}</td>
-                                                        <td>-</td>
-                                                        <td>₹{{ number_format($tyre->tyre_price, 2) }}</td>
+                                                        <td>{{ $battery->battery_condition }}</td>
+                                                        <td>{{ $battery->battery_brand }}</td>
+                                                        <td>{{ $battery->battery_model ?? '-' }}</td>
+                                                        <td>{{ $battery->battery_voltage }}</td>
+                                                        <td>{{ $battery->battery_serial }}</td>
+                                                        <td>{{ $battery->battery_invoice_ref ?? '-' }}</td>
+                                                        <td>₹{{ number_format($battery->battery_purchase_cost ?? 0, 2) }}</td>
                                                         <td>
-                                                            {{$tyre->createdby?->name}}
-                                                            <span class="text-secondary d-block">{{$tyre->createdby?->email}}</span>
+                                                            {{ $battery->createdBy?->name ?? '-' }}
+                                                            <span class="text-secondary d-block">{{ $battery->createdBy?->email }}</span>
                                                         </td>
                                                         <td class="text-end">
                                                             <div class="dropdown dot-dd">
@@ -845,25 +847,23 @@
                                                               </span>
                                                               <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
                                                                 <li>
-                                                                    <a class="dropdown-item" href="{{ route('tyre.show', $tyre->id) }}">
+                                                                    <a class="dropdown-item" href="{{ route('inventory.battery.details', $battery->id) }}">
                                                                         <i class="uil uil-eye me-2"></i>View Details
                                                                     </a>
                                                                 </li>
-                                                                <!--<li><a class="dropdown-item text-danger mark_as_discard" data-url="{{ route('tyre.markasdiscard', $tyre->id) }}" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Mark As Discard</a></li>-->
-                                                                
                                                               </ul>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="8" class="text-center text-muted">No records found</td>
+                                                        <td colspan="9" class="text-center text-muted">No records found</td>
                                                     </tr>
-                                                @endforelse--}}
+                                                @endforelse
                                             </tbody>
                                         </table>
                                         
-                                        {{-- $tyres->appends(request()->query())->links('pagination::bootstrap-5') --}}
+                                        {{ $batteries->appends(request()->query())->links('pagination::bootstrap-5') }}
                                     </div>
                                 </div>
 
@@ -1001,7 +1001,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

@@ -553,23 +553,20 @@ class AssetController extends Controller
     
     public function getAssetDetails($id)
     {
-        try {
-    
-            $asset = Asset::select('id','name','model','make')->findOrFail($id);
-    
+        $asset = Asset::select('id', 'name', 'model', 'make')->find($id);
+
+        if (! $asset) {
             return response()->json([
-                'status' => true,
-                'message' => 'Asset data found.',
-                'data'   => $asset
-            ]);
-    
-        } catch (\Exception $e) {
-    
-            return response()->json([
-                'status' => false,
-                'message' => 'Asset not found'
-            ], 404);
+                'status'  => false,
+                'message' => 'Asset not found.',
+            ], 422);
         }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Asset data found.',
+            'data'    => $asset,
+        ], 200);
     }
     
     

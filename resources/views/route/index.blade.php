@@ -65,7 +65,7 @@
                     <div class="container-fluid">
                         
                         <div class="table-responsive mt-3">
-                            <table class="table table-hover invoice-table mb-0">
+                            <table class="table table-hover invoice-table mb-0" data-delete-url="{{ route('route.delete') }}">
                                 <thead>
                                     <tr>
                                         <th>SL No.</th>
@@ -74,6 +74,8 @@
                                         <th style="width: 200px">Fixed  KM<br/>Transit Time</th>
                                         <th style="min-width: 200px">Fixed Diesel BS-3 & BS-4<br/>Fixed Diesel BS-6</th>
                                         <th style="width: 200px">Fixed Driver Advance</th>
+                                        <th style="width: 220px">Toll Station<br/><small class="text-muted">L / M / S Charges</small></th>
+                                        <th style="width: 220px">RTO Checkpoint<br/><small class="text-muted">L / M / S Charges</small></th>
                                         <th>Route Type</th>
                                         <th>Status</th>
                                         <th>Created By</th>
@@ -85,7 +87,7 @@
                                     
                                     @forelse($routes as $key => $route)
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ ($routes->currentPage() - 1) * $routes->perPage() + $key + 1 }}</td>
                                         <td>{{ $route->name ?? '-' }}</td>
                                         <td>
                                             {{ $route->sourceCity->name ?? '-' }}
@@ -107,6 +109,85 @@
                                         </td>
                                     
                                         <td>₹{{ number_format($route->fixed_driver_advance, 2) }}</td>
+
+                                        {{-- Toll Station --}}
+                                        <td>
+                                            @php
+                                                $tollItems = $route->tollstations->filter(fn($rt) => $rt->tollstation)->values();
+                                            @endphp
+                                            @if($tollItems->isNotEmpty())
+                                                @php $firstToll = $tollItems->first()->tollstation; @endphp
+                                                <span class="tag">{{ $firstToll->station_name ?? '-' }}</span>
+                                                <div class="small text-muted mt-1">
+                                                    L: ₹{{ number_format($firstToll->large_vehicle_charge ?? 0, 2) }} /
+                                                    M: ₹{{ number_format($firstToll->medium_vehicle_charge ?? 0, 2) }} /
+                                                    S: ₹{{ number_format($firstToll->small_vehicle_charge ?? 0, 2) }}
+                                                </div>
+                                                @if($tollItems->count() > 1)
+                                                    @php
+                                                        $tollPayload = $tollItems->map(function($rt){
+                                                            $t = $rt->tollstation;
+                                                            return [
+                                                                'station_name' => $t->station_name ?? '-',
+                                                                'toll_company' => $t->toll_company ?? '-',
+                                                                'large'        => number_format($t->large_vehicle_charge ?? 0, 2),
+                                                                'medium'       => number_format($t->medium_vehicle_charge ?? 0, 2),
+                                                                'small'        => number_format($t->small_vehicle_charge ?? 0, 2),
+                                                            ];
+                                                        })->values();
+                                                    @endphp
+                                                    <a class="toll-detail-btn ms-1"
+                                                       href="javascript:void(0)"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#moreTollstation"
+                                                       data-items='@json($tollPayload)'>
+                                                        More
+                                                    </a>
+                                                @endif
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+
+                                        {{-- RTO Checkpoint --}}
+                                        <td>
+                                            @php
+                                                $rtoItems = $route->rtos->filter(fn($rr) => $rr->rto)->values();
+                                            @endphp
+                                            @if($rtoItems->isNotEmpty())
+                                                @php $firstRto = $rtoItems->first()->rto; @endphp
+                                                <span class="tag">{{ $firstRto->name ?? '-' }}</span>
+                                                <div class="small text-muted mt-1">
+                                                    L: ₹{{ number_format($firstRto->charge_for_large_truck ?? 0, 2) }} /
+                                                    M: ₹{{ number_format($firstRto->charge_for_medium_truck ?? 0, 2) }} /
+                                                    S: ₹{{ number_format($firstRto->charge_for_small_truck ?? 0, 2) }}
+                                                </div>
+                                                @if($rtoItems->count() > 1)
+                                                    @php
+                                                        $rtoPayload = $rtoItems->map(function($rr){
+                                                            $r = $rr->rto;
+                                                            return [
+                                                                'name'   => $r->name ?? '-',
+                                                                'rtono'  => $r->rtono ?? '-',
+                                                                'large'  => number_format($r->charge_for_large_truck ?? 0, 2),
+                                                                'medium' => number_format($r->charge_for_medium_truck ?? 0, 2),
+                                                                'small'  => number_format($r->charge_for_small_truck ?? 0, 2),
+                                                            ];
+                                                        })->values();
+                                                    @endphp
+                                                    <a class="rto-detail-btn ms-1"
+                                                       href="javascript:void(0)"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#moreRto"
+                                                       data-items='@json($rtoPayload)'>
+                                                        More
+                                                    </a>
+                                                @endif
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+
                                         <td>{{ $route->route_type ?? '' }}</td>
                                     
                                         <td>
@@ -134,7 +215,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">No routes found</td>
+                                        <td colspan="12" class="text-center">No routes found</td>
                                     </tr>
                                     @endforelse
 
@@ -192,16 +273,73 @@
         </div>
     </div>
 </div>
-    
+
+{{-- More Tollstations Modal --}}
+<div class="modal fade" id="moreTollstation" tabindex="-1" aria-labelledby="moreTollstationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moreTollstationLabel">Toll Stations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="uil uil-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table w-100">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Station Name</th>
+                                <th>Toll Company</th>
+                                <th class="text-end">Large&nbsp;₹</th>
+                                <th class="text-end">Medium&nbsp;₹</th>
+                                <th class="text-end">Small&nbsp;₹</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tollstationListBody">
+                            <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- More RTO Checkpoints Modal --}}
+<div class="modal fade" id="moreRto" tabindex="-1" aria-labelledby="moreRtoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moreRtoLabel">RTO Checkpoints</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="uil uil-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table w-100">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>RTO Name</th>
+                                <th>RTO No.</th>
+                                <th class="text-end">Large Truck&nbsp;₹</th>
+                                <th class="text-end">Medium Truck&nbsp;₹</th>
+                                <th class="text-end">Small Truck&nbsp;₹</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rtoListBody">
+                            <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('js')
-<script>
-var DELETE_ROUTE  = "{{route('route.delete')}}";
-</script>
-
-<script type="text/javascript" src="{{asset('js/Routes/index.js')}}"></script>
-
+<script type="text/javascript" src="{{ asset('js/Routes/index.js?v=1.2') }}"></script>
 @endsection
 
 

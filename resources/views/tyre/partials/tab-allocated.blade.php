@@ -45,15 +45,14 @@
                         $warrantyLabel = '<span class="badge bg-danger">Expired</span>';
                     }
                 }
-                // Vehicle & tracking group
+                // Vehicle & tracking group (BUG-004: use eager-loaded allocatedVehicle; BUG-007: use description column)
                 $vehicleNo = '—';
                 $trackingGroup = '—';
                 $tyrePosition  = '—';
                 if ($mapping = $tyre->activeVehicleMapping) {
-                    $vehicle = \App\Models\Vehicle::with(['basicinfo', 'group'])->find($tyre->allocated_vehicle_id);
-                    $vehicleNo = $vehicle?->basicinfo?->vehicle_number ?? '—';
-                    $trackingGroup = $vehicle?->group?->name ?? '—';
-                    $tyrePosition  = $mapping->tyreposition?->position_name ?? $mapping->tyreposition?->name ?? '—';
+                    $vehicleNo     = $tyre->allocatedVehicle?->basicinfo?->vehicle_number ?? '—';
+                    $trackingGroup = $tyre->allocatedVehicle?->group?->name ?? '—';
+                    $tyrePosition  = $mapping->tyreposition?->description ?? $mapping->tyreposition?->code ?? '—';
                 }
                 $fitmentDate = $tyre->installation_date ?? $tyre->activeVehicleMapping?->fitment_date;
                 $firstImage = $tyre->images->first();
@@ -61,8 +60,12 @@
             <tr>
                 <td><a href="{{ route('tyre.show', $tyre->id) }}" class="fw-semibold text-primary-custom">{{ $tyre->tyre_serial_number }}</a></td>
                 <td>
-                    <span class="d-block fw-semibold">{{ $vehicleNo }}</span>
-                    <span class="text-muted small">{{ $trackingGroup }}</span>
+                    @if($vehicleNo === '—')
+                        <span class="badge bg-warning text-dark">No Vehicle Linked</span>
+                    @else
+                        <span class="d-block fw-semibold">{{ $vehicleNo }}</span>
+                        <span class="text-muted small">{{ $trackingGroup }}</span>
+                    @endif
                 </td>
                 <td>{{ $tyrePosition }}</td>
                 <td>{{ $tyre->tyre_type ?? '—' }}</td>

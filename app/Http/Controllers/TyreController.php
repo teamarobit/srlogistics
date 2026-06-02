@@ -39,7 +39,8 @@ class TyreController extends Controller
         // ── Shared eager-load closure ────────────────────────────────────────
         $with = ['tyrevendor', 'rethreadingVendor', 'scrapVendor',
                  'lastFittedVehicle.basicinfo', 'activeVehicleMapping.tyreposition',
-                 'activeVehicleMapping.tyre', 'maintenanceSchedules'];
+                 'activeVehicleMapping.tyre', 'maintenanceSchedules',
+                 'allocatedVehicle.basicinfo', 'allocatedVehicle.group', 'images', 'comments'];
 
         // ── Summary Counters ─────────────────────────────────────────────────
         $q = Tyre::query();
@@ -454,7 +455,7 @@ class TyreController extends Controller
         $remainingWarrantyMonths = null;
         if ($tyre->tyre_warrenty_end_date) {
             $endDate = Carbon::parse($tyre->tyre_warrenty_end_date);
-            $remainingWarrantyMonths = $today->diffInMonths($endDate, false);
+            $remainingWarrantyMonths = (int) $today->diffInMonths($endDate, false);
             // negative means expired
         }
 
@@ -674,6 +675,8 @@ class TyreController extends Controller
 
     public function edit(Tyre $tyre)
     {
+        $tyre->load('allocatedVehicle.basicinfo');
+
         $tyrevendors = Contact::where('cotype_id', 6)->where('status', 'Active')->get();
 
         $warehouses = \App\Models\Warehouse::where('status', 'Active')
@@ -710,9 +713,9 @@ class TyreController extends Controller
             'tyre_brand'           => 'required|string|max:100',
             'tyre_model_name'      => 'required|string|max:100',
             'tyre_size'            => 'nullable|string|max:50',
-            'tyre_category'        => 'nullable|in:Drive,Steer,Trailer',
+            'tyre_category'        => 'required|in:Drive,Steer,Trailer',
             'tyre_type'            => 'required|in:Radial,Nylon',
-            'tube_type'            => 'nullable|in:Tube,Tubeless',
+            'tube_type'            => 'required|in:Tube,Tubeless',
 
             // Purchase
             'invoice_reference'    => 'nullable|string|max:100',
@@ -724,16 +727,16 @@ class TyreController extends Controller
 
             // Lifecycle
             'tyre_issue_date'      => 'nullable|date|after_or_equal:tyre_purchase_date',
-            'fixed_run_km'         => 'required|numeric|min:0',
-            'fixed_life_months'    => 'required|numeric|min:0|max:240',
-            'actual_run_km'        => 'nullable|numeric|min:0',
-            'actual_run_month'     => 'nullable|numeric|min:0',
+            'fixed_run_km'         => 'required|integer|min:0',
+            'fixed_life_months'    => 'required|integer|min:0|max:240',
+            'actual_run_km'        => 'nullable|integer|min:0',
+            'actual_run_month'     => 'nullable|integer|min:0',
 
             // Maintenance
-            'last_alignment_km'    => 'nullable|numeric|min:0',
-            'last_rotation_km'     => 'nullable|numeric|min:0',
-            'alignment_interval_km'=> 'nullable|numeric|min:0',
-            'rotation_interval_km' => 'nullable|numeric|min:0',
+            'last_alignment_km'    => 'nullable|integer|min:0',
+            'last_rotation_km'     => 'nullable|integer|min:0',
+            'alignment_interval_km'=> 'nullable|integer|min:0',
+            'rotation_interval_km' => 'nullable|integer|min:0',
 
             // Notes
             'notes'                => 'nullable|string|max:2000',
@@ -796,6 +799,9 @@ class TyreController extends Controller
                     'Retreaded' => 'Retread',
                     'Used Good' => 'Used Good',
                     'Scrap'     => 'Scrap',
+                    // Note: legacy tyre_condition = 'Used' is normalised to 'Used Good' on edit-save
+                    // via the blade @php pre-compute which maps 'Used' → initial_condition 'Used Good'.
+                    // This is intentional — 'Used' is a deprecated value superseded by 'Used Good'.
                 ];
                 $tyreCondition = $condMap[$request->initial_condition] ?? 'New';
 
@@ -1032,7 +1038,7 @@ class TyreController extends Controller
                     'attachment_type' => 'required',
                 
                     'document_number' => 'required|string|max:100',
-                    'issue_date' => 'nullable|date',
+                    'issue_date' => 'required|date',
                     'expiry_date' => 'nullable|date|after:issue_date',
                 
                     'set_reminder' => 'nullable',
@@ -1270,9 +1276,11 @@ class TyreController extends Controller
             'before_or_equal' => 'Date cannot be in the future.',
             'after_or_equal'  => 'Date must be on or after the Purchase Date.',
             'unique'      => 'This serial number is already taken.',
-            'required_if' => 'This field is required.',
-            'required_with' => 'This field is required.',
-            'mimes'       => 'Invalid file type.',
+            'required_if'     => 'This field is required.',
+            'required_with'   => 'This field is required.',
+            'required_unless' => 'This field is required.',
+            'source_origin_note.required_unless' => 'Please enter a source or origin note.',
+            'mimes'           => 'Invalid file type.',
         ]);
 
         if ($validator->fails()) {

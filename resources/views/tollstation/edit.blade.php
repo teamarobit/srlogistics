@@ -38,7 +38,8 @@
                         </div> -->
                     @endif
 
-                    <form action="{{route('tollstation.update')}}" method="POST" id="editForm">
+                    <form action="{{route('tollstation.update')}}" method="POST" id="editForm"
+                          data-tollstation-list-url="{{ route('tollstation.index') }}">
                         @csrf
                         
                         <input type="hidden" name="tollstationid" id="edit_tollstationid_input" value="{{ $tollstation->id }}">
@@ -143,7 +144,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge', $tollstation->large_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" >
+                                  <input type="text" name="large_vehicle_charge" value="{{ old('large_vehicle_charge', $tollstation->large_vehicle_charge) }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate" >
                                   <small class="error text-danger" id="edit_large_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -157,7 +158,7 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge', $tollstation->medium_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" >
+                                  <input type="text" name="medium_vehicle_charge" value="{{ old('medium_vehicle_charge', $tollstation->medium_vehicle_charge) }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate" >
                                   <small class="error text-danger" id="edit_medium_vehicle_charge_error"></small>
                               </div>
                           </div>
@@ -171,14 +172,14 @@
                               <!--<input type="text" class="form-control">-->
                               <div class="input-group mb-3">
                                   <span class="input-group-text" id="rate">₹</span>
-                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge', $tollstation->small_vehicle_charge) }}" class="form-control decimalonly text-end" placeholder="0.00" aria-describedby="rate" >
+                                  <input type="text" name="small_vehicle_charge" value="{{ old('small_vehicle_charge', $tollstation->small_vehicle_charge) }}" class="form-control decimalonly text-end" inputmode="decimal" placeholder="0.00" aria-describedby="rate" >
                                   <small class="error text-danger" id="edit_small_vehicle_charge_error"></small>
                               </div>
                           </div>
                         </div>
                       
                         <div class="form-group row pb-">
-                          <div class="col-12 col-md-3"><label>Status</label></div>
+                          <div class="col-12 col-md-3"><label>Status <span class="text-danger">*</span></label></div>
 
                           <div class="col-12 col-md-6">
                               <div class="d-flex flex-wrap">
@@ -202,7 +203,7 @@
                       
                       
                         <div class="text-right">
-                          <button class="btn btn-dark mb-4" id="editBtn">Save</button>
+                          <button type="button" class="btn btn-dark mb-4" id="editBtn">Save</button>
                           
                           <a href="{{ route('tollstation.index') }}" class="btn btn-danger mb-4"> Close </a>
                         </div>
@@ -225,11 +226,7 @@
 
 @section('js')
 
-<script>
-var TOLLSTATIONS = "{{ route('tollstation.index') }}";
-</script>
-
-<script type="text/javascript" src="{{asset('js/Tollstation/edit.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/Tollstation/edit.js?v=1.1') }}"></script>
 
 @endsection
 

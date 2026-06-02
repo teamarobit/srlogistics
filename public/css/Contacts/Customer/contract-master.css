@@ -1,3 +1,71 @@
-body{
-    background-color: #fff;
+/* =========================================================
+   Contract Master — contract-master.css  v1.0
+   SR Logistics — Customer contract list page
+   ========================================================= */
+
+body { background-color: #fff; }
+
+/* ── Table ───────────────────────────────────────────────── */
+.invoice-table thead th {
+    color: #032671;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.invoice-table tbody td {
+    padding: 10px 12px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.invoice-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ── Action dot-menu ─────────────────────────────────────── */
+.dot-dd .dropdown-toggle {
+    cursor: pointer;
+    color: #adb5bd;
+    font-size: 20px;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.dot-dd .dropdown-toggle:hover {
+    color: #032671;
+}
+
+.dot-dd .dropdown-toggle::after {
+    display: none;
+}
+
+.dot-dd .dropdown-menu {
+    min-width: 130px;
+    font-size: 13px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-radius: 6px;
+}
+
+.dot-dd .dropdown-item {
+    padding: 6px 14px;
+}
+
+.dot-dd .dropdown-item:hover {
+    background-color: #f0f4ff;
+    color: #032671;
+}
+
+/* ── Reset button ────────────────────────────────────────── */
+.reset-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.text-muted {
+    font-size: 13px;
 }

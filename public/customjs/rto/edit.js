@@ -69,15 +69,21 @@ $(document).ready(function() {
     $(document).on('click','#editBtn',function(){
         $('form#editForm').submit();
     });
-    
+
+    // Clear the field-level error message as soon as the user edits the field
+    $(document).on('input change', 'form#editForm input, form#editForm select, form#editForm textarea', function () {
+        var name = $(this).attr('name');
+        if (name) {
+            $('#edit_' + name + '_error').text('');
+        }
+    });
+
     $('form#editForm').on('submit', function(){
         var formData = new FormData(this);
-        // Ensure hidden field is included
-        formData.append('tollstationid', $('#edit_tollstationid_input').val());
-    
+
         $('.error').html('');
         $('#editBtn').html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled', true);
-    
+
         $.ajax({
             method: 'POST',
             url: $(this).attr('action'),
@@ -95,23 +101,19 @@ $(document).ready(function() {
             },
             error: function(xhr){
                 $('#editBtn').html('Save').attr('disabled', false);
-                var response = $.parseJSON(xhr.responseText);
+                var response = xhr.responseJSON || {};
                 Toast.fire({
                     icon: 'error',
                     title: response.message || 'Please check validation error.'
                 });
-    
+
                 const errors = response.data || {};
                 Object.entries(errors).forEach(([field, messages]) => {
-                    const $input = $(`[name="${field}"]`);
-                    if ($input.length) {
-                        $input.addClass('is-invalid');
-                        $(`#edit_${field}_error`).text(messages[0]);
-                    }
+                    $(`#edit_${field}_error`).text(messages[0]);
                 });
             }
         });
-    
+
         return false;
     });
 

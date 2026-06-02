@@ -2,7 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/digilock-create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-create.css?v=1.1') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.1') }}">
 
 
 @endsection
@@ -21,7 +22,17 @@
                 <div class="topbar">
                     <div class="container-fluid page-head">
                         <div class="row align-items-end">
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-12">
+                                {{-- BUG-008 — breadcrumb --}}
+                                <div class="dl-breadcrumb">
+                                    <a href="{{ route('adminconsole.index') }}">Admin Console</a>
+                                    <span class="sep">›</span>
+                                    <span>Provider Master</span>
+                                    <span class="sep">›</span>
+                                    <a href="{{ route('digilockprovider.index') }}">Digital Lock Provider</a>
+                                    <span class="sep">›</span>
+                                    Add Digital Lock Provider
+                                </div>
                                 <h5>Add Digital Lock Provider</h5>
                             </div>
                         </div>
@@ -53,15 +64,16 @@
 
                           <div class="col-12 col-md-6">
                               <div class="d-flex flex-wrap">
+                                  {{-- BUG-005 — default Active selected --}}
                                   <div class="form-check d-flex me-2">
-                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active" autocompleted="">
+                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active" {{ old('status', 'Active') === 'Active' ? 'checked' : '' }}>
                                       <label class="form-check-label" for="exampleRadios1">
                                           Active
                                       </label>
                                   </div>
 
                                   <div class="form-check d-flex">
-                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios2" value="Inactive" autocompleted="">
+                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios2" value="Inactive" {{ old('status') === 'Inactive' ? 'checked' : '' }}>
                                       <label class="form-check-label" for="exampleRadios2">
                                           Inactive
                                       </label>
@@ -100,7 +112,7 @@
 var LISTING      = "{{route('digilockprovider.index')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/provider/digilock/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/provider/digilock/create.js?v=1.2')}}"></script>
 
 @endsection
 

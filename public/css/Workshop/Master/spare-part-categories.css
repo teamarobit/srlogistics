@@ -45,7 +45,7 @@ body { background: #fff; }
 /* ── Status badge ── */
 .sp-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
 .sp-badge.active   { background: #dcfce7; color: #15803d; }
-.sp-badge.inactive { background: #fef3c7; color: #92400e; }
+.sp-badge.inactive { background: #e2e8f0; color: #475569; }
 
 /* ── Action buttons ── */
 .sp-actions { display: flex; gap: 5px; justify-content: flex-end; }

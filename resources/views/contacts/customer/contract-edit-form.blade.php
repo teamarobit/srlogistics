@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/contract-edit-form.css?v=1.0') }}">
 
 
 @endsection
@@ -241,7 +241,7 @@
                             <div class="text-right">
                               <button id="editContractBtn" class="btn btn-dark mb-4">Save</button>
                               
-                              <a href="{{ route('contact.customer.edit', $contract->contact_id) }}" class="btn btn-danger mb-4"> Close </a>
+                              <a href="{{ route('contact.customer.contract.list') }}" class="btn btn-danger mb-4"> Close </a>
                             </div>
                         </form>         
                     </div>
@@ -258,46 +258,6 @@
 
 @section('js')
 
-<script>
-
-var CONTRACTS = "{{ route('contact.customer.contract.list') }}";
-
-
-$(function() {
-  $('input[name="time_hr_from"]').daterangepicker({
-    singleDatePicker: true,
-    showDropdowns: true,
-    minYear: 1901,
-    maxYear: parseInt(moment().format('YYYY'),10)
-  }, function(start, end, label) {
-    var years = moment().diff(start, 'years');
-    alert("You are " + years + " years old!");
-  });
-});
-
-$(document).ready(function(){
-    
-    
-    
-    $('.loading-chargable').click(function(){
-        $('.loading-wrap').toggle();
-    })
-    $('.unloading-chargable').click(function(){
-        $('.unloading-wrap').toggle();
-    })
-    $('.dbtn-chargable').click(function(){
-        $('.rate-wrap').toggle();
-    })
-    $('.set-tax').click(function(){
-        $('.tax-wrap').toggle();
-    })
-    $('.toll-chargable').click(function(){
-        $('.toll-wrap').toggle();
-    })
-    
-});
-</script>
-
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.1') }}"></script>
+<script src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.1') }}"></script>
 
 @endsection

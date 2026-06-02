@@ -72,22 +72,24 @@
                     'Scheduled' => 'bg-info',
                     default     => 'bg-secondary',
                 };
-                // Tracking group via vehicle mapping
+                // Tracking group via vehicle mapping (BUG-004: use eager-loaded allocatedVehicle)
                 $trackingGroup = '—';
-                if ($tyre->activeVehicleMapping) {
-                    $vehicle = \App\Models\Vehicle::with('group')->find($tyre->allocated_vehicle_id);
-                    if ($vehicle?->group) { $trackingGroup = $vehicle->group->name ?? '—'; }
+                if ($tyre->activeVehicleMapping && $tyre->allocatedVehicle?->group) {
+                    $trackingGroup = $tyre->allocatedVehicle->group->name ?? '—';
                 }
-                // Tyre Status label
-                $statusBadge = match($tyre->tyre_status) {
-                    'Ready to Use'  => '<span class="badge tyre-badge-ready">Ready to Use</span>',
-                    'Warranty Claim'=> '<span class="badge tyre-badge-warranty">Warranty</span>',
-                    'Re-threading'  => '<span class="badge tyre-badge-rethread">Re-threading</span>',
-                    'Scrap'         => '<span class="badge tyre-badge-scrap">Scrap</span>',
-                    'Allocated'     => '<span class="badge tyre-badge-allocated">On Vehicle</span>',
-                    'Direct Fitment'=> '<span class="badge tyre-badge-fitment">Direct Fit</span>',
-                    'Yet to Decide' => '<span class="badge tyre-badge-ytd">Yet to Decide</span>',
-                    default         => '<span class="badge bg-secondary">' . ($tyre->tyre_status ?? $tyre->location) . '</span>',
+                // Tyre Status label (BUG-001: derive status from location when tyre_status is NULL)
+                $resolvedStatus = $tyre->tyre_status
+                    ?? ($tyre->location === 'Vehicle' ? 'Allocated' : 'Ready to Use');
+                $statusBadge = match($resolvedStatus) {
+                    'Ready to Use'     => '<span class="badge tyre-badge-ready">Ready to Use</span>',
+                    'Warranty Claim'   => '<span class="badge tyre-badge-warranty">Warranty</span>',
+                    'Re-threading'     => '<span class="badge tyre-badge-rethread">Re-threading</span>',
+                    'Scrap'            => '<span class="badge tyre-badge-scrap">Scrap</span>',
+                    'Allocated'        => '<span class="badge tyre-badge-allocated">On Vehicle</span>',
+                    'Direct Fitment'   => '<span class="badge tyre-badge-fitment">Direct Fit</span>',
+                    'Yet to Decide'    => '<span class="badge tyre-badge-ytd">Yet to Decide</span>',
+                    'Extra on Vehicle' => '<span class="badge tyre-badge-extra">Extra on Vehicle</span>',
+                    default            => '<span class="badge bg-secondary">' . $resolvedStatus . '</span>',
                 };
                 // Location display
                 $locationDisplay = $tyre->location === 'Vehicle'

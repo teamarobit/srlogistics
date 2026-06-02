@@ -27,7 +27,8 @@ $(document).ready(function(){
     
     $(document.body).on('click', '.deleteBranch', function () {
         var branchid = $(this).data('id');
-    
+        var deleteUrl = $('table.invoice-table').data('delete-url');
+
         Swal.fire({
             icon: 'warning',
             title: 'Are you sure to delete?',
@@ -46,13 +47,13 @@ $(document).ready(function(){
             if (result.isConfirmed) {
                 var formData = new FormData();
                 formData.append('id', branchid);
-    
+
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     method: 'POST',
-                    url: DELETE_BRANCH, // Make sure this is defined
+                    url: deleteUrl,
                     data: formData,
                     processData: false,
                     contentType: false,
@@ -61,7 +62,7 @@ $(document).ready(function(){
                             icon: 'success',
                             title: response.message
                         });
-                        location.reload(true); // or remove the row from the table dynamically
+                        location.reload(true);
                     },
                     error: function (xhr) {
                         var response = $.parseJSON(xhr.responseText);

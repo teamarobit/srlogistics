@@ -2,7 +2,7 @@
 
 @section('css')
 {{-- Reuse Battery-Add design system for identical patterns --}}
-<link href="{{ asset('css/Inventory/battery-add.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/battery-add.css?v=1.2') }}" rel="stylesheet">
 {{-- Tyre-specific additions (reminder toggles, maintenance grid, tube-type picker) --}}
 <link href="{{ asset('css/tyre/create-new.css?v=2.0') }}" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">
@@ -618,5 +618,5 @@
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script src="{{ asset('customjs/tyre/create-new.js?v=2.0') }}"></script>
+<script src="{{ asset('customjs/tyre/create-new.js?v=2.2') }}"></script>
 @endsection

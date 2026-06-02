@@ -137,7 +137,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr>
+                            <tr class="wh-server-empty">
                                 <td colspan="9">
                                     <div class="wh-empty-state">
                                         <i class="uil uil-warehouse"></i>
@@ -146,6 +146,15 @@
                                 </td>
                             </tr>
                             @endforelse
+                            {{-- BUG-005: client-side filter empty state row, toggled by index.js --}}
+                            <tr id="whNoResults" class="d-none">
+                                <td colspan="9">
+                                    <div class="wh-empty-state">
+                                        <i class="uil uil-search"></i>
+                                        <p>No warehouses match the current filters.<br>Adjust filters or click <strong>Reset</strong>.</p>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -157,5 +166,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Warehouse/index.js?v=1.0') }}"></script>
+<script src="{{ asset('js/Warehouse/index.js?v=1.2') }}"></script>
 @endsection

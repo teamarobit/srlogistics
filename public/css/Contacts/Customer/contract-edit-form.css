@@ -1,41 +1,127 @@
-.loading-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.unloading-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.rate-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.toll-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-.tax-wrap{
-    display: none;
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
+body {
+    background-color: #fff;
 }
 
+.form-bg {
+    padding: 20px 30px;
+    background: #fbfdff;
+    margin-bottom: 20px;
+    border: 1px solid #f2f2f2;
+    border-radius: 10px;
+}
+
+.btn-theme.head-btn i {
+    background-color: transparent;
+    color: #000;
+}
+
+.btn {
+    padding: 8px 12px;
+    text-transform: inherit;
+}
+
+.form-check-input[type=checkbox]:checked {
+    background-color: #1f75a8 !important;
+    border-color: #1f75a8 !important;
+}
+
+.head-btn:after {
+    display: none;
+}
+
+.accordion-button {
+    background: #ecf2f4 !important;
+    padding: 10px 20px;
+    color: #0b5871;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.dropdown-item {
+    padding: 5px 15px;
+}
+
+/* Reminder tooltip */
+.sec-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.sec-tooltip .uil-info-circle {
+    color: #070b3e;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 1px 2px;
+    margin-left: 3px;
+    border-radius: 11px;
+    line-height: 11px;
+    background: #ffffff45;
+    height: 18px;
+    display: inline-flex;
+    width: 18px;
+    align-items: center;
+    justify-content: center;
+}
+
+.sec-tooltip p {
+    visibility: hidden;
+    width: 130px;
+    background: #333;
+    color: #fff;
+    text-align: left;
+    padding: 3px 6px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 26px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.sec-tooltip p:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 12px solid #333;
+    border-left: 0;
+    position: absolute;
+    left: -7px;
+    top: 4px;
+}
+
+.sec-tooltip:hover p {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Days-before-expiry conditional section */
+.days-beforeexpiry.active {
+    display: block !important;
+}
+
+/* Disabled customer dropdown */
 .not-clickable {
-    pointer-events: none;      
-    background-color: #f2f2f2; 
+    pointer-events: none;
+    background-color: #f2f2f2;
     cursor: not-allowed;
+}
+
+.table thead tr th { padding: 8px 8px; }
+.table tbody td { padding: 8px 8px; }
+
+p {
+    margin: 0;
+    font-size: 13px;
+    word-break: break-word;
 }

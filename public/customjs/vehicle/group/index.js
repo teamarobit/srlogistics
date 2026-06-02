@@ -2,7 +2,7 @@ $(document).ready(function(){
     
     const Toast = Swal.mixin({
           toast: true,
-          position: 'top',
+          position: 'top-end',
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
@@ -16,8 +16,9 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name').on('change blur', function () { 
-        $('#searchform').submit();
+    $('#search_name').on('keyup change', function () {
+        clearTimeout(window._searchTimer);
+        window._searchTimer = setTimeout(function(){ $('#searchform').submit(); }, 400);
     });
     
     
@@ -32,42 +33,25 @@ $(document).ready(function(){
             method      : 'POST',
             data        : formData,
             url         : $(this).attr('action'),
-            processData : false, // Don't process the files
-            contentType : false, // Set content type to false as jQuery will tell the server its a query string request
-            dataType    : 'application/json',
+            processData : false,
+            contentType : false,
+            dataType    : 'json',
             success     : function(response){
-                
+                Toast.fire({ icon: 'success', title: response.message });
+                $('#addBtn').html('Save').attr('disabled', false);
+                setTimeout(function(){ window.location.href = VEHILEGROUPS; }, 1500);
             },
-            error       : function(data){
-                
-                var response = $.parseJSON(data.responseText);
-                if(response.success === true){
-                    
-                    Toast.fire({
-                      icon: 'success',
-                      title: response.message
-                    });
-                    $('#addBtn').html('Save').attr('disabled', false);
-                    window.location.href = VEHILEGROUPS;
-                    
-                } else {
-                    
-                    Toast.fire({
-                      icon: 'error',
-                      title: response.message
-                    });
-                    
+            error       : function(xhr){
+                var response = $.parseJSON(xhr.responseText);
+                Toast.fire({ icon: 'error', title: response.message });
+                if (response.data) {
                     $.each(response.data, function(index, value){
-                        $('#add_'+index+'_error').text(value);
+                        $('#add_'+index+'_error').text(Array.isArray(value) ? value[0] : value);
                     });
-                    
-                    $('#addBtn').html('Save').attr('disabled', false);
-                    
                 }
+                $('#addBtn').html('Save').attr('disabled', false);
             }
-
         });
-        
         return false;
     });
     
@@ -126,43 +110,25 @@ $(document).ready(function(){
             method      : 'POST',
             data        : formData,
             url         : $(this).attr('action'),
-            processData : false, // Don't process the files
-            contentType : false, // Set content type to false as jQuery will tell the server its a query string request
-            dataType    : 'application/json',
+            processData : false,
+            contentType : false,
+            dataType    : 'json',
             success     : function(response){
-                
+                Toast.fire({ icon: 'success', title: response.message });
+                $('#updateBtn').html('Save').attr('disabled', false);
+                setTimeout(function(){ window.location.href = VEHILEGROUPS; }, 1500);
             },
-            error       : function(data){
-                
-                var response = $.parseJSON(data.responseText);
-                if(response.success === true){
-                    
-                    Toast.fire({
-                      icon: 'success',
-                      title: response.message
-                    });
-                    $('#updateBtn').html('Update').attr('disabled', false);
-                    window.location.href = VEHILEGROUPS;
-                    
-                } else {
-                    
-                    Toast.fire({
-                      icon: 'error',
-                      title: response.message,
-                      width:'420px'
-                    });
-                    
+            error       : function(xhr){
+                var response = $.parseJSON(xhr.responseText);
+                Toast.fire({ icon: 'error', title: response.message });
+                if (response.data) {
                     $.each(response.data, function(index, value){
-                        $('#edit_'+index+'_error').text(value);
+                        $('#edit_'+index+'_error').text(Array.isArray(value) ? value[0] : value);
                     });
-                    
-                    $('#updateBtn').html('Update').attr('disabled', false);
-                    
                 }
+                $('#updateBtn').html('Save').attr('disabled', false);
             }
-
         });
-        
         return false;
     });
     

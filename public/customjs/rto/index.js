@@ -16,8 +16,14 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_state_id').data('select2').$container.find('.select2-selection__placeholder').text('Filter by State');
-    $('#search_city_id').data('select2').$container.find('.select2-selection__placeholder').text('Filter by City');
+    var $stateSel = $('#search_state_id');
+    if ($stateSel.data('select2')) {
+        $stateSel.data('select2').$container.find('.select2-selection__placeholder').text('Filter by State');
+    }
+    var $citySel = $('#search_city_id');
+    if ($citySel.data('select2')) {
+        $citySel.data('select2').$container.find('.select2-selection__placeholder').text('Filter by City');
+    }
     
     
     $('#search_rto, #search_state_id, #search_city_id, #search_status').on('change blur', function () { 

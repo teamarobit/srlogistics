@@ -2722,6 +2722,20 @@ class FleetDashboardController extends Controller
             });
         }
 
+        // Snapshot filtered query for stats BEFORE paginate (so search/doc_type/expiry_filter carry over)
+        $statsQuery = (clone $query);
+        $totalCount = (clone $statsQuery)->count();
+
+        $expiredCount = 0; $expiringCount = 0;
+        foreach (['insurance_expiry','fitness_expiry','permit_expiry','pucc_expiry','tax_expiry'] as $col) {
+            $expiredCount  += (clone $statsQuery)
+                ->whereHas('basicinfo', fn($q) => $q->where($col, '<', now()))
+                ->count();
+            $expiringCount += (clone $statsQuery)
+                ->whereHas('basicinfo', fn($q) => $q->whereBetween($col, [now(), now()->addDays(30)]))
+                ->count();
+        }
+
         $vehicles = $query->orderBy('vehicle_no')->paginate(25)->withQueryString();
 
         $helper = fn($date) => $date ? (function () use ($date) {
@@ -2743,14 +2757,8 @@ class FleetDashboardController extends Controller
             'tax'       => $helper($v->basicinfo?->tax_expiry),
         ]);
 
-        // Global counts across all doc types
-        $expiredCount  = 0; $expiringCount = 0;
-        foreach (['insurance_expiry','fitness_expiry','permit_expiry','pucc_expiry','tax_expiry'] as $col) {
-            $expiredCount  += Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->where($col,'<',now()))->count();
-            $expiringCount += Vehicle::where('status','Active')->whereHas('basicinfo', fn($q) => $q->whereBetween($col,[now(),now()->addDays(30)]))->count();
-        }
         $stats = [
-            'total'    => Vehicle::where('status','Active')->count(),
+            'total'    => $totalCount,
             'expired'  => $expiredCount,
             'expiring' => $expiringCount,
         ];

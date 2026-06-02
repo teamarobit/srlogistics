@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Warehouse/form.css?v=1.1') }}" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css">
+{{-- BUG-004: intl-tel-input CSS is already loaded globally in layouts/app.blade.php. No duplicate include. --}}
+<link href="{{ asset('css/Warehouse/form.css?v=1.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -222,7 +222,6 @@
 
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whEditForm. --}}
-{{-- SD-13: intl-tel-input must load before edit.js --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-<script src="{{ asset('js/Warehouse/edit.js?v=1.2') }}"></script>
+{{-- SD-13: intl-tel-input is already loaded globally in layouts/app.blade.php (BUG-004). --}}
+<script src="{{ asset('js/Warehouse/edit.js?v=1.5') }}"></script>
 @endsection

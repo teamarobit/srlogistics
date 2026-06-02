@@ -35,8 +35,11 @@ class FasttagProviderController extends Controller
     {
         $search_name = $request->get('name');
         $search_status = $request->get('status');
-        
-        
+
+        $sortable = ['name', 'code', 'status', 'created_at'];
+        $sort  = in_array($request->get('sort'), $sortable, true) ? $request->get('sort') : 'id';
+        $order = strtolower($request->get('order')) === 'asc' ? 'asc' : 'desc';
+
         $datas = Fasttagprovider::query()
                                 ->when(!empty($search_name), function ($query) use ($search_name) {
                                     $query->where('name', 'like', '%' . trim($search_name) . '%');
@@ -44,13 +47,13 @@ class FasttagProviderController extends Controller
                                 ->when(!is_null($search_status) && $search_status !== '', function ($query) use ($search_status) {
                                     $query->where('status', $search_status); // 1 = active, 0 = inactive
                                 })
-                                ->orderByDesc('id')
+                                ->orderBy($sort, $order)
                                 ->paginate(10)
                                 ->withQueryString();
 
         //dd($supervisors);
-        
-        return view('provider.fasttag.index', compact('datas','search_name','search_status'));
+
+        return view('provider.fasttag.index', compact('datas','search_name','search_status','sort','order'));
     }
     
     
@@ -77,9 +80,9 @@ class FasttagProviderController extends Controller
     {
         
         $validator = Validator::make($request->all(), [
-            'provider_name' => 'required|max:100|unique:fasttagproviders,name',
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'provider_name' => ['required', 'max:100', 'regex:/^[A-Za-z0-9 .,&()\-\/]+$/', 'unique:fasttagproviders,name'],
+            'status'          => 'required|in:Active,Inactive',
+
         ], [
                 'required' => 'This field is required.',
                 'max'      => 'Maximum 100 characters allowed.',
@@ -88,30 +91,31 @@ class FasttagProviderController extends Controller
                 'min'      => 'Value must be at least :min.',
                 'max'      => 'Maximum allowed value is :max.',
                 'in'       => 'Invalid selection.',
+                'regex'    => 'Only letters, numbers and . , & ( ) - / are allowed.',
             ]
         );
-        
+
         $errorcount = 0;
         $errors = [];
-        
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
-        
+
         if($validator->fails() || $errorcount > 0){
             return response()->json(['success' => false, 'data' => $errormessages, 'message' => 'Please check validation error.'], 422);
         }
-        
+
         try{
-            
+
             $provider = [];
-            
+
             DB::transaction(function () use($request, &$provider){
-                
+
                 $lastCode = Fasttagprovider::withTrashed()->orderBy('id', 'DESC')->first();
                 $provider_code = $lastCode ? str_pad((int) $lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
-                   
-        
+
+
                 $provider = new Fasttagprovider;
-                $provider->name = $request->provider_name;
+                $provider->name = trim($request->provider_name);
                 $provider->code = $provider_code;
                 $provider->status = $request->status;
                 $provider->created_by = Auth::user()->id;
@@ -123,19 +127,21 @@ class FasttagProviderController extends Controller
             
             $success = true;
             $respmessage = 'Fasttag provider saved successfully.';
-            
+            $status = 200;
+
         } catch (\Exception $exp){
-                                    
+
             DB::rollBack();
             $success = false;
             $respmessage = $exp->getMessage();
-            
+            $status = 500;
+
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $provider, 'message' => $respmessage]);
+
+
+        return response()->json(['success' => $success, 'data' => $provider, 'message' => $respmessage], $status);
     }
-    
+
     /**
      * Display the specified resource.
      *
@@ -185,10 +191,11 @@ class FasttagProviderController extends Controller
             'provider_name' => [
                 'required',
                 'max:100',
+                'regex:/^[A-Za-z0-9 .,&()\-\/]+$/',
                 Rule::unique('fasttagproviders', 'name')->ignore($request->get('recordid'), 'id'),
             ],
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'status'          => 'required|in:Active,Inactive',
+
         ], [
                 'required' => 'This field is required.',
                 'max'      => 'Maximum 100 characters allowed.',
@@ -197,6 +204,7 @@ class FasttagProviderController extends Controller
                 'min'      => 'Value must be at least :min.',
                 'max'      => 'Maximum allowed value is :max.',
                 'in'       => 'Invalid selection.',
+                'regex'    => 'Only letters, numbers and . , & ( ) - / are allowed.',
             ]
         );
         
@@ -221,7 +229,7 @@ class FasttagProviderController extends Controller
             
             DB::transaction(function () use($request, &$record){
                 
-                $record->name = $request->get('provider_name');
+                $record->name = trim($request->get('provider_name'));
                 $record->status = $request->get('status');
                 
                 $record->updated_by = Auth::user()->id;
@@ -234,17 +242,19 @@ class FasttagProviderController extends Controller
             
             $success = true;
             $respmessage = 'Fasttag provider updated successfully.';
-            
+            $status = 200;
+
         } catch (\Exception $exp){
-                                    
+
             DB::rollBack();
             $success = false;
             $respmessage = $exp->getMessage();
-            
+            $status = 500;
+
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $record, 'message' => $respmessage]);
+
+
+        return response()->json(['success' => $success, 'data' => $record, 'message' => $respmessage], $status);
     }
     
     

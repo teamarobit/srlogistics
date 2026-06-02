@@ -109,20 +109,8 @@
 
 @section('js')
 
-<script>
-var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";
-
-$(document).ready(function(){
-    $('.add-vs').click(function(){
-        $('.added-vs-sec').show();
-    })
-    $('.dell-vs').click(function(){
-        $('.added-vs-sec').hide();
-    })
-});
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/vehicle/status/create.js')}}"></script>
+<script>var VEHILE_STATUS = "{{ route('vehiclestatus.index') }}";</script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/status/create.js?v=1.1')}}"></script>
 
 @endsection
 

@@ -33,24 +33,26 @@ class GpsProviderController extends Controller
      */
     public function index(Request $request): View
     {
-        $search_name = $request->get('name');
+        $search_name   = $request->get('name');
         $search_status = $request->get('status');
-        
-        
-        $datas = Gpsprovider::query()
+
+        $sort_by  = in_array($request->get('sort_by'), ['name','code','status','created_at','updated_at']) ? $request->get('sort_by') : 'created_at';
+        $sort_dir = $request->get('sort_dir') === 'asc' ? 'asc' : 'desc';
+
+        $datas = Gpsprovider::with(['createdBy','updatedBy'])
                                 ->when(!empty($search_name), function ($query) use ($search_name) {
-                                    $query->where('name', 'like', '%' . trim($search_name) . '%');
+                                    // Escape LIKE wildcards so '%' and '_' inside the search term are treated literally.
+                                    $term = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($search_name));
+                                    $query->where('name', 'like', '%' . $term . '%');
                                 })
                                 ->when(!is_null($search_status) && $search_status !== '', function ($query) use ($search_status) {
-                                    $query->where('status', $search_status); // 1 = active, 0 = inactive
+                                    $query->where('status', $search_status);
                                 })
-                                ->orderByDesc('id')
+                                ->orderBy($sort_by, $sort_dir)
                                 ->paginate(10)
                                 ->withQueryString();
 
-        //dd($supervisors);
-        
-        return view('provider.gps.index', compact('datas','search_name','search_status'));
+        return view('provider.gps.index', compact('datas','search_name','search_status','sort_by','sort_dir'));
     }
     
     
@@ -77,96 +79,81 @@ class GpsProviderController extends Controller
     {
         
         $validator = Validator::make($request->all(), [
-            'provider_name' => 'required|max:100|unique:gpsproviders,name',
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'provider_name' => ['required', 'max:100', 'regex:/^[^<>]+$/', 'unique:gpsproviders,name'],
+            'status'        => 'required|in:Active,Inactive',
         ], [
-                'required' => 'This field is required.',
-                'max'      => 'Maximum 100 characters allowed.',
-                'unique'   => 'This value already exists.',
-                'numeric'  => 'Only numeric values are allowed.',
-                'min'      => 'Value must be at least :min.',
-                'max'      => 'Maximum allowed value is :max.',
-                'in'       => 'Invalid selection.',
+                'provider_name.required' => 'This field is required.',
+                'provider_name.max'      => 'Maximum allowed length is 100 characters.',
+                'provider_name.regex'    => 'HTML tags are not allowed in the name.',
+                'provider_name.unique'   => 'This value already exists.',
+                'status.required'        => 'This field is required.',
+                'status.in'              => 'Invalid selection.',
             ]
         );
-        
+
         $errorcount = 0;
         $errors = [];
-        
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
-        
+
         if($validator->fails() || $errorcount > 0){
             return response()->json(['success' => false, 'data' => $errormessages, 'message' => 'Please check validation error.'], 422);
         }
-        
+
         try{
-            
-            $provider = [];
-            
-            DB::transaction(function () use($request, &$provider){
-                
-                $lastCode = Gpsprovider::withTrashed()->orderBy('id', 'DESC')->first();
-                $provider_code = $lastCode ? str_pad((int) $lastCode->code + 1, 6, '0', STR_PAD_LEFT) : '000001';
-                   
-        
-                $provider = new Gpsprovider;
-                $provider->name = $request->provider_name;
-                $provider->code = $provider_code;
-                $provider->status = $request->status;
-                $provider->created_by = Auth::user()->id;
-                $provider->save();
-                
-                $description = 'Added new gps provider.';
-                $useractivity = $this->storeUseractivity(56, 3, Auth::user()->id, $provider->id, $description);
+
+            $provider = DB::transaction(function () use($request){
+
+                // Sequential numeric code based on the highest existing numeric code (legacy alphabetic codes ignored).
+                $maxNumeric = (int) Gpsprovider::withTrashed()
+                    ->whereRaw("code REGEXP '^[0-9]+$'")
+                    ->max(DB::raw('CAST(code AS UNSIGNED)'));
+                $provider_code = (string) ($maxNumeric + 1);
+
+                $p = new Gpsprovider;
+                $p->organisation_id = Auth::user()->organisation_id ?? 1;
+                $p->name            = $request->provider_name;
+                $p->code            = $provider_code;
+                $p->status          = $request->status;
+                $p->created_by      = Auth::user()->id;
+                $p->save();
+
+                $this->storeUseractivity(56, 3, Auth::user()->id, $p->id, 'Added new gps provider.');
+
+                return $p;
             });
-            
-            $success = true;
-            $respmessage = 'GPS provider saved successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => $provider,
+                'message' => 'GPS provider saved successfully.',
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage(),
+            ], 500);
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $provider, 'message' => $respmessage]);
     }
-    
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     */
-    public function show(Request $request)
-    {
-        //
-    }
-    
     
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
-        if($id == ''){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! id not found.']);
-        }
-        
         $record = Gpsprovider::find($id);
-        
-        if($record == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Data not found.']);
+
+        if (! $record) {
+            return redirect()->route('gpsprovider.index')
+                             ->with('error', 'GPS provider not found.');
         }
-    
-        
+
         // Log activity
-        $description = 'Retrieve a record named '.$record->name.' to edit.';
-        $useractivity = $this->storeUseractivity(56, 5, Auth::user()->id, $record->id, $description);
-        
+        $description = 'Retrieve a record named ' . $record->name . ' to edit.';
+        $this->storeUseractivity(56, 5, Auth::user()->id, $record->id, $description);
+
         return view('provider.gps.edit', compact('record'));
     }
     
@@ -185,18 +172,17 @@ class GpsProviderController extends Controller
             'provider_name' => [
                 'required',
                 'max:100',
+                'regex:/^[^<>]+$/',
                 Rule::unique('gpsproviders', 'name')->ignore($request->get('recordid'), 'id'),
             ],
-            'status'          => 'required|in:Active,Inactive', 
-            
+            'status'        => 'required|in:Active,Inactive',
         ], [
-                'required' => 'This field is required.',
-                'max'      => 'Maximum 100 characters allowed.',
-                'unique'   => 'This value already exists.',
-                'numeric'  => 'Only numeric values are allowed.',
-                'min'      => 'Value must be at least :min.',
-                'max'      => 'Maximum allowed value is :max.',
-                'in'       => 'Invalid selection.',
+                'provider_name.required' => 'This field is required.',
+                'provider_name.max'      => 'Maximum allowed length is 100 characters.',
+                'provider_name.regex'    => 'HTML tags are not allowed in the name.',
+                'provider_name.unique'   => 'This value already exists.',
+                'status.required'        => 'This field is required.',
+                'status.in'              => 'Invalid selection.',
             ]
         );
         
@@ -217,34 +203,32 @@ class GpsProviderController extends Controller
         }
         
         try{
-            
-            
-            DB::transaction(function () use($request, &$record){
-                
-                $record->name = $request->get('provider_name');
-                $record->status = $request->get('status');
-                
+
+            $record = DB::transaction(function () use($request, $record){
+
+                $record->name       = $request->get('provider_name');
+                $record->status     = $request->get('status');
                 $record->updated_by = Auth::user()->id;
                 $record->save();
-                
-                $description = 'Updated a department.';
-                $useractivity = $this->storeUseractivity(56, 4, Auth::user()->id, $record->id, $description);
-                
+
+                $this->storeUseractivity(56, 4, Auth::user()->id, $record->id, 'Updated a gps provider.');
+
+                return $record;
             });
-            
-            $success = true;
-            $respmessage = 'GPS provider updated successfully.';
-            
+
+            return response()->json([
+                'success' => true,
+                'data'    => $record,
+                'message' => 'GPS provider updated successfully.',
+            ], 200);
+
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
-            $success = false;
-            $respmessage = $exp->getMessage();
-            
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => $exp->getMessage(),
+            ], 500);
         }
-        
-        
-        return response()->json(['success' => $success, 'data' => $record, 'message' => $respmessage]);
     }
     
     

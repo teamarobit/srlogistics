@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Workshop/Master/spare-parts.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/Workshop/Master/spare-parts.css?v=1.1') }}" rel="stylesheet">
+<meta name="sp-base-url" content="{{ route('ws.master.spare-parts') }}">
 @endsection
 
 @section('content')
@@ -62,7 +63,13 @@
         <div class="sp-table-wrap">
 
             <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">
-                Showing <strong style="color:#1e293b;">{{ $parts->total() }}</strong> part{{ $parts->total() !== 1 ? 's' : '' }}
+                @if($parts->total() > 0)
+                    Showing <strong style="color:#1e293b;">{{ $parts->firstItem() }}</strong> to
+                    <strong style="color:#1e293b;">{{ $parts->lastItem() }}</strong> of
+                    <strong style="color:#1e293b;">{{ $parts->total() }}</strong> part{{ $parts->total() !== 1 ? 's' : '' }}
+                @else
+                    Showing <strong style="color:#1e293b;">0</strong> parts
+                @endif
                 @if(request()->hasAny(['search','category','status']))
                     — <a href="{{ route('ws.master.spare-parts') }}" style="color:#032671;font-weight:600;">Clear filters</a>
                 @endif
@@ -87,7 +94,17 @@
                         </thead>
                         <tbody>
                             @foreach($parts as $part)
-                            <tr id="part-row-{{ $part->id }}">
+                            <tr id="part-row-{{ $part->id }}"
+                                data-id="{{ $part->id }}"
+                                data-part-no="{{ $part->part_no }}"
+                                data-name="{{ $part->name }}"
+                                data-category-id="{{ $part->wssparepartscategory_id ?? '' }}"
+                                data-compatible-makes="{{ $part->compatible_makes ?? '' }}"
+                                data-unit="{{ $part->unit }}"
+                                data-standard-cost="{{ $part->standard_cost }}"
+                                data-reorder-level="{{ $part->reorder_level }}"
+                                data-notes="{{ $part->notes ?? '' }}"
+                                data-status="{{ $part->status }}">
                                 <td><span class="sp-part-no">{{ $part->part_no }}</span></td>
                                 <td>
                                     <div class="sp-part-name">{{ $part->name }}</div>
@@ -115,28 +132,15 @@
                                 </td>
                                 <td>
                                     <div class="sp-actions">
-                                        <button type="button" class="sp-action-btn" title="Edit"
-                                            onclick="openEditModal(
-                                                {{ $part->id }},
-                                                @json($part->part_no),
-                                                @json($part->name),
-                                                {{ $part->wssparepartscategory_id ?? 'null' }},
-                                                @json($part->compatible_makes ?? ''),
-                                                @json($part->unit),
-                                                @json($part->standard_cost),
-                                                {{ $part->reorder_level }},
-                                                @json($part->notes ?? '')
-                                            )">
+                                        <button type="button" class="sp-action-btn sp-edit" title="Edit">
                                             <i class="uil uil-pen"></i>
                                         </button>
                                         <button type="button"
-                                            class="sp-action-btn {{ $part->status === 'Inactive' ? 'activate' : '' }}"
-                                            title="{{ $part->status === 'Active' ? 'Deactivate' : 'Activate' }}"
-                                            onclick="toggleStatus({{ $part->id }}, '{{ $part->status }}')">
+                                            class="sp-action-btn sp-toggle {{ $part->status === 'Inactive' ? 'activate' : '' }}"
+                                            title="{{ $part->status === 'Active' ? 'Deactivate' : 'Activate' }}">
                                             <i class="uil {{ $part->status === 'Active' ? 'uil-toggle-off' : 'uil-toggle-on' }}"></i>
                                         </button>
-                                        <button type="button" class="sp-action-btn danger" title="Remove"
-                                            onclick="deletePart({{ $part->id }}, @json($part->name))">
+                                        <button type="button" class="sp-action-btn danger sp-remove" title="Remove">
                                             <i class="uil uil-trash-alt"></i>
                                         </button>
                                     </div>
@@ -184,7 +188,7 @@
                 <h5 class="modal-title"><i class="uil uil-plus me-2"></i>Add Spare Part</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="addPartForm" novalidate>
+            <form id="addPartForm" method="POST" action="{{ route('ws.master.spare-parts.store') }}" novalidate>
                 @csrf
                 <div class="modal-body">
                     <div class="row g-3">
@@ -194,26 +198,27 @@
                                 <input type="text" class="form-control" name="part_no" id="add_part_no"
                                        placeholder="SP-0001" required maxlength="50">
                                 <button type="button" class="btn btn-outline-secondary" style="font-size:12px;"
-                                        onclick="autoFillPartNo()" title="Auto-generate">
+                                        id="autoFillPartNoBtn" title="Auto-generate">
                                     <i class="uil uil-sync"></i>
                                 </button>
                             </div>
-                            <div class="text-danger mt-1" style="font-size:11px;" id="add_part_no_error"></div>
+                            <span class="text-danger small d-block mt-1" id="add_part_no_error"></span>
                         </div>
                         <div class="col-md-8">
                             <label class="form-label">Part Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="name" id="add_name"
                                    placeholder="e.g. Engine Oil Filter" required maxlength="255">
-                            <div class="text-danger mt-1" style="font-size:11px;" id="add_name_error"></div>
+                            <span class="text-danger small d-block mt-1" id="add_name_error"></span>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Category</label>
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select class="form-select select2" name="wssparepartscategory_id" id="add_category_id" style="width:100%;">
                                 <option value="">— Select Category —</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
+                            <span class="text-danger small d-block mt-1" id="add_wssparepartscategory_id_error"></span>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Compatible Makes</label>
@@ -233,14 +238,16 @@
                             <label class="form-label">Standard Cost (₹) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text">₹</span>
-                                <input type="number" class="form-control" name="standard_cost"
+                                <input type="number" class="form-control" name="standard_cost" id="add_standard_cost"
                                        min="0" step="0.01" value="0" required>
                             </div>
+                            <span class="text-danger small d-block mt-1" id="add_standard_cost_error"></span>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Reorder Level <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="reorder_level"
+                            <input type="number" class="form-control" name="reorder_level" id="add_reorder_level"
                                    min="0" value="5" required>
+                            <span class="text-danger small d-block mt-1" id="add_reorder_level_error"></span>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -269,7 +276,7 @@
                 <h5 class="modal-title"><i class="uil uil-pen me-2"></i>Edit Spare Part</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editPartForm" novalidate>
+            <form id="editPartForm" method="POST" action="#" novalidate>
                 @csrf
                 <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" id="edit_id">
@@ -279,22 +286,23 @@
                             <label class="form-label">Part No. <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="part_no" id="edit_part_no"
                                    required maxlength="50">
-                            <div class="text-danger mt-1" style="font-size:11px;" id="edit_part_no_error"></div>
+                            <span class="text-danger small d-block mt-1" id="edit_part_no_error"></span>
                         </div>
                         <div class="col-md-8">
                             <label class="form-label">Part Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="name" id="edit_name"
                                    required maxlength="255">
-                            <div class="text-danger mt-1" style="font-size:11px;" id="edit_name_error"></div>
+                            <span class="text-danger small d-block mt-1" id="edit_name_error"></span>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Category</label>
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select class="form-select select2" name="wssparepartscategory_id" id="edit_category_id" style="width:100%;">
                                 <option value="">— Select Category —</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
+                            <span class="text-danger small d-block mt-1" id="edit_wssparepartscategory_id_error"></span>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Compatible Makes</label>
@@ -317,11 +325,13 @@
                                 <input type="number" class="form-control" name="standard_cost" id="edit_standard_cost"
                                        min="0" step="0.01" required>
                             </div>
+                            <span class="text-danger small d-block mt-1" id="edit_standard_cost_error"></span>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Reorder Level <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" name="reorder_level" id="edit_reorder_level"
                                    min="0" required>
+                            <span class="text-danger small d-block mt-1" id="edit_reorder_level_error"></span>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -351,182 +361,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Workshop/Master/spare-parts.js?v=1.0') }}"></script>
-
-<script>
-(function () {
-    'use strict';
-
-    const CSRF  = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-    const BASE  = '{{ route("ws.master.spare-parts") }}';
-
-    /* ── Toast ── */
-    function showToast(msg, ok = true) {
-        const el = document.getElementById('spToast');
-        document.getElementById('spToastMsg').textContent = msg;
-        el.classList.remove('bg-success', 'bg-danger', 'text-white');
-        el.classList.add(ok ? 'bg-success' : 'bg-danger', 'text-white');
-        bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
-    }
-
-    /* ── Clear / show field errors ── */
-    function clearErrors(prefix) {
-        document.querySelectorAll(`[id^="${prefix}_"][id$="_error"]`).forEach(el => {
-            el.textContent = '';
-        });
-        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-    }
-
-    function showErrors(prefix, errors) {
-        Object.entries(errors).forEach(([field, msgs]) => {
-            const errEl   = document.getElementById(`${prefix}_${field}_error`);
-            const inputEl = document.getElementById(`${prefix}_${field}`) ??
-                            document.querySelector(`#${prefix}PartForm [name="${field}"]`);
-            if (errEl)   errEl.textContent = msgs[0];
-            if (inputEl) inputEl.classList.add('is-invalid');
-        });
-    }
-
-    /* ── AJAX helper ── */
-    function apiFetch(url, method, formOrBody) {
-        const body = formOrBody instanceof HTMLFormElement
-            ? new URLSearchParams(new FormData(formOrBody))
-            : formOrBody;
-        if (method !== 'GET' && method !== 'POST') {
-            if (body instanceof URLSearchParams) body.set('_method', method);
-        }
-        return fetch(url, {
-            method : method === 'GET' ? 'GET' : 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json',
-                       'Content-Type': 'application/x-www-form-urlencoded' },
-            body   : method === 'GET' ? undefined : body,
-        }).then(r => r.json());
-    }
-
-    /* ── Auto-fill part no ── */
-    window.autoFillPartNo = function () {
-        apiFetch(`${BASE}?_auto_no=1`, 'GET')
-            .then(d => { if (d.part_no) document.getElementById('add_part_no').value = d.part_no; })
-            .catch(() => {});
-    };
-
-    /* ── ADD ── */
-    document.getElementById('addPartForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors('add');
-        const btn = document.getElementById('addPartBtn');
-        const sp  = document.getElementById('addSpinner');
-        btn.disabled = true; sp.classList.remove('d-none');
-
-        apiFetch(BASE, 'POST', this)
-            .then(d => {
-                if (d.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('addPartModal')).hide();
-                    this.reset();
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 900);
-                } else if (d.errors) {
-                    showErrors('add', d.errors);
-                } else {
-                    showToast(d.message ?? 'An error occurred.', false);
-                }
-            })
-            .catch(() => showToast('Server error. Please try again.', false))
-            .finally(() => { btn.disabled = false; sp.classList.add('d-none'); });
-    });
-
-    /* ── Open edit modal ── */
-    window.openEditModal = function (id, part_no, name, category_id, compatible_makes, unit, standard_cost, reorder_level, notes) {
-        clearErrors('edit');
-        document.getElementById('edit_id').value               = id;
-        document.getElementById('edit_part_no').value          = part_no;
-        document.getElementById('edit_name').value             = name;
-        $('#edit_category_id').val(category_id).trigger('change');
-        document.getElementById('edit_compatible_makes').value = compatible_makes;
-        document.getElementById('edit_unit').value             = unit;
-        document.getElementById('edit_standard_cost').value    = standard_cost;
-        document.getElementById('edit_reorder_level').value    = reorder_level;
-        document.getElementById('edit_notes').value            = notes;
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('editPartModal')).show();
-    };
-
-    /* ── EDIT ── */
-    document.getElementById('editPartForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors('edit');
-        const id  = document.getElementById('edit_id').value;
-        const btn = document.getElementById('editPartBtn');
-        const sp  = document.getElementById('editSpinner');
-        btn.disabled = true; sp.classList.remove('d-none');
-
-        apiFetch(`${BASE}/${id}`, 'PUT', this)
-            .then(d => {
-                if (d.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('editPartModal')).hide();
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 900);
-                } else if (d.errors) {
-                    showErrors('edit', d.errors);
-                } else {
-                    showToast(d.message ?? 'An error occurred.', false);
-                }
-            })
-            .catch(() => showToast('Server error. Please try again.', false))
-            .finally(() => { btn.disabled = false; sp.classList.add('d-none'); });
-    });
-
-    /* ── Toggle status ── */
-    window.toggleStatus = function (id, currentStatus) {
-        const action = currentStatus === 'Active' ? 'deactivate' : 'activate';
-        if (!confirm(`Are you sure you want to ${action} this part?`)) return;
-
-        const body = new URLSearchParams({ _method: 'PATCH' });
-        apiFetch(`${BASE}/${id}/status`, 'PATCH', body)
-            .then(d => {
-                if (d.success) {
-                    showToast(d.message);
-                    setTimeout(() => location.reload(), 700);
-                } else {
-                    showToast(d.message ?? 'Could not update status.', false);
-                }
-            })
-            .catch(() => showToast('Server error.', false));
-    };
-
-    /* ── Soft delete ── */
-    window.deletePart = function (id, name) {
-        if (!confirm(`Remove "${name}" from spare parts master?\n\nThis can be restored by an administrator.`)) return;
-
-        const body = new URLSearchParams({ _method: 'DELETE' });
-        apiFetch(`${BASE}/${id}`, 'DELETE', body)
-            .then(d => {
-                if (d.success) {
-                    showToast(d.message);
-                    const row = document.getElementById(`part-row-${id}`);
-                    if (row) {
-                        row.style.transition = 'opacity .35s';
-                        row.style.opacity    = '0';
-                        setTimeout(() => row.remove(), 350);
-                    }
-                } else {
-                    showToast(d.message ?? 'Could not delete part.', false);
-                }
-            })
-            .catch(() => showToast('Server error.', false));
-    };
-
-    /* ── Enter on search input ── */
-    document.querySelector('input[name="search"]')
-        ?.addEventListener('keypress', e => {
-            if (e.key === 'Enter') { e.preventDefault(); document.getElementById('spFilterForm').submit(); }
-        });
-
-    /* ── Select2 init ── */
-    $(document).ready(function () {
-        $('#add_category_id').select2({ dropdownParent: $('#addPartModal'), width: '100%', placeholder: '— Select Category —', allowClear: true });
-        $('#edit_category_id').select2({ dropdownParent: $('#editPartModal'), width: '100%', placeholder: '— Select Category —', allowClear: true });
-    });
-
-}());
-</script>
+<script src="{{ asset('js/Workshop/Master/spare-parts.js?v=1.4') }}"></script>
 @endsection

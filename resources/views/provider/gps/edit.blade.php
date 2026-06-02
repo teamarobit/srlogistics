@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/gps-edit.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/gps-edit.css?v=2.0') }}">
 
 
 @endsection
@@ -35,6 +35,16 @@
                         @csrf
                         
                         <input type="hidden" name="recordid" id="edit_id_input" value="{{ $record->id }}">
+
+                      <div class="form-group row pb-1">
+                        <div class="col-12 col-md-3">
+                            <label>Code</label>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <input type="text" value="{{ $record->code ?? '' }}" class="form-control" readonly>
+                            <small class="text-muted">Code is system-generated and cannot be changed.</small>
+                        </div>
+                      </div>
 
                       <div class="form-group row pb-1">
                         <div class="col-12 col-md-3">
@@ -96,10 +106,7 @@
 
 @section('js')
 
-<script>
-var LISTING = "{{ route('gpsprovider.index') }}";
-</script>
-
-<script type="text/javascript" src="{{asset('customjs/provider/gps/edit.js')}}"></script>
+<div id="page-config" data-listing="{{ route('gpsprovider.index') }}"></div>
+<script type="text/javascript" src="{{ asset('customjs/provider/gps/edit.js?v=2.0') }}"></script>
 
 @endsection

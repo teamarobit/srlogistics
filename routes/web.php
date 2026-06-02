@@ -270,6 +270,7 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('/{id}/edit', [App\Http\Controllers\TollstationController::class, 'edit'])->name('edit');
             Route::post('/update', [App\Http\Controllers\TollstationController::class, 'update'])->name('update');
             Route::post('/delete', [App\Http\Controllers\TollstationController::class, 'destroy'])->name('delete');
+            Route::get('/{id}', [App\Http\Controllers\TollstationController::class, 'show'])->name('show');
         });
         
         
@@ -402,7 +403,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/{tyre}/change-status', [App\Http\Controllers\TyreController::class, 'changeStatus'])->name('changeStatus');
 
     });
-    
+
+    // Auth-gated tyre attachment server (BUG-002 fix, 2026-05-28)
+    Route::get('/tyre-media/{id}', [App\Http\Controllers\MediaController::class, 'serveTyre'])
+        ->name('tyre.media.serve');
+
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');
@@ -530,7 +535,6 @@ Route::group(['middleware' => ['auth']], function() {
     // Expense Master
     Route::prefix('expense-master')->name('expense.')->group(function () {
         Route::get('/', [App\Http\Controllers\ExpenseController::class, 'index'])->name('index');
-        Route::get('/create', [App\Http\Controllers\ExpenseController::class, 'create'])->name('create');
         Route::post('/save', [App\Http\Controllers\ExpenseController::class, 'store'])->name('save');
         Route::get('/{id}/edit', [App\Http\Controllers\ExpenseController::class, 'edit'])->name('edit');
         Route::post('/update', [App\Http\Controllers\ExpenseController::class, 'update'])->name('update');
@@ -570,7 +574,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/update', [App\Http\Controllers\DigitalLockProviderController::class, 'update'])->name('update');
         Route::post('/delete', [App\Http\Controllers\DigitalLockProviderController::class, 'destroy'])->name('delete');
     });
-    
+
+
+    /******************************** Hisab Category **********************************************************/
+    Route::prefix('hisab-category')->name('hisab.category.')->group(function () {
+        Route::get('/',        [App\Http\Controllers\HisabCategoryController::class, 'index'])->name('index');
+        Route::get('/create',    [App\Http\Controllers\HisabCategoryController::class, 'create'])->name('create');
+    });
+
     
     /******************************** Fleet Dashboard **********************************************************/
     

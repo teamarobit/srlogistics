@@ -109,7 +109,7 @@
 var SKILLSETS = "{{ route('skillset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/skillset/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/skillset/create.js?v=1.1')}}"></script>
 
 @endsection
 

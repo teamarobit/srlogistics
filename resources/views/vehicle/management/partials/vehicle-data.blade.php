@@ -1,3 +1,17 @@
+@php
+    $today = \Carbon\Carbon::today();
+
+    function complianceIcon(string $dateStr, \Carbon\Carbon $today): string {
+        try {
+            $d = \Carbon\Carbon::createFromFormat('d/m/Y', $dateStr);
+            if ($d && $d->lt($today)) {
+                return '<i class="fa fa-exclamation-triangle me-2 text-danger" aria-hidden="true"></i>';
+            }
+        } catch (\Exception $e) {}
+        return '<i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>';
+    }
+@endphp
+
 <div class="card" style="background: #fff; border-radius: 10px;">
     <div class="row">
         <div class="col-12">
@@ -6,10 +20,10 @@
                 <tbody>
                     <tr>
                         <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Owner Name</th>
-                        <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['owner_name'] }}</td> 
+                        <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['owner_name'] }}</td>
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Address</th> 
+                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Address</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['owner_address'] }}</td>
                     </tr>
                     <tr>
@@ -20,30 +34,30 @@
                         <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Registration Date</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['registration_date'] }}</td>
                     </tr>
-                    
+
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Fitness Certificate Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['fitness_expiry'], $today) !!}Fitness Certificate Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['fitness_expiry'] }}</td>
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Insurance Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['insurance_expiry'], $today) !!}Insurance Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['insurance_expiry'] }}</td>
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-info-circle text-danger me-2" aria-hidden="true"></i>Tax Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['tax_expiry'], $today) !!}Tax Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['tax_expiry'] }}</td>
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Permit Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['permit_expiry'], $today) !!}Permit Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['permit_expiry'] }}</td>
                     </tr>
-                    
+
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>PUCC Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['pucc_expiry'], $today) !!}PUCC Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['pucc_expiry'] }}</td>
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>National Permit Expiry</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2">{!! complianceIcon($vehicle['national_permit_expiry'], $today) !!}National Permit Expiry</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['national_permit_expiry'] }}</td>
                     </tr>
                     <tr>
@@ -92,7 +106,7 @@
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['fuel_type'] }}</td>  
                     </tr>
                     <tr>
-                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Chassis Number Date</th>
+                        <th class="pt-1 pb-1 ps-2 pe-2"><i class="fa fa-check-circle me-2 text-success" aria-hidden="true"></i>Chassis Number</th>
                         <td class="pt-1 pb-1 ps-2 pe-2">{{ $vehicle['chassis_no'] }}</td>   
                     </tr>
                     

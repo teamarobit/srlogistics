@@ -35,10 +35,14 @@ function showValidationErrors(errors) {
         var $input = $('[name="' + field + '"]');
         if ($input.length) {
             var $target = $input.last();
+            // SD-4: for Select2 fields the widget span sits after the hidden select —
+            // insert after the widget, not after the hidden select itself.
+            var $select2 = $target.next('.select2-container');
+            var $anchor  = $select2.length ? $select2 : $target;
             $('<span class="text-danger small d-block mt-1 field-error">' + messages[0] + '</span>')
-                .insertAfter($target);
+                .insertAfter($anchor);
             if (! firstScrolled) {
-                $('html, body').animate({ scrollTop: $target.offset().top - 120 }, 300);
+                $('html, body').animate({ scrollTop: $anchor.offset().top - 120 }, 300);
                 firstScrolled = true;
             }
         }
@@ -100,10 +104,18 @@ function initRadioChips() {
 function initFlapTubeToggle() {
     $('#tceFlapTubeRow').on('click', '.tcn-radio-chip', function() {
         var val = $(this).find('input[type=radio]').val();
-        $('#tceFlapTubePriceLabel').text(val + ' Price');
-        $('#tceFlapTubePriceSection').removeClass('d-none');
-        $('#tceFlapChip, #tceTubeChip').removeClass('active');
+        $('#tceFlapChip, #tceTubeChip, #tceFlapTubeNoneChip').removeClass('active');
         $(this).addClass('active');
+        if (val) {
+            $('#tceFlapTubePriceLabel').text(val + ' Price');
+            $('#tceFlapTubePriceSection').removeClass('d-none');
+        } else {
+            // None selected — collapse price section and clear accessory fields
+            $('#tceFlapTubePriceSection').addClass('d-none');
+            $('#tceFTTaxable').val('');
+            $('#tceFTGst').val('');
+            $('#tceFTTotal').val('');
+        }
     });
 }
 

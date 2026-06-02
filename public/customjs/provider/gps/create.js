@@ -1,6 +1,8 @@
 
 $(document).ready(function() {
-    
+
+    var LISTING = $('#page-config').data('listing');
+
     const Toast = Swal.mixin({
           toast: true,
           position: 'top',
@@ -16,6 +18,14 @@ $(document).ready(function() {
     
     
     
+    // Clear inline validation error as soon as the user edits the field.
+    $(document).on('input keyup', 'input[name="provider_name"]', function () {
+        $('#add_provider_name_error').text('');
+    });
+    $(document).on('change', 'input[name="status"]', function () {
+        $('#add_status_error').text('');
+    });
+
     $(document).on('click', '#addBtn', function () {
         $('form#addForm').submit();
     });

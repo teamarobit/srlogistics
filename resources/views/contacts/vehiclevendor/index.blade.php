@@ -73,7 +73,7 @@ body{
                                 
                                 <a href="{{ route('contact.vehiclevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1"><i class="uil uil-history me-1"></i>Reset</a>
                             
-                                <button type="button" class="btn btn-danger reset-btn ms-1" style="text-transform: capitalize;" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <button type="button" id="bulkDeleteBtn" class="btn btn-danger reset-btn ms-1" style="text-transform: capitalize; display:none;" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                     <i class="uil uil-trash-alt me-1"></i>Delete
                                 </button>
                             
@@ -96,7 +96,7 @@ body{
                                 <th>RAG Status</th>
                                 <th>Status</th>
                                 <th>Created by</th>
-                                <th class="text-end">
+                                <th class="text-end" style="position:sticky;right:0;background:#fff;z-index:2;box-shadow:-2px 0 4px rgba(0,0,0,.06);">
                                     Action
                                 </th>
                             </tr>
@@ -147,7 +147,7 @@ body{
                                         {{ $contact->createdby?->name ?? '' }}
                                         <span class="text-secondary d-block">{{ $contact->createdby?->email ?? '' }}</span>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" style="position:sticky;right:0;background:#fff;box-shadow:-2px 0 4px rgba(0,0,0,.06);">
                                         <div class="dropdown dot-dd">
                                           <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="uil uil-ellipsis-h"></i>
@@ -241,9 +241,6 @@ var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 var DELETE_CONTACT  = "{{-- route('contact.delete') --}}";
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.2') }}"></script>
 
 @endsection
-
-
-

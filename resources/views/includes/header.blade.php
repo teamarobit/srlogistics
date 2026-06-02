@@ -19,7 +19,7 @@
 
         <li class="nav-item">
 
-          <a href="javascript:void(0)" class="nav-link text-white"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
+          <a href="javascript:void(0)" class="nav-link text-white {{ request()->routeIs('fleet.*', 'fleetdashboard.*', 'tyre.*', 'battery.*') ? 'active' : '' }}"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
           
           <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
@@ -34,7 +34,7 @@
                       @endif
                       
                       @if(Route::has('fleet.compliance.document-expiry'))
-                      <li><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Status</a></li>
+                      <li class="{{ request()->routeIs('fleet.compliance.document-expiry') ? 'active' : '' }}"><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Status</a></li>
                       @endif
                       <li><a href="{{ route('tyre.dashboard') }}">Tyre Dashboard</a></li>
                       <li><a href="{{ route('tyre.owner-dashboard') }}">Tyre Owner Dashboard</a></li>
@@ -79,7 +79,7 @@
                       <li><a href="{{ route('fleet.compliance.policy-renewal') }}">Policy Renewal Tracker</a></li>
                       @endif
                       @if(Route::has('fleet.compliance.document-expiry'))
-                      <li><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Expiry</a></li>
+                      <li class="{{ request()->routeIs('fleet.compliance.document-expiry') ? 'active' : '' }}"><a href="{{ route('fleet.compliance.document-expiry') }}">Vehicle Document Expiry</a></li>
                       @endif
                       @if(Route::has('fleet.compliance.permit-fitness'))
                       <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Permit & Fitness Tracker</a></li>

@@ -29,16 +29,26 @@ $(document).ready(function(){
     
     
     
+    function toggleBulkDeleteBtn() {
+        if ($('.rowCheckbox:checked').length > 0) {
+            $('#bulkDeleteBtn').show();
+        } else {
+            $('#bulkDeleteBtn').hide();
+        }
+    }
+
     $(document).on('change', '#selectAll', function () {
         $('.rowCheckbox').prop('checked', this.checked);
+        toggleBulkDeleteBtn();
     });
-    
+
     $(document).on('change', '.rowCheckbox', function () {
         if ($('.rowCheckbox:checked').length == $('.rowCheckbox').length) {
             $('#selectAll').prop('checked', true);
         } else {
             $('#selectAll').prop('checked', false);
         }
+        toggleBulkDeleteBtn();
     });
     
     $('#confirmDelete').click(function () {
@@ -221,25 +231,6 @@ $(document).ready(function(){
                     },
                     error: function (xhr) {
                         var response = $.parseJSON(xhr.responseText);
-                        Toast.fire({
-                            icon: 'error',
-                            title: response.message || 'An error occurred.'
-                        });
-                    }
-                });
-            } else {
-                Toast.fire({
-                    icon: 'info',
-                    title: 'No action taken.'
-                });
-            }
-        });
-    });*/
 
-    
-    
-    
-    
-    
+*/
 });
-

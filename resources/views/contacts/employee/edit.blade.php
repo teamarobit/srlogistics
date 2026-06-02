@@ -145,7 +145,7 @@
                                                     <div class="upload__box">
                                                       <div class="upload__btn-box">
                                                         <label class="upload__btn">
-                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Images</p>
+                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Image</p>
                                                           <input type="file" name="contact_image" data-max_length="20" class="upload__inputfile">
                                                         </label>
                                                       </div>
@@ -309,7 +309,8 @@
                                                     <label>Date of Birth <span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
-                                                    <input type="date" class="form-control dob" name="dob" id="dob" value="{{ $contact->dob ?? '' }}" max="{{ date('Y-m-d') }}" />
+                                                    <input type="text" class="form-control app-date-display" data-target="dob" data-max-today="1" value="{{ $contact->dob ? \Carbon\Carbon::parse($contact->dob)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" class="dob" name="dob" id="dob" value="{{ $contact->dob ?? '' }}">
                                                     <small class="error text-danger" id="edit_dob_error"></small>
                                                 </div>
                                             </div>
@@ -328,7 +329,8 @@
                                                     <label>Date of Joining <span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
-                                                    <input type="date" name="doj" id="doj" value="{{ $contact->doj ?? '' }}" class="form-control" max="{{ date('Y-m-d') }}" />
+                                                    <input type="text" class="form-control app-date-display" data-target="doj" data-max-today="1" value="{{ $contact->doj ? \Carbon\Carbon::parse($contact->doj)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="doj" id="doj" value="{{ $contact->doj ?? '' }}">
                                                     <small class="error text-danger" id="edit_doj_error"></small>
                                                 </div>
                                             </div>
@@ -1823,7 +1825,8 @@
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
-                                                    <input name="exit_date" id="exit_date" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                                    <input type="text" class="form-control app-date-display" data-target="exit_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="exit_date" id="exit_date" value="">
                                                     <small class="error text-danger" id="edit_exit_date_error"></small>
                                                 </div>
                                                 
@@ -2047,7 +2050,8 @@
                     
                     <div class="form-group mb-2">
                         <label>Revoke From<span class="text-danger">*</span></label>
-                        <input type="date" name="revoke_date" class="form-control general_date" />
+                        <input type="text" class="form-control app-date-display" data-target="revoke_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                        <input type="hidden" name="revoke_date" id="revoke_date" value="">
                         <small class="error text-danger" id="add_revoke_date_error"></small>
                     </div>
                     
@@ -2226,7 +2230,8 @@
                     <div class="row form-group mb-2">
                         <div class="col-12 form-group mb-2">
                             <label>Effective Date <span class="text-danger">*</span></label>
-                            <input type="date" name="effective_from" class="form-control general_date" />
+                            <input type="text" class="form-control app-date-display" data-target="effective_from" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                            <input type="hidden" name="effective_from" id="effective_from" value="">
                             <small class="error text-danger" id="add_effective_from_error"></small>
                         </div>
                     </div>
@@ -2311,7 +2316,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

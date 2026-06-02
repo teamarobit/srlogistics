@@ -40,7 +40,7 @@
                                     <select name="state_id" id="search_state_id" class="form-control select2 dependent-select" data-target="search_city_id">
                                         <option value="">-- Select State --</option>
                                         @foreach($states as $state)
-                                            <option value="{{ $state->id }}" {{ (int)$search_state === $state->id ? 'selected' : '' }}>
+                                            <option value="{{ $state->id }}" data-url="{{ route('getcities', $state->id) }}" {{ (int)$search_state === $state->id ? 'selected' : '' }}>
                                                 {{ $state->name }}
                                             </option>
                                         @endforeach
@@ -72,7 +72,9 @@
                     <div class="container-fluid">
                         <!-- /////////////////////////////////// -->
 
-                        <div class="table-responsive mt-3">
+                        <div class="table-responsive mt-3"
+                             data-tollstation-list-url="{{ route('tollstation.index') }}"
+                             data-tollstation-delete-url="{{ route('tollstation.delete') }}">
                             <table class="table table-hover invoice-table mb-0">
                                 <thead>
                                     <tr>
@@ -92,7 +94,11 @@
                                     
                                     @forelse($tollstations as $key => $tollstation)
                                         <tr>
-                                            <td>{{ $tollstation->station_name }}</td>
+                                            <td>
+                                                <a href="{{ route('tollstation.show', $tollstation->id) }}" class="text-decoration-none">
+                                                    {{ $tollstation->station_name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $tollstation->toll_company }}</td>
                                             <td>{{ $tollstation->state->name ?? '-' }}</td>
                                             <td>{{ $tollstation->city->name ?? '-' }}</td>
@@ -124,10 +130,11 @@
                                             
                                             <td class="text-end">
                                                 <div class="dropdown dot-dd">
-                                                  <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                                  <span class="dropdown-toggle" id="moreTable-{{ $tollstation->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="uil uil-ellipsis-h"></i>
                                                   </span>
-                                                  <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
+                                                  <ul class="dropdown-menu" aria-labelledby="moreTable-{{ $tollstation->id }}" style="">
+                                                    <li><a class="dropdown-item" href="{{ route('tollstation.show', $tollstation->id) }}"><i class="uil uil-eye me-2"></i>View</a></li>
                                                     <li><a class="dropdown-item" href="{{ route('tollstation.edit', $tollstation->id) }}"><i class="uil uil-pen me-2"></i>Edit</a></li>
                                                     {{--<li><a class="dropdown-item text-danger deleteTollstation" data-id="{{ $tollstation->id }}" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
                                                   </ul>
@@ -203,11 +210,8 @@
 @endsection
 
 @section('js')
-<script>
-var DELETE_TOLLSTATION  = "{{route('tollstation.delete')}}";
-</script>
 
-<script type="text/javascript" src="{{asset('js/Tollstation/index.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/Tollstation/index.js?v=1.1') }}"></script>
 
 @endsection
 

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Warehouse/form.css?v=1.4') }}" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css">
+{{-- BUG-004: intl-tel-input CSS is already loaded globally in layouts/app.blade.php. No duplicate include. --}}
+<link href="{{ asset('css/Warehouse/form.css?v=1.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -176,7 +176,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Status <span class="text-danger">*</span></label>
+                                    {{-- BUG-009 fix: placeholder for consistency with other selects. Active remains the pre-selected default. --}}
                                     <select class="form-select" name="status" id="wh_status">
+                                        <option value="">Select Status</option>
                                         <option value="Active"   {{ old('status','Active') === 'Active'   ? 'selected' : '' }}>Active</option>
                                         <option value="Inactive" {{ old('status','Active') === 'Inactive' ? 'selected' : '' }}>Inactive</option>
                                     </select>
@@ -211,7 +213,6 @@
 
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whCreateForm. --}}
-{{-- SD-13: intl-tel-input must load before create.js --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-<script src="{{ asset('js/Warehouse/create.js?v=1.2') }}"></script>
+{{-- SD-13: intl-tel-input is already loaded globally in layouts/app.blade.php (BUG-004). --}}
+<script src="{{ asset('js/Warehouse/create.js?v=1.5') }}"></script>
 @endsection

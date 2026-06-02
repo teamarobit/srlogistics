@@ -121,7 +121,7 @@
 var DESIGNATIONS = "{{ route('designation.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/designation/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/designation/create.js?v=1.1')}}"></script>
 
 @endsection
 

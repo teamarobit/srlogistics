@@ -746,7 +746,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-6">
                                                         <select class="form-select select2 atypin" name="coattachtypes[]" id="coattachtypes_0">
-                                                            <option value="">Select ID</option>
+                                                            <option value="">Select Document Type</option>
                                                             @if( $coattachtypes->count())
                                                                 @foreach( $coattachtypes as $type)
                                                                    <option value="{{$type->id}}">{{$type->name}}</option>
@@ -1439,7 +1439,8 @@
                         </div>
                     </div>
                     
-                    <div class="text-end">
+                    <div class="text-end d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" id="addContactLocationBtn" class="btn btn-primary">Save</button>
                     </div>
                 </form>
@@ -1809,14 +1810,16 @@
                     <div class="col-12 col-md-6">
                         <div class="form-group">
                             <label>Start Date <span class="text-danger">*</span></label>
-                            <input type="date" name="v_start_date" class="form-control" />
+                            <input type="text" class="form-control app-date-display" data-target="v_start_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                            <input type="hidden" name="v_start_date" id="v_start_date" value="">
                             <small class="error text-danger" id="add_v_start_date_error"></small>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
                         <div class="form-group">
                             <label>End Date <span class="text-danger">*</span></label>
-                            <input type="date" name="v_end_date" class="form-control" />
+                            <input type="text" class="form-control app-date-display" data-target="v_end_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                            <input type="hidden" name="v_end_date" id="v_end_date" value="">
                             <small class="error text-danger" id="add_v_end_date_error"></small>
                         </div>
                     </div>
@@ -2160,7 +2163,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

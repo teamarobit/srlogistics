@@ -1,5 +1,10 @@
 $(document).ready(function(){
-    
+
+    // BUG-011 fix: SD-1 — read URL constants from data-* attrs (no inline JS in blade).
+    var $tollWrap         = $('[data-tollstation-list-url]').first();
+    var TOLLSTATIONS      = $tollWrap.data('tollstation-list-url') || '/tollstations';
+    var DELETE_TOLLSTATION = $tollWrap.data('tollstation-delete-url') || '';
+
     const Toast = Swal.mixin({
           toast: true,
           position: 'top',
@@ -19,7 +24,16 @@ $(document).ready(function(){
     $('#search_state_id').data('select2').$container.find('.select2-selection__placeholder').text('Filter by State');
     $('#search_city_id').data('select2').$container.find('.select2-selection__placeholder').text('Filter by City');
     
-    $('#search_tollstation, #search_state_id, #search_city_id').on('change blur', function () { 
+    // BUG-013 fix: live search (debounced keyup) on the Name field.
+    var liveSearchTimer = null;
+    $('#search_tollstation').on('keyup', function () {
+        clearTimeout(liveSearchTimer);
+        liveSearchTimer = setTimeout(function () {
+            $('#searchform').submit();
+        }, 400);
+    });
+
+    $('#search_state_id, #search_city_id').on('change', function () {
         $('#searchform').submit();
     });
     

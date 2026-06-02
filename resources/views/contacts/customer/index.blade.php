@@ -57,7 +57,7 @@
                             
                             
                             
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <button type="button" id="bulkDeleteBtn" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" style="display:none;">
                                 <i class="uil uil-trash-alt me-1"></i> Delete
                             </button>
                             
@@ -220,9 +220,6 @@ var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 var DELETE_CONTACT  = "{{-- route('contact.delete') --}}";
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.2') }}"></script>
 
 @endsection
-
-
-

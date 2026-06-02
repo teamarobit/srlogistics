@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 class Battery extends Model
 {
@@ -41,6 +42,11 @@ class Battery extends Model
     public function vendor()
     {
         return $this->belongsTo(Contact::class, 'vendor_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function repairVendor()

@@ -634,6 +634,15 @@
     padding: 14px 18px;
 }
 
+/* ── BUG-006 fix (2026-05-28): lock html scroll when modal open ─────────────
+   Bootstrap only adds overflow:hidden to <body>, but in modern Chrome the
+   scrolling root is <html> — so without this, the page beneath the modal
+   still scrolls. :has() is supported in Chrome 105+, Firefox 121+, Safari
+   15.4+. */
+html:has(body.modal-open) {
+    overflow: hidden;
+}
+
 /* ── HORIZONTAL RULE DIVIDER ─────────────────────────────────────────────── */
 .tam-hr {
     border: none;

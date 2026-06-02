@@ -102,7 +102,7 @@
                 <div class="v2-id-field-label">Driver</div>
                 <div class="v2-id-field-value">
                     {{ $vehicle->driverAllocation->contact->contact_name ?? 'Unassigned' }}
-                    <a class="v2-id-edit-link" href="javascript:void(0)"
+                    <a class="v2-id-edit-link edit-driver-btn" href="javascript:void(0)"
                        data-id="{{ $vehicle->id }}" data-bs-toggle="modal" data-bs-target="#notAssigned02">
                         <i class="uil uil-pen"></i>
                     </a>
@@ -122,7 +122,7 @@
             {{-- Actions flush right --}}
             <div class="v2-id-actions">
                 <span class="v2-id-tag-btn">Add TAG <i class="uil uil-plus"></i></span>
-                <button class="btn btn-sm" onclick="$('[data-bs-target=\'#vahanModal\']').click()" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
+                <button class="btn btn-sm" data-action="refresh-vahan" style="background:#f0f4ff;color:#032671;border:1px solid #c5d0ee;font-size:11px;font-weight:600;">
                     <i class="uil uil-refresh me-1"></i>Refresh Vahan
                 </button>
                 <a href="{{ route('vehiclemanagement.edit', $vehicle->id) }}"
@@ -278,7 +278,7 @@
                 </div>
 
                 <hr class="v2-intel-divider">
-                <a href="javascript:void(0)" class="v2-intel-action">
+                <a href="javascript:void(0)" class="v2-intel-action" data-action="track-live">
                     <i class="uil uil-map-marker"></i> Track Live
                 </a>
             </div>
@@ -325,8 +325,7 @@
                 </div>
 
                 <hr class="v2-intel-divider">
-                <a href="javascript:void(0)" class="v2-intel-action"
-                   onclick="var btn=document.querySelector('[data-bs-target=\'#emi_book\']'); if(btn) btn.click();">
+                <a href="javascript:void(0)" class="v2-intel-action" data-action="view-emi-book">
                     <i class="uil uil-book-open"></i> View EMI Book
                 </a>
             </div>
@@ -1286,7 +1285,7 @@
 
                                 @endif {{-- /if($totalTyres === 0) --}}
 
-                                @if(false) {{-- Dead code block removed --}}
+                                @if(false)
                                     <div class="table-responsive table-responsive02">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -1402,7 +1401,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                @endif {{-- /Dead code block --}}
+                                @endif
                             </div>
                         </div>
                     
@@ -3717,7 +3716,7 @@
                         <div class="form-group col-12 col-md-6">
                             <label>GPS Plan Start Date <span class="text-danger">*</span></label>
                             <input type="date" name="gps_plan_start_date" id="gps_plan_start_date" class="form-control general_date">
-                            <small class="error text-danger" id="add_plan_start_date_error"></small>
+                            <small class="error text-danger" id="add_gps_plan_start_date_error"></small>
                         </div>
                         <div class="form-group col-12 col-md-6">
                             <label>GPS Plan Validity (No. of Months) <span class="text-danger">*</span></label>
@@ -3727,7 +3726,7 @@
                         <div class="form-group col-12 col-md-6">
                             <label>Renew Date <span class="text-danger">*</span></label>
                             <input type="date" name="gps_plan_renew_date" id="gps_plan_renew_date" class="form-control" readonly>
-                            <small class="error text-danger" id="add_plan_renew_date_error"></small>
+                            <small class="error text-danger" id="add_gps_plan_renew_date_error"></small>
                         </div>
                         
                         <div class="form-group col-12 col-md-6">
@@ -6093,7 +6092,7 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.3') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
 

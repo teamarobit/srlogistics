@@ -204,8 +204,9 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="phone" id="add_phone"
-                                   placeholder="10-digit number" required maxlength="10">
+                            {{-- SD-12: intl-tel-input, default IN (+91). Init via global .telinput in layouts/app.blade.php --}}
+                            <input type="tel" class="form-control telinput" name="phone" id="add_phone"
+                                   placeholder="e.g. 9876543210" required>
                             <div class="text-danger mt-1" style="font-size:11px;" id="add_phone_error"></div>
                         </div>
                         <div class="col-md-4">
@@ -301,7 +302,8 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="phone" id="edit_phone" required maxlength="10">
+                            {{-- SD-12: intl-tel-input, default IN (+91). Init via global .telinput in layouts/app.blade.php --}}
+                            <input type="tel" class="form-control telinput" name="phone" id="edit_phone" required>
                             <div class="text-danger mt-1" style="font-size:11px;" id="edit_phone_error"></div>
                         </div>
                         <div class="col-md-4">
@@ -363,5 +365,5 @@
 window.IP_SAVE     = '{{ route("contact.insuranceprovider.save") }}';
 window.IP_JSON_URL = '{{ url("contacts/insurance-provider") }}';
 </script>
-<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.1') }}"></script>
+<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.2') }}"></script>
 @endsection

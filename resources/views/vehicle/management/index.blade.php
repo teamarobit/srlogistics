@@ -30,19 +30,22 @@
                                 <div class="search-wrap d-inline-block ms-2" style="width: 220px;">
                                   <select name="number" id="search_vehicle_number" class="form-select select2">
                                       <option value="">Filter by Registration Number</option>
-                                      <option>27AAACT2727Q1ZW1</option>
-                                      <option>TS09QAB7CC</option>
+                                      @foreach($vehicles as $v)
+                                      <option value="{{ $v->vehicle_no }}" {{ $search_number == $v->vehicle_no ? 'selected' : '' }}>
+                                          {{ $v->vehicle_no }}
+                                      </option>
+                                      @endforeach
                                   </select>
                                 </div>
 
                                 <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
-                                  <select name="type" id="search_vehicle_type" class="form-select ">
+                                  <select name="type" id="search_vehicle_type" class="form-select">
                                     <option value="">Filter by Vehicle Type</option>
                                     @foreach($vehicletype as $type)
-                                    <option value="{{ $type->id }}" >
-                                        {{ $type->name }} 
+                                    <option value="{{ $type->id }}" {{ $search_type == $type->id ? 'selected' : '' }}>
+                                        {{ $type->name }}
                                     </option>
-                                    @endforeach 
+                                    @endforeach
                                   </select>
                                 </div>
                               
@@ -80,14 +83,14 @@
                                     
                                     @forelse($datas as $key => $val)
                                     <tr>
-                                        <td>{{ $val->vehicle_no ?? '' }} <span class="text-secondary d-block">5 Years</span></td>
+                                        <td>{{ $val->vehicle_no ?? '' }}</td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td>{{ $val->size->name ?? '-' }}<br/><span class="text-secondary">{{ $val->type->name ?? '-' }}</span></td>
                                         <td>{{ $val->group->name ?? '-' }}</td>
-                                        <td>-<br/><span class="text-secondary">+91 9876543210</span></td>
-                                        <td>On Trip</td>
-                                        <td>Asit Dhar</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
                                         <td>
                                             <span class="badge bg-{{ $val->status == 'Active' ? 'success' : 'danger' }}">
                                                 {{ $val->status }}
@@ -108,8 +111,6 @@
                                                         <i class="uil uil-pen me-2"></i>Edit
                                                     </a>
                                                 </li>
-                                                {{--<li><a class="dropdown-item text-danger deleteRecord" data-id="{{ $val->id }}" data-actmodelid="14" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
-                                                
                                               </ul>
                                             </div>
                                         </td>
@@ -178,7 +179,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{asset('js/Vehicle/Management/index.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/Vehicle/Management/index.js?v=1.1') }}"></script>
 
 @endsection
 

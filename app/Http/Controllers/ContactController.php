@@ -2076,18 +2076,18 @@ class ContactController extends Controller
                         // safe unique filename
                         $filename = 'contract_' . time() . '_' . uniqid() . '.' . $extension;
                     
-                        $uploadPath = public_path('media/customer-contract');
-                    
+                        $uploadPath = public_path('medias/customer-contract');
+
                         // Ensure directory exists
                         if (!File::exists($uploadPath)) {
                             File::makeDirectory($uploadPath, 0755, true);
                         }
-                    
+
                         // Move file
                         $file->move($uploadPath, $filename);
-                    
+
                         // Save this in DB
-                        $filePath = 'media/customer-contract/' . $filename;
+                        $filePath = 'medias/customer-contract/' . $filename;
                     }
                     
                     
@@ -2098,6 +2098,7 @@ class ContactController extends Controller
                     
                     // Save Contract
                     $contract = new Customercontract();
+                    $contract->organisation_id                 = Auth::user()->organisation_id ?? 1;
                     $contract->contact_id                      = $request->contact_id;
                     $contract->contract_no                     = $request->contract_no ?? null;
                     $contract->contract_type_id                = $request->contract_type_id;
@@ -2110,9 +2111,10 @@ class ContactController extends Controller
                     $contract->remarks                         = $request->remarks ?? null;
                     $contract->created_by                      = Auth::user()->id;
                     $contract->save();
-                        
+
                     // Save Contract Detail
                     $detail  = new Customercontractdetail;
+                    $detail->organisation_id      = Auth::user()->organisation_id ?? 1;
                     $detail->customercontract_id  = $contract->id;
                     $detail->contract_file        = $filename;
                     $detail->contract_expiry_date = $request->end_date ?? null;
@@ -2139,7 +2141,7 @@ class ContactController extends Controller
                 'success' => true,
                 'data'    => $contractdata,
                 'message' => 'Customer contract data saved successfully.'
-            ]);
+            ], 200);
     
         } catch (\Throwable $e) {
             \Log::error('CustomerContractDetail save failed', [
@@ -2224,10 +2226,7 @@ class ContactController extends Controller
                 $contract = Customercontract::with('detail')->find($request->id);
     
                 if (!$contract) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Contract not found.'
-                    ], 404);
+                    throw new \Exception('Contract not found.');
                 }
     
                 if ($contract->delete()) {
@@ -2302,18 +2301,12 @@ class ContactController extends Controller
         
         $validator = Validator::make($request->all(), [
             'contract_id'       => 'required|exists:customercontracts,id',
-            //'contact_id'        => 'required|exists:contacts,id',
-            //'contract_no'       => 'required|string|max:100',
-            //'contract_type_id'  => 'required|exists:contracttypes,id',
             'advance_payment'   => 'required|numeric|min:0',
             'payment_within_day'=> 'required|integer|min:0',
             'remarks'           => 'nullable|string|max:255',
             
             'route_id'          => 'required|array|min:1',
             'route_id.*'        => 'required|exists:routes,id',
-    
-            //'start_date'        => 'nullable|date',
-            //'end_date'          => 'nullable|date|after_or_equal:start_date',
     
             'total_allowed_kilometer' => 'required_if:contract_type_id,1|numeric|min:0',
             'monthly_total_price'     => 'required_if:contract_type_id,1|decimal:0,2|min:0',
@@ -2337,13 +2330,6 @@ class ContactController extends Controller
             'route_id.min'      => 'Please select at least one route.',
             'route_id.*.exists' => 'One of the selected routes is invalid.',
         ]);
-    
-        // dates required except type 6
-        // $validator->sometimes(
-        //     ['start_date', 'end_date'],
-        //     'required|date',
-        //     fn ($i) => (int)$i->contract_type_id !== 6
-        // );
     
         // reminder rule
         $validator->sometimes(
@@ -2388,9 +2374,11 @@ class ContactController extends Controller
 
             $contract = DB::transaction(function () use ($request) {
         
-                $contract = Customercontract::with('detail')
-                    ->findOrFail($request->contract_id);
-        
+                $contract = Customercontract::with('detail')->find($request->contract_id);
+                if (! $contract) {
+                    throw new \Exception('Contract not found.');
+                }
+
                 /* ================= FILE UPLOAD ================= */
         
                 $filename = optional($contract->detail)->contract_file;
@@ -2398,14 +2386,14 @@ class ContactController extends Controller
                 if ($request->hasFile('upload_file') && $request->file('upload_file')->isValid()) {
         
                     // Delete old file
-                    if ($filename && File::exists(public_path('media/customer-contract/' . $filename))) {
-                        File::delete(public_path('media/customer-contract/' . $filename));
+                    if ($filename && File::exists(public_path('medias/customer-contract/' . $filename))) {
+                        File::delete(public_path('medias/customer-contract/' . $filename));
                     }
-        
+
                     $file = $request->file('upload_file');
                     $filename = 'contract_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        
-                    $path = public_path('media/customer-contract');
+
+                    $path = public_path('medias/customer-contract');
                     File::ensureDirectoryExists($path);
         
                     $file->move($path, $filename);
@@ -2489,9 +2477,9 @@ class ContactController extends Controller
         
             return response()->json([
                 'success' => true,
-                'data' => $contract,
+                'data'    => $contract,
                 'message' => 'Customer contract updated successfully.'
-            ]);
+            ], 200);
         
         } catch (\Throwable $e) {
         
@@ -11584,12 +11572,14 @@ class ContactController extends Controller
         $banks = Bank::orderBy('name')->get();
         
         //$tyres = Tyre::where('contact_id', $contact->id)->paginate(10, ['*'], 'tyre_page');
-         
+
+        $batteries = \App\Models\Battery::where('vendor_id', $contact->id)->paginate(10, ['*'], 'battery_page');
+
         // Log activity
         $description = 'Retrieve a load vendor named '.$contact->contact_name.' to edit.';
         $useractivity = $this->storeUseractivity(69, 5, Auth::user()->id, $contact->id, $description);
-         
-        return view('contacts.batteryvendor.edit', compact('contact','customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks')); 
+
+        return view('contacts.batteryvendor.edit', compact('contact','customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks', 'batteries')); 
                                                     
     }
     
@@ -12197,7 +12187,9 @@ class ContactController extends Controller
                             $q->where('iso2', 'IN');
                         })->orderBy('name')->get();
 
-        return view('contacts.sparevendor.index', compact('contacts', 'cities', 'cotype', 'search_name', 'search_city'));
+        $specMap = WsSparePartCategory::pluck('name', 'id');
+
+        return view('contacts.sparevendor.index', compact('contacts', 'cities', 'cotype', 'search_name', 'search_city', 'specMap'));
     }
 
     public function createSpareVendor(Request $request)

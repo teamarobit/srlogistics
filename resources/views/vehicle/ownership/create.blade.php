@@ -23,7 +23,7 @@
                     <div class="container-fluid page-head">
                         <div class="row align-items-end">
                             <div class="col-12 col-md-6">
-                                <h5>Add Ownership</h5>
+                                <h5>Add Ownership Type</h5>
                             </div>
                         </div>
                     </div>
@@ -106,9 +106,9 @@
 
 @section('js')
 <script>
-    var LISTING = "{{ route('vehicleownership.index') }}";
+var LISTING = "{{ route('vehicleownership.index') }}";
 </script>
-<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/ownership/create.js?v=1.2')}}"></script>
 
 @endsection
 

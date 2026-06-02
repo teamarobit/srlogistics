@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Gpsprovider extends Model
 {
     use SoftDeletes;
-    
+
+    protected $fillable = [
+        'organisation_id',
+        'name',
+        'code',
+        'status',
+        'created_by',
+        'updated_by',
+        'deleted_by',
+    ];
+
     public function vehiclegps()
     {
         return $this->hasMany(Vehiclegps::class, 'gpsprovider_id');

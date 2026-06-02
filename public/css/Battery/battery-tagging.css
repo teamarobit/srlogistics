@@ -222,6 +222,8 @@
     align-items: center;
     gap: 5px;
     transition: background 0.15s;
+    position: relative;
+    z-index: 1;
 }
 .btn-vbt-add:hover {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
@@ -327,6 +329,8 @@
     color: #94a3b8;
     margin-bottom: 16px;
     transition: border-color 0.15s;
+    position: relative;
+    z-index: 1;
 }
 .vbt-slot-card:hover {
     border-color: #3b82f6;
@@ -467,6 +471,7 @@
 .vbt-svg-panel {
     position: sticky;
     top: 75px;
+    z-index: 0;
     padding: 16px;
     box-shadow: 0 0 10px rgba(0,0,0,0.10);
     border-radius: 8px;

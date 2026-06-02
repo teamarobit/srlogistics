@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/RTO/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/RTO/create.css?v=1.1') }}">
 
 
 
@@ -26,16 +26,16 @@
                               
                                 <a href="{{ route('rto.create') }}" class="btn btn-theme mb-0 ms-2">
                                   <i class="uil uil-plus me-1"></i>
-                                  RTO Checkpoint
+                                  Add RTO Checkpoint
                                 </a>
-                                
-                                <form action="{{ route('rto.index') }}" id="searchform" class="d-inline-block d-flex">
-                                      
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 125px;">
+
+                                <form action="{{ route('rto.index') }}" method="GET" id="searchform" class="d-inline-block d-flex">
+
+                                  <div class="search-wrap filter-w-125 d-inline-block ms-2">
                                       <input type="text" name="rto" id="search_rto" value="{{ old('rto', $search_rto_name) }}" class="form-control" placeholder="Search by Name" />
                                   </div>
-                                  
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 120px;">
+
+                                  <div class="search-wrap filter-w-120 d-inline-block ms-2">
                                     <select name="state_id" id="search_state_id" class="form-control select2 dependent-select" data-target="search_city_id">
                                         <option value="">-- Select State --</option>
                                         @foreach($states as $state)
@@ -45,27 +45,31 @@
                                         @endforeach
                                     </select>
                                   </div>
-                                  
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 110px;">
+
+                                  <div class="search-wrap filter-w-110 d-inline-block ms-2">
                                     <select name="city_id" id="search_city_id" class="form-control select2">
                                         <option value="">-- Select City --</option>
                                         @foreach($cities as $city)
-                                            <option value="{{ $city->id }}" 
+                                            <option value="{{ $city->id }}"
                                                 {{ (int)$search_city === $city->id ? 'selected' : '' }}>
                                                 {{ $city->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                   </div>
-                                  
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 125px;">
+
+                                  <div class="search-wrap filter-w-125 d-inline-block ms-2">
                                     <select name="search_status" id="search_status" class="form-select">
                                         <option value="">Filter by Status</option>
                                         <option value="Active" @if($search_status == 'Active') selected @endif>Active</option>
                                         <option value="Inactive" @if($search_status == 'Inactive') selected @endif>Inactive</option>
                                     </select>
                                   </div>
-                                  
+
+                                  <button type="submit" class="btn btn-secondary ms-2 d-flex align-items-center">
+                                      <i class="uil uil-search"></i>
+                                  </button>
+
                                 </form>
                                 
                                 <a href="{{ route('rto.index') }}" class="btn btn-primary ms-1 d-flex"><i class="uil uil-sync me-1"></i>Reset</a>
@@ -133,8 +137,11 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted">
+                                            <td colspan="9" class="text-center text-muted">
                                                 No RTO Checkpoint found.
+                                                @if($search_rto_name || $search_state || $search_city || $search_status)
+                                                    <a href="{{ route('rto.index') }}" class="ms-2">Clear filters</a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforelse
@@ -189,7 +196,7 @@
 var DELETE_RTO  = "{{route('rto.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/rto/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/rto/index.js?v=1.1')}}"></script>
 
 @endsection
 

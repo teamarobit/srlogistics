@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
     
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreBranchRequest;
+use App\Http\Requests\UpdateBranchRequest;
 
 use App\Models\State;
 use App\Models\City;
@@ -20,7 +21,6 @@ use Illuminate\Support\Arr;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Closure;
 use Illuminate\Support\Fluent;
@@ -83,72 +83,12 @@ class BranchController extends Controller
     }
     
     
-    public function store(Request $request)
-    {   
-        
+    public function store(StoreBranchRequest $request)
+    {
         $request->merge([
-            'phone'    => preg_replace('/\s+/', '', $request->phone),
-            'branch_owner_phone'    => preg_replace('/\s+/', '', $request->branch_owner_phone),
+            'phone'              => preg_replace('/\s+/', '', $request->phone),
+            'branch_owner_phone' => preg_replace('/\s+/', '', $request->branch_owner_phone),
         ]);
-        
-        $validator = Validator::make($request->all(), [
-            'branch_location'               => 'required|max:100|unique:branches,location', // <--- added unique
-            
-            'branch_type'                   => 'required|array',
-            'branch_type.*'                 => 'in:Head Office,Branch Office',
-
-            'start_date'                    => 'nullable|date_format:Y-m-d|before_or_equal:today', 
-            'branch_code'                   => 'required', 
-            'branch_head_name'              => 'required', 
-            //'ph_code'                     => 'nullable',
-            'phone'                         => 'required|digits:10',
-            'no_of_employee'                => 'required|integer|min:0', 
-            'address'                       => 'required|string|max:1000',
-            'state_id'                      => 'required|exists:states,id',
-            'city_id'                       => 'required|exists:cities,id',
-            'post_code'                     => 'required|digits:6',
-            'branch_ownership'              => 'required|in:Owned,Rental', 
-            
-            // Conditional: required when branch_ownership == Owned
-            
-        
-            // Conditional: required when branch_ownership == Rental
-            'branch_owner_name'             => 'exclude_unless:branch_ownership,Rental|required|string|max:255',
-            'branch_owner_phone_code'       => 'nullable', 
-            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
-            'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
-            'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
-
-            'electricity_service_provider'  => 'nullable|string|max:255',
-            'electricity_consumer_number'   => 'nullable|max:255',
-            'documents'                     => 'nullable|array',
-            'documents.*'                   => 'file|max:10240',
-            'status'                        => 'required|in:Active,Inactive',
-
-        ], [
-            'required' => 'This field is required.',
-            'max'      => 'Maximum 100 characters allowed.',
-            'unique'   => 'This value already exists.',
-            'numeric'  => 'Only numeric values are allowed.',
-            'min'      => 'Value must be at least :min.',
-            'max'      => 'Maximum allowed value is :max.',
-            'in'       => 'Invalid selection.',
-            'integer'  => 'Only whole numbers are allowed.',
-        ]);
-
-
-        if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-                //'input' => request()->all(), // optional: log the input data for context
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
-        }
 
         if (in_array('Head Office', (array) $request->branch_type)) {
             $headOfficeExists = Branch::where('city_id', $request->city_id)
@@ -265,7 +205,7 @@ class BranchController extends Controller
         $branch = Branch::with(['files','state','city'])->find($id);
         
         if($branch == NULL){
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! skillset not found.']);
+            return response()->json(['success' => false, 'data' => [], 'message' => 'Branch not found.'], 422);
         }
         
         $states = State::whereHas('country', function ($q) {
@@ -282,8 +222,8 @@ class BranchController extends Controller
     }
     
     
-    public function update(Request $request)
-    {   
+    public function update(UpdateBranchRequest $request)
+    {
         $id = $request->get('branchid');
 
         if (!$id) {
@@ -293,73 +233,11 @@ class BranchController extends Controller
                 'message' => 'Branch ID is missing.'
             ], 422);
         }
-        
+
         $request->merge([
-            'phone'    => preg_replace('/\s+/', '', $request->phone),
-            'branch_owner_phone'    => preg_replace('/\s+/', '', $request->branch_owner_phone),
+            'phone'              => preg_replace('/\s+/', '', $request->phone),
+            'branch_owner_phone' => preg_replace('/\s+/', '', $request->branch_owner_phone),
         ]);
-        
-        // Step 1: Validate main fields and dynamic rows
-        $validator = Validator::make($request->all(), [
-            'branch_location' => [
-                'required',
-                'max:100',
-                Rule::unique('branches', 'location')->ignore($id, 'id'),
-            ],
-            'branch_type'                   => 'required|array',
-            'branch_type.*'                 => 'in:Head Office,Branch Office',
-
-            'start_date'                    => 'nullable|date_format:Y-m-d|before_or_equal:today', 
-            'branch_code'                   => 'required', 
-            'branch_head_name'              => 'required', 
-            //'ph_code'                     => 'nullable',
-            'phone'                         => 'required|digits:10',
-            'no_of_employee'                => 'required|integer|min:0', 
-            'address'                       => 'required|string|max:1000',
-            'state_id'                      => 'required|exists:states,id',
-            'city_id'                       => 'required|exists:cities,id',
-            'post_code'                     => 'required|digits:6',
-            'branch_ownership'              => 'required|in:Owned,Rental', 
-            
-            // Conditional: required when branch_ownership == Owned
-            
-        
-            // Conditional: required when branch_ownership == Rental
-            'branch_owner_name'             => 'exclude_unless:branch_ownership,Rental|required|string|max:255',
-            'branch_owner_phone_code'       => 'nullable', 
-            'branch_owner_phone'            => 'exclude_unless:branch_ownership,Rental|required|digits:10',
-            'rent_amount'                   => 'exclude_unless:branch_ownership,Rental|required|numeric|min:1',
-            'rent_due_count'                => 'exclude_unless:branch_ownership,Rental|required|integer|min:1|max:20',
-
-            'electricity_service_provider'  => 'nullable|string|max:255',
-            'electricity_consumer_number'   => 'nullable|max:255',
-            'documents'                     => 'nullable|array',
-            'documents.*'                   => 'file|max:10240',
-            'status'                        => 'required|in:Active,Inactive',
-
-        ], [
-            'required' => 'This field is required.',
-            'max'      => 'Maximum 100 characters allowed.',
-            'unique'   => 'This value already exists.',
-            'numeric'  => 'Only numeric values are allowed.',
-            'min'      => 'Value must be at least :min.',
-            'max'      => 'Maximum allowed value is :max.',
-            'in'       => 'Invalid selection.',
-            'integer'  => 'Only whole numbers are allowed.',
-        ]);
-    
-        
-        if ($validator->fails()) {
-            \Log::error('Validation failed', [
-                'errors' => $validator->errors()->toArray(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'data' => $validator->errors(),
-                'message' => 'Please check validation errors.'
-            ], 422);
-        }
 
         if (in_array('Head Office', (array) $request->branch_type)) {
             $headOfficeExists = Branch::where('city_id', $request->city_id)

@@ -1,6 +1,9 @@
 
 $(document).ready(function() {
-    
+
+    // BUG-011 fix: SD-1 — no inline JS in blade. Read constants from form data attrs.
+    var TOLLSTATIONS = $('form#addForm').data('tollstation-list-url') || '/tollstations';
+
     const Toast = Swal.mixin({
           toast: true,
           position: 'top',
@@ -65,11 +68,51 @@ $(document).ready(function() {
     }
     
     
-    $(document).on('click', '#addBtn', function () {
-        $('form#addForm').submit();
+    // BUG-009 fix: numeric-only guard on charge fields (.decimalonly).
+    // Strips anything that isn't a digit or a single decimal point on every keystroke.
+    $(document).on('input', '.decimalonly', function () {
+        var v = $(this).val();
+        // remove anything that's not digit or dot
+        v = v.replace(/[^0-9.]/g, '');
+        // keep only the first dot
+        var firstDot = v.indexOf('.');
+        if (firstDot !== -1) {
+            v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+        }
+        $(this).val(v);
     });
-    
-    $('form#addForm').on('submit', function () {
+
+
+    // BUG-005 fix: clear stale "This field is required." messages
+    // as soon as the field becomes valid.
+    function clearErrorFor(name) {
+        // strip array notation (e.g. quantity[0] -> quantity.0) for id lookup
+        var key = name.replace(/\[(\d+)\]/g, '.$1');
+        $('#add_' + key + '_error').text('');
+    }
+
+    $(document).on('input change', 'form#addForm input, form#addForm textarea, form#addForm select', function () {
+        var $el  = $(this);
+        var name = $el.attr('name');
+        if (!name) return;
+
+        var val = $el.is(':radio') || $el.is(':checkbox')
+            ? $('form#addForm [name="' + name + '"]:checked').val()
+            : $el.val();
+
+        if (val !== undefined && val !== null && String(val).trim() !== '') {
+            clearErrorFor(name);
+        }
+    });
+
+    $(document).on('click', '#addBtn', function (e) {
+        e.preventDefault();
+        $('form#addForm').trigger('submit');
+    });
+
+    $('form#addForm').on('submit', function (e) {
+
+        e.preventDefault();
 
         var formData = new FormData(this);
     

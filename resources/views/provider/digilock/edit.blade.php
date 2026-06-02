@@ -2,7 +2,8 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/digilock-edit.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-edit.css?v=1.1') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.1') }}">
 
 
 @endsection
@@ -21,7 +22,17 @@
                 <div class="topbar">
                     <div class="container-fluid page-head">
                         <div class="row align-items-end">
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-12">
+                                {{-- BUG-008 — breadcrumb --}}
+                                <div class="dl-breadcrumb">
+                                    <a href="{{ route('adminconsole.index') }}">Admin Console</a>
+                                    <span class="sep">›</span>
+                                    <span>Provider Master</span>
+                                    <span class="sep">›</span>
+                                    <a href="{{ route('digilockprovider.index') }}">Digital Lock Provider</a>
+                                    <span class="sep">›</span>
+                                    Edit Digital Lock Provider
+                                </div>
                                 <h5>Edit Digital Lock Provider</h5>
                             </div>
                         </div>
@@ -100,6 +111,6 @@
 var LISTING = "{{ route('digilockprovider.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/provider/digilock/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/provider/digilock/edit.js?v=1.2')}}"></script>
 
 @endsection

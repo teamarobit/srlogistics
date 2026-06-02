@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/gps-index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/gps-index.css?v=2.0') }}">
 
 
 @endsection
@@ -45,19 +45,69 @@
                     <table class="table table-hover invoice-table mb-0">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Code</th>
-                                <th>Status</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_dir' => ($sort_by === 'name' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Name
+                                        @if($sort_by === 'name')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'code', 'sort_dir' => ($sort_by === 'code' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Code
+                                        @if($sort_by === 'code')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_dir' => ($sort_by === 'status' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Status
+                                        @if($sort_by === 'status')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th>Created By</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => ($sort_by === 'created_at' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Created At
+                                        @if($sort_by === 'created_at')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>Updated By</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'updated_at', 'sort_dir' => ($sort_by === 'updated_at' && $sort_dir === 'asc') ? 'desc' : 'asc']) }}" class="sort-link">
+                                        Updated At
+                                        @if($sort_by === 'updated_at')
+                                            <i class="uil uil-arrow-{{ $sort_dir === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="uil uil-arrows-v sort-idle"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th class="text-end">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
+
                             @forelse($datas as $key => $value)
                             <tr>
-                                
-                                <td>{{ $value->name ?? '' }}</td>
+
+                                <td>
+                                    <a href="{{ route('gpsprovider.edit', $value->id) }}" class="text-reset fw-medium name-link">{{ $value->name ?? '' }}</a>
+                                </td>
                                 <td>{{ $value->code ?? '' }}</td>
                                 <td>
                                     <span class="badge bg-{{ $value->status == 'Active' ? 'success' : 'danger' }}">
@@ -65,37 +115,48 @@
                                     </span>
                                 </td>
                                 <td>
-                                    {{$value->createdby?->name}}
-                                    <span class="text-secondary d-block">{{$value->createdby?->email}}</span>
+                                    {{ $value->createdBy?->name }}
+                                    <span class="text-secondary d-block">{{ $value->createdBy?->email }}</span>
                                 </td>
+                                <td>{{ $value->created_at ? $value->created_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>
+                                    {{ $value->updatedBy?->name ?? '—' }}
+                                    <span class="text-secondary d-block">{{ $value->updatedBy?->email ?? '' }}</span>
+                                </td>
+                                <td>{{ $value->updated_at ? $value->updated_at->format('d-M-Y h:i A') : '—' }}</td>
                                 <td class="text-end">
                                     <div class="dropdown dot-dd">
-                                      <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                      <span class="dropdown-toggle" id="moreTable_{{ $value->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="uil uil-ellipsis-h"></i>
                                       </span>
-                                      <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
+                                      <ul class="dropdown-menu" aria-labelledby="moreTable_{{ $value->id }}">
                                         <li><a class="dropdown-item" href="{{ route('gpsprovider.edit', $value->id) }}"><i class="uil uil-pen me-2"></i>Edit</a></li>
-                                        {{--<li><a class="dropdown-item text-danger deleteRecord" data-id="{{ $value->id }}" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
                                       </ul>
                                     </div>
                                 </td>
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">
+                                    <td colspan="8" class="text-center text-muted">
                                         No data found.
                                     </td>
                                 </tr>
                             @endforelse
-                           
-                            
+
+
                         </tbody>
                     </table>
                 </div>
                 
                 
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="text-muted small">
+                        Showing {{ $datas->firstItem() ?? 0 }}–{{ $datas->lastItem() ?? 0 }} of {{ $datas->total() }}
+                    </div>
+                </div>
+
                 @if ($datas->hasPages())
-                <nav aria-label="Page navigation" class="mt-4">
+                <nav aria-label="Page navigation" class="mt-2">
                     <ul class="pagination justify-content-end">
                 
                         {{-- Previous --}}
@@ -144,12 +205,8 @@
 
 @section('js')
 
-<script>
-    var LISTING      = "{{route('gpsprovider.index')}}";
-    
-    var DELETE_DATA  = "{{route('gpsprovider.delete')}}";
-    
-   
-</script>
-<script type="text/javascript" src="{{ asset('customjs/provider/gps/index.js') }}"></script>
+<div id="page-config"
+     data-listing="{{ route('gpsprovider.index') }}"
+     data-delete-url="{{ route('gpsprovider.delete') }}"></div>
+<script type="text/javascript" src="{{ asset('customjs/provider/gps/index.js?v=2.0') }}"></script>
 @endsection

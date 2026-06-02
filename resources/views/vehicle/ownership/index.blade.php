@@ -23,7 +23,7 @@
                           <div class="row align-items-end">
                               <div class="col-12">
                                   <h5 class="d-inline-block mb-0">Ownership Type</h5>
-                                  <a href="{{ route('vehicleownership.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Ownership</a>
+                                  <a href="{{ route('vehicleownership.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Ownership Type</a>
                                   
                                   <form action="{{ route('vehicleownership.index') }}" id="searchform" class="d-inline-block">
                                       <div class="search-wrap d-inline-block ms-2" style="width: 180px;">

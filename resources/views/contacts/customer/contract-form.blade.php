@@ -109,17 +109,19 @@
                                     <label>Start Date <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input type="date" name="start_date" class="form-control start_date">
+                                    <input type="text" name="start_date_display" id="start_date_display" class="form-control start_date" placeholder="Select Start Date" readonly>
+                                    <input type="hidden" name="start_date" id="start_date_hidden">
                                     <small class="error text-danger" id="add_start_date_error"></small>
                                 </div>
                             </div>
-                          
+
                             <div class="form-group row">
                                 <div class="col-12 col-md-3">
                                     <label>End Date <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input type="date" name="end_date" class="form-control end_date">
+                                    <input type="text" name="end_date_display" id="end_date_display" class="form-control end_date" placeholder="Select End Date" readonly>
+                                    <input type="hidden" name="end_date" id="end_date_hidden">
                                     <small class="error text-danger" id="add_end_date_error"></small>
                                 </div>
                             </div>
@@ -212,6 +214,7 @@
                           
                             <div class="text-right">
                               <button id="addContractBtn" class="btn btn-dark mb-4">Save</button>
+                              <a href="{{ route('contact.customer.edit', $customerid) }}" class="btn btn-danger mb-4 ms-2">Cancel</a>
                             </div>
                         </form>         
                     </div>
@@ -275,7 +278,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.2') }}"></script>
 
 @endsection
 

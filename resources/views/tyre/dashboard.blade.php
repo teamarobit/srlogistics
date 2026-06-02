@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/fleet/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.8') }}">
+<link rel="stylesheet" href="{{ asset('css/tyre/dashboard.css?v=2.9') }}">
 @endsection
 
 @section('content')
@@ -153,7 +153,7 @@
                                                         <label>Tyre Status</label>
                                                         <select class="form-select" name="f_status">
                                                             <option value="">All</option>
-                                                            @foreach(['Ready to Use','Warranty Claim','Re-threading','Scrap','Allocated','Direct Fitment','Yet to Decide'] as $s)
+                                                            @foreach(['Ready to Use','Warranty Claim','Re-threading','Scrap','Allocated','Direct Fitment','Yet to Decide','Extra on Vehicle'] as $s)
                                                                 <option value="{{ $s }}" {{ request('f_status') == $s ? 'selected' : '' }}>{{ $s }}</option>
                                                             @endforeach
                                                         </select>
@@ -173,6 +173,8 @@
                                                             <option value="New" {{ request('f_condition') == 'New' ? 'selected' : '' }}>New</option>
                                                             <option value="Used" {{ request('f_condition') == 'Used' ? 'selected' : '' }}>Used</option>
                                                             <option value="Re-thread" {{ request('f_condition') == 'Re-thread' ? 'selected' : '' }}>Re-thread</option>
+                                                            <option value="Retread" {{ request('f_condition') == 'Retread' ? 'selected' : '' }}>Retread</option>
+                                                            <option value="Used Good" {{ request('f_condition') == 'Used Good' ? 'selected' : '' }}>Used Good</option>
                                                         </select>
                                                     </div>
                                                     <div class="vehicletype ms-1">
@@ -300,6 +302,8 @@
                                                             <option value="New" {{ request('f2_condition') == 'New' ? 'selected' : '' }}>New</option>
                                                             <option value="Used" {{ request('f2_condition') == 'Used' ? 'selected' : '' }}>Used</option>
                                                             <option value="Re-thread" {{ request('f2_condition') == 'Re-thread' ? 'selected' : '' }}>Re-thread</option>
+                                                            <option value="Retread" {{ request('f2_condition') == 'Retread' ? 'selected' : '' }}>Retread</option>
+                                                            <option value="Used Good" {{ request('f2_condition') == 'Used Good' ? 'selected' : '' }}>Used Good</option>
                                                         </select>
                                                     </div>
                                                     <div class="vehicletype ms-1">
@@ -634,6 +638,8 @@
                                                             <option value="New" {{ request('f6_condition') == 'New' ? 'selected' : '' }}>New</option>
                                                             <option value="Used" {{ request('f6_condition') == 'Used' ? 'selected' : '' }}>Used</option>
                                                             <option value="Re-thread" {{ request('f6_condition') == 'Re-thread' ? 'selected' : '' }}>Re-thread</option>
+                                                            <option value="Retread" {{ request('f6_condition') == 'Retread' ? 'selected' : '' }}>Retread</option>
+                                                            <option value="Used Good" {{ request('f6_condition') == 'Used Good' ? 'selected' : '' }}>Used Good</option>
                                                         </select>
                                                     </div>
                                                     <div class="vehicletype ms-1">
@@ -733,6 +739,8 @@
                                                             <option value="New" {{ request('f7_condition') == 'New' ? 'selected' : '' }}>New</option>
                                                             <option value="Used" {{ request('f7_condition') == 'Used' ? 'selected' : '' }}>Used</option>
                                                             <option value="Re-thread" {{ request('f7_condition') == 'Re-thread' ? 'selected' : '' }}>Re-thread</option>
+                                                            <option value="Retread" {{ request('f7_condition') == 'Retread' ? 'selected' : '' }}>Retread</option>
+                                                            <option value="Used Good" {{ request('f7_condition') == 'Used Good' ? 'selected' : '' }}>Used Good</option>
                                                         </select>
                                                     </div>
                                                     <div class="vehicletype ms-1">
@@ -818,6 +826,8 @@
                                                             <option value="New" {{ request('f8_condition') == 'New' ? 'selected' : '' }}>New</option>
                                                             <option value="Used" {{ request('f8_condition') == 'Used' ? 'selected' : '' }}>Used</option>
                                                             <option value="Re-thread" {{ request('f8_condition') == 'Re-thread' ? 'selected' : '' }}>Re-thread</option>
+                                                            <option value="Retread" {{ request('f8_condition') == 'Retread' ? 'selected' : '' }}>Retread</option>
+                                                            <option value="Used Good" {{ request('f8_condition') == 'Used Good' ? 'selected' : '' }}>Used Good</option>
                                                         </select>
                                                     </div>
                                                     <div class="vehicletype ms-1">
@@ -896,5 +906,5 @@
 @endsection
 
 @section('js')
-<script type="text/javascript" src="{{ asset('customjs/tyre/dashboard.js?v=2.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/tyre/dashboard.js?v=2.3') }}"></script>
 @endsection

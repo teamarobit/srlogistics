@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/create.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Customer/contract-master.css?v=1.0') }}">
 
 
 @endsection
@@ -113,10 +113,10 @@
                     @if($contracts->isNotEmpty())
                     <nav class="mt-4">
                         {{ $contracts->appends([
-                            'cotype' => request('cotype'),
-                            'name' => request('name'),
-                            'start_date' => request('start_date'),
-                            'end_date' => request('end_date'),
+                            'customer'        => request('customer'),
+                            'contractno'      => request('contractno'),
+                            'start_daterange' => request('start_daterange'),
+                            'end_daterange'   => request('end_daterange'),
                         ])->links('pagination::bootstrap-5') }}
                     </nav>
                     @endif
@@ -133,43 +133,7 @@
 
 @section('js')
 
-<script>
-$(function() {
-  $('input[name="time_hr_from"]').daterangepicker({
-    singleDatePicker: true,
-    showDropdowns: true,
-    minYear: 1901,
-    maxYear: parseInt(moment().format('YYYY'),10)
-  }, function(start, end, label) {
-    var years = moment().diff(start, 'years');
-    alert("You are " + years + " years old!");
-  });
-});
-
-$(document).ready(function(){
-    
-    var CONTRACTS = "{{ route('contact.customer.contract.list') }}";
-    
-    $('.loading-chargable').click(function(){
-        $('.loading-wrap').toggle();
-    })
-    $('.unloading-chargable').click(function(){
-        $('.unloading-wrap').toggle();
-    })
-    $('.dbtn-chargable').click(function(){
-        $('.rate-wrap').toggle();
-    })
-    $('.set-tax').click(function(){
-        $('.tax-wrap').toggle();
-    })
-    $('.toll-chargable').click(function(){
-        $('.toll-wrap').toggle();
-    })
-    
-});
-</script>
-
-<script type="text/javascript" src="{{ asset('customjs/contact/customer/contract-list.js') }}"></script>
+<script src="{{ asset('customjs/contact/customer/contract-list.js') }}"></script>
 
 @endsection
 

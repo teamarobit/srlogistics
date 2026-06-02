@@ -30,15 +30,18 @@
                                 <div class="row align-items-center">
                                     <div class="col-11 pe-0">                       
                                         <div class="gst-inputbd" id="gstForm">
-                                            <input type="text" name="gst_number" placeholder="27AAACT2727Q1ZW" class="gstinput form-control" 
+                                            <input type="text" name="gst_number" placeholder="27AAACT2727Q1ZW" class="gstinput form-control"
                                             id="gstNumber" />
+<<<<<<< HEAD
                                             
+=======
+>>>>>>> 409a53bb4e25279e903c697f24369bbd5b80febd
                                             <!--<button class="submit-btn" type="submit">-->
                                             <!--    <i class="uil uil-search"></i>Fetch Info-->
                                             <!--</button>-->
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-1">
                                         <div class="sec-tooltip">
                                             <i class="uil uil-info-circle"></i>
@@ -46,7 +49,12 @@
                                         </div>
                                     </div>
                                 </div>
+<<<<<<< HEAD
                                 <small class="error text-danger" id="add_gst_number_error"></small>
+=======
+                                {{-- SD-4: error below field, never beside input --}}
+                                <small class="error text-danger d-block mt-1" id="add_gst_number_error"></small>
+>>>>>>> 409a53bb4e25279e903c697f24369bbd5b80febd
                                 <span class="gst-format">Format: 27AAACT2727Q1ZW</span>
                             </div>
                         </div>
@@ -490,11 +498,13 @@
                             <ul class="nav nav-pills" id="pills-tab" role="tablist">
                                 
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#contract" type="button" role="tab">
-                                        Contract 
-                                    </button>
-                                </li> 
-                                
+                                    <span data-bs-toggle="tooltip" data-bs-title="Save the customer first to enable this tab">
+                                        <button class="nav-link disabled" type="button" role="tab" style="pointer-events:none;">
+                                            Contract
+                                        </button>
+                                    </span>
+                                </li>
+
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#document" type="button" role="tab">
                                         Document
@@ -502,21 +512,27 @@
                                 </li>
 
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#locations" type="button" role="tab">
-                                        Locations
-                                    </button>
+                                    <span data-bs-toggle="tooltip" data-bs-title="Save the customer first to enable this tab">
+                                        <button class="nav-link disabled" type="button" role="tab" style="pointer-events:none;">
+                                            Location
+                                        </button>
+                                    </span>
                                 </li>
-                                
+
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#contract-ricing" type="button" role="tab">
-                                        Rate Chart
-                                    </button>
+                                    <span data-bs-toggle="tooltip" data-bs-title="Save the customer first to enable this tab">
+                                        <button class="nav-link disabled" type="button" role="tab" style="pointer-events:none;">
+                                            Rate Chart
+                                        </button>
+                                    </span>
                                 </li>
-                                
+
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
-                                        Activity
-                                    </button>
+                                    <span data-bs-toggle="tooltip" data-bs-title="Save the customer first to enable this tab">
+                                        <button class="nav-link disabled" type="button" role="tab" style="pointer-events:none;">
+                                            Activity
+                                        </button>
+                                    </span>
                                 </li>
                                 
                             </ul>

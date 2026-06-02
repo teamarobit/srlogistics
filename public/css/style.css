@@ -1291,6 +1291,12 @@ hr{
     background: #ededf7;
     border-radius: 5px;
 }
+.sidemenu .accordion-body p a.active-nav {
+    color: #032671 !important;
+    background: #ededf7;
+    border-radius: 5px;
+    font-weight: 700 !important;
+}
 .sidemenu .accordion-body{
     background: #f9f9f9;
     border: 0;
@@ -1914,6 +1920,19 @@ hr{
 }
 .megamenu-bd .link-list:nth-child(odd) {
   background-color: #eff4ff;
+}
+/* Active state for mega-menu items — highlights current page (BUG-07) */
+.link-list ul li.active > a {
+    color: #1a4fa0;
+    font-weight: 700;
+    background: #eff4ff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-left: -8px;
+}
+.nav-link.active {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
 }
 .bootstrap-tagsinput .tag{
     padding: 0px 5px;
