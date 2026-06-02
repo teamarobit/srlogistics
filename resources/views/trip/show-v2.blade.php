@@ -391,7 +391,7 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header">
                                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2VehCollapse">
-                                                        Select from Suggested Vehicles <span class="badge bg-primary ms-2">3</span>
+                                                        Select from Suggested Vehicles <span class="ms-2 fw-bold d-inline-flex align-items-center justify-content-center" style="background:#16a34a; color:#fff; min-width:30px; height:30px; border-radius:50%; font-size:1rem; line-height:1; box-shadow:0 2px 8px rgba(22,163,74,0.5);">3</span>
                                                     </button>
                                                 </h2>
                                                 <div id="td2VehCollapse" class="accordion-collapse collapse show">
