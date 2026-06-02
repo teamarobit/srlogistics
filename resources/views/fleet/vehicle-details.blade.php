@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.8') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.0') }}">
 
 @endsection
 
@@ -5854,7 +5854,6 @@
                                                     <th class="text-end">Total Repair Cost (₹)</th>
                                                     <th>Insurance Claim</th>
                                                     <th>Attachment</th>
-                                                    <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -5912,10 +5911,6 @@
                                                             <span class="acc-attach-count">3</span>
                                                         </a>
                                                     </td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
                                                 </tr>
 
                                                 {{-- Row 2 — Major accident, driver injury yes, no driver mistake --}}
@@ -5969,10 +5964,6 @@
                                                             <span class="acc-attach-count">6</span>
                                                         </a>
                                                     </td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
                                                 </tr>
 
                                                 {{-- Row 3 — Minor accident, green RAG, no claim --}}
@@ -6022,10 +6013,6 @@
                                                             <i class="uil uil-paperclip"></i> Photos
                                                             <span class="acc-attach-count">2</span>
                                                         </a>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>
