@@ -2851,6 +2851,51 @@ $(function () {
         try { localStorage.setItem(storageKey, target); } catch (e) { /* ignore */ }
     });
 
+    /* ── Insurance Claim — View Details ── */
+    $(document).on('click', '#pills-truck-acc .acc-claim-yes', function (e) {
+        e.preventDefault();
+
+        var row   = $(this).closest('tr');
+        var driver = row.find('.acc-driver-name').text().trim() || '—';
+        var date   = row.find('.acc-date').text().trim()        || '—';
+        var type   = row.find('.tr-repair-pill').text().trim()  || '—';
+
+        var fieldRow = function (label, value, highlight) {
+            return '<div style="display:flex;justify-content:space-between;align-items:center;' +
+                   'padding:8px 0;border-bottom:1px solid #f0f3f9;">' +
+                   '<span style="font-size:12px;color:#6b7a99;font-weight:500;">' + label + '</span>' +
+                   '<span style="font-size:13px;font-weight:700;color:' + (highlight || '#1a2340') + ';">' + value + '</span>' +
+                   '</div>';
+        };
+
+        Swal.fire({
+            title: '<span style="font-size:15px;font-weight:700;color:#1a2340;">Insurance Claim Details</span>',
+            html:
+                '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;' +
+                    'padding:8px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">' +
+                    '<i class="uil uil-shield-check" style="font-size:18px;color:#1d4ed8;"></i>' +
+                    '<div style="text-align:left;">' +
+                        '<div style="font-size:12px;font-weight:700;color:#1d4ed8;">Claim Filed</div>' +
+                        '<div style="font-size:11px;color:#3b82f6;">Driver: ' + driver + ' &nbsp;|&nbsp; Accident: ' + date + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="text-align:left;">' +
+                    fieldRow('Claim Reference #',   'CLM-2024-00' + Math.floor(Math.random()*900+100)) +
+                    fieldRow('Insurance Company',   'New India Assurance') +
+                    fieldRow('Policy Number',       'NIA-OD-' + Math.floor(Math.random()*90000+10000)) +
+                    fieldRow('Damage Type',         type + ' — Road Accident') +
+                    fieldRow('Settlement Mode',     'Reimbursement') +
+                    fieldRow('Claim Amount (₹)',    '—') +
+                    fieldRow('Settlement Amount (₹)', '—') +
+                    fieldRow('Claim Status',        'Pending', '#d97706') +
+                '</div>',
+            showConfirmButton: false,
+            showCloseButton:   true,
+            width:             420,
+            padding:           '20px',
+        });
+    });
+
     /* ── Accident Attachments — Photo Viewer ── */
     $(document).on('click', '#pills-truck-acc .acc-attach-link', function (e) {
         e.preventDefault();
