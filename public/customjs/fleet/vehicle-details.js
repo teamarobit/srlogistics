@@ -2851,6 +2851,43 @@ $(function () {
         try { localStorage.setItem(storageKey, target); } catch (e) { /* ignore */ }
     });
 
+    /* ── Accident Attachments — Photo Viewer ── */
+    $(document).on('click', '#pills-truck-acc .acc-attach-link', function (e) {
+        e.preventDefault();
+        var count = parseInt($(this).find('.acc-attach-count').text()) || 0;
+
+        var thumbs = '';
+        for (var i = 0; i < count; i++) {
+            thumbs +=
+                '<div style="' +
+                    'background:#f0f3f9;border-radius:10px;aspect-ratio:1;' +
+                    'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+                    'gap:6px;border:1px solid #e2e8f0;color:#94a3b8;' +
+                '">' +
+                    '<i class="uil uil-image" style="font-size:28px;"></i>' +
+                    '<span style="font-size:10px;font-weight:600;letter-spacing:.3px;">Photo ' + (i + 1) + '</span>' +
+                '</div>';
+        }
+
+        Swal.fire({
+            title: '<span style="font-size:15px;font-weight:700;color:#1a2340;">Photo Attachments</span>',
+            html:
+                '<div style="background:#f8fafc;border-radius:8px;padding:8px 12px;margin-bottom:12px;' +
+                    'font-size:12px;color:#6b7a99;display:flex;align-items:center;gap:6px;">' +
+                    '<i class="uil uil-paperclip" style="font-size:15px;color:#4f63d2;"></i>' +
+                    count + ' attachment' + (count !== 1 ? 's' : '') + ' available' +
+                '</div>' +
+                '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 0;">' +
+                    thumbs +
+                '</div>',
+            showConfirmButton: false,
+            showCloseButton: true,
+            width: 380,
+            padding: '20px',
+            customClass: { popup: 'acc-attach-popup' },
+        });
+    });
+
     /* ── Accident Description — More / Less toggle ── */
     $(document).on('click', '#pills-truck-acc .acc-desc-more', function () {
         var $link  = $(this);
