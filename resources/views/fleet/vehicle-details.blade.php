@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.4') }}">
 
 @endsection
 
@@ -5735,6 +5735,107 @@
                                         <span class="sec-title">Truck Accidental Repair</span>
                                         <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Log Accident</a>
                                     </div>
+
+                                    {{-- Filter Card --}}
+                                    <div class="accordion mt-3" id="accordionTruckAccFilter">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="truck_acc_filter">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseTruckAccFilter"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseTruckAccFilter"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+
+                                            <div
+                                                id="collapseTruckAccFilter"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="truck_acc_filter"
+                                                data-bs-parent="#accordionTruckAccFilter"
+                                            >
+                                                <div class="accordion-body">
+                                                    <form class="vehicle_dform p-4">
+                                                        <div class="filtersearch-bd justify-content-between">
+
+                                                            {{-- BA: Driver assigned at time of accident --}}
+                                                            <div class="vehicletype">
+                                                                <label>Driver Name</label>
+                                                                <select class="form-select select2">
+                                                                    <option>Choose..</option>
+                                                                    <option>Suresh Nayak Jir (3962)</option>
+                                                                </select>
+                                                            </div>
+
+                                                            {{-- BA: Was the accident caused by driver error? --}}
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Driver Mistake</label>
+                                                                <select class="form-select select2">
+                                                                    <option>Choose..</option>
+                                                                    <option>Yes</option>
+                                                                    <option>No</option>
+                                                                </select>
+                                                            </div>
+
+                                                            {{-- BA: Matches table "Severity" column — Major / Moderate / Minor --}}
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Severity</label>
+                                                                <select class="form-select select2">
+                                                                    <option>Choose..</option>
+                                                                    <option>Major</option>
+                                                                    <option>Moderate</option>
+                                                                    <option>Minor</option>
+                                                                </select>
+                                                            </div>
+
+                                                            {{-- BA: Was a claim raised? Yes / No --}}
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Insurance Claim</label>
+                                                                <select class="form-select select2">
+                                                                    <option>Choose..</option>
+                                                                    <option>Yes – Claimed</option>
+                                                                    <option>No – Not Claimed</option>
+                                                                </select>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                            <button class="btn btn-primary ms-1" type="button">
+                                                                <i class="uil uil-sync me-1"></i>Reset
+                                                            </button>
+
+                                                            <div class="dropdown ms-1">
+                                                                <button
+                                                                    class="btn btn-primary dropdown-toggle d-flex"
+                                                                    type="button"
+                                                                    id="exportBtnTruckAcc"
+                                                                    data-bs-toggle="dropdown"
+                                                                    aria-expanded="false"
+                                                                >
+                                                                    Export <i class="uil uil-upload ms-1"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="exportBtnTruckAcc">
+                                                                    <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
+                                                                    <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- /Filter Card --}}
 
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
