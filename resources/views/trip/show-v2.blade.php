@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=4.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=4.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -429,7 +429,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">5th | Total 12 | Line 5 | Local 7</span>
+                                                                        <span class="td2-vc-val">5th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>5 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>7 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
@@ -472,7 +472,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">3rd | Total 12 | Line 8 | Local 4</span>
+                                                                        <span class="td2-vc-val">3rd <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>8 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>4 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
@@ -515,7 +515,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">8th | Total 12 | Line 3 | Local 9</span>
+                                                                        <span class="td2-vc-val">8th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>3 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>9 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
@@ -3354,5 +3354,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.3') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.4') }}"></script>
 @endsection

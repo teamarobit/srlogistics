@@ -3242,3 +3242,55 @@
 @media (max-width: 991px) {
     .td2-tab-group-label { display: none; }
 }
+
+/* =============================================================
+   VEHICLE RANK TOOLTIP
+   ============================================================= */
+.rank-tooltip .tooltip-inner {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    min-width: 190px;
+    max-width: 220px;
+    text-align: left;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.rank-tooltip.bs-tooltip-top .tooltip-arrow::before,
+.rank-tooltip.bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before {
+    border-top-color: #1e293b;
+}
+
+.rank-tooltip .rtt-header {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #334155;
+}
+
+.rank-tooltip .rtt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.82rem;
+}
+
+.rank-tooltip .rtt-row:last-child {
+    margin-bottom: 0;
+}
+
+.rank-tooltip .rtt-label {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.rank-tooltip .rtt-val {
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-left: 16px;
+}

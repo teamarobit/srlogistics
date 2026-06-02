@@ -718,4 +718,10 @@ $(document).ready(function () {
     /* Apply all conditional visibility rules on page load */
     applyConditionalVisibility();
 
+    /* Initialise Bootstrap tooltips */
+    var tooltipEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipEls.forEach(function (el) {
+        new bootstrap.Tooltip(el);
+    });
+
 });
