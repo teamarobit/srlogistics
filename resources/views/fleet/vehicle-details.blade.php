@@ -4,9 +4,9 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.8') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.0') }}">
 
 @endsection
 
@@ -5134,7 +5134,7 @@
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
                                         <span class="sec-title">Truck Repair</span>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Repair</a>
+                                        {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Repair</a> --}}
                                     </div>
 
                                     <div class="table-responsive">
@@ -5301,73 +5301,334 @@
                                         <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add05_maintenance"><i class="uil uil-plus me-1"></i> Schedule Maintenance</a>
                                     </div>
 
-                                    <div class="table-responsive">
-                                        <table class="table custom-driver-table">
+                                    {{-- Maintenance Mini Dashboard --}}
+                                    <div class="tsmd-dashboard mb-3">
+                                        <div class="tsmd-head">
+                                            <span class="tsmd-title"><i class="uil uil-wrench"></i> Maintenance Overview</span>
+                                            <span class="tsmd-sub">Snapshot of scheduled maintenance for this vehicle</span>
+                                        </div>
+
+                                        {{-- Row 1: Key Stats --}}
+                                        <div class="tsmd-kpi-grid">
+                                            <div class="tsmd-kpi tsmd-kpi-primary">
+                                                <div class="tsmd-kpi-icon"><i class="uil uil-rupee-sign"></i></div>
+                                                <div class="tsmd-kpi-body">
+                                                    <p>Maintenance Cost</p>
+                                                    <h4>&#8377; 45,000</h4>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-kpi">
+                                                <div class="tsmd-kpi-icon tsmd-ic-total"><i class="uil uil-list-ul"></i></div>
+                                                <div class="tsmd-kpi-body">
+                                                    <p>Total Scheduled</p>
+                                                    <h4>4</h4>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-kpi">
+                                                <div class="tsmd-kpi-icon tsmd-ic-done"><i class="uil uil-check-circle"></i></div>
+                                                <div class="tsmd-kpi-body">
+                                                    <p>Completed</p>
+                                                    <h4>2</h4>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-kpi">
+                                                <div class="tsmd-kpi-icon tsmd-ic-missed"><i class="uil uil-times-circle"></i></div>
+                                                <div class="tsmd-kpi-body">
+                                                    <p>Missed</p>
+                                                    <h4>1</h4>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-kpi">
+                                                <div class="tsmd-kpi-icon tsmd-ic-pending"><i class="uil uil-clock"></i></div>
+                                                <div class="tsmd-kpi-body">
+                                                    <p>Pending</p>
+                                                    <h4>1</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Row 2: Operational Intelligence (BA) --}}
+                                        <div class="tsmd-ops-grid">
+                                            <div class="tsmd-ops-card">
+                                                <div class="tsmd-ops-icon tsmd-ops-next"><i class="uil uil-exclamation-triangle"></i></div>
+                                                <div class="tsmd-ops-body">
+                                                    <p class="tsmd-ops-label">Next Due Service</p>
+                                                    <span class="tsmd-ops-val">Hub Greasing</span>
+                                                    <span class="tsmd-ops-meta tsmd-ops-overdue">20 Nov 2025 · Overdue</span>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-ops-card">
+                                                <div class="tsmd-ops-icon tsmd-ops-last"><i class="uil uil-history"></i></div>
+                                                <div class="tsmd-ops-body">
+                                                    <p class="tsmd-ops-label">Last Serviced</p>
+                                                    <span class="tsmd-ops-val">Engine Oil Change</span>
+                                                    <span class="tsmd-ops-meta">27 Aug 2025</span>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-ops-card">
+                                                <div class="tsmd-ops-icon tsmd-ops-month"><i class="uil uil-calendar-alt"></i></div>
+                                                <div class="tsmd-ops-body">
+                                                    <p class="tsmd-ops-label">Due This Month</p>
+                                                    <span class="tsmd-ops-val">0 Services</span>
+                                                    <span class="tsmd-ops-meta">Jun 2026</span>
+                                                </div>
+                                            </div>
+                                            <div class="tsmd-ops-card">
+                                                <div class="tsmd-ops-icon tsmd-ops-avg"><i class="uil uil-chart-bar"></i></div>
+                                                <div class="tsmd-ops-body">
+                                                    <p class="tsmd-ops-label">Avg Cost / Service</p>
+                                                    <span class="tsmd-ops-val">&#8377; 11,250</span>
+                                                    <span class="tsmd-ops-meta">Across 4 services</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- End Maintenance Mini Dashboard --}}
+
+                                    <div class="table-responsive sched-table-wrap">
+                                        <table class="table custom-driver-table sched-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Maintenance Item</th>
-                                                    <th>Service Interval</th>
-                                                    <th>Last Service Date</th>
-                                                    <th>Last Service KM</th>
-                                                    <th>Next Due Date</th>
-                                                    <th>Next Due KM</th>
-                                                    <th>Status</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th class="sched-th-no">No.</th>
+                                                    <th class="sched-th-driver">Driver Name &amp; Code</th>
+                                                    <th class="sched-th-date">Date</th>
+                                                    <th class="sched-th-odo">Odometer Reading</th>
+                                                    <th class="sched-th-workshop">Workshop</th>
+                                                    <th class="sched-th-svctype">Service Type</th>
+                                                    <th class="sched-th-majmin">Major / Minor</th>
+                                                    <th class="sched-th-dayhrs">Day / Hours</th>
+                                                    <th class="sched-th-sched-interval">Scheduled Interval<br><small class="sched-th-sub">KM &amp; Months</small></th>
+                                                    <th class="sched-th-actual">Actual Service<br><small class="sched-th-sub">KM &amp; Months</small></th>
+                                                    <th class="sched-th-remaining">KM &amp; Months Remaining<br><small class="sched-th-sub">For Next Service</small></th>
+                                                    <th class="sched-th-status">Status</th>
+                                                    <th class="sched-th-cost text-end">Cost (&#8377;)</th>
+                                                    <th class="sched-th-vendor">Vendor &amp; Contact</th>
+                                                    <th class="sched-th-location">Workshop Location</th>
+                                                    <th class="sched-th-invoice">Invoice No.</th>
+                                                    <th class="sched-th-gst-appl text-center">GST Bill<br><small class="sched-th-sub">Applicable</small></th>
+                                                    <th class="sched-th-gst-recv text-center">GST Bill<br><small class="sched-th-sub">Received</small></th>
+                                                    <th class="sched-th-attach text-center">Attachments</th>
+                                                    <th class="sched-th-view text-center">Work Done Details</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+
+                                                {{-- Row 1: Completed --}}
                                                 <tr>
-                                                    <td>Engine Oil Change</td>
-                                                    <td>Every 15,000 KM</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>1,15,000</td>
-                                                    <td>15-12-2025</td>
-                                                    <td>1,30,000</td>
-                                                    <td><span class="badge badge-warning">Due Soon</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td class="sched-td-no">1</td>
+                                                    <td class="sched-td-driver">
+                                                        <span class="sched-driver-name">Rajesh Kumar</span>
+                                                        <span class="sched-driver-code">DRV-001</span>
+                                                    </td>
+                                                    <td class="sched-td-date">27-08-2025</td>
+                                                    <td class="sched-td-odo">1,15,000 KM</td>
+                                                    <td class="sched-td-workshop">
+                                                        <span class="sched-ws-type sched-ws-own">Own</span>
+                                                        <a href="javascript:void(0)" class="sched-jobcard-link"><i class="uil uil-file-alt me-1"></i>Job Card</a>
+                                                    </td>
+                                                    <td class="sched-td-svctype">
+                                                        <span class="sched-svc-badge">1st Service</span>
+                                                        <small class="sched-svc-label">Engine Oil Change</small>
+                                                    </td>
+                                                    <td class="sched-td-majmin">
+                                                        <span class="tr-repair-pill is-minor">Minor</span>
+                                                    </td>
+                                                    <td class="sched-td-dayhrs">4 Hours</td>
+                                                    <td class="sched-td-interval">
+                                                        <span class="sched-interval-val">15,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">6 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-actual">
+                                                        <span class="sched-interval-val">1,15,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">8 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-remaining">
+                                                        <span class="sched-remain-val">15,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-remain-val">4 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-status"><span class="badge badge-success">Completed</span></td>
+                                                    <td class="sched-td-cost text-end">&#8377; 3,200</td>
+                                                    <td class="sched-td-vendor">
+                                                        <span class="sched-vendor-name">SR Auto Works</span>
+                                                        <span class="sched-vendor-phone"><i class="uil uil-phone me-1"></i>+91 98765 43210</span>
+                                                    </td>
+                                                    <td class="sched-td-location">Kukatpally, Hyderabad</td>
+                                                    <td class="sched-td-invoice">INV-2025-0081</td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-yes">Yes</span></td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-yes">Yes</span></td>
+                                                    <td class="sched-td-attach text-center">
+                                                        <a href="javascript:void(0)" class="sched-attach-btn" title="View Attachments"><i class="uil uil-paperclip"></i> 2</a>
+                                                    </td>
+                                                    <td class="sched-td-view text-center">
+                                                        <a href="javascript:void(0)" class="sched-view-btn" title="View Full Work Done Details"><i class="uil uil-eye me-1"></i>View</a>
                                                     </td>
                                                 </tr>
+
+                                                {{-- Row 2: Missed --}}
                                                 <tr>
-                                                    <td>Hub Greasing</td>
-                                                    <td>Every 10,000 KM</td>
-                                                    <td>15-07-2025</td>
-                                                    <td>1,10,000</td>
-                                                    <td>20-11-2025</td>
-                                                    <td>1,20,000</td>
-                                                    <td><span class="badge badge-danger">Overdue</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td class="sched-td-no">2</td>
+                                                    <td class="sched-td-driver">
+                                                        <span class="sched-driver-name">Suresh Yadav</span>
+                                                        <span class="sched-driver-code">DRV-004</span>
+                                                    </td>
+                                                    <td class="sched-td-date">20-11-2025</td>
+                                                    <td class="sched-td-odo">1,20,000 KM</td>
+                                                    <td class="sched-td-workshop">
+                                                        <span class="sched-ws-type sched-ws-own">Own</span>
+                                                        <a href="javascript:void(0)" class="sched-jobcard-link"><i class="uil uil-file-alt me-1"></i>Job Card</a>
+                                                    </td>
+                                                    <td class="sched-td-svctype">
+                                                        <span class="sched-svc-badge">2nd Service</span>
+                                                        <small class="sched-svc-label">Hub Greasing</small>
+                                                    </td>
+                                                    <td class="sched-td-majmin">
+                                                        <span class="tr-repair-pill is-minor">Minor</span>
+                                                    </td>
+                                                    <td class="sched-td-dayhrs">2 Hours</td>
+                                                    <td class="sched-td-interval">
+                                                        <span class="sched-interval-val">10,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">3 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-actual">
+                                                        <span class="sched-interval-val">1,20,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">4 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-remaining">
+                                                        <span class="sched-remain-val sched-remain-overdue">Overdue 2,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-remain-val sched-remain-overdue">Overdue 1 Month</span>
+                                                    </td>
+                                                    <td class="sched-td-status"><span class="badge badge-danger">Missed</span></td>
+                                                    <td class="sched-td-cost text-end">—</td>
+                                                    <td class="sched-td-vendor">
+                                                        <span class="sched-vendor-name">—</span>
+                                                        <span class="sched-vendor-phone">—</span>
+                                                    </td>
+                                                    <td class="sched-td-location">—</td>
+                                                    <td class="sched-td-invoice">—</td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-no">No</span></td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-no">No</span></td>
+                                                    <td class="sched-td-attach text-center">
+                                                        <span class="sched-attach-none">—</span>
+                                                    </td>
+                                                    <td class="sched-td-view text-center">
+                                                        <a href="javascript:void(0)" class="sched-view-btn" title="View Full Work Done Details"><i class="uil uil-eye me-1"></i>View</a>
                                                     </td>
                                                 </tr>
+
+                                                {{-- Row 3: Completed --}}
                                                 <tr>
-                                                    <td>Air Filter Replacement</td>
-                                                    <td>Every 20,000 KM</td>
-                                                    <td>05-06-2025</td>
-                                                    <td>1,08,000</td>
-                                                    <td>10-01-2026</td>
-                                                    <td>1,28,000</td>
-                                                    <td><span class="badge badge-success">Up to Date</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td class="sched-td-no">3</td>
+                                                    <td class="sched-td-driver">
+                                                        <span class="sched-driver-name">Rajesh Kumar</span>
+                                                        <span class="sched-driver-code">DRV-001</span>
+                                                    </td>
+                                                    <td class="sched-td-date">05-06-2025</td>
+                                                    <td class="sched-td-odo">1,08,000 KM</td>
+                                                    <td class="sched-td-workshop">
+                                                        <span class="sched-ws-type sched-ws-ext">External</span>
+                                                        <small class="sched-ws-ext-name">Tata SC, Kurnool</small>
+                                                    </td>
+                                                    <td class="sched-td-svctype">
+                                                        <span class="sched-svc-badge">3rd Service</span>
+                                                        <small class="sched-svc-label">Air Filter Replacement</small>
+                                                    </td>
+                                                    <td class="sched-td-majmin">
+                                                        <span class="tr-repair-pill is-major">Major</span>
+                                                    </td>
+                                                    <td class="sched-td-dayhrs">1 Day</td>
+                                                    <td class="sched-td-interval">
+                                                        <span class="sched-interval-val">20,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">12 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-actual">
+                                                        <span class="sched-interval-val">1,08,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">12 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-remaining">
+                                                        <span class="sched-remain-val">20,000 KM</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-remain-val">8 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-status"><span class="badge badge-success">Completed</span></td>
+                                                    <td class="sched-td-cost text-end">&#8377; 7,500</td>
+                                                    <td class="sched-td-vendor">
+                                                        <span class="sched-vendor-name">Tata SC Kurnool</span>
+                                                        <span class="sched-vendor-phone"><i class="uil uil-phone me-1"></i>+91 94403 11223</span>
+                                                    </td>
+                                                    <td class="sched-td-location">Kurnool, Andhra Pradesh</td>
+                                                    <td class="sched-td-invoice">INV-2025-0149</td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-yes">Yes</span></td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-yes">Yes</span></td>
+                                                    <td class="sched-td-attach text-center">
+                                                        <a href="javascript:void(0)" class="sched-attach-btn" title="View Attachments"><i class="uil uil-paperclip"></i> 3</a>
+                                                    </td>
+                                                    <td class="sched-td-view text-center">
+                                                        <a href="javascript:void(0)" class="sched-view-btn" title="View Full Work Done Details"><i class="uil uil-eye me-1"></i>View</a>
                                                     </td>
                                                 </tr>
+
+                                                {{-- Row 4: Pending --}}
                                                 <tr>
-                                                    <td>Painting Touch-Up</td>
-                                                    <td>Yearly</td>
-                                                    <td>27-03-2025</td>
-                                                    <td>1,02,500</td>
-                                                    <td>27-03-2026</td>
-                                                    <td>—</td>
-                                                    <td><span class="badge badge-success">Up to Date</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td class="sched-td-no">4</td>
+                                                    <td class="sched-td-driver">
+                                                        <span class="sched-driver-name">—</span>
+                                                        <span class="sched-driver-code">—</span>
+                                                    </td>
+                                                    <td class="sched-td-date">27-03-2026</td>
+                                                    <td class="sched-td-odo">—</td>
+                                                    <td class="sched-td-workshop">
+                                                        <span class="sched-ws-type sched-ws-own">Own</span>
+                                                        <span class="sched-ws-pending-note">Not yet assigned</span>
+                                                    </td>
+                                                    <td class="sched-td-svctype">
+                                                        <span class="sched-svc-badge">4th Service</span>
+                                                        <small class="sched-svc-label">Painting Touch-Up</small>
+                                                    </td>
+                                                    <td class="sched-td-majmin">
+                                                        <span class="tr-repair-pill is-minor">Minor</span>
+                                                    </td>
+                                                    <td class="sched-td-dayhrs">2 Days</td>
+                                                    <td class="sched-td-interval">
+                                                        <span class="sched-interval-val">—</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">12 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-actual">
+                                                        <span class="sched-interval-val">—</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-interval-val">—</span>
+                                                    </td>
+                                                    <td class="sched-td-remaining">
+                                                        <span class="sched-remain-val">—</span>
+                                                        <span class="sched-interval-sep">/</span>
+                                                        <span class="sched-remain-val">3 Months</span>
+                                                    </td>
+                                                    <td class="sched-td-status"><span class="badge badge-warning">Pending</span></td>
+                                                    <td class="sched-td-cost text-end">—</td>
+                                                    <td class="sched-td-vendor">
+                                                        <span class="sched-vendor-name">—</span>
+                                                        <span class="sched-vendor-phone">—</span>
+                                                    </td>
+                                                    <td class="sched-td-location">—</td>
+                                                    <td class="sched-td-invoice">—</td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-na">N/A</span></td>
+                                                    <td class="sched-td-gst text-center"><span class="sched-gst-pill sched-gst-na">N/A</span></td>
+                                                    <td class="sched-td-attach text-center">
+                                                        <span class="sched-attach-none">—</span>
+                                                    </td>
+                                                    <td class="sched-td-view text-center">
+                                                        <a href="javascript:void(0)" class="sched-view-btn" title="View Full Work Done Details"><i class="uil uil-eye me-1"></i>View</a>
                                                     </td>
                                                 </tr>
+
                                             </tbody>
                                         </table>
                                     </div>
