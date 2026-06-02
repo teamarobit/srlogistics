@@ -105,11 +105,11 @@ $(document).ready(function(){
     
     
     $('.datetime').daterangepicker({
-        singleDatePicker: true,   
-        timePicker: true,         
-        startDate: moment(),      
+        singleDatePicker: true,
+        timePicker: true,
+        startDate: moment(),
         locale: {
-          format: 'MM/DD/YYYY hh:mm A' 
+          format: 'MM/DD/YYYY hh:mm A'
         }
     });
     

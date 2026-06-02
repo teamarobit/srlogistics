@@ -17,6 +17,7 @@ use App\Models\Trackingvehicle;
 
 use App\Models\Fleetstatus;
 use App\Models\Contact;
+use App\Models\State;
 use App\Models\Vehicleallocation;
 
 use App\Models\Gpsprovider;
@@ -51,6 +52,7 @@ use App\Models\Insuranceclaimfollowup;
 use App\Models\VehicleInsurancePolicy;
 use App\Models\Insurancecompany;
 use App\Models\Workshop;
+use App\Models\Expense;
 
 
 use Spatie\Permission\Models\Role;
@@ -259,7 +261,22 @@ class FleetDashboardController extends Controller
     
         $workshops = \App\Models\Workshop::active()->orderBy('ownership')->orderBy('name')->get();
 
-        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops'));
+        // P&L Book — driver dropdown source (cotype_id = 4 → drivers)
+        $plDrivers = Contact::where('cotype_id', 4)
+            ->where('status', 'Active')
+            ->orderBy('contact_name')
+            ->get(['id', 'contact_name', 'contact_code']);
+
+        // Expense Book — mini-dashboard type cards (dynamic types, static amounts)
+        $expenseTypes = Expense::where('status', 'Active')
+            ->get(['id', 'name']);
+
+        // Challan Book — filter dropdowns
+        $states = State::where('country_id', 101)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('fleet.vehicle-details', compact('vehicle','gpsproviders','fasttagproviders','digitallockproviders','financeproviders','chassisLoan','bodyLoan','totalEmi','chassisEmis','bodyEmis','attachmenttypes','mediadocuments', 'total_doc_count', 'expired_doc_count', 'expiring_doc_count', 'workshops', 'plDrivers', 'expenseTypes', 'states'));
     }
 
     public function getVehicleDetailsV2($id)

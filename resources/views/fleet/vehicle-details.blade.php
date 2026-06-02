@@ -4,9 +4,9 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.1') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=4.6') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=7.8') }}">
 
 @endsection
 
@@ -1683,10 +1683,24 @@
 
         <div class="vehicle-itemtab pt-4">
             <div class="container-fluid">
-                
+
+                <div class="item-box-scroll-wrap">
+                    <button type="button" class="item-box-scroll-btn item-box-scroll-prev" aria-label="Scroll tabs left">
+                        <i class="uil uil-angle-left-b"></i>
+                    </button>
+                    <button type="button" class="item-box-scroll-btn item-box-scroll-next" aria-label="Scroll tabs right">
+                        <i class="uil uil-angle-right-b"></i>
+                    </button>
                 <ul class="nav nav-tabs item-box">
                     <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#trip">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pl_book">
+                            <span class="icon pb-0"><i class="uil uil-chart-line" style="font-size:18px;color:#6c757d;"></i></span>
+                            P&amp;L Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#trip">
                             <span class="icon"><img src="{{ asset('images/icons/trip-bookicon.png') }}" alt="" /></span>
                             Trip Book
                         </button>
@@ -1702,31 +1716,45 @@
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#expenses">
                             <span class="icon"><img src="{{ asset('images/icons/expenses-icon.png') }}" alt="" /></span>
-                            Expenses Book
+                            Expense Book
                         </button>
                     </li>
-                    
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#toll_charges">
+                            <span class="icon pb-0"><i class="uil uil-money-bill" style="font-size:24px;color:#6c757d;"></i></span>
+                            Toll Charges Book
+                        </button>
+                    </li>
+
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#maintenance">
                             <span class="icon"><img src="{{ asset('images/icons/maintenance-icon.png') }}" alt="" /></span>
-                            Maintenance
+                            Maintenance Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#challan">
+                            <span class="icon pb-0"><i class="uil uil-file-alt" style="font-size:18px;color:#6c757d;"></i></span>
+                            Challan Book
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">
-                            <span class="icon"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
-                            Document
+                            <span class="icon pb-0"><img src="{{ asset('images/icons/documents-icon.png') }}" alt="" /></span>
+                            Document Book
                         </button>
                     </li>
 
                     <li class="nav-item">
-                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allotment">
-                        <span class="icon"><img src="{{ asset('images/icons/allotment-icon.png') }}" alt=""></span>
-                        Allotment 
-                      </button>
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
+                            <span class="icon pb-0"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
+                            Insurance Book
+                        </button>
                     </li>
-                    
+
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#emi_book">
                             <span class="icon"><img src="{{ asset('images/icons/emi-bookicon.png') }}" alt="" /></span>
@@ -1735,9 +1763,16 @@
                     </li>
 
                     <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#insurance">
-                            <span class="icon"><i class="uil uil-shield-check" style="font-size:18px;color:#6c757d;"></i></span>
-                            Insurance
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#driver_history">
+                            <span class="icon pb-0"><i class="uil uil-history" style="font-size:18px;color:#6c757d;"></i></span>
+                            Driver History Book
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tyre_book">
+                            <span class="icon pb-0"><i class="uil uil-dashboard" style="font-size:18px;color:#6c757d;"></i></span>
+                            Tyre Book
                         </button>
                     </li>
 
@@ -1748,12 +1783,1293 @@
                         </button>
                     </li>
                 </ul>
+                </div>
 
                 <!-- Tab Content -->
                 <div class="tab-content mt-3">
-                    
-                    <div class="tab-pane fade show active" id="trip">
-                        <div class="totalrevenue mt-3">
+
+                    {{-- P&L Book (Static design as per attachment, theme-aligned) --}}
+                    <div class="tab-pane fade show active" id="pl_book">
+
+                        {{-- Filter strip + RAG indicator --}}
+                        <div class="plb-filter-strip">
+                            <div class="plb-filter-left">
+                                <span class="plb-filter-icon">
+                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="filter" />
+                                </span>
+                                <div class="plb-filter-fields">
+                                    <div class="plb-field">
+                                        <label>Date Range</label>
+                                        <div class="plb-input-wrap">
+                                            <i class="uil uil-calendar-alt"></i>
+                                            <input type="text"
+                                                   class="daterange plb-daterange"
+                                                   id="pl_daterange"
+                                                   name="pl_daterange"
+                                                   placeholder="Select date range...">
+                                        </div>
+                                    </div>
+                                    <div class="plb-field">
+                                        <label>Driver Name</label>
+                                        <div class="plb-input-wrap plb-select-wrap">
+                                            <i class="uil uil-user"></i>
+                                            <select class="form-select plb-driver-select" id="pl_driver" name="pl_driver">
+                                                <option value="">All Drivers</option>
+                                                @isset($plDrivers)
+                                                    @foreach($plDrivers as $drv)
+                                                        <option value="{{ $drv->id }}">
+                                                            {{ $drv->contact_name }}@if($drv->contact_code) ({{ $drv->contact_code }})@endif
+                                                        </option>
+                                                    @endforeach
+                                                @endisset
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plb-filter-right">
+                                <span class="plb-rag-label">RAG Status</span>
+                                <div class="plb-rag-pills">
+                                    <span class="plb-rag plb-rag-red"><span class="dot"></span>Red</span>
+                                    <span class="plb-rag plb-rag-yellow"><span class="dot"></span>Yellow</span>
+                                    <span class="plb-rag plb-rag-green is-active"><span class="dot"></span>Green</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- KPI strip — Trip Summary --}}
+                        <div class="plb-kpi-grid">
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon"><i class="uil uil-route"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Total Trips</p>
+                                    <h4>15</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c2"><i class="uil uil-map-marker"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Local Trips</p>
+                                    <h4>10</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c3"><i class="uil uil-arrows-h"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Line Trips</p>
+                                    <h4>5</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c4"><i class="uil uil-clock-three"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Delay Trips</p>
+                                    <h4>2</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c5"><i class="uil uil-calendar-slash"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>Empty Days</p>
+                                    <h4>2</h4>
+                                </div>
+                            </div>
+                            <div class="plb-kpi">
+                                <div class="plb-kpi-icon kpi-c6"><i class="uil uil-tachometer-fast"></i></div>
+                                <div class="plb-kpi-body">
+                                    <p>KM Driven</p>
+                                    <h4>8,000</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Main row: Revenue & Expense + Notes panel --}}
+                        <div class="plb-main-row">
+
+                            <div class="plb-main-col">
+
+                                {{-- Revenue + Expense side-by-side --}}
+                                <div class="plb-finance-grid">
+                                    {{-- Revenue --}}
+                                    <div class="plb-panel plb-panel-rev">
+                                        <div class="plb-panel-head">
+                                            <div class="head-l">
+                                                <span class="panel-icon"><i class="uil uil-money-stack"></i></span>
+                                                <div>
+                                                    <p class="panel-title">Total Revenue</p>
+                                                    <h4 class="panel-amount">₹2,00,000</h4>
+                                                </div>
+                                            </div>
+                                            <span class="panel-trend up"><i class="uil uil-arrow-up"></i></span>
+                                        </div>
+                                        <ul class="plb-panel-list">
+                                            <li>
+                                                <span class="lbl"><span class="bullet rev"></span>Own Booking</span>
+                                                <span class="val">₹1,50,000</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl"><span class="bullet rev"></span>Outside Booking</span>
+                                                <span class="val">₹50,000</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {{-- Expense --}}
+                                    <div class="plb-panel plb-panel-exp">
+                                        <div class="plb-panel-head">
+                                            <div class="head-l">
+                                                <span class="panel-icon"><i class="uil uil-receipt"></i></span>
+                                                <div>
+                                                    <p class="panel-title">Total Expense</p>
+                                                    <h4 class="panel-amount">₹1,77,500</h4>
+                                                </div>
+                                            </div>
+                                            <span class="panel-trend down"><i class="uil uil-arrow-down"></i></span>
+                                        </div>
+                                        <ul class="plb-panel-list scroll">
+                                            <li><span class="lbl"><span class="bullet exp"></span>Diesel</span><span class="val">₹75,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Driver</span><span class="val">₹35,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Fasttag</span><span class="val">₹25,000</span></li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Repair &amp; Maintenance
+                                                    <small class="hint">Repairs, Urea, Schedule service</small>
+                                                </span>
+                                                <span class="val">₹10,000</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Tyre
+                                                    <small class="hint">Purchase, repair, rotation</small>
+                                                </span>
+                                                <span class="val">₹2,500</span>
+                                            </li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Battery</span><span class="val">₹1,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>RTO Document</span><span class="val">₹4,500</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Challan</span><span class="val">₹1,000</span></li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Loading
+                                                    <small class="hint">No Reimbursement only</small>
+                                                </span>
+                                                <span class="val">₹4,800</span>
+                                            </li>
+                                            <li>
+                                                <span class="lbl">
+                                                    <span class="bullet exp"></span>Unloading
+                                                    <small class="hint">No Reimbursement only</small>
+                                                </span>
+                                                <span class="val">₹3,000</span>
+                                            </li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Parking</span><span class="val">₹700</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Accident Charges</span><span class="val">₹5,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Border Expense</span><span class="val">₹3,000</span></li>
+                                            <li><span class="lbl"><span class="bullet exp"></span>Customer Deductions</span><span class="val">₹7,000</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {{-- Bottom summary: Profit/Loss + EMI + Final --}}
+                                <div class="plb-summary-grid">
+                                    <div class="plb-summary-card sc-profit">
+                                        <span class="sc-ico"><i class="uil uil-chart-growth"></i></span>
+                                        <div class="sc-body">
+                                            <p>Profit or Loss</p>
+                                            <h3>₹22,500</h3>
+                                            <span class="sc-tag tag-up"><i class="uil uil-arrow-up"></i>Operating Profit</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-summary-card sc-emi">
+                                        <span class="sc-ico"><i class="uil uil-bill"></i></span>
+                                        <div class="sc-body">
+                                            <p>EMI</p>
+                                            <h3>₹70,000</h3>
+                                            <span class="sc-tag tag-neutral">Monthly Installment</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-summary-card sc-final">
+                                        <span class="sc-ico"><i class="uil uil-chart-down"></i></span>
+                                        <div class="sc-body">
+                                            <p>Profit / Loss After EMI</p>
+                                            <h3>-₹47,500</h3>
+                                            <span class="sc-tag tag-down"><i class="uil uil-arrow-down"></i>Net Loss</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{-- Side info panel --}}
+                            <aside class="plb-side">
+                                <div class="plb-side-card">
+                                    <div class="plb-side-head">
+                                        <span class="head-ico"><i class="uil uil-info-circle"></i></span>
+                                        <h6>Amortisation Rule</h6>
+                                    </div>
+                                    <div class="plb-side-body">
+                                        <p>
+                                            Document cost is <strong>divided equally</strong> across the months covered by the policy,
+                                            based on <strong>start &amp; expiry date</strong>.
+                                        </p>
+                                        <div class="plb-callout">
+                                            <span class="callout-tag">Example</span>
+                                            <p>
+                                                <strong>Insurance</strong> — 12 months × <strong>₹60,000</strong>
+                                                = <strong>₹5,000 / month</strong>
+                                                <br><small>(not the full ₹60,000 in one month)</small>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="plb-side-head">
+                                        <span class="head-ico"><i class="uil uil-file-shield-alt"></i></span>
+                                        <h6>Amortised Documents</h6>
+                                    </div>
+                                    <div class="plb-doc-grid">
+                                        <div class="plb-doc"><i class="uil uil-shield-check"></i><span>Insurance</span></div>
+                                        <div class="plb-doc"><i class="uil uil-file-check-alt"></i><span>1 Year Permit</span></div>
+                                        <div class="plb-doc"><i class="uil uil-file-check-alt"></i><span>5 Year Permit</span></div>
+                                        <div class="plb-doc"><i class="uil uil-receipt-alt"></i><span>Tax</span></div>
+                                        <div class="plb-doc"><i class="uil uil-clipboard-notes"></i><span>Fitness</span></div>
+                                        <div class="plb-doc"><i class="uil uil-smile"></i><span>PUCC</span></div>
+                                    </div>
+                                </div>
+                            </aside>
+
+                        </div>
+                    </div>
+
+                    {{-- Toll Charges Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="toll_charges">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-road me-2"></i>Toll Charges Book</h5>
+
+                                {{-- Mini Dashboard (static, month-wise; supports up to 12 months) --}}
+                                <div class="toll-mini-dashboard mb-4">
+                                    <div class="toll-month-grid">
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jan 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;9,840</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">14 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Feb 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;11,260</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">16 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Mar 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;13,720</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">19 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Apr 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;12,450</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">18 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">May 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;14,820</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">22 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jun 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;15,340</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">23 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Jul 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;13,980</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">20 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Aug 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;16,210</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">24 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Sep 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;14,560</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">21 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Oct 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;17,430</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">26 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Nov 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;15,890</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">23 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="toll-month-card">
+                                            <div class="toll-month-head">
+                                                <span class="toll-month-name">Dec 2026</span>
+                                                <span class="toll-month-dot"></span>
+                                            </div>
+                                            <div class="toll-month-metrics">
+                                                <div class="toll-metric">
+                                                    <i class="uil uil-rupee-sign"></i>
+                                                    <span class="toll-metric-val">&#8377;18,250</span>
+                                                </div>
+                                                <div class="toll-metric toll-metric-sub">
+                                                    <i class="uil uil-receipt"></i>
+                                                    <span class="toll-metric-val">27 tolls</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Filter Card (static) --}}
+                                <div class="accordion mt-3" id="accordionTollChargesBook">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="toll_charges_filter">
+                                            <button
+                                                class="accordion-button filter-options"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseTollChargesBook"
+                                                aria-expanded="true"
+                                                aria-controls="collapseTollChargesBook"
+                                            >
+                                                <div class="item-filter">
+                                                    <span class="filter-icon">
+                                                        <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                    </span>
+                                                    <p>Filter Options</p>
+                                                </div>
+                                            </button>
+                                        </h2>
+
+                                        <div
+                                            id="collapseTollChargesBook"
+                                            class="accordion-collapse collapse show"
+                                            aria-labelledby="toll_charges_filter"
+                                            data-bs-parent="#accordionTollChargesBook">
+                                            <div class="accordion-body">
+                                                <form class="vehicle_dform p-4">
+                                                    <div class="filtersearch-bd justify-content-between">
+
+                                                        <div class="vehicletype">
+                                                            <label>Toll Date Range</label>
+                                                            <input
+                                                                type="text"
+                                                                class="form-control daterange"
+                                                                id="tollbook_daterange"
+                                                                name="toll_daterange"
+                                                                autocomplete="off"
+                                                                placeholder="Select date range..."
+                                                            />
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Fast-tag ID</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>FT-1001</option>
+                                                                <option>FT-1002</option>
+                                                                <option>FT-1003</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Fast-tag Bank Name</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>ICICI Bank</option>
+                                                                <option>HDFC Bank</option>
+                                                                <option>SBI</option>
+                                                                <option>Axis Bank</option>
+                                                                <option>Paytm Payments Bank</option>
+                                                                <option>Kotak Mahindra Bank</option>
+                                                                <option>IDFC First Bank</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Driver Name &amp; Code</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>Sujit Paul (DRV-001)</option>
+                                                                <option>Ramesh Kumar (DRV-002)</option>
+                                                                <option>Mohan Singh (DRV-003)</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="vehicletype ms-1">
+                                                            <label>Location</label>
+                                                            <select class="form-select select2">
+                                                                <option>Choose..</option>
+                                                                <option>Hyderabad</option>
+                                                                <option>Kolkata</option>
+                                                                <option>Mumbai</option>
+                                                                <option>Delhi</option>
+                                                                <option>Bengaluru</option>
+                                                                <option>Chennai</option>
+                                                                <option>Pune</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                        <button class="btn btn-primary ms-1" type="button">
+                                                            <i class="uil uil-sync me-1"></i>Reset
+                                                        </button>
+
+                                                        <div class="dropdown ms-1">
+                                                            <button
+                                                                class="btn btn-primary dropdown-toggle d-flex"
+                                                                type="button"
+                                                                id="exportBtnTollChargesBook"
+                                                                data-bs-toggle="dropdown"
+                                                                aria-expanded="false"
+                                                            >
+                                                                Export <i class="uil uil-upload ms-1"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="exportBtnTollChargesBook">
+                                                                <li>
+                                                                    <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Toll Charges Book Table (static design) --}}
+                                <div class="table-responsive mt-3">
+                                    <table class="table custom-driver-table trip-table toll-charges-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S. No</th>
+                                                <th>Fast-tag ID</th>
+                                                <th>Fast-tag Bank Name</th>
+                                                <th>Driver Name &amp; Code</th>
+                                                <th>Trip ID</th>
+                                                <th>LR / Memo Number</th>
+                                                <th>Date &amp; Time</th>
+                                                <th>Toll Name</th>
+                                                <th>Location</th>
+                                                <th>Pin Code</th>
+                                                <th>State</th>
+                                                <th>Amount</th>
+                                                <th>Price Hike</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {{-- Row 1: Vehicle on trip --}}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td>LR#2897</td>
+                                                <td>15-05-2026 <br><small class="text-muted">09:42 AM</small></td>
+                                                <td>Kothur Toll Plaza</td>
+                                                <td>Kothur</td>
+                                                <td>509228</td>
+                                                <td>Telangana</td>
+                                                <td>&#8377;185</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 2: Vehicle on trip - price hike --}}
+                                            <tr>
+                                                <td>2</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td>LR#2897</td>
+                                                <td>15-05-2026 <br><small class="text-muted">02:18 PM</small></td>
+                                                <td>Pune-Mumbai Expressway Toll</td>
+                                                <td>Khalapur</td>
+                                                <td>410202</td>
+                                                <td>Maharashtra</td>
+                                                <td>&#8377;320</td>
+                                                <td><span class="text-danger">+&#8377;30</span></td>
+                                            </tr>
+
+                                            {{-- Row 3: Vehicle empty (no trip) --}}
+                                            <tr>
+                                                <td>3</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td>16-05-2026 <br><small class="text-muted">07:05 AM</small></td>
+                                                <td>Shadnagar Toll Plaza</td>
+                                                <td>Shadnagar</td>
+                                                <td>509216</td>
+                                                <td>Telangana</td>
+                                                <td>&#8377;155</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 4: New trip started --}}
+                                            <tr>
+                                                <td>4</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td>LR#2901</td>
+                                                <td>17-05-2026 <br><small class="text-muted">11:30 AM</small></td>
+                                                <td>Bengaluru-Hosur Toll</td>
+                                                <td>Attibele</td>
+                                                <td>562107</td>
+                                                <td>Karnataka</td>
+                                                <td>&#8377;145</td>
+                                                <td><span class="text-success">&#8377;0</span></td>
+                                            </tr>
+
+                                            {{-- Row 5: Price hike --}}
+                                            <tr>
+                                                <td>5</td>
+                                                <td>FT-1001</td>
+                                                <td>ICICI Bank</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td>Memo#MO-1124</td>
+                                                <td>18-05-2026 <br><small class="text-muted">05:54 PM</small></td>
+                                                <td>Krishnagiri Toll Plaza</td>
+                                                <td>Krishnagiri</td>
+                                                <td>635001</td>
+                                                <td>Tamil Nadu</td>
+                                                <td>&#8377;210</td>
+                                                <td><span class="text-danger">+&#8377;15</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Challan Book (NEW - static design only) --}}
+                    <div class="tab-pane fade" id="challan">
+
+                        {{-- Filter Card (static) --}}
+                        <div class="accordion mt-3" id="accordionChallanBook">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="challan_filter">
+                                    <button
+                                        class="accordion-button filter-options"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapseChallanBook"
+                                        aria-expanded="true"
+                                        aria-controls="collapseChallanBook"
+                                    >
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+
+                                <div
+                                    id="collapseChallanBook"
+                                    class="accordion-collapse collapse show"
+                                    aria-labelledby="challan_filter"
+                                    data-bs-parent="#accordionChallanBook">
+                                    <div class="accordion-body">
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
+
+                                                <div class="vehicletype">
+                                                    <label>State</label>
+                                                    <select class="form-select select2" id="challan_state">
+                                                        <option value="">Choose..</option>
+                                                        @foreach($states as $state)
+                                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2" id="challan_driver">
+                                                        <option value="">Choose..</option>
+                                                        @foreach($plDrivers as $drv)
+                                                            <option value="{{ $drv->id }}">{{ $drv->contact_name }}{{ $drv->contact_code ? ' (' . $drv->contact_code . ')' : '' }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Challan RAG Status</label>
+                                                    <select class="form-select select2" id="challan_rag">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Green">Green (Below &#8377;2,000)</option>
+                                                        <option value="Yellow">Yellow (&#8377;2,000 - &#8377;5,000)</option>
+                                                        <option value="Red">Red (Above &#8377;5,000)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Challan Status</label>
+                                                    <select class="form-select select2" id="challan_status">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Paid">Paid</option>
+                                                        <option value="Unpaid">Unpaid</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Sent to Court</label>
+                                                    <select class="form-select select2" id="challan_court">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Yes">Yes</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Borne By</label>
+                                                    <select class="form-select select2" id="challan_borne">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Driver">Driver</option>
+                                                        <option value="SR">SR</option>
+                                                        <option value="Both">Both 50/50</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnChallanBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnChallanBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mt-3">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-file-alt me-2"></i>Challan Book</h5>
+
+                                {{-- Challan Book Table (static design) --}}
+                                <div class="table-responsive mt-3">
+                                    <table class="table custom-driver-table trip-table challan-book-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S. No</th>
+                                                <th>Driver Name &amp; Code</th>
+                                                <th>Driver License</th>
+                                                <th>Challan Number</th>
+                                                <th>Challan Amount</th>
+                                                <th>Challan Reason</th>
+                                                <th>Borne By</th>
+                                                <th>Challan Date</th>
+                                                <th>Challan Place</th>
+                                                <th>Challan State</th>
+                                                <th>State Code</th>
+                                                <th>Trip Number</th>
+                                                <th>Challan Status</th>
+                                                <th>Offence Details</th>
+                                                <th>Sent to Reg. Court</th>
+                                                <th>Sent to Court On</th>
+                                                <th>Court Name</th>
+                                                <th>Court Address</th>
+                                                <th>Date of Proceeding</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {{-- Row 1: Borne by Driver, on a trip, paid --}}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>WB-2020-0001234</td>
+                                                <td>CH-23045678</td>
+                                                <td>&#8377;1,500</td>
+                                                <td>Over-speeding</td>
+                                                <td><span class="ch-pill ch-pill-driver p-2">Driver</span></td>
+                                                <td>12-04-2026 <br><small class="text-muted">11:24 AM</small></td>
+                                                <td>NH-44, Kothur</td>
+                                                <td>Telangana</td>
+                                                <td>TS</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56667</a>
+                                                    <br><small class="text-muted">LR#2897</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-paid p-2">Paid</span></td>
+                                                <td>Vehicle exceeded 80 km/h on highway stretch.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 2: Borne by SR, on a trip, pending --}}
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>MH-2019-0005678</td>
+                                                <td>CH-23045912</td>
+                                                <td>&#8377;2,000</td>
+                                                <td>Overloading</td>
+                                                <td><span class="ch-pill ch-pill-sr p-2">SR</span></td>
+                                                <td>22-04-2026 <br><small class="text-muted">03:45 PM</small></td>
+                                                <td>Khalapur Toll</td>
+                                                <td>Maharashtra</td>
+                                                <td>MH</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56670</a>
+                                                    <br><small class="text-muted">LR#2901</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-pending p-2">Pending</span></td>
+                                                <td>Gross vehicle weight exceeded permissible limit by 1.2 T.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 3: Borne 50/50, no trip (empty), pending --}}
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Mohan Singh <br><small class="text-muted">DRV-003</small></td>
+                                                <td>KA-2021-0009012</td>
+                                                <td>CH-23046204</td>
+                                                <td>&#8377;500</td>
+                                                <td>Signal Jump</td>
+                                                <td><span class="ch-pill ch-pill-split p-2">Both 50/50</span></td>
+                                                <td>02-05-2026 <br><small class="text-muted">08:10 AM</small></td>
+                                                <td>Attibele Junction</td>
+                                                <td>Karnataka</td>
+                                                <td>KA</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="ch-pill ch-pill-pending p-2">Pending</span></td>
+                                                <td>Crossed signal during red phase at junction CCTV-014.</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="text-muted">—</span></td>
+                                            </tr>
+
+                                            {{-- Row 4: Sent to Regional Court (Yes) - all court fields filled --}}
+                                            <tr>
+                                                <td>4</td>
+                                                <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                                <td>WB-2020-0001234</td>
+                                                <td>CH-23046890</td>
+                                                <td>&#8377;10,000</td>
+                                                <td>Driving without valid permit</td>
+                                                <td><span class="ch-pill ch-pill-driver p-2">Driver</span></td>
+                                                <td>14-05-2026 <br><small class="text-muted">06:30 PM</small></td>
+                                                <td>Krishnagiri Check Post</td>
+                                                <td>Tamil Nadu</td>
+                                                <td>TN</td>
+                                                <td>
+                                                    <a href="javascript:void(0)" class="text-primary fw-semibold">TRP-56672</a>
+                                                    <br><small class="text-muted">LR#2905</small>
+                                                </td>
+                                                <td><span class="ch-pill ch-pill-court p-2">Sent to Court</span></td>
+                                                <td>Inter-state permit not produced at check post; vehicle detained.</td>
+                                                <td><span class="ch-pill ch-pill-yes p-2">Yes</span></td>
+                                                <td>18-05-2026</td>
+                                                <td>JMFC Court, Krishnagiri</td>
+                                                <td>Court Complex, Collectorate Rd, Krishnagiri, TN — 635001</td>
+                                                <td>05-06-2026 <br><small class="text-muted">10:30 AM</small></td>
+                                            </tr>
+
+                                            {{-- Row 5: Sent to Court (Yes) - 50/50 split --}}
+                                            <tr>
+                                                <td>5</td>
+                                                <td>Ramesh Kumar <br><small class="text-muted">DRV-002</small></td>
+                                                <td>MH-2019-0005678</td>
+                                                <td>CH-23047155</td>
+                                                <td>&#8377;5,000</td>
+                                                <td>Dangerous driving</td>
+                                                <td><span class="ch-pill ch-pill-split p-2">Both 50/50</span></td>
+                                                <td>20-05-2026 <br><small class="text-muted">09:15 PM</small></td>
+                                                <td>Shadnagar</td>
+                                                <td>Telangana</td>
+                                                <td>TS</td>
+                                                <td><span class="text-muted">—</span></td>
+                                                <td><span class="ch-pill ch-pill-court p-2">Sent to Court</span></td>
+                                                <td>Lane cutting and rash overtake reported by traffic police.</td>
+                                                <td><span class="ch-pill ch-pill-yes p-2">Yes</span></td>
+                                                <td>25-05-2026</td>
+                                                <td>Traffic Court, Shadnagar</td>
+                                                <td>RTA Bhavan, Old Hyd Rd, Shadnagar, TS — 509216</td>
+                                                <td>12-06-2026 <br><small class="text-muted">11:00 AM</small></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Driver History Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="driver_history">
+
+                        <div class="accordion mt-3" id="accordionDriverHistoryBook">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="driver_history_filter">
+                                    <button
+                                        class="accordion-button filter-options"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapseDriverHistoryBook"
+                                        aria-expanded="true"
+                                        aria-controls="collapseDriverHistoryBook"
+                                    >
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+
+                                <div
+                                    id="collapseDriverHistoryBook"
+                                    class="accordion-collapse collapse show"
+                                    aria-labelledby="driver_history_filter"
+                                    data-bs-parent="#accordionDriverHistoryBook">
+                                    <div class="accordion-body">
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
+
+                                                <div class="vehicletype">
+                                                    <label>Date Range</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control daterange"
+                                                        id="driverhistory_daterange"
+                                                        name="driverhistory_daterange"
+                                                        autocomplete="off"
+                                                        placeholder="Select date range..."
+                                                    />
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2" id="driverhistory_driver">
+                                                        <option value="">Choose..</option>
+                                                        <option value="DRV-0001">Rakesh Das (DRV-0001)</option>
+                                                        <option value="DRV-0002">Suman Pal (DRV-0002)</option>
+                                                        <option value="DRV-0003">Sovan Pal (DRV-0003)</option>
+                                                        <option value="DRV-0004">Sujit Paul (DRV-0004)</option>
+                                                        <option value="DRV-0005">Ramesh Kumar (DRV-0005)</option>
+                                                        <option value="DRV-0006">Mohan Singh (DRV-0006)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver RAG Status</label>
+                                                    <select class="form-select select2" id="driverhistory_rag">
+                                                        <option value="">Choose..</option>
+                                                        <option value="Green">Green</option>
+                                                        <option value="Amber">Amber</option>
+                                                        <option value="Red">Red</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnDriverHistory"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnDriverHistory">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="vehiclestable">
+                            <div class="table-responsive">
+                                <table class="table custom-driver-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">S.No</th>
+                                            <th>Driver Name & Code</th>
+                                            <th>Driver RAG Status</th>
+                                            <th>No. of Trips</th>
+                                            <th>No. of Days Assigned</th>
+                                            <th>Issue Date</th>
+                                            <th>Revoke Date</th>
+                                            <th>Revoke Reason</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- Row 1 -->
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Rakesh Das <br><small class="text-muted">DRV-0001</small></td>
+                                            <td><span class="rag-pill rag-green"><i class="uil uil-circle"></i> Green</span></td>
+                                            <td>20</td>
+                                            <td>15</td>
+                                            <td>08-09-2025 | FN</td>
+                                            <td>08-01-2025 | AN</td>
+                                            <td>Engine parts messing</td>
+                                        </tr>
+
+                                        <!-- Row 2 -->
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Suman Pal <br><small class="text-muted">DRV-0002</small></td>
+                                            <td><span class="rag-pill rag-amber"><i class="uil uil-circle"></i> Amber</span></td>
+                                            <td>20</td>
+                                            <td>12</td>
+                                            <td>08-09-2025 | FN</td>
+                                            <td>08-12-2025 | AN</td>
+                                            <td>Engine parts messing</td>
+                                        </tr>
+
+                                        <!-- Row 3 -->
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Sovan Pal <br><small class="text-muted">DRV-0003</small></td>
+                                            <td><span class="rag-pill rag-red"><i class="uil uil-circle"></i> Red</span></td>
+                                            <td>20</td>
+                                            <td>10</td>
+                                            <td>07-11-2025 | FN</td>
+                                            <td>08-01-2025 | AN</td>
+                                            <td>Engine parts messing</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Tyre Book (NEW - static placeholder) --}}
+                    <div class="tab-pane fade" id="tyre_book">
+
+                        {{-- Mini Dashboard — Maintenance & Repair Cost (Static) --}}
+                        <div class="tbm-dashboard mt-3 mb-3">
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-own"><i class="uil uil-wrench"></i></span>
+                                    <h5>Maintenance &amp; Repair Cost</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-calendar-alt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Scheduled Maintenance Cost</p>
+                                            <h4>₹0</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-setting"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Repair Cost</p>
+                                            <h4>₹0</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5 class="mb-3"><i class="uil uil-dashboard me-2"></i>Tyre Book</h5>
+                                <p class="text-muted mb-0">Tyre history and mapping for this vehicle will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="trip">
+
+                        {{-- Mini Dashboard — Own Booking vs Outside Booking (Static) --}}
+                        <div class="tbm-dashboard mt-3">
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-own"><i class="uil uil-truck"></i></span>
+                                    <h5>Own Booking</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c1"><i class="uil uil-map-marker"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>No. of Trips</p>
+                                            <h4>24</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c2"><i class="uil uil-money-bill"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Revenue</p>
+                                            <h4>₹8,45,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-receipt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Expense</p>
+                                            <h4>₹3,20,500</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-minus-circle"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Deduction</p>
+                                            <h4>₹18,750</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c5"><i class="uil uil-chart-line"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Profit / Loss</p>
+                                            <h4 class="tbm-profit">₹5,05,750</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tbm-group">
+                                <div class="tbm-group-head">
+                                    <span class="tbm-badge tbm-badge-out"><i class="uil uil-exchange"></i></span>
+                                    <h5>Outside Booking</h5>
+                                </div>
+                                <div class="tbm-kpi-grid">
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c1"><i class="uil uil-map-marker"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>No. of Trips</p>
+                                            <h4>9</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c2"><i class="uil uil-money-bill"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Revenue</p>
+                                            <h4>₹2,75,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c3"><i class="uil uil-receipt"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Expense</p>
+                                            <h4>₹1,42,000</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c4"><i class="uil uil-minus-circle"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Deduction</p>
+                                            <h4>₹6,500</h4>
+                                        </div>
+                                    </div>
+                                    <div class="tbm-kpi">
+                                        <div class="tbm-kpi-icon tbm-c5"><i class="uil uil-chart-line"></i></div>
+                                        <div class="tbm-kpi-body">
+                                            <p>Profit / Loss</p>
+                                            <h4 class="tbm-loss">-₹12,500</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- <div class="totalrevenue mt-3">
                                <div class="item-row">
 
                                    <div class="itemcol">
@@ -1844,7 +3160,8 @@
                                </div>
                            </div>
 
-                        <div class="accordion mt-3" id="accordionExample">
+                        
+                           <div class="accordion mt-3" id="accordionExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingOne">
                                     <button
@@ -1871,26 +3188,38 @@
                                     data-bs-parent="#accordionExample"
                                 >
                                     <div class="accordion-body">
-                                        <form class="vehicle_dform">
+                                        <form class="vehicle_dform p-4">
                                             <div class="filtersearch-bd justify-content-between">
                                                 <div class="vehicletype">
-                                                    <label>Start Date</label>
+                                                    <label>LR Date Range</label>
                                                     <input
                                                         type="text"
-                                                        class="form-control"
-                                                        name="daterange"
+                                                        class="form-control daterange"
+                                                        id="tripbook_lr_daterange"
+                                                        name="lr_daterange"
+                                                        autocomplete="off"
                                                         placeholder="Select date range..."
                                                     />
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>End Date</label>
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="daterange"
-                                                        placeholder="Select date range..."
-                                                    />
+                                                    <label>Trip Type</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>Own Booking</option>
+                                                        <option>Outside Booking</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Customer / Load Vendor</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>John Doe (Customer)</option>
+                                                        <option>Acme Logistics (Customer)</option>
+                                                        <option>Bharat Carriers (Load Vendor)</option>
+                                                        <option>Speed Movers (Load Vendor)</option>
+                                                    </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
@@ -1899,25 +3228,37 @@
                                                         <option>Choose..</option>
                                                         <option>HYD - KOL</option>
                                                         <option>DEL - PUN</option>
+                                                        <option>MUM - HYD</option>
+                                                        <option>BLR - CHN</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>Trip Status</label>
-                                                    <select class="form-select">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
                                                         <option>Choose..</option>
-                                                        <option>Initiated</option>
-                                                        <option>On Going</option>
-                                                        <option>Completed</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="vehicletype ms-1">
-                                                    <label>Filter By Booking Type</label>
+                                                    <label>Trip RAG Status</label>
                                                     <select class="form-select">
                                                         <option>Choose..</option>
-                                                        <option>Own Booking</option>
-                                                        <option>External Booking</option>
+                                                        <option>On Time (Green)</option>
+                                                        <option>Delayed (Amber)</option>
+                                                        <option>Critical (Red)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>POD Deduction Trips</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>With POD Deduction</option>
+                                                        <option>Without POD Deduction</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -1928,7 +3269,7 @@
                                                         <input
                                                             type="text"
                                                             class="form-control"
-                                                            placeholder="Search by Trip Number"
+                                                            placeholder="Search by Trip ID"
                                                         />
                                                         <span class="input-group-text"
                                                             ><i class="uil uil-search"></i
@@ -1936,33 +3277,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="ms-1" style="width: 220px">
-                                                    <div class="input-group">
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            placeholder="Search by Customer"
-                                                        />
-                                                        <span class="input-group-text"
-                                                            ><i class="uil uil-search"></i
-                                                        ></span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="ms-1" style="width: 220px">
-                                                    <div class="input-group">
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            placeholder="Search by Driver"
-                                                        />
-                                                        <span class="input-group-text"
-                                                            ><i class="uil uil-search"></i
-                                                        ></span>
-                                                        <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
-                                                    </div>
-                                                </div>
-                                                
                                                 <div class="ms-1" style="width: 220px">
                                                     <div class="input-group">
                                                         <input
@@ -1973,7 +3287,6 @@
                                                         <span class="input-group-text"
                                                             ><i class="uil uil-search"></i
                                                         ></span>
-                                                        <!--<span class="input-group-text"><i class="uil uil-sync me-1"></i></span>-->
                                                     </div>
                                                 </div>
 
@@ -1985,13 +3298,550 @@
                                                     <button
                                                         class="btn btn-primary dropdown-toggle d-flex"
                                                         type="button"
-                                                        id="exportBtn"
+                                                        id="exportBtnTripBook"
                                                         data-bs-toggle="dropdown"
                                                         aria-expanded="false"
                                                     >
                                                         Export <i class="uil uil-upload ms-1"></i>
                                                     </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="exportBtn">
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnTripBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >Excel</a
+                                                            >
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >PDF</a
+                                                            >
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> --}}
+
+                        <!---->
+                        <div class="vehiclestable">
+                            <div class="itemtop">
+                                <span class="sec-title">Trips List</span>
+                                <a href="{{ route('trip.index') }}?open=create" class="addtripbtn">
+                                    <i class="uil uil-plus me-1"></i>Add Trip</a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table custom-driver-table trip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>S. No</th>
+                                            <th>Trip ID</th>
+                                            <th>LR / Memo Number & Date</th>
+                                            <th>Trip Type</th>
+                                            <th>Customer / Load Vendor</th>
+                                            <th>Route</th>
+                                            <th>Loading Point & Unloading Point</th>
+                                            <th>Trip Start Date & Time</th>
+                                            <th>Trip End Date & Time</th>
+                                            <th>Driver Name & Code</th>
+                                            <th>Trip Status</th>
+                                            <th>Trip RAG Status</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- Row 1 -->
+                                        <tr>
+                                            <td>1</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56667</a></td>
+                                            <td>LR#2897 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-secondary">Outside Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Load Vendor</small></td>
+                                            <td>HYD - KOL</td>
+                                            <td>Kolkata <br><small class="text-muted">→ Mumbai</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-warning d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-clock"></i> Initiated
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="On Time Delivery & No POD Deductions">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#28a745;display:inline-block;"></span>
+                                                    On Time
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 2 -->
+                                        <tr>
+                                            <td>2</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56668</a></td>
+                                            <td>LR#2898 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-primary">Own Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Customer</small></td>
+                                            <td>HYD - KOL</td>
+                                            <td>Mumbai <br><small class="text-muted">→ Hyderabad</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-info d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-truck"></i> On Going
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="Delayed trip as per SR transit time">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#ffc107;display:inline-block;"></span>
+                                                    Delayed
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 3 -->
+                                        <tr>
+                                            <td>3</td>
+                                            <td><a href="{{ route('trip.details', 1) }}" class="text-primary fw-semibold">TRP-56669</a></td>
+                                            <td>LR#2899 <br><small class="text-muted">13/11/2025</small></td>
+                                            <td><span class="badge badge-primary">Own Booking</span></td>
+                                            <td>John Doe <br><small class="text-muted">Customer</small></td>
+                                            <td>HYD - KOL</td>
+                                            <td>Mumbai <br><small class="text-muted">→ Hyderabad</small></td>
+                                            <td>19-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>25-09-2025 <br><small class="text-muted">12:00 PM</small></td>
+                                            <td>Sujit Paul <br><small class="text-muted">DRV-001</small></td>
+                                            <td>
+                                                <span class="badge badge-success d-inline-flex align-items-center gap-1 px-2 py-1">
+                                                    <i class="uil uil-check-circle"></i> Completed
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-2 px-2 py-1"
+                                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="Customer delay / POD deductions / Accident / Driver escalation / Vehicle challan / Diesel theft">
+                                                    <span style="width:8px;height:8px;border-radius:50%;background:#dc3545;display:inline-block;"></span>
+                                                    Critical
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!---->
+                        
+                    </div>
+                    <!--Trip-Book-content-here-END-->
+
+                    <!--Fuel-Book-content-here-start-->
+                    <div class="tab-pane fade" id="fuel">
+
+                        {{-- Fuel Expenses & Consumption KPI Row --}}
+                        {{-- <div class="totalrevenue mt-3">
+                            <div class="item-row">
+
+                                <div class="itemcol">
+                                    <p>Total Fuel Expenses</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Cash</h6>
+                                            <span class="number c-01">₹20,000</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Credit</h6>
+                                            <span class="number c-01">₹25,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Total Fuel Consumption</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Quantity</h6>
+                                            <span class="number c-02">1,000 L</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Avg. Rate</h6>
+                                            <span class="number c-02">₹100 / L</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Total Refuels</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Count</h6>
+                                            <span class="number c-03">24</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Avg. Qty</h6>
+                                            <span class="number c-03">42 L</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="itemcol">
+                                    <p>Mileage (KMPL)</p>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">This Month</h6>
+                                            <span class="number c-04">4.8</span>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <h6 style="font-size: 12px;">Last Month</h6>
+                                            <span class="number c-04">4.6</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div> --}}
+
+                        {{-- ============================================================
+                             FUEL BOOK — MINI DASHBOARD (static)
+                             Isolated component (fmd-* namespace). Does NOT reuse
+                             .totalrevenue / .item-row / .itemcol — those carry a
+                             20% fixed width from style.css that broke the grid.
+                             ============================================================ --}}
+                        <div class="fmd mt-3">
+
+                            {{-- Hero KPI strip --}}
+                            <div class="fmd-hero">
+                                <div class="fmd-hero-card fmd-hero--pri">
+                                    <span class="fmd-hero-label">Total Fuel — Amount</span>
+                                    <span class="fmd-hero-value">₹4,50,000</span>
+                                    <span class="fmd-hero-sub">across 4,500 L</span>
+                                </div>
+                                <div class="fmd-hero-card fmd-hero--succ">
+                                    <span class="fmd-hero-label">Total Fuel — Quantity</span>
+                                    <span class="fmd-hero-value">4,500 <span class="fmd-hero-unit">L</span></span>
+                                    <span class="fmd-hero-sub">across 24 refuels</span>
+                                </div>
+                                <div class="fmd-hero-card fmd-hero--warn">
+                                    <span class="fmd-hero-label">Average Fuel Rate</span>
+                                    <span class="fmd-hero-value">₹100.00 <span class="fmd-hero-unit">/ L</span></span>
+                                    <span class="fmd-hero-sub">Total Amount / Total Qty</span>
+                                </div>
+                            </div>
+
+                            {{-- Section: By Payment Method --}}
+                            <div class="fmd-panel mt-3">
+                                <div class="fmd-panel-head">
+                                    <div class="fmd-panel-title">
+                                        <span class="fmd-panel-bullet"></span>
+                                        By Payment Method
+                                    </div>
+                                    <div class="fmd-panel-sub">Split of amount &amp; quantity across payment modes</div>
+                                </div>
+                                <div class="fmd-panel-body">
+                                    <div class="fmd-grid fmd-grid--4">
+
+                                        <div class="fmd-card fmd-card--pri">
+                                            <div class="fmd-card-name">OTP</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,20,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,200 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--succ">
+                                            <div class="fmd-card-name">Market-pe</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹95,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">950 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--warn">
+                                            <div class="fmd-card-name">UPI</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹85,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">850 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--danger">
+                                            <div class="fmd-card-name">On Credit</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,50,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,500 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Section: By Fuel Company --}}
+                            <div class="fmd-panel mt-3">
+                                <div class="fmd-panel-head">
+                                    <div class="fmd-panel-title">
+                                        <span class="fmd-panel-bullet"></span>
+                                        By Fuel Company
+                                    </div>
+                                    <div class="fmd-panel-sub">Spend &amp; quantity per OMC / retail outlet</div>
+                                </div>
+                                <div class="fmd-panel-body">
+                                    <div class="fmd-grid fmd-grid--3">
+
+                                        <div class="fmd-card fmd-card--pri">
+                                            <div class="fmd-card-name">Jio</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹75,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">750 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--warn">
+                                            <div class="fmd-card-name">Nyara</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹68,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">680 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--purp">
+                                            <div class="fmd-card-name">Indian Oil</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹1,10,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">1,100 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--danger">
+                                            <div class="fmd-card-name">Bharat Petroleum</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹82,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">820 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--succ">
+                                            <div class="fmd-card-name">HP</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹70,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">700 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="fmd-card fmd-card--info">
+                                            <div class="fmd-card-name">Kalpataru Fuel Station</div>
+                                            <div class="fmd-card-stats">
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Amount</span>
+                                                    <span class="fmd-stat-value">₹45,000</span>
+                                                </div>
+                                                <div class="fmd-stat">
+                                                    <span class="fmd-stat-label">Qty</span>
+                                                    <span class="fmd-stat-value">450 L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {{-- /Fuel Book Mini Dashboard --}}
+
+                        <div class="accordion mt-3" id="accordionFuelBook">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="fuel_book">
+                                    <button
+                                        class="accordion-button filter-options"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapse02"
+                                        aria-expanded="true"
+                                        aria-controls="collapse02"
+                                    >
+                                        <div class="item-filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                            </span>
+                                            <p>Filter Options</p>
+                                        </div>
+                                    </button>
+                                </h2>
+
+                                <div
+                                    id="collapse02"
+                                    class="accordion-collapse collapse show"
+                                    aria-labelledby="fuel_book"
+                                    data-bs-parent="#accordionFuelBook">
+                                    <div class="accordion-body">
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
+
+                                                <div class="vehicletype">
+                                                    <label>Fuel Date Range</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control daterange"
+                                                        id="fuelbook_daterange"
+                                                        name="fuel_daterange"
+                                                        autocomplete="off"
+                                                        placeholder="Select date range..."
+                                                    />
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Fuel Company</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Indian Oil (IOCL)</option>
+                                                        <option>Hindustan Petroleum (HPCL)</option>
+                                                        <option>Bharat Petroleum (BPCL)</option>
+                                                        <option>Reliance Petroleum</option>
+                                                        <option>Nayara Energy</option>
+                                                        <option>Shell</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Location</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Hyderabad</option>
+                                                        <option>Kolkata</option>
+                                                        <option>Mumbai</option>
+                                                        <option>Delhi</option>
+                                                        <option>Bengaluru</option>
+                                                        <option>Chennai</option>
+                                                        <option>Pune</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Payment Method</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>OTP</option>
+                                                        <option>Market-pe</option>
+                                                        <option>UPI</option>
+                                                        <option>On Credit</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by Trip ID"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by LR Number"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
+                                                    </div>
+                                                </div>
+
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnFuelBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnFuelBook">
                                                         <li>
                                                             <a class="dropdown-item" href="javascript:void(0)"
                                                                 >Excel</a
@@ -2011,266 +3861,141 @@
                             </div>
                         </div>
 
-                        <!---->
-                        <div class="vehiclestable">
-                            <div class="itemtop">
-                                <span class="sec-title">Trips List</span>
-                                <a href="#" class="addtripbtn" data-bs-toggle="modal" data-bs-target="#addTrip">
-                                    <i class="uil uil-plus me-1"></i>Add Trip</a>
-                            </div>
-                            
-                            <div class="table-responsive">
-                                <table class="table custom-driver-table trip-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Trip Number</th>
-                                            <th>Start Date & Time</th>
-                                            <th>End Date & Time</th>
-                                            <th>Driver</th>
-                                            <th>Trip Type</th>
-                                            <th>Customer</th>
-                                            <th>LR# / LR Date</th>
-                                            <th>Route</th>
-                                            <th>Source</th>
-                                            <th>Destination</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                            
-                                    <tbody>
-                                        <!-- Row 1 -->
-                                        <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>External</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
-                                            <td>HYD - KOL</td>
-                                            <td>Kolkata</td>
-                                            <td>Mumbai</td>
-                                            <td><span class="badge badge-warning">Initiated</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
-                            
-                                        <!-- Row 2 -->
-                                        <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>Own</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
-                                            <td>HYD - KOL</td>
-                                            <td>Mumbai</td>
-                                            <td>Hyderabad</td>
-                                            <td><span class="badge badge-info">On Going</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
-                            
-                                        <!-- Row 3 -->
-                                        <tr>
-                                            <td>56667</td>
-                                            <td>19-09-2025 | 12:00 PM</td>
-                                            <td>25-09-2025 | 12:00 PM</td>
-                                            <td>Sujit Paul</td>
-                                            <td>Own</td>
-                                            <td>John Doe</td>
-                                            <td>LR#2897 | 13/11/2025</td>
-                                            <td>HYD - KOL</td>
-                                            <td>Mumbai</td>
-                                            <td>Hyderabad</td>
-                                            <td><span class="badge badge-success">Completed</span></td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success" data-bs-toggle="modal" data-bs-target="#addTrip"><i class="uil uil-pen me-2"></i></a>
-                                                <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!---->
-                        
-                    </div>
-                    <!--Trip-Book-content-here-END-->
 
-                    <!--Fuel-Book-content-here-start-->
-                    <div class="tab-pane fade" id="fuel">
-                        <div class="accordion mt-3" id="accordionExample">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="fuel_book">
-                                    <button
-                                        class="accordion-button filter-options"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#collapse02"
-                                        aria-expanded="true"
-                                        aria-controls="collapseOne"
-                                    >
-                                        <div class="item-filter">
-                                            <span class="filter-icon">
-                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
-                                            </span>
-                                            <p>Filter Options</p>
-                                        </div>
-                                    </button>
-                                </h2>
-
-                                <div
-                                    id="collapse02"
-                                    class="accordion-collapse collapse show"
-                                    aria-labelledby="fuel_book"
-                                    data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <div class="row">
-                                            
-                                            <div class="col-lg-6">
-                                                <form class="filterbd fualbook_form">
-                                                    <div class="filtersearch-bd align-items-end justify-content-start">
-
-                                                         <div class="vehicletype">
-                                                            <label>Filter by Date Range</label>
-                                                            <input type="text" class="form-control" name="daterange"  placeholder="Filter by date range" />
-                                                        </div>
-                                                        <button class="btn btn-primary ms-1 d-flex" type="button"><i class="uil uil-sync me-1"></i>Reset</button>
-                                                        <div class="dropdown export_wrap ms-1">
-                                                          <button class="btn btn-primary dropdown-toggle d-flex" type="button" id="exportBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Export <i class="uil uil-upload ms-1"></i>
-                                                          </button>
-                                                          
-                                                          <ul class="dropdown-menu " aria-labelledby="exportBtn">
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
-                                                          </ul>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-
-
-                                            <div class="col-lg-6">
-                                                <div class="expenses_and_quantity">
-                                                    <div class="row item_row">
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                
-                                                                <p>Total Fuel Expenses</p>
-                                                                
-                                                                <div class="amount_sec">
-                                                                  <i class="fa fa-inr"></i>10000
-                                                                </div>
-                                                                
-                                                                <div class="botom_sec">
-                                                                    <span class="bor_pa0"><i class="bi bi-cash"></i>Cash:<i class="fa fa-inr"></i>20000</span>
-                                                                    <span><i class="bi bi-credit-card "></i>Credit:<i class="fa fa-inr"></i>25000</span>
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                <p>Total Fuel Consumption</p>
-                                                                <div class="amount_sec">
-                                                                    <i class="bi bi-fuel-pump"></i>1000 L
-                                                                </div>
-                                                                <div class="botom_sec">
-                                                                    <span class="p-0"><i class="bi bi-graph-up "></i>Average Rate: <i class="fa fa-inr"></i>100 / L</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>                                                
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        
                         <div class="sr_dashboard0_table">
                             <div class="container-fluid">
-                                <!--<div class="itemtop mb-4">-->
-                                <!--    <span class="sec-title">Driver List</span>-->
-                                <!--</div>-->
-                        
+                                <div class="itemtop mb-3">
+                                    <span class="sec-title">Fuel Book List</span>
+                                </div>
+
                                 <div class="table-responsive">
                                     <table class="table custom-driver-table">
                                         <thead>
                                             <tr>
-                                                <th>Date</th>
-                                                <th style="min-width: 120px">Expenses Type</th>
-                                                <th style="min-width: 120px">Quantity (L)</th>
-                                                <th>Rate(₹/L)</th>
-                                                <th>Payment</th>
-                                                <th>Payment Mode</th>
-                                                <th>Charged To</th>
-                                                <th>Odometer(KM)</th>
-                                                <th></th>
+                                                <th>S.No</th>
+                                                <th style="min-width: 110px">Trip ID</th>
+                                                <th style="min-width: 160px">LR Number &amp; Date</th>
+                                                <th style="min-width: 180px">Route</th>
+                                                <th style="min-width: 180px">Driver Name &amp; Code</th>
+                                                <th style="min-width: 110px">Fuel Date</th>
+                                                <th>Fuel Qty (L)</th>
+                                                <th>Fuel Amount</th>
+                                                <th style="min-width: 130px">Fuel Per L Rate</th>
+                                                <th style="min-width: 160px">Fuel Company</th>
+                                                <th style="min-width: 130px">Location</th>
+                                                <th style="min-width: 130px">Payment Method</th>
+                                                <th style="min-width: 140px">Odo-Meter Reading</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                             <tr>
-                                                <td>08/09/-2025</td>
+                                                <td>1</td>
+                                                <td>TRP-1001</td>
                                                 <td>
-                                                    Fuel Expenses
+                                                    <span class="value">LR-2025-0451</span><br>
+                                                    <small>05/09/2025</small>
                                                 </td>
-                                                
+                                                <td>Hyderabad → Kolkata</td>
+                                                <td>
+                                                    <span class="value">Sujit Paul</span><br>
+                                                    <small>DRV-001</small>
+                                                </td>
+                                                <td>08/09/2025</td>
                                                 <td>85</td>
-                                                
-                                                <td>15000</td>
-                                                
-                                                <td>₹ 30000</td>
-                                                
-                                                <td><span class="value">Online</span></td>
-                                                
-                                                <td><span class="value">Hindustan Petroleum</span></td>
-                                                
-                                                <td>200</td>
-        
-                                                <td class="text-center">
-                                                    <span class="badge bg-success" data-bs-toggle="modal" data-bs-target="#fuelbook1remarks">Remarks</span>
-                                                </td>
+                                                <td>₹ 8,500</td>
+                                                <td>₹ 100.00</td>
+                                                <td>Hindustan Petroleum</td>
+                                                <td>Hyderabad</td>
+                                                <td><span class="value">UPI</span></td>
+                                                <td>1,25,200</td>
                                             </tr>
-                                            
+
                                             <tr>
-                                                <td>08/09/-2025</td>
+                                                <td>2</td>
+                                                <td>TRP-1002</td>
                                                 <td>
-                                                    Fuel Expenses
+                                                    <span class="value">LR-2025-0478</span><br>
+                                                    <small>12/09/2025</small>
                                                 </td>
-                                                
-                                                <td>85</td>
-                                                
-                                                <td>15000</td>
-                                                
-                                                <td>₹ 30000</td>
-                                                
-                                                <td><span class="value">Online</span></td>
-                                                
-                                                <td><span class="value">Hindustan Petroleum</span></td>
-                                                
-                                                <td>200</td>
-        
-                                                <td class="text-center">
-                                                    <span class="badge bg-success" data-bs-toggle="modal" data-bs-target="#fuelbook1remarks">Remarks</span>
+                                                <td>Kolkata → Mumbai</td>
+                                                <td>
+                                                    <span class="value">Ramesh Kumar</span><br>
+                                                    <small>DRV-002</small>
                                                 </td>
+                                                <td>14/09/2025</td>
+                                                <td>120</td>
+                                                <td>₹ 12,240</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Indian Oil (IOCL)</td>
+                                                <td>Nagpur</td>
+                                                <td><span class="value">OTP</span></td>
+                                                <td>1,26,540</td>
                                             </tr>
-                                            
-        
+
+                                            <tr>
+                                                <td>3</td>
+                                                <td>—</td>
+                                                <td>—</td>
+                                                <td><span class="upcoming-trip-pill p-2">Upcoming trip</span></td>
+                                                <td>
+                                                    <span class="value">Mohan Singh</span><br>
+                                                    <small>DRV-003</small>
+                                                </td>
+                                                <td>20/09/2025</td>
+                                                <td>60</td>
+                                                <td>₹ 6,120</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Bharat Petroleum (BPCL)</td>
+                                                <td>Pune</td>
+                                                <td><span class="value">Market-pe</span></td>
+                                                <td>1,27,180</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>4</td>
+                                                <td>TRP-1003</td>
+                                                <td>
+                                                    <span class="value">LR-2025-0502</span><br>
+                                                    <small>22/09/2025</small>
+                                                </td>
+                                                <td>Mumbai → Delhi</td>
+                                                <td>
+                                                    <span class="value">Sujit Paul</span><br>
+                                                    <small>DRV-001</small>
+                                                </td>
+                                                <td>24/09/2025</td>
+                                                <td>95</td>
+                                                <td>₹ 9,690</td>
+                                                <td>₹ 102.00</td>
+                                                <td>Reliance Petroleum</td>
+                                                <td>Vadodara</td>
+                                                <td><span class="value">On Credit</span></td>
+                                                <td>1,28,420</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>5</td>
+                                                <td>TRP-1004</td>
+                                                <td>
+                                                    <span class="value">LR-2025-0531</span><br>
+                                                    <small>28/09/2025</small>
+                                                </td>
+                                                <td>Delhi → Bengaluru</td>
+                                                <td>
+                                                    <span class="value">Ramesh Kumar</span><br>
+                                                    <small>DRV-002</small>
+                                                </td>
+                                                <td>30/09/2025</td>
+                                                <td>110</td>
+                                                <td>₹ 11,330</td>
+                                                <td>₹ 103.00</td>
+                                                <td>Shell</td>
+                                                <td>Jaipur</td>
+                                                <td><span class="value">UPI</span></td>
+                                                <td>1,29,860</td>
+                                            </tr>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -2281,16 +4006,55 @@
 
                     <!--Expenses content-start-->
                     <div class="tab-pane fade" id="expenses">
-                        <div class="accordion mt-3" id="accordionExample">
+
+                        {{-- Mini-Dashboard — Total + Expense Type Wise (Static) --}}
+                        <div class="exp-mini-dashboard">
+                            <div class="exp-mini-head">
+                                <span class="exp-mini-title">
+                                    <i class="uil uil-chart-pie"></i> Expense Mini-Dashboard
+                                </span>
+                                <span class="exp-mini-sub">Snapshot of expenses for this vehicle</span>
+                            </div>
+
+                            <div class="exp-kpi-grid">
+                                {{-- Total Expense (highlight card) --}}
+                                <div class="exp-kpi exp-kpi-total">
+                                    <div class="exp-kpi-icon"><i class="uil uil-usd-circle"></i></div>
+                                    <div class="exp-kpi-body">
+                                        <p>Total Expense</p>
+                                        <h4><i class="fa fa-inr"></i> 1,25,000</h4>
+                                    </div>
+                                </div>
+
+                                {{-- Expense Type Wise — dynamic from Expense model (amounts remain static) --}}
+                                @forelse($expenseTypes as $i => $type)
+                                    <div class="exp-kpi">
+                                        <div class="exp-kpi-icon exp-c{{ ($i % 8) + 1 }}"><i class="uil uil-tag-alt"></i></div>
+                                        <div class="exp-kpi-body">
+                                            <p>{{ $type->name }}</p>
+                                            <h4><i class="fa fa-inr"></i> 0</h4>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="exp-kpi-empty">
+                                        <i class="uil uil-info-circle"></i>
+                                        No active expense types configured.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                        {{-- End Mini-Dashboard --}}
+
+                        <div class="accordion mt-3" id="accordionExpenseBook">
                             <div class="accordion-item">
-                                <h2 class="accordion-header" id="fuel_book">
+                                <h2 class="accordion-header" id="expense_book_filter">
                                     <button
                                         class="accordion-button filter-options"
                                         type="button"
                                         data-bs-toggle="collapse"
-                                        data-bs-target="#collapse02"
+                                        data-bs-target="#collapseExpenseBook"
                                         aria-expanded="true"
-                                        aria-controls="collapseOne"
+                                        aria-controls="collapseExpenseBook"
                                     >
                                         <div class="item-filter">
                                             <span class="filter-icon">
@@ -2302,95 +4066,129 @@
                                 </h2>
 
                                 <div
-                                    id="collapse02"
+                                    id="collapseExpenseBook"
                                     class="accordion-collapse collapse show"
-                                    aria-labelledby="fuel_book"
-                                    data-bs-parent="#accordionExample"
-                                >
+                                    aria-labelledby="expense_book_filter"
+                                    data-bs-parent="#accordionExpenseBook">
                                     <div class="accordion-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                
-                                                <form class="filterbd fualbook_form">
-                                                    <div class="filtersearch-bd align-items-end justify-content-start">
-                                                        
-                                                        <div class="vehicletype ms-1">
-                                                            <label>Month</label>
-                                                            <select class="form-select">
-                                                                <option>Choose..</option>
-                                                                <option>January 2025</option>
-                                                                <option>February 2024</option>
-                                                                <option>March 2025</option>
-                                                                <option>April 2025</option>
-                                                                <option>May 2025</option>
-                                                                <option>June 2025</option>
-                                                                <option>July 2025</option>
-                                                                <option>August 2024</option>
-                                                                <option>September 2023</option>
-                                                                <option>October 2023</option>
-                                                                <option>November 2024</option>
-                                                                <option>December 2024</option>
-                                                            </select>
-                                                        </div>
-                                                        
-                                                        <div class="vehicletype ms-1">
-                                                            <label>Day</label>
-                                                            <select class="form-select">
-                                                                <option>Choose..</option>
-                                                                <option>Day-1</option>
-                                                                <option>Day-2</option>
-                                                                <option>Day-3</option>
-                                                                <option>Day-4</option>
-                                                                <option>Day-5</option>
-                                                                <option>Day-6</option>
-                                                                <option>Day-7</option>
-                                                                <option>Day-8</option>
-                                                            </select>
-                                                        </div>
-                                                        
-                                                        <button class="btn btn-primary ms-1 d-flex" type="button"><i class="uil uil-sync me-1"></i>Reset</button>
-                                                        <div class="dropdown export_wrap ms-1">
-                                                          <button class="btn btn-primary dropdown-toggle d-flex" type="button" id="exportBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            Export <i class="uil uil-upload ms-1"></i>
-                                                          </button>
-                                                          
-                                                          <ul class="dropdown-menu " aria-labelledby="exportBtn">
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
-                                                          </ul>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            
-                                            <div class="col-lg-6">
-                                                <div class="expenses_and_quantity">
-                                                    <div class="row item_row">
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                
-                                                                <p>Total Expenses</p>
-                                                                
-                                                                <div class="amount_sec">
-                                                                  <i class="fa fa-inr"></i>100000
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </div>
+                                        <form class="vehicle_dform p-4">
+                                            <div class="filtersearch-bd justify-content-between">
 
-                                                        <div class="col-lg-6 col-md-6 item_col">
-                                                            <div class="item_box card">
-                                                                <p>Fuel Expenses</p>
-                                                                <div class="amount_sec">
-                                                                    <i class="fa fa-inr"></i>10000
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
+                                                <div class="vehicletype">
+                                                    <label>Expense Date Range</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control daterange"
+                                                        id="expensebook_daterange"
+                                                        name="expense_daterange"
+                                                        autocomplete="off"
+                                                        placeholder="Select date range..."
+                                                    />
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Driver Name &amp; Code</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Sujit Paul (DRV-001)</option>
+                                                        <option>Ramesh Kumar (DRV-002)</option>
+                                                        <option>Mohan Singh (DRV-003)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Expense Type</label>
+                                                    <select class="form-select select2">
+                                                        <option>Choose..</option>
+                                                        <option>Maintenance</option>
+                                                        <option>Repair</option>
+                                                        <option>Tyre</option>
+                                                        <option>Battery</option>
+                                                        <option>RTO Document</option>
+                                                        <option>Challan</option>
+                                                        <option>Police</option>
+                                                        <option>Loading</option>
+                                                        <option>Unloading</option>
+                                                        <option>Parking</option>
+                                                        <option>Border Expense</option>
+                                                        <option>Accident Charges</option>
+                                                        <option>Driver Allowance</option>
+                                                        <option>Miscellaneous</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="vehicletype ms-1">
+                                                    <label>Payment Method</label>
+                                                    <select class="form-select">
+                                                        <option>Choose..</option>
+                                                        <option>Cash</option>
+                                                        <option>UPI</option>
+                                                        <option>Bank Transfer</option>
+                                                        <option>Cheque</option>
+                                                        <option>Credit Card</option>
+                                                        <option>Debit Card</option>
+                                                        <option>On Credit</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by Trip ID"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
                                                     </div>
                                                 </div>
+
+                                                <div class="ms-1" style="width: 220px">
+                                                    <div class="input-group">
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            placeholder="Search by LR Number"
+                                                        />
+                                                        <span class="input-group-text"
+                                                            ><i class="uil uil-search"></i
+                                                        ></span>
+                                                    </div>
+                                                </div>
+
+                                                <button class="btn btn-primary ms-1" type="button">
+                                                    <i class="uil uil-sync me-1"></i>Reset
+                                                </button>
+
+                                                <div class="dropdown ms-1">
+                                                    <button
+                                                        class="btn btn-primary dropdown-toggle d-flex"
+                                                        type="button"
+                                                        id="exportBtnExpenseBook"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        Export <i class="uil uil-upload ms-1"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="exportBtnExpenseBook">
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >Excel</a
+                                                            >
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                                >PDF</a
+                                                            >
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -2411,49 +4209,114 @@
                                 <table class="table custom-driver-table">
                                     <thead>
                                         <tr>
+                                            <th>S.No</th>
+                                            <th>Trip ID</th>
+                                            <th>LR Number &amp; Date</th>
+                                            <th>Driver Name &amp; Code</th>
+                                            <th>Route</th>
                                             <th>Date</th>
                                             <th>Expense Type</th>
-                                            <th>Payment Mode</th>
-                                            <th>Trip</th>
-                                            <th>Remark</th>
-                                            <th>Amount</th>
-                                            <th class="text-center">Actions</th>
+                                            <th>Expense Amount</th>
+                                            <th>Payment Method</th>
+                                            <th>Comment</th>
+                                            <th>Attachment</th>
                                         </tr>
                                     </thead>
-                            
+
                                     <tbody>
                                         <!-- Row 1 -->
                                         <tr>
+                                            <td>1</td>
+                                            <td>TRP-56667</td>
+                                            <td>
+                                                LR-10234
+                                                <span class="text-secondary d-block">08-09-2025</span>
+                                            </td>
+                                            <td>
+                                                Ramesh Kumar
+                                                <span class="text-secondary d-block">DRV-001</span>
+                                            </td>
+                                            <td>Chennai &rarr; Bangalore</td>
                                             <td>08-09-2025</td>
                                             <td>Maintenance</td>
+                                            <td>&#8377; 4,500</td>
                                             <td>Cash</td>
-                                            <td>56667</td>
                                             <td>Paid on call request</td>
-                                            <td>₹ 4500</td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success">
-                                                    <i class="uil uil-pen me-2"></i>
-                                                </a>
-                                                <a class="item-delete text-danger">
-                                                    <i class="uil uil-trash-alt"></i>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
                                             </td>
                                         </tr>
-                            
+
                                         <!-- Row 2 -->
                                         <tr>
+                                            <td>2</td>
+                                            <td>TRP-56867</td>
+                                            <td>
+                                                LR-10298
+                                                <span class="text-secondary d-block">08-10-2025</span>
+                                            </td>
+                                            <td>
+                                                Suresh Babu
+                                                <span class="text-secondary d-block">DRV-014</span>
+                                            </td>
+                                            <td>Hyderabad &rarr; Pune</td>
                                             <td>08-10-2025</td>
-                                            <td>Police</td>
+                                            <td>Repair</td>
+                                            <td>&#8377; 1,000</td>
                                             <td>Cash</td>
-                                            <td>56867</td>
                                             <td>Paid on call request</td>
-                                            <td>₹ 1000</td>
-                                            <td class="text-center">
-                                                <a class="item-edit text-success">
-                                                    <i class="uil uil-pen me-2"></i>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
-                                                <a class="item-delete text-danger">
-                                                    <i class="uil uil-trash-alt"></i>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 3 — Diesel without trip → Route shows Empty -->
+                                        <tr>
+                                            <td>3</td>
+                                            <td>&mdash;</td>
+                                            <td>&mdash;</td>
+                                            <td>
+                                                Mahesh Singh
+                                                <span class="text-secondary d-block">DRV-022</span>
+                                            </td>
+                                            <td><span class="text-muted">Empty</span></td>
+                                            <td>09-10-2025</td>
+                                            <td>Diesel</td>
+                                            <td>&#8377; 3,200</td>
+                                            <td>UPI</td>
+                                            <td>Top-up at depot</td>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Row 4 — Driver advance -->
+                                        <tr>
+                                            <td>4</td>
+                                            <td>TRP-57012</td>
+                                            <td>
+                                                LR-10355
+                                                <span class="text-secondary d-block">12-10-2025</span>
+                                            </td>
+                                            <td>
+                                                Ramesh Kumar
+                                                <span class="text-secondary d-block">DRV-001</span>
+                                            </td>
+                                            <td>Chennai &rarr; Coimbatore</td>
+                                            <td>12-10-2025</td>
+                                            <td>Driver Advance</td>
+                                            <td>&#8377; 5,000</td>
+                                            <td>Bank Transfer</td>
+                                            <td>Advance for trip expenses</td>
+                                            <td>
+                                                <a href="#" class="text-primary">
+                                                    <i class="uil uil-paperclip"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -3030,7 +4893,7 @@
 
                     <!--Maintenance-content-here-->
                     <div class="tab-pane fade" id="maintenance">
-                        <div class="totalrevenue mt-3">
+                        {{-- <div class="totalrevenue mt-3">
                             <div class="item-row">
                                 <div class="itemcol">
                                     <p>Total Scheduled</p>
@@ -3052,100 +4915,457 @@
                                     <span class="number c-04">₹0</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         
                         <div class="row mt-4">
-                            <div class="col-12 col-md-8">
-                                <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                                  <li class="nav-item" role="presentation">
-                                    <button class="nav-link active mb-0" id="pills-maint-tab" data-bs-toggle="pill" data-bs-target="#pills-maint" type="button" role="tab" aria-controls="pills-maint" aria-selected="true">Maintenance</button>
-                                  </li>
-                                  <li class="nav-item" role="presentation">
-                                    <button class="nav-link mb-0" id="pills-repair-tab" data-bs-toggle="pill" data-bs-target="#pills-repair" type="button" role="tab" aria-controls="pills-repair" aria-selected="false">Repair</button>
-                                  </li>
-                                </ul>
-                            </div>
-                            <div class="col-12 col-md-4 text-end">
-                                <a
-                                    href="javascript:void(0)"
-                                    class="btn btn-primary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#add05_maintenance"
-                                    ><i class="uil uil-plus me-1"></i> Schedule Maintenance</a
-                                >
+                            <div class="col-12">
+                                <div class="maint-pills-scroll-wrap">
+                                    <button type="button" class="maint-pills-scroll-btn maint-pills-scroll-prev" aria-label="Scroll tabs left">
+                                        <i class="uil uil-angle-left-b"></i>
+                                    </button>
+                                    <button type="button" class="maint-pills-scroll-btn maint-pills-scroll-next" aria-label="Scroll tabs right">
+                                        <i class="uil uil-angle-right-b"></i>
+                                    </button>
+                                    <ul class="nav nav-pills flex-nowrap gap-2" id="pills-tab" role="tablist">
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link active mb-0" id="pills-truck-repair-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-repair" type="button" role="tab" aria-controls="pills-truck-repair" aria-selected="true">Truck Repair</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-truck-sched-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-sched" type="button" role="tab" aria-controls="pills-truck-sched" aria-selected="false">Truck Scheduled Maintenance</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-truck-acc-tab" data-bs-toggle="pill" data-bs-target="#pills-truck-acc" type="button" role="tab" aria-controls="pills-truck-acc" aria-selected="false">Truck Accidental Repair</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-battery-tab" data-bs-toggle="pill" data-bs-target="#pills-battery" type="button" role="tab" aria-controls="pills-battery" aria-selected="false">Battery – Repair &amp; Maintenance</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-def-tab" data-bs-toggle="pill" data-bs-target="#pills-def" type="button" role="tab" aria-controls="pills-def" aria-selected="false">DEF – Allocation History</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-tirpal-tab" data-bs-toggle="pill" data-bs-target="#pills-tirpal" type="button" role="tab" aria-controls="pills-tirpal" aria-selected="false">Tirpal &amp; Rope – Allocation History</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link mb-0" id="pills-tagged-tab" data-bs-toggle="pill" data-bs-target="#pills-tagged" type="button" role="tab" aria-controls="pills-tagged" aria-selected="false">Tagged Assets</button>
+                                      </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                        
-                        
-                        <div class="tab-content" id="pills-tabContent">
-                          <div class="tab-pane fade show active" id="pills-maint" role="tabpanel" aria-labelledby="pills-maint-tab">
-                                <div class="vehiclestable">
-                                    <div class="itemtop">
-                                        <span class="sec-title">Scheduled Maintenance</span>
+
+
+                        <div class="tab-content mt-3" id="pills-tabContent">
+
+                          {{-- 1. Truck Repair --}}
+                          <div class="tab-pane fade show active" id="pills-truck-repair" role="tabpanel" aria-labelledby="pills-truck-repair-tab">
+
+                              {{-- ═══ Mini Dashboard — Truck Repair KPIs (static) ═══ --}}
+                              <div class="tr-kpi-strip row g-3 mb-3">
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-primary">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-tools"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Repair Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-warning">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-gear-fill"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Spare Parts Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                      <div class="tr-kpi-card tr-kpi-success">
+                                          <div class="tr-kpi-icon">
+                                              <i class="bi bi-person-gear"></i>
+                                          </div>
+                                          <div class="tr-kpi-body">
+                                              <div class="tr-kpi-label">Total Labour Cost</div>
+                                              <div class="tr-kpi-value">&#8377; 0.00</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              {{-- ═══ End Mini Dashboard ═══ --}}
+
+                              {{-- Filter Card (static) --}}
+                              <div class="accordion mt-3" id="accordionTruckRepair">
+                                  <div class="accordion-item">
+                                      <h2 class="accordion-header" id="truck_repair_filter">
+                                          <button
+                                              class="accordion-button filter-options"
+                                              type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTruckRepair"
+                                              aria-expanded="true"
+                                              aria-controls="collapseTruckRepair"
+                                          >
+                                              <div class="item-filter">
+                                                  <span class="filter-icon">
+                                                      <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                  </span>
+                                                  <p>Filter Options</p>
+                                              </div>
+                                          </button>
+                                      </h2>
+
+                                      <div
+                                          id="collapseTruckRepair"
+                                          class="accordion-collapse collapse show"
+                                          aria-labelledby="truck_repair_filter"
+                                          data-bs-parent="#accordionTruckRepair">
+                                          <div class="accordion-body">
+                                              <form class="vehicle_dform p-4">
+                                                  <div class="filtersearch-bd justify-content-between">
+
+                                                      <div class="vehicletype">
+                                                          <label>Repair</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Major</option>
+                                                              <option>Minor</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Repair Category</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Mechanical</option>
+                                                              <option>Electrical</option>
+                                                              <option>Body Work</option>
+                                                              <option>Tyre</option>
+                                                              <option>Hydraulic</option>
+                                                              <option>Other</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Work Done</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Clutch Plate Replacement</option>
+                                                              <option>Brake Shoe Adjustment</option>
+                                                              <option>Air Compressor Replacement</option>
+                                                              <option>Cabin Door Dent Removal</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Workshop Name</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>SR Workshop</option>
+                                                              <option>Joshan LLP</option>
+                                                              <option>Sai Body Works</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>Repair Warranty</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Under Warranty</option>
+                                                              <option>Expired</option>
+                                                              <option>Not Applicable</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>GST Applicable</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Yes</option>
+                                                              <option>No</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class="vehicletype ms-1">
+                                                          <label>GST Bill Received</label>
+                                                          <select class="form-select select2">
+                                                              <option>Choose..</option>
+                                                              <option>Yes</option>
+                                                              <option>No</option>
+                                                          </select>
+                                                      </div>
+
+                                                  </div>
+
+                                                  <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                      <button class="btn btn-primary ms-1" type="button">
+                                                          <i class="uil uil-sync me-1"></i>Reset
+                                                      </button>
+
+                                                      <div class="dropdown ms-1">
+                                                          <button
+                                                              class="btn btn-primary dropdown-toggle d-flex"
+                                                              type="button"
+                                                              id="exportBtnTruckRepair"
+                                                              data-bs-toggle="dropdown"
+                                                              aria-expanded="false"
+                                                          >
+                                                              Export <i class="uil uil-upload ms-1"></i>
+                                                          </button>
+                                                          <ul class="dropdown-menu" aria-labelledby="exportBtnTruckRepair">
+                                                              <li>
+                                                                  <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                              </li>
+                                                              <li>
+                                                                  <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                              </li>
+                                                          </ul>
+                                                      </div>
+                                                  </div>
+                                              </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Repair</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Repair</a>
                                     </div>
-                                    
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Driver Name &amp; Code</th>
+                                                    <th>Date</th>
+                                                    <th>Workshop Type</th>
+                                                    <th>Repair</th>
+                                                    <th>Repair Category</th>
+                                                    <th>Repair Work</th>
+                                                    <th>Odometer Reading</th>
+                                                    <th>Repair Days / Hours</th>
+                                                    <th>Repair Warranty (Months)</th>
+                                                    <th>Workshop Name &amp; Location</th>
+                                                    <th class="text-end">Repair Cost (₹)</th>
+                                                    <th>Invoice Number</th>
+                                                    <th>GST Bill Applicable</th>
+                                                    <th>GST Bill Received</th>
+                                                    <th class="text-center">Attachment</th>
+                                                    <th class="text-center">Action</th>
+                                                    <th>Work Done</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Ramesh Kumar <br><small class="text-muted">DRV-1021</small></td>
+                                                    <td>27-08-2025</td>
+                                                    <td>Own <br><a href="javascript:void(0)" class="text-primary"><small>JC-2025-0087</small></a></td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>Mechanical</td>
+                                                    <td>Clutch Plate Replacement</td>
+                                                    <td>1,24,520 KM</td>
+                                                    <td>2 Days</td>
+                                                    <td>6</td>
+                                                    <td>SR Workshop <br><small class="text-muted">Hyderabad</small></td>
+                                                    <td class="text-end">18,500</td>
+                                                    <td>INV-2025-3341</td>
+                                                    <td>Yes</td>
+                                                    <td>Yes</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Dismantled gearbox housing,…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Clutch Plate Replacement — Work Done"
+                                                           data-content="Dismantled gearbox housing, replaced worn clutch plate &amp; pressure plate, inspected flywheel, refitted assembly and road-tested for smooth engagement.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Suresh Yadav <br><small class="text-muted">DRV-1034</small></td>
+                                                    <td>15-09-2025</td>
+                                                    <td>External</td>
+                                                    <td><span class="tr-repair-pill is-minor">Minor</span></td>
+                                                    <td>Mechanical</td>
+                                                    <td>Brake Shoe Adjustment</td>
+                                                    <td>1,26,840 KM</td>
+                                                    <td>4 Hours</td>
+                                                    <td>—</td>
+                                                    <td>Joshan LLP <br><small class="text-muted">Vijayawada</small></td>
+                                                    <td class="text-end">2,200</td>
+                                                    <td>INV-JL-7782</td>
+                                                    <td>Yes</td>
+                                                    <td>No</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Adjusted rear brake shoe…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Brake Shoe Adjustment — Work Done"
+                                                           data-content="Adjusted rear brake shoe clearance, cleaned drum, checked brake fluid level and tested pedal travel for proper response.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mahesh Reddy <br><small class="text-muted">DRV-1045</small></td>
+                                                    <td>02-10-2025</td>
+                                                    <td>Own <br><a href="javascript:void(0)" class="text-primary"><small>JC-2025-0102</small></a></td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>Electrical</td>
+                                                    <td>Air Compressor Replacement</td>
+                                                    <td>1,28,910 KM</td>
+                                                    <td>1 Day</td>
+                                                    <td>12</td>
+                                                    <td>SR Workshop <br><small class="text-muted">Hyderabad</small></td>
+                                                    <td class="text-end">12,750</td>
+                                                    <td>INV-2025-3398</td>
+                                                    <td>Yes</td>
+                                                    <td>Yes</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Removed faulty air compressor…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Air Compressor Replacement — Work Done"
+                                                           data-content="Removed faulty air compressor unit, replaced with OEM compressor, recharged air lines, verified pressure cut-in/cut-out and leak-tested entire circuit.">More</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Vinod Singh <br><small class="text-muted">DRV-1052</small></td>
+                                                    <td>18-10-2025</td>
+                                                    <td>External</td>
+                                                    <td><span class="tr-repair-pill is-minor">Minor</span></td>
+                                                    <td>Body Work</td>
+                                                    <td>Cabin Door Dent Removal</td>
+                                                    <td>1,30,210 KM</td>
+                                                    <td>6 Hours</td>
+                                                    <td>—</td>
+                                                    <td>Sai Body Works <br><small class="text-muted">Guntur</small></td>
+                                                    <td class="text-end">3,500</td>
+                                                    <td>INV-SBW-2241</td>
+                                                    <td>No</td>
+                                                    <td>—</td>
+                                                    <td class="text-center"><a href="javascript:void(0)" class="text-primary"><i class="uil uil-paperclip"></i></a></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-workdone-short">Pulled out dents on driver-side…</span>
+                                                        <a href="javascript:void(0)" class="tr-workdone-more text-primary"
+                                                           data-title="Cabin Door Dent Removal — Work Done"
+                                                           data-content="Pulled out dents on driver-side cabin door using slide hammer, sanded surface, applied primer, repainted to match cab colour and polished.">More</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {{-- Truck Repair · Work Done Modal --}}
+                                <div class="modal fade" id="trWorkDoneModal" tabindex="-1" aria-labelledby="trWorkDoneModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="trWorkDoneModalLabel">Work Done</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p id="trWorkDoneModalBody" class="mb-0">—</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 2. Truck Scheduled Maintenance --}}
+                          <div class="tab-pane fade" id="pills-truck-sched" role="tabpanel" aria-labelledby="pills-truck-sched-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Scheduled Maintenance</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add05_maintenance"><i class="uil uil-plus me-1"></i> Schedule Maintenance</a>
+                                    </div>
+
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
                                                     <th>Maintenance Item</th>
-                                                    <th>Last Date</th>
-                                                    <th>Next Due</th>
-                                                    <th>Odometer (KM)</th>
+                                                    <th>Service Interval</th>
+                                                    <th>Last Service Date</th>
+                                                    <th>Last Service KM</th>
+                                                    <th>Next Due Date</th>
+                                                    <th>Next Due KM</th>
                                                     <th>Status</th>
                                                     <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
-                                    
                                             <tbody>
-                                                <!-- Row 1 -->
+                                                <tr>
+                                                    <td>Engine Oil Change</td>
+                                                    <td>Every 15,000 KM</td>
+                                                    <td>27-08-2025</td>
+                                                    <td>1,15,000</td>
+                                                    <td>15-12-2025</td>
+                                                    <td>1,30,000</td>
+                                                    <td><span class="badge badge-warning">Due Soon</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
                                                 <tr>
                                                     <td>Hub Greasing</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>420</td>
-                                                    <td><span class="badge badge-warning">Pending</span></td>
+                                                    <td>Every 10,000 KM</td>
+                                                    <td>15-07-2025</td>
+                                                    <td>1,10,000</td>
+                                                    <td>20-11-2025</td>
+                                                    <td>1,20,000</td>
+                                                    <td><span class="badge badge-danger">Overdue</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
-                                    
-                                                <!-- Row 2 -->
                                                 <tr>
-                                                    <td>Painting</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>350</td>
+                                                    <td>Air Filter Replacement</td>
+                                                    <td>Every 20,000 KM</td>
+                                                    <td>05-06-2025</td>
+                                                    <td>1,08,000</td>
+                                                    <td>10-01-2026</td>
+                                                    <td>1,28,000</td>
                                                     <td><span class="badge badge-success">Up to Date</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
-                                    
-                                                <!-- Row 3 -->
                                                 <tr>
-                                                    <td>Electric</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>₹56420</td>
-                                                    <td>140</td>
+                                                    <td>Painting Touch-Up</td>
+                                                    <td>Yearly</td>
+                                                    <td>27-03-2025</td>
+                                                    <td>1,02,500</td>
+                                                    <td>27-03-2026</td>
+                                                    <td>—</td>
                                                     <td><span class="badge badge-success">Up to Date</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -3153,47 +5373,57 @@
                                     </div>
                                 </div>
                           </div>
-                          <div class="tab-pane fade" id="pills-repair" role="tabpanel" aria-labelledby="pills-repair-tab">
+
+                          {{-- 3. Truck Accidental Repair --}}
+                          <div class="tab-pane fade" id="pills-truck-acc" role="tabpanel" aria-labelledby="pills-truck-acc-tab">
                               <div class="vehiclestable">
-                                    <div class="itemtop">
-                                        <span class="sec-title">Scheduled Repair</span>
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Truck Accidental Repair</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Log Accident</a>
                                     </div>
-                                    
+
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Repair Item</th>
-                                                    <th>Repair Type</th>
-                                                    <th>Repair Start Date</th>
-                                                    <th>Expected Closure Date</th>
-                                                    <th>Actual Closure Date</th>
-                                                    <th>Workshop Name</th>
-                                                    <th>Workshop Location</th>
-                                                    <th>Odometer (KM)</th>
+                                                    <th>Accident Date</th>
+                                                    <th>Location</th>
+                                                    <th>Damage Type</th>
+                                                    <th>Severity</th>
+                                                    <th>Workshop</th>
+                                                    <th>Insurance Claim #</th>
+                                                    <th class="text-end">Repair Cost (₹)</th>
                                                     <th>Status</th>
                                                     <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
-                                    
                                             <tbody>
                                                 <tr>
-                                                    <td>Hub Greasing</td>
-                                                    <td>Major</td>
-                                                    <td>27-08-2025</td>
-                                                    <td>30-08-2025</td>
-                                                    <td>02-09-2025</td>
-                                                    <td>Joshan LLP</td>
-                                                    <td>Hydrabad</td>
-                                                    <td>420</td>
-                                                    <td><span class="badge badge-warning">Pending</span></td>
+                                                    <td>14-07-2023</td>
+                                                    <td>NH-44, Kurnool</td>
+                                                    <td>Front Bumper, Headlight</td>
+                                                    <td><span class="badge badge-warning">Moderate</span></td>
+                                                    <td>Tata SC, Kurnool</td>
+                                                    <td>CLM-2023-0031</td>
+                                                    <td class="text-end">95,000</td>
+                                                    <td><span class="badge badge-success">Settled</span></td>
                                                     <td class="text-center">
-                                                        <a class="item-edit text-success">
-                                                            <i class="uil uil-pen me-2"></i>
-                                                        </a>
-                                                        <a class="item-delete text-danger">
-                                                            <i class="uil uil-trash-alt"></i>
-                                                        </a>
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>08-12-2024</td>
+                                                    <td>Outer Ring Road, Hyderabad</td>
+                                                    <td>Side Panel, Rear Axle</td>
+                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
+                                                    <td>SC-HYD (Own)</td>
+                                                    <td>CLM-2024-0048</td>
+                                                    <td class="text-end">2,40,000</td>
+                                                    <td><span class="badge badge-warning">Survey in Progress</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -3201,168 +5431,353 @@
                                     </div>
                                 </div>
                           </div>
+
+                          {{-- 4. Battery – Repair & Maintenance --}}
+                          <div class="tab-pane fade" id="pills-battery" role="tabpanel" aria-labelledby="pills-battery-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Battery – Repair &amp; Maintenance</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Add Battery Entry</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Action Date</th>
+                                                    <th>Battery Brand</th>
+                                                    <th>Serial No</th>
+                                                    <th>Install Date</th>
+                                                    <th>Warranty Until</th>
+                                                    <th>Action Type</th>
+                                                    <th class="text-end">Cost (₹)</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>10-02-2024</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>New Installation</td>
+                                                    <td class="text-end">14,800</td>
+                                                    <td><span class="badge badge-success">Active</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>22-08-2025</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>Terminal Cleaning &amp; Water Top-up</td>
+                                                    <td class="text-end">350</td>
+                                                    <td><span class="badge badge-success">Done</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>05-11-2025</td>
+                                                    <td>Exide Mileage XL</td>
+                                                    <td>EXD-99875421</td>
+                                                    <td>10-02-2024</td>
+                                                    <td>10-02-2027</td>
+                                                    <td>Load Test</td>
+                                                    <td class="text-end">200</td>
+                                                    <td><span class="badge badge-warning">Voltage Low</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 5. DEF – Allocation History --}}
+                          <div class="tab-pane fade" id="pills-def" role="tabpanel" aria-labelledby="pills-def-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">DEF (AdBlue) – Allocation History</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Qty (Litres)</th>
+                                                    <th>Odometer (KM)</th>
+                                                    <th>Supplier / Source</th>
+                                                    <th class="text-end">Rate (₹/L)</th>
+                                                    <th class="text-end">Total Cost (₹)</th>
+                                                    <th>Allocated By</th>
+                                                    <th>Remarks</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>05-09-2025</td>
+                                                    <td>20</td>
+                                                    <td>1,25,400</td>
+                                                    <td>HP Pump – Hyderabad</td>
+                                                    <td class="text-end">85</td>
+                                                    <td class="text-end">1,700</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>Refill at depot</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>28-09-2025</td>
+                                                    <td>15</td>
+                                                    <td>1,27,820</td>
+                                                    <td>IOCL Pump – Vijayawada</td>
+                                                    <td class="text-end">88</td>
+                                                    <td class="text-end">1,320</td>
+                                                    <td>Suresh M. (Driver)</td>
+                                                    <td>Trip allocation</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>20-10-2025</td>
+                                                    <td>25</td>
+                                                    <td>1,29,500</td>
+                                                    <td>Own Depot Stock</td>
+                                                    <td class="text-end">82</td>
+                                                    <td class="text-end">2,050</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>Bulk fill before line trip</td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 6. Tirpal & Rope – Allocation History --}}
+                          <div class="tab-pane fade" id="pills-tirpal" role="tabpanel" aria-labelledby="pills-tirpal-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Tirpal &amp; Rope – Allocation History</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate Item</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Allocation Date</th>
+                                                    <th>Item Type</th>
+                                                    <th>Size / Spec</th>
+                                                    <th>Qty</th>
+                                                    <th>Issued To</th>
+                                                    <th>Return Date</th>
+                                                    <th>Condition on Return</th>
+                                                    <th class="text-end">Cost (₹)</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>12-08-2025</td>
+                                                    <td>Tirpal (HDPE)</td>
+                                                    <td>20 ft x 25 ft</td>
+                                                    <td>1</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>28-08-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td class="text-end">3,200</td>
+                                                    <td><span class="badge badge-success">Returned</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>15-09-2025</td>
+                                                    <td>Nylon Rope</td>
+                                                    <td>12 mm x 50 m</td>
+                                                    <td>2</td>
+                                                    <td>Suresh M. (Driver)</td>
+                                                    <td>—</td>
+                                                    <td>—</td>
+                                                    <td class="text-end">1,800</td>
+                                                    <td><span class="badge badge-warning">In Use</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>02-10-2025</td>
+                                                    <td>Tirpal (Canvas)</td>
+                                                    <td>18 ft x 22 ft</td>
+                                                    <td>1</td>
+                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td>20-10-2025</td>
+                                                    <td><span class="badge badge-danger">Torn</span></td>
+                                                    <td class="text-end">2,800</td>
+                                                    <td><span class="badge badge-danger">Damaged</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
+                          {{-- 7. Tagged Assets --}}
+                          <div class="tab-pane fade" id="pills-tagged" role="tabpanel" aria-labelledby="pills-tagged-tab">
+                              <div class="vehiclestable">
+                                    <div class="itemtop d-flex justify-content-between align-items-center">
+                                        <span class="sec-title">Tagged Assets — Stopper, Jack, Rod, Tools, Fan etc.</span>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset Name</th>
+                                                    <th>Category</th>
+                                                    <th>Tag / Serial No</th>
+                                                    <th>Qty</th>
+                                                    <th>Tagged Date</th>
+                                                    <th>Issued By</th>
+                                                    <th>Last Verified</th>
+                                                    <th>Condition</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Wheel Stopper</td>
+                                                    <td>Safety</td>
+                                                    <td>STP-001A</td>
+                                                    <td>2</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Hydraulic Jack (10 Ton)</td>
+                                                    <td>Tool</td>
+                                                    <td>JCK-7842</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Wheel Spanner Rod</td>
+                                                    <td>Tool</td>
+                                                    <td>ROD-3321</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-warning">Worn</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Tool Kit (Standard)</td>
+                                                    <td>Tool Box</td>
+                                                    <td>TLK-1108</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Good</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cabin Fan (12V)</td>
+                                                    <td>Accessory</td>
+                                                    <td>FAN-2205</td>
+                                                    <td>1</td>
+                                                    <td>14-03-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-success">Working</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>First Aid Box</td>
+                                                    <td>Safety</td>
+                                                    <td>FAB-0091</td>
+                                                    <td>1</td>
+                                                    <td>10-01-2024</td>
+                                                    <td>Yard Supervisor</td>
+                                                    <td>15-10-2025</td>
+                                                    <td><span class="badge badge-warning">Restock Needed</span></td>
+                                                    <td><span class="badge badge-success">On Vehicle</span></td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                          </div>
+
                         </div>
 
                         
                     </div>
                     <!--Maintenance-content-here-->
-
-                    <!--allotment-->
-                    <div class="tab-pane fade" id="allotment">
-                        
-                        <div class="filter-options">
-                            <div class="item-filter">
-                                <span class="filter-icon">
-                                    <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
-                                </span>
-                                <p>Filter Options</p>
-                            </div>
-
-                            <form class="filterbd">
-                                <div class="row item-row02 mt-3">
-                                    <div class="col-lg-3 form-group">
-                                        <label for="vehicleType">Bill Status</label>
-                                        <div class="input-wrapper">
-                                            <select class="form-select">
-                                                <option>Choose</option>
-                                                <option>Paid</option>
-                                                <option>Pending</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3 form-group">
-                                        <label for="vehicleType">Bill Number</label>
-                                        <div class="input-wrapper">
-                                            <input
-                                                type="text"
-                                                class="form-control itemtext"
-                                            />
-                                            <button type="button" class="clear-btn">
-                                                <i class="uil uil-times-circle"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-6 form-group d-flex">
-                                        <div class="input-wrapper">
-                                            
-                                            <div class="search_rcnumber">
-                                                <div class="input-lt">
-                                                    <input
-                                                        class="input_search"
-                                                        type="text"
-                                                        placeholder="Search by LR Number, Ref LR Number, route, material.."
-                                                    />
-                                                </div>
-
-                                                <div class="input-reset">
-                                                    <button class="btn refresh-btn"><i class="uil uil-search"></i></button>
-                                                </div>
-                                            </div>
-                                            
-                                        </div>
-                                        
-                                        <!--<button class="btn fxportbtn" type="button">Export <i class="uil uil-export me-1"></i> </button>-->
-                                        <!--<button class="btn btn-primary d-flex ms-1" type="button"><i class="uil uil-sync me-1"></i>Reset</button>-->
-                                        <!--////-->
-
-                                        <div class="dropdown fxportbtn ms-1">
-                                            <button
-                                                class="btn btn-primary dropdown-toggle d-flex"
-                                                type="button"
-                                                id="exportBtn"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false"
-                                            >
-                                                Export <i class="uil uil-upload ms-1"></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="exportBtn">
-                                                <li>
-                                                    <a class="dropdown-item" href="javascript:void(0)">Excel</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
-                                            </ul>
-                                        </div>
-
-                                        <!--////-->
-                                        
-                                    </div>
-
-                                    <!--<div class="col-lg-1 form-group">-->
-                                    <!--  <button class="btn fxportbtn" type="button">Export <i class="uil uil-export me-1"></i> </button>-->
-                                    <!--</div>-->
-                                </div>
-                            </form>
-                        </div>
-
-                        
-                        <div class="vehiclestable">
-                            <div class="table-responsive">
-                                <table class="table custom-driver-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Vehicle Number</th>
-                                            <th>Issue Date & Time</th>
-                                            <th>Revoke Date & Time</th>
-                                            <th>Number of Trips</th>
-                                            <th>Assigned Driver</th>
-                                            <th>Reason</th>
-                                            <th>Remarks</th>
-                                            <th class="text-center" style="width: 210px;">Actions</th>
-                                        </tr>
-                                    </thead>
-                            
-                                    <tbody>
-                                        <!-- Row 1 -->
-                                        <tr>
-                                            <td>MH-10-AB-1834</td>
-                                            <td>08-09-2025 | FN</td>
-                                            <td>08-01-2025 | AN</td>
-                                            <td>20</td>
-                                            <td>Rakesh Das</td>
-                                            <td>Engine parts messing</td>
-                                            <td>No Malpractice</td>
-                                            <td class="text-center">
-                                                <a href="javascript:void(0)" class="badge bg-success">Remarks</a>
-                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
-                                            </td>
-                                        </tr>
-                            
-                                        <!-- Row 2 -->
-                                        <tr>
-                                            <td>MH-10-AB-1834</td>
-                                            <td>08-09-2025 | FN</td>
-                                            <td>08-12-2025 | AN</td>
-                                            <td>20</td>
-                                            <td>Suman Pal</td>
-                                            <td>Engine parts messing</td>
-                                            <td>No Malpractice</td>
-                                            <td class="text-center">
-                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
-                                            </td>
-                                        </tr>
-                            
-                                        <!-- Row 3 -->
-                                        <tr>
-                                            <td>MH-10-AB-1834</td>
-                                            <td>07-11-2025 | FN</td>
-                                            <td>08-01-2025 | AN</td>
-                                            <td>20</td>
-                                            <td>Sovan Pal</td>
-                                            <td>Engine parts messing</td>
-                                            <td>No Malpractice</td>
-                                            <td class="text-center">
-                                                <a href="javascript:void(0)" class="badge bg-info">View Details</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <!--Allotment-End-->
 
                     <!--comment-->
                     {{-- ═══ INSURANCE TAB ═══ --}}
@@ -5120,7 +7535,7 @@
     
     
 <!-- HTML Modal -->
-<div class="modal fade" id="addTrip" tabindex="-1">
+{{-- <div class="modal fade" id="addTrip" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5270,7 +7685,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
     
 <div class="modal fade" id="editVehicle" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -6092,9 +8507,13 @@
 @section('js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.5') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/fleet/truck-repair.js?v=1.0') }}"></script>
 
 <script>
 

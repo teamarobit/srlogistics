@@ -4,6 +4,40 @@
    Does not override any functional styles
 ════════════════════════════════════════════════════════ */
 
+/* Driver History Book — RAG Status pills */
+#driver_history .rag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+#driver_history .rag-pill i {
+    font-size: 10px;
+    line-height: 1;
+}
+#driver_history .rag-pill.rag-green {
+    background: #e6f7ef;
+    color: #0a7d46;
+    border-color: #bfe9d3;
+}
+#driver_history .rag-pill.rag-amber {
+    background: #fff4e0;
+    color: #b76e00;
+    border-color: #ffd89a;
+}
+#driver_history .rag-pill.rag-red {
+    background: #fde8ec;
+    color: #c01a36;
+    border-color: #f7c2cc;
+}
+
 /* ── Version badge ── */
 .v2-version-bar {
     background: linear-gradient(135deg, #032671 0%, #0a3d9e 100%);
@@ -93,6 +127,80 @@
     scrollbar-width: none;
     box-shadow: 0 2px 8px rgba(3,38,113,0.06);
 }
+
+/* ── Scroll wrapper + thin nav buttons (brand gradient pill) ── */
+.item-box-scroll-wrap {
+    position: relative;
+}
+
+/* Soft fade overlays on the strip edges — hints that more tabs exist */
+.item-box-scroll-wrap::before,
+.item-box-scroll-wrap::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    width: 38px;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity .2s ease;
+    border-radius: 10px;
+}
+.item-box-scroll-wrap::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.item-box-scroll-wrap::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.item-box-scroll-wrap.has-prev::before { opacity: 1; }
+.item-box-scroll-wrap.has-next::after  { opacity: 1; }
+
+.item-box-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    width: 18px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    background: linear-gradient(135deg, #032671, #0a3d9e);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.9);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.item-box-scroll-btn:hover {
+    background: linear-gradient(135deg, #0a3d9e, #1a52c4);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.45), 0 0 0 3px rgba(255,255,255,0.95);
+    transform: translateY(-50%) scale(1.08);
+}
+.item-box-scroll-btn:active {
+    transform: translateY(-50%) scale(0.94);
+    box-shadow: 0 2px 6px rgba(3,38,113,0.35), 0 0 0 3px rgba(255,255,255,0.9);
+}
+.item-box-scroll-btn:focus { outline: none; }
+.item-box-scroll-btn:focus-visible {
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.95), 0 0 0 5px rgba(10,61,158,0.35);
+}
+.item-box-scroll-btn i {
+    line-height: 1;
+    pointer-events: none;
+    display: inline-flex;
+}
+.item-box-scroll-prev { left: -8px; }
+.item-box-scroll-next { right: -8px; }
+.item-box-scroll-btn.is-visible { display: inline-flex; }
 .vehicle-itemtab .nav-tabs.item-box::-webkit-scrollbar { display: none; }
 .vehicle-itemtab .nav-tabs.item-box .nav-link {
     border: none !important;
@@ -1399,6 +1507,353 @@
     margin-bottom: 0 !important;
 }
 
+/* ── Maintenance Book — single-line pill tabs with prev/next nav buttons ── */
+.maint-pills-scroll-wrap {
+    position: relative;
+}
+.maint-pills-scroll-wrap::before,
+.maint-pills-scroll-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 38px;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity .2s ease;
+    border-radius: 6px;
+}
+.maint-pills-scroll-wrap::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.maint-pills-scroll-wrap::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 30%, rgba(255,255,255,0) 100%);
+}
+.maint-pills-scroll-wrap.has-prev::before { opacity: 1; }
+.maint-pills-scroll-wrap.has-next::after  { opacity: 1; }
+
+.maint-pills-scroll-wrap #pills-tab {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+    margin: 0;
+}
+.maint-pills-scroll-wrap #pills-tab::-webkit-scrollbar { display: none; }
+.maint-pills-scroll-wrap #pills-tab .nav-item { flex: 0 0 auto; }
+.maint-pills-scroll-wrap #pills-tab .nav-link {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.maint-pills-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    width: 18px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: linear-gradient(135deg, #032671, #0a3d9e);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.9);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.maint-pills-scroll-btn:hover {
+    background: linear-gradient(135deg, #0a3d9e, #1a52c4);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.45), 0 0 0 3px rgba(255,255,255,0.95);
+    transform: translateY(-50%) scale(1.08);
+}
+.maint-pills-scroll-btn:active {
+    transform: translateY(-50%) scale(0.94);
+    box-shadow: 0 2px 6px rgba(3,38,113,0.35), 0 0 0 3px rgba(255,255,255,0.9);
+}
+.maint-pills-scroll-btn:focus { outline: none; }
+.maint-pills-scroll-btn:focus-visible {
+    box-shadow: 0 4px 12px rgba(3,38,113,0.32), 0 0 0 3px rgba(255,255,255,0.95), 0 0 0 5px rgba(10,61,158,0.35);
+}
+.maint-pills-scroll-btn i {
+    line-height: 1;
+    pointer-events: none;
+    display: inline-flex;
+}
+.maint-pills-scroll-prev { left: -8px; }
+.maint-pills-scroll-next { right: -8px; }
+.maint-pills-scroll-btn.is-visible { display: inline-flex; }
+
+/* =====================================================
+   FUEL BOOK — MINI DASHBOARD (.fmd-*)
+   Self-contained component. Does NOT reuse the legacy
+   .totalrevenue / .item-row / .itemcol classes — those
+   carry a fixed `width: 20%` from global style.css that
+   collapses every tile.
+
+   Color tokens used (kept in sync with the existing
+   .number .c-0X ramp on this page):
+     pri    #032671  navy   (brand primary)
+     succ   #16a34a  green
+     warn   #E59E04  amber
+     danger #EE2B2B  red
+     purp   #7c3aed  purple
+     info   #4756FF  indigo
+   ===================================================== */
+
+#fuel .fmd {
+    --fmd-pri:    #032671;
+    --fmd-succ:   #16a34a;
+    --fmd-warn:   #E59E04;
+    --fmd-danger: #EE2B2B;
+    --fmd-purp:   #7c3aed;
+    --fmd-info:   #4756FF;
+    --fmd-border: #E8E8E8;
+    --fmd-surf:   #FFFFFF;
+    --fmd-soft:   #F6F8FB;
+    --fmd-text:   #2D2D2D;
+    --fmd-muted:  #6B7280;
+
+    font-family: Inter, sans-serif;
+    color: var(--fmd-text);
+}
+
+/* ---------- Hero KPI strip ---------- */
+#fuel .fmd .fmd-hero {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0;
+}
+
+#fuel .fmd .fmd-hero-card {
+    background: var(--fmd-surf);
+    border: 1px solid var(--fmd-border);
+    border-left: 3px solid var(--fmd-pri);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    transition: box-shadow .18s ease;
+}
+
+#fuel .fmd .fmd-hero-card:hover {
+    box-shadow: 0 2px 8px rgba(3, 38, 113, 0.06);
+}
+
+#fuel .fmd .fmd-hero--pri  { border-left-color: var(--fmd-pri); }
+#fuel .fmd .fmd-hero--succ { border-left-color: var(--fmd-succ); }
+#fuel .fmd .fmd-hero--warn { border-left-color: var(--fmd-warn); }
+
+#fuel .fmd .fmd-hero-label {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--fmd-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+}
+
+#fuel .fmd .fmd-hero-value {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--fmd-pri);
+    word-break: break-word;
+}
+
+#fuel .fmd .fmd-hero--succ .fmd-hero-value { color: var(--fmd-succ); }
+#fuel .fmd .fmd-hero--warn .fmd-hero-value { color: var(--fmd-warn); }
+
+#fuel .fmd .fmd-hero-unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 1px;
+}
+
+#fuel .fmd .fmd-hero-sub {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--fmd-muted);
+    line-height: 1.2;
+}
+
+/* ---------- Section panel ---------- */
+#fuel .fmd .fmd-panel {
+    background: var(--fmd-surf);
+    border: 1px solid var(--fmd-border);
+    border-radius: 6px;
+    padding: 8px 12px 10px;
+}
+
+#fuel .fmd .fmd-panel-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 0 6px 0;
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid #F0F2F5;
+    flex-wrap: wrap;
+}
+
+#fuel .fmd .fmd-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fmd-pri);
+    line-height: 1.2;
+    letter-spacing: 0.1px;
+}
+
+#fuel .fmd .fmd-panel-bullet {
+    display: inline-block;
+    width: 3px;
+    height: 13px;
+    border-radius: 2px;
+    background: var(--fmd-pri);
+}
+
+#fuel .fmd .fmd-panel-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--fmd-muted);
+    line-height: 1.2;
+}
+
+#fuel .fmd .fmd-panel-body {
+    padding: 0;
+}
+
+/* ---------- Grid ---------- */
+#fuel .fmd .fmd-grid {
+    display: grid;
+    gap: 6px;
+    align-items: stretch;
+}
+
+#fuel .fmd .fmd-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#fuel .fmd .fmd-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+/* ---------- KPI mini card (single-row, ultra-compact) ---------- */
+#fuel .fmd .fmd-card {
+    background: var(--fmd-soft);
+    border: 1px solid var(--fmd-border);
+    border-left: 3px solid var(--fmd-pri);
+    border-radius: 4px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+    min-height: 38px;
+    transition: background .18s ease, box-shadow .18s ease;
+}
+
+#fuel .fmd .fmd-card:hover {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(3, 38, 113, 0.06);
+}
+
+#fuel .fmd .fmd-card--pri    { border-left-color: var(--fmd-pri); }
+#fuel .fmd .fmd-card--succ   { border-left-color: var(--fmd-succ); }
+#fuel .fmd .fmd-card--warn   { border-left-color: var(--fmd-warn); }
+#fuel .fmd .fmd-card--danger { border-left-color: var(--fmd-danger); }
+#fuel .fmd .fmd-card--purp   { border-left-color: var(--fmd-purp); }
+#fuel .fmd .fmd-card--info   { border-left-color: var(--fmd-info); }
+
+#fuel .fmd .fmd-card-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fmd-text);
+    line-height: 1.2;
+    word-break: break-word;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+#fuel .fmd .fmd-card-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 4px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+#fuel .fmd .fmd-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0;
+    min-width: 0;
+}
+
+#fuel .fmd .fmd-stat + .fmd-stat::before {
+    content: "·";
+    margin: 0 6px;
+    color: #C7CCD3;
+    font-weight: 500;
+}
+
+#fuel .fmd .fmd-stat-label {
+    display: none;
+}
+
+#fuel .fmd .fmd-stat-value {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--fmd-text);
+    text-align: right;
+}
+
+#fuel .fmd .fmd-card--pri    .fmd-stat-value { color: var(--fmd-pri); }
+#fuel .fmd .fmd-card--succ   .fmd-stat-value { color: var(--fmd-succ); }
+#fuel .fmd .fmd-card--warn   .fmd-stat-value { color: var(--fmd-warn); }
+#fuel .fmd .fmd-card--danger .fmd-stat-value { color: var(--fmd-danger); }
+#fuel .fmd .fmd-card--purp   .fmd-stat-value { color: var(--fmd-purp); }
+#fuel .fmd .fmd-card--info   .fmd-stat-value { color: var(--fmd-info); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1399.98px) {
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 991.98px) {
+    #fuel .fmd .fmd-hero    { grid-template-columns: 1fr; }
+    #fuel .fmd .fmd-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #fuel .fmd .fmd-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 575.98px) {
+    #fuel .fmd .fmd-grid--3,
+    #fuel .fmd .fmd-grid--4,
+    #fuel .fmd .fmd-grid--6 { grid-template-columns: 1fr; }
+    #fuel .fmd .fmd-hero-value { font-size: 16px; }
+}
+
 /* =====================================================
    BATTERY VISUAL LAYOUT (bat-*)
    Vehicle Details V1 redesign — Battery section
@@ -1963,3 +2418,1289 @@
 .vtd-timeline-error i { opacity: 0.5; }
 
 
+
+/* =====================================================
+   P&L BOOK — Vehicle Details (Theme-aligned)
+   Scoped to #pl_book
+   ===================================================== */
+#pl_book {
+    font-family: Inter, sans-serif;
+    color: #21263C;
+}
+
+/* ---------- 1. FILTER STRIP ---------- */
+#pl_book .plb-filter-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.04);
+}
+#pl_book .plb-filter-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+#pl_book .plb-filter-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #032671 0%, #1a3fa0 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(3,38,113,0.25);
+    flex-shrink: 0;
+}
+#pl_book .plb-filter-icon img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+#pl_book .plb-filter-fields {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+}
+#pl_book .plb-field {
+    min-width: 220px;
+    flex: 1 1 220px;
+}
+#pl_book .plb-field label {
+    display: block;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+#pl_book .plb-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #DDE3EE;
+    border-radius: 7px;
+    transition: border-color .15s ease;
+}
+#pl_book .plb-input-wrap:focus-within { border-color: #032671; }
+#pl_book .plb-input-wrap i {
+    color: #032671;
+    font-size: 16px;
+}
+#pl_book .plb-input-wrap input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    flex: 1;
+    font-size: 13px;
+    color: #21263C;
+    font-weight: 500;
+}
+
+/* RAG cluster */
+#pl_book .plb-filter-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+#pl_book .plb-rag-label {
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+#pl_book .plb-rag-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+#pl_book .plb-rag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    color: #6c7591;
+    transition: all .15s ease;
+}
+#pl_book .plb-rag .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+#pl_book .plb-rag-red    .dot { background: #ED4C5C; }
+#pl_book .plb-rag-yellow .dot { background: #F2A93B; }
+#pl_book .plb-rag-green  .dot { background: #2DC56F; }
+#pl_book .plb-rag.is-active.plb-rag-green {
+    background: #E8F8EF;
+    border-color: #B9EACC;
+    color: #1a9152;
+}
+#pl_book .plb-rag.is-active.plb-rag-red {
+    background: #FDECEE;
+    border-color: #F8C2C8;
+    color: #C82F40;
+}
+#pl_book .plb-rag.is-active.plb-rag-yellow {
+    background: #FEF5E6;
+    border-color: #FADDA7;
+    color: #B97400;
+}
+
+/* ---------- 2. KPI GRID ---------- */
+#pl_book .plb-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0,1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+#pl_book .plb-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#pl_book .plb-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.08);
+}
+#pl_book .plb-kpi-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+#pl_book .plb-kpi-icon.kpi-c2 { background: rgba(45,197,111,0.10); color: #1a9152; }
+#pl_book .plb-kpi-icon.kpi-c3 { background: rgba(123,97,255,0.10); color: #5a3fd1; }
+#pl_book .plb-kpi-icon.kpi-c4 { background: rgba(237,76,92,0.10);  color: #C82F40; }
+#pl_book .plb-kpi-icon.kpi-c5 { background: rgba(242,169,59,0.10); color: #B97400; }
+#pl_book .plb-kpi-icon.kpi-c6 { background: rgba(0,165,168,0.10);  color: #00858A; }
+
+#pl_book .plb-kpi-body { min-width: 0; }
+#pl_book .plb-kpi-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+#pl_book .plb-kpi-body h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #21263C;
+    line-height: 1.1;
+}
+
+/* ---------- 3. MAIN ROW ---------- */
+#pl_book .plb-main-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 16px;
+    margin-top: 14px;
+    align-items: start;
+}
+#pl_book .plb-main-col { min-width: 0; }
+
+/* ---------- 4. FINANCE GRID (Revenue + Expense) ---------- */
+#pl_book .plb-finance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+#pl_book .plb-panel {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.04);
+    display: flex;
+    flex-direction: column;
+}
+
+#pl_book .plb-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F0F2F8;
+}
+#pl_book .plb-panel-head .head-l {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+#pl_book .plb-panel-head .panel-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+}
+#pl_book .plb-panel-rev .panel-icon {
+    background: linear-gradient(135deg, #2DC56F 0%, #1a9152 100%);
+    box-shadow: 0 4px 10px rgba(45,197,111,0.25);
+}
+#pl_book .plb-panel-exp .panel-icon {
+    background: linear-gradient(135deg, #ED4C5C 0%, #C82F40 100%);
+    box-shadow: 0 4px 10px rgba(237,76,92,0.25);
+}
+
+#pl_book .plb-panel-head .panel-title {
+    margin: 0 0 2px 0;
+    font-size: 12px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+#pl_book .plb-panel-head .panel-amount {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+#pl_book .plb-panel-rev .panel-amount { color: #1a9152; }
+#pl_book .plb-panel-exp .panel-amount { color: #C82F40; }
+
+#pl_book .panel-trend {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+}
+#pl_book .panel-trend.up   { background: #E8F8EF; color: #1a9152; }
+#pl_book .panel-trend.down { background: #FDECEE; color: #C82F40; }
+
+/* Panel list */
+#pl_book .plb-panel-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+}
+#pl_book .plb-panel-list.scroll {
+    max-height: 420px;
+    overflow-y: auto;
+}
+#pl_book .plb-panel-list.scroll::-webkit-scrollbar { width: 6px; }
+#pl_book .plb-panel-list.scroll::-webkit-scrollbar-thumb { background: #DDE3EE; border-radius: 6px; }
+
+#pl_book .plb-panel-list li {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px dashed #F0F2F8;
+    gap: 10px;
+}
+#pl_book .plb-panel-list li:last-child { border-bottom: 0; }
+#pl_book .plb-panel-list li:hover { background: #F8FAFF; }
+
+#pl_book .plb-panel-list .lbl {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 8px;
+    color: #21263C;
+    font-size: 13.5px;
+    font-weight: 500;
+    flex-wrap: wrap;
+}
+#pl_book .plb-panel-list .lbl small.hint {
+    width: 100%;
+    margin-left: 14px;
+    color: #8a92a8;
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-top: 2px;
+}
+#pl_book .plb-panel-list .bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+}
+#pl_book .plb-panel-list .bullet.rev { background: #2DC56F; }
+#pl_book .plb-panel-list .bullet.exp { background: #ED4C5C; }
+#pl_book .plb-panel-list .val {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #21263C;
+    white-space: nowrap;
+    margin-top: 1px;
+}
+
+/* ---------- 5. SUMMARY CARDS ---------- */
+#pl_book .plb-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 14px;
+    margin-top: 14px;
+}
+#pl_book .plb-summary-card {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.04);
+}
+#pl_book .plb-summary-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+}
+#pl_book .plb-summary-card.sc-profit::before { background: linear-gradient(180deg,#2DC56F,#1a9152); }
+#pl_book .plb-summary-card.sc-emi::before    { background: linear-gradient(180deg,#5a3fd1,#7b61ff); }
+#pl_book .plb-summary-card.sc-final::before  { background: linear-gradient(180deg,#ED4C5C,#C82F40); }
+
+#pl_book .plb-summary-card .sc-ico {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #fff;
+    flex-shrink: 0;
+}
+#pl_book .sc-profit .sc-ico { background: linear-gradient(135deg,#2DC56F,#1a9152); }
+#pl_book .sc-emi    .sc-ico { background: linear-gradient(135deg,#7b61ff,#5a3fd1); }
+#pl_book .sc-final  .sc-ico { background: linear-gradient(135deg,#ED4C5C,#C82F40); }
+
+#pl_book .plb-summary-card .sc-body { flex: 1; min-width: 0; }
+#pl_book .plb-summary-card .sc-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+#pl_book .plb-summary-card .sc-body h3 {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+#pl_book .sc-profit .sc-body h3 { color: #1a9152; }
+#pl_book .sc-emi    .sc-body h3 { color: #5a3fd1; }
+#pl_book .sc-final  .sc-body h3 { color: #C82F40; }
+
+#pl_book .sc-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+}
+#pl_book .sc-tag.tag-up      { background: #E8F8EF; color: #1a9152; }
+#pl_book .sc-tag.tag-down    { background: #FDECEE; color: #C82F40; }
+#pl_book .sc-tag.tag-neutral { background: #EEEAFE; color: #5a3fd1; }
+
+/* ---------- 6. SIDE PANEL (Documents + Note) ---------- */
+#pl_book .plb-side {
+    align-self: stretch;
+}
+#pl_book .plb-side-card {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.04);
+    height: 100%;
+}
+#pl_book .plb-side-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg,#F7F9FE 0%, #ffffff 100%);
+    border-bottom: 1px solid #F0F2F8;
+}
+#pl_book .plb-side-head .head-ico {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+#pl_book .plb-side-head h6 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #21263C;
+}
+#pl_book .plb-side-body {
+    padding: 14px 16px;
+}
+#pl_book .plb-side-body p {
+    margin: 0 0 10px 0;
+    font-size: 12.8px;
+    line-height: 1.55;
+    color: #4A5168;
+}
+#pl_book .plb-side-body strong { color: #21263C; font-weight: 600; }
+
+#pl_book .plb-callout {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #F8FAFF;
+    border-left: 3px solid #032671;
+    border-radius: 0 8px 8px 0;
+    position: relative;
+}
+#pl_book .plb-callout .callout-tag {
+    display: inline-block;
+    background: #032671;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 30px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+#pl_book .plb-callout p {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #4A5168;
+}
+#pl_book .plb-callout small { color: #8a92a8; font-size: 11.5px; }
+
+/* Doc grid */
+#pl_book .plb-doc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 16px 16px;
+}
+#pl_book .plb-doc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+    background: #F7F9FE;
+    border: 1px solid #E4E8F3;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #21263C;
+    transition: all .15s ease;
+}
+#pl_book .plb-doc:hover {
+    background: #EEF2FC;
+    border-color: #C8D2EA;
+}
+#pl_book .plb-doc i {
+    color: #032671;
+    font-size: 15px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1200px) {
+    #pl_book .plb-kpi-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 991px) {
+    #pl_book .plb-main-row { grid-template-columns: 1fr; }
+    #pl_book .plb-finance-grid { grid-template-columns: 1fr; }
+    #pl_book .plb-summary-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+    #pl_book .plb-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    #pl_book .plb-filter-strip { flex-direction: column; align-items: stretch; }
+    #pl_book .plb-filter-right { justify-content: space-between; }
+}
+
+/* ----- P&L filter — Select2 + Daterange tweaks (v4.9) ----- */
+#pl_book .plb-input-wrap.plb-select-wrap {
+    padding: 0 0 0 12px;
+}
+#pl_book .plb-input-wrap.plb-select-wrap > i {
+    flex-shrink: 0;
+}
+#pl_book .plb-input-wrap.plb-select-wrap .plb-driver-select {
+    /* keep native control hidden while Select2 is initialised */
+    border: 0;
+    padding: 0;
+    background: transparent;
+    height: auto;
+}
+#pl_book .plb-input-wrap .select2-container { width: 100% !important; flex: 1; }
+#pl_book .plb-input-wrap .select2-container--default .select2-selection--single {
+    border: 0;
+    background: transparent;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+#pl_book .plb-input-wrap .select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 6px;
+    line-height: 36px;
+    font-size: 13px;
+    color: #21263C;
+    font-weight: 500;
+}
+#pl_book .plb-input-wrap .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+#pl_book .plb-input-wrap .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #8a92a8;
+}
+/* Daterange input — show pointer cursor */
+#pl_book .plb-daterange { cursor: pointer; }
+
+/* ============================================================
+   TRIP BOOK — Mini Dashboard (Own vs Outside Booking) — STATIC
+   ============================================================ */
+#trip .tbm-dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+#trip .tbm-group {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    padding: 14px 14px 16px;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#trip .tbm-group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #E4E8F3;
+}
+#trip .tbm-group-head h5 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #21263C;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+#trip .tbm-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+#trip .tbm-badge-own { background: rgba(3,38,113,0.08); color: #032671; }
+#trip .tbm-badge-out { background: rgba(123,97,255,0.10); color: #5a3fd1; }
+
+#trip .tbm-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+#trip .tbm-kpi {
+    background: #fff;
+    border: 1px solid #EEF1F8;
+    border-radius: 10px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    min-width: 0;
+}
+#trip .tbm-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(3,38,113,0.07);
+}
+#trip .tbm-kpi-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+}
+#trip .tbm-kpi-icon.tbm-c1 { background: rgba(3,38,113,0.08);  color: #032671; }
+#trip .tbm-kpi-icon.tbm-c2 { background: rgba(45,197,111,0.10); color: #1a9152; }
+#trip .tbm-kpi-icon.tbm-c3 { background: rgba(242,169,59,0.10); color: #B97400; }
+#trip .tbm-kpi-icon.tbm-c4 { background: rgba(237,76,92,0.10);  color: #C82F40; }
+#trip .tbm-kpi-icon.tbm-c5 { background: rgba(0,165,168,0.10);  color: #00858A; }
+
+#trip .tbm-kpi-body {
+    min-width: 0;
+    width: 100%;
+}
+#trip .tbm-kpi-body p {
+    margin: 0 0 3px 0;
+    font-size: 10.5px;
+    color: #6c7591;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    line-height: 1.25;
+    white-space: normal;
+}
+#trip .tbm-kpi-body h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #21263C;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#trip .tbm-kpi-body h4.tbm-profit { color: #1a9152; }
+#trip .tbm-kpi-body h4.tbm-loss   { color: #C82F40; }
+
+/* Responsive */
+@media (max-width: 1280px) {
+    #trip .tbm-kpi-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    #trip .tbm-kpi-body h4 { font-size: 13px; }
+}
+@media (max-width: 1024px) {
+    #trip .tbm-dashboard { grid-template-columns: 1fr; }
+    #trip .tbm-kpi-grid  { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+    #trip .tbm-kpi-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+    #trip .tbm-kpi-grid  { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   TYRE BOOK — Mini Dashboard (Maintenance & Repair Cost) — STATIC
+   ============================================================ */
+#tyre_book .tbm-dashboard {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+#tyre_book .tbm-group {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    padding: 14px 14px 16px;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#tyre_book .tbm-group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #E4E8F3;
+}
+#tyre_book .tbm-group-head h5 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #21263C;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+#tyre_book .tbm-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+#tyre_book .tbm-badge-own { background: rgba(3,38,113,0.08); color: #032671; }
+
+#tyre_book .tbm-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+#tyre_book .tbm-kpi {
+    background: #fff;
+    border: 1px solid #EEF1F8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    min-width: 0;
+}
+#tyre_book .tbm-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(3,38,113,0.07);
+}
+#tyre_book .tbm-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+}
+#tyre_book .tbm-kpi-icon.tbm-c3 { background: rgba(242,169,59,0.10); color: #B97400; }
+#tyre_book .tbm-kpi-icon.tbm-c4 { background: rgba(237,76,92,0.10);  color: #C82F40; }
+
+#tyre_book .tbm-kpi-body {
+    min-width: 0;
+    width: 100%;
+}
+#tyre_book .tbm-kpi-body p {
+    margin: 0 0 4px 0;
+    font-size: 11px;
+    color: #6c7591;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    line-height: 1.25;
+    white-space: normal;
+}
+#tyre_book .tbm-kpi-body h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #21263C;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    #tyre_book .tbm-kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* Fuel Book — Upcoming Trip Pill */
+.upcoming-trip-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    color: #B25E00;
+    background: #FFF6E5;
+    border: 1px solid #FFE0A6;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+.upcoming-trip-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #F59E0B;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* =====================================================================
+   EXPENSE BOOK — MINI DASHBOARD (Total + Expense Type Wise)  v5.9
+   ===================================================================== */
+#expenses .exp-mini-dashboard {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    padding: 14px 16px 16px;
+    margin-top: 14px;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#expenses .exp-mini-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #E4E8F3;
+    flex-wrap: wrap;
+}
+#expenses .exp-mini-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #032671;
+    letter-spacing: 0.2px;
+}
+#expenses .exp-mini-title i {
+    font-size: 18px;
+    color: #032671;
+}
+#expenses .exp-mini-sub {
+    font-size: 11.5px;
+    color: #8a92a8;
+    font-weight: 500;
+}
+#expenses .exp-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0,1fr));
+    gap: 10px;
+}
+#expenses .exp-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#expenses .exp-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.08);
+}
+#expenses .exp-kpi-total {
+    background: linear-gradient(135deg, #032671 0%, #1a3a8f 100%);
+    border-color: #032671;
+    color: #fff;
+}
+#expenses .exp-kpi-total .exp-kpi-icon {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+}
+#expenses .exp-kpi-total .exp-kpi-body p {
+    color: rgba(255,255,255,0.85);
+}
+#expenses .exp-kpi-total .exp-kpi-body h4 {
+    color: #fff;
+}
+#expenses .exp-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+}
+#expenses .exp-kpi-icon.exp-c1 { background: rgba(237,76,92,0.10);  color: #C82F40; } /* Fuel */
+#expenses .exp-kpi-icon.exp-c2 { background: rgba(242,169,59,0.10); color: #B97400; } /* Toll */
+#expenses .exp-kpi-icon.exp-c3 { background: rgba(45,197,111,0.10); color: #1a9152; } /* Driver Allowance */
+#expenses .exp-kpi-icon.exp-c4 { background: rgba(123,97,255,0.10); color: #5a3fd1; } /* Repair */
+#expenses .exp-kpi-icon.exp-c5 { background: rgba(0,165,168,0.10);  color: #00858A; } /* Loading */
+#expenses .exp-kpi-icon.exp-c6 { background: rgba(3,38,113,0.08);   color: #032671; } /* Parking */
+#expenses .exp-kpi-icon.exp-c7 { background: rgba(221,107,32,0.10); color: #B0530E; } /* FASTag */
+#expenses .exp-kpi-icon.exp-c8 { background: rgba(108,117,145,0.12); color: #4A5168; } /* Misc */
+
+#expenses .exp-kpi-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: #F7F9FE;
+    border: 1px dashed #E4E8F3;
+    border-radius: 10px;
+    font-size: 12.5px;
+    color: #6c7591;
+    font-weight: 500;
+}
+#expenses .exp-kpi-empty i { font-size: 16px; color: #8a92a8; }
+
+#expenses .exp-kpi-body {
+    min-width: 0;
+}
+#expenses .exp-kpi-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+#expenses .exp-kpi-body h4 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a2042;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#expenses .exp-kpi-body h4 i {
+    font-size: 13px;
+    margin-right: 2px;
+    color: inherit;
+}
+
+@media (max-width: 1200px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+@media (max-width: 991px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 576px) {
+    #expenses .exp-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    #expenses .exp-mini-head { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================================
+   Truck Repair · Repair Severity Pills (Major / Minor)
+   ============================================================ */
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill,
+.tr-repair-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 5px 12px !important;
+    border-radius: 999px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.2px !important;
+    border: 1px solid transparent !important;
+    white-space: nowrap !important;
+    min-height: 22px !important;
+    vertical-align: middle !important;
+}
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill::before,
+.tr-repair-pill::before {
+    content: "" !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    padding: 0 !important;
+}
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill.is-major,
+.tr-repair-pill.is-major {
+    color: #b42318 !important;
+    background: #fef3f2 !important;
+    border-color: #fecdca !important;
+}
+.tr-repair-pill.is-major::before {
+    background: #d92d20 !important;
+}
+.vehicledtl-bd .vehicleinfo-wrap .vehicleinfo-sec .table-responsive .table td span.tr-repair-pill.is-minor,
+.tr-repair-pill.is-minor {
+    color: #b54708 !important;
+    background: #fffaeb !important;
+    border-color: #fedf89 !important;
+}
+.tr-repair-pill.is-minor::before {
+    background: #f79009 !important;
+}
+
+/* =====================================================================
+   TOLL CHARGES BOOK — MINI DASHBOARD (Month-wise · supports up to 12 mo)
+   ===================================================================== */
+.toll-mini-dashboard { margin-top: 4px; }
+
+.toll-month-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.toll-month-card {
+    background: #ffffff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    min-width: 0;
+}
+.toll-month-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(16, 24, 40, 0.08);
+}
+
+.toll-month-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.toll-month-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c7591;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+.toll-month-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3b82f6;
+    flex-shrink: 0;
+}
+
+.toll-month-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toll-metric {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.toll-metric i {
+    font-size: 13px;
+    color: #B97400;
+    flex-shrink: 0;
+}
+.toll-metric-val { min-width: 0; }
+
+.toll-metric-sub {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #6b7280;
+}
+.toll-metric-sub i { color: #8a92a8; font-size: 12px; }
+
+/* Responsive — wraps gracefully for 12-month sets */
+@media (max-width: 1399.98px) { .toll-month-grid { grid-template-columns: repeat(6, minmax(0,1fr)); } }
+@media (max-width: 1199.98px) { .toll-month-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+@media (max-width: 767.98px)  { .toll-month-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 479.98px)  { .toll-month-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+/* ─────────────────────────────────────────────────────────────
+   Challan Book — soft pill badges (replace bright Bootstrap badges)
+   ───────────────────────────────────────────────────────────── */
+.challan-book-table .ch-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+    border: 1px solid transparent;
+}
+
+/* Borne By */
+.challan-book-table .ch-pill-driver {
+    background: rgba(234, 88, 12, 0.10);
+    color: #c2410c;
+    border-color: rgba(234, 88, 12, 0.20);
+}
+.challan-book-table .ch-pill-sr {
+    background: rgba(3, 38, 113, 0.08);
+    color: #032671;
+    border-color: rgba(3, 38, 113, 0.18);
+}
+.challan-book-table .ch-pill-split {
+    background: rgba(107, 114, 128, 0.10);
+    color: #4b5563;
+    border-color: rgba(107, 114, 128, 0.22);
+}
+
+/* Challan Status */
+.challan-book-table .ch-pill-paid {
+    background: rgba(16, 185, 129, 0.10);
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.22);
+}
+.challan-book-table .ch-pill-pending {
+    background: rgba(234, 179, 8, 0.12);
+    color: #a16207;
+    border-color: rgba(234, 179, 8, 0.25);
+}
+.challan-book-table .ch-pill-court {
+    background: rgba(220, 38, 38, 0.08);
+    color: #b91c1c;
+    border-color: rgba(220, 38, 38, 0.22);
+}
+
+/* Sent to Reg. Court — yes / no */
+.challan-book-table .ch-pill-yes {
+    background: rgba(220, 38, 38, 0.08);
+    color: #b91c1c;
+    border-color: rgba(220, 38, 38, 0.22);
+}
+.challan-book-table .ch-pill-no {
+    background: rgba(107, 114, 128, 0.08);
+    color: #6b7280;
+    border-color: rgba(107, 114, 128, 0.18);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   Truck Repair — Mini Dashboard KPI Strip (static)
+   Scope: #pills-truck-repair .tr-kpi-strip
+   ═══════════════════════════════════════════════════════ */
+#pills-truck-repair .tr-kpi-strip {
+    margin-top: 2px;
+}
+
+#pills-truck-repair .tr-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #ffffff;
+    border: 1px solid #E4E8F3;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(20, 28, 60, 0.04);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+    min-height: 84px;
+}
+#pills-truck-repair .tr-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(20, 28, 60, 0.08);
+    transform: translateY(-1px);
+}
+
+#pills-truck-repair .tr-kpi-icon {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+}
+
+#pills-truck-repair .tr-kpi-body {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+#pills-truck-repair .tr-kpi-label {
+    margin: 0 0 4px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+#pills-truck-repair .tr-kpi-value {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a2042;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Accent variants */
+#pills-truck-repair .tr-kpi-primary {
+    border-left: 4px solid #2f6fed;
+}
+#pills-truck-repair .tr-kpi-primary .tr-kpi-icon {
+    background: #E8F0FE;
+    color: #2f6fed;
+}
+
+#pills-truck-repair .tr-kpi-warning {
+    border-left: 4px solid #E89B16;
+}
+#pills-truck-repair .tr-kpi-warning .tr-kpi-icon {
+    background: #FDF3E0;
+    color: #E89B16;
+}
+
+#pills-truck-repair .tr-kpi-success {
+    border-left: 4px solid #1F9D55;
+}
+#pills-truck-repair .tr-kpi-success .tr-kpi-icon {
+    background: #E2F5EC;
+    color: #1F9D55;
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+    #pills-truck-repair .tr-kpi-card {
+        padding: 14px 14px;
+        min-height: 76px;
+    }
+    #pills-truck-repair .tr-kpi-value {
+        font-size: 18px;
+    }
+}
