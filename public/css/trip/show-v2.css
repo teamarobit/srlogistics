@@ -1257,6 +1257,42 @@
 .td2-rag-yellow { background: #fef3c7; color: #92400e; }
 .td2-rag-green  { background: #d1fae5; color: #065f46; }
 
+/* =============================================================
+   ABOUT DRIVER — Behaviour chip
+   ============================================================= */
+.td2-bhv-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.td2-bhv-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.td2-bhv-green  { background: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.18); }
+.td2-bhv-yellow { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.18); }
+.td2-bhv-red    { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.18); }
+
+.td2-bhv-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.01em;
+}
+
+.td2-bhv-exp {
+    font-size: 0.73rem;
+    font-weight: 500;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
 /* Priority */
 .td2-priority {
     display: inline-block;

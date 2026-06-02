@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=4.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=4.7') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -412,8 +412,8 @@
                                                                         <span class="td2-vc-val">+91 8879402641</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-green">Green (10 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">10 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
@@ -455,8 +455,8 @@
                                                                         <span class="td2-vc-val">+91 9432101234</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-yellow">Yellow (4 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-yellow"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">4 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
@@ -498,8 +498,8 @@
                                                                         <span class="td2-vc-val">+91 7654321098</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-green">Green (14 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">14 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
