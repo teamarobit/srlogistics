@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.1') }}">
 
 @endsection
 
@@ -5384,6 +5384,99 @@
                                         </div>
                                     </div>
                                     {{-- End Maintenance Mini Dashboard --}}
+
+                                    {{-- Filter Card --}}
+                                    <div class="accordion mt-3" id="accordionTruckSched">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="truck_sched_filter">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseTruckSched"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseTruckSched"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+                                            <div
+                                                id="collapseTruckSched"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="truck_sched_filter"
+                                                data-bs-parent="#accordionTruckSched"
+                                            >
+                                                <div class="accordion-body">
+                                                    <form class="vehicle_dform p-4">
+                                                        <div class="filtersearch-bd justify-content-between">
+
+                                                            <div class="vehicletype">
+                                                                <label>Date Range</label>
+                                                                <input type="text" class="form-control daterange" id="tsmd_daterange" name="tsmd_daterange" placeholder="Select date range..."  autocomplete="off">
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Service Type</label>
+                                                                <select class="form-select select2" id="tsmd_service_type">
+                                                                    <option>Choose..</option>
+                                                                    <option>1st Service</option>
+                                                                    <option>2nd Service</option>
+                                                                    <option>3rd Service</option>
+                                                                    <option>Full Service</option>
+                                                                    <option>Engine Oil Change</option>
+                                                                    <option>Hub Greasing</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Status</label>
+                                                                <select class="form-select select2" id="tsmd_status">
+                                                                    <option>Choose..</option>
+                                                                    <option>Completed</option>
+                                                                    <option>Pending</option>
+                                                                    <option>Missed</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>Vendor Name &amp; Location</label>
+                                                                <input type="text" class="form-control" id="tsmd_vendor" placeholder="Search vendor or location...">
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                            <button class="btn btn-primary ms-1" type="button">
+                                                                <i class="uil uil-sync me-1"></i>Reset
+                                                            </button>
+
+                                                            <div class="dropdown ms-1">
+                                                                <button
+                                                                    class="btn btn-primary dropdown-toggle d-flex"
+                                                                    type="button"
+                                                                    id="exportBtnTruckSched"
+                                                                    data-bs-toggle="dropdown"
+                                                                    aria-expanded="false"
+                                                                >
+                                                                    Export <i class="uil uil-upload ms-1"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="exportBtnTruckSched">
+                                                                    <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
+                                                                    <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- End Filter Card --}}
 
                                     <div class="table-responsive sched-table-wrap">
                                         <table class="table custom-driver-table sched-table">
