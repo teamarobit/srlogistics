@@ -1422,11 +1422,39 @@
     background: #eef2ff;
 }
 
+.td2-vc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
 .td2-vc-num {
     font-family: Inter, sans-serif;
     font-weight: 700;
     font-size: 15px;
     color: #032671;
+}
+
+.td2-vc-eye-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #032671;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.25);
+}
+.td2-vc-eye-btn:hover {
+    background: #1a3f8f;
+    transform: scale(1.08);
 }
 
 /* Vehicle RAG — status dot beside vehicle number */

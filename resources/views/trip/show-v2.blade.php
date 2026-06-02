@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=5.1') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=5.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -400,8 +400,11 @@
                                                         {{-- Vehicle Card 1 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh1" class="td2-veh-radio">
-                                                            <label for="td2Veh1" class="td2-veh-card">
-                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-green"></span> WB-12-AB-1237</div>
+                                                            <label for="td2Veh1" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-green"></span> WB-12-AB-1237</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -436,15 +439,17 @@
                                                                         <span class="td2-vc-val">10 Years 5 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
                                                         {{-- Vehicle Card 2 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh2" class="td2-veh-radio">
-                                                            <label for="td2Veh2" class="td2-veh-card">
-                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-red"></span> WB-34-CD-5678</div>
+                                                            <label for="td2Veh2" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-red"></span> WB-34-CD-5678</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -479,15 +484,17 @@
                                                                         <span class="td2-vc-val">7 Years 2 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
                                                         {{-- Vehicle Card 3 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh3" class="td2-veh-radio">
-                                                            <label for="td2Veh3" class="td2-veh-card">
-                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-yellow"></span> WB-56-EF-9012</div>
+                                                            <label for="td2Veh3" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-yellow"></span> WB-56-EF-9012</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -522,7 +529,6 @@
                                                                         <span class="td2-vc-val">4 Years 9 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
@@ -3354,5 +3360,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.4') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.5') }}"></script>
 @endsection

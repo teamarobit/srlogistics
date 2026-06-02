@@ -225,8 +225,9 @@ $(document).on('click', '.td2-bill-click', function () {
     $('.bill-popup').addClass('show');
 });
 
-/* Map / Vehicle Detail overlay */
-$(document).on('click', '.td2-open-map', function () {
+/* Map / Vehicle Detail overlay — eye button or card click */
+$(document).on('click', '.td2-open-map', function (e) {
+    e.stopPropagation();
     closeAllOverlays();
     $('.map-popup').addClass('show');
 });
