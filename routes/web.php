@@ -817,8 +817,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get    ('/{trip}/edit',  [App\Http\Controllers\TripController::class, 'edit'])->name('edit');
         Route::get    ('/{trip}',       [App\Http\Controllers\TripController::class, 'show'])->name('details');
 
-        Route::get    ('/lr/create',[App\Http\Controllers\TripController::class, 'createLr'])->name('lr.create');
-        Route::get    ('/lr/print',[App\Http\Controllers\TripController::class, 'printLr'])->name('lr.print');
+    });
+    
+    Route::controller(App\Http\Controllers\LrController::class)->group(function () {
+        Route::get('/lr/create', 'create')->name('trip.lr.create');
+        Route::get('/lr/print', 'print')->name('trip.lr.print');
     });
 
 }); // end auth middleware group
