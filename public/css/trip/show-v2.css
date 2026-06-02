@@ -1427,8 +1427,23 @@
     font-weight: 700;
     font-size: 15px;
     color: #032671;
-    margin-bottom: 10px;
 }
+
+/* Vehicle RAG — coloured left-accent bar (pseudo-element) */
+.td2-veh-card.td2-card-rag-green::before,
+.td2-veh-card.td2-card-rag-yellow::before,
+.td2-veh-card.td2-card-rag-red::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 10px 0 0 10px;
+}
+.td2-veh-card.td2-card-rag-green::before  { background: #059669; }
+.td2-veh-card.td2-card-rag-yellow::before { background: #d97706; }
+.td2-veh-card.td2-card-rag-red::before    { background: #e11d48; }
 
 .td2-vc-grid {
     display: grid;
