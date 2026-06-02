@@ -222,11 +222,9 @@
                                  role="tabpanel" aria-labelledby="td2-tripInit-tab">
                                 <div class="td2-pane-header">
                                     <h5 class="td2-pane-title">Trip Initiations</h5>
-                                    <button class="td2-icon-btn" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#editTrip"
-                                            title="Edit Trip">
+                                    <a href="{{ route('trip.edit', 1) }}" class="td2-icon-btn" title="Edit Trip">
                                         <i class="uil uil-edit-alt"></i>
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="td2-pane-body">
 
