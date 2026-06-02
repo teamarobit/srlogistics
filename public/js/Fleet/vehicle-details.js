@@ -2544,4 +2544,23 @@ $(document).ready(function(){
 
 
 
+
+    /* ── Accident Description — More / Less toggle ── */
+    $(document).on('click', '#pills-truck-acc .acc-desc-more', function () {
+        var $link  = $(this);
+        var $wrap  = $link.closest('.acc-desc-text');
+        var $short = $wrap.find('.acc-desc-short');
+        var $full  = $wrap.find('.acc-desc-full');
+
+        if ($full.is(':hidden')) {
+            $short.hide();
+            $full.show();
+            $link.text('Less');
+        } else {
+            $full.hide();
+            $short.show();
+            $link.text('More');
+        }
+    });
+
 });

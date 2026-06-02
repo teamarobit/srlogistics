@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.4') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=8.5') }}">
 
 @endsection
 
@@ -5841,41 +5841,188 @@
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Accident Date</th>
-                                                    <th>Location</th>
-                                                    <th>Damage Type</th>
-                                                    <th>Severity</th>
-                                                    <th>Workshop</th>
-                                                    <th>Insurance Claim #</th>
-                                                    <th class="text-end">Repair Cost (₹)</th>
-                                                    <th>Status</th>
+                                                    <th>Driver Name &amp; Code</th>
+                                                    <th>Driver RAG Status</th>
+                                                    <th>Accident Type</th>
+                                                    <th>Accident Date &amp; Time</th>
+                                                    <th>Accident Location</th>
+                                                    <th>Accident State</th>
+                                                    <th>Pin-code</th>
+                                                    <th>Driver Injury</th>
+                                                    <th>Driver Mistake</th>
+                                                    <th>Accident Description</th>
+                                                    <th class="text-end">Total Repair Cost (₹)</th>
+                                                    <th>Insurance Claim</th>
+                                                    <th>Attachment</th>
                                                     <th class="text-center">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {{-- Row 1 — Minor accident, no injury, driver mistake with deduction --}}
                                                 <tr>
-                                                    <td>14-07-2023</td>
-                                                    <td>NH-44, Kurnool</td>
-                                                    <td>Front Bumper, Headlight</td>
-                                                    <td><span class="badge badge-warning">Moderate</span></td>
-                                                    <td>Tata SC, Kurnool</td>
-                                                    <td>CLM-2023-0031</td>
-                                                    <td class="text-end">95,000</td>
-                                                    <td><span class="badge badge-success">Settled</span></td>
+                                                    <td>
+                                                        <span class="acc-driver-name">Suresh Nayak Jir</span>
+                                                        <span class="acc-driver-code">#3962</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-rag-pill acc-rag-amber">Amber</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-repair-pill is-minor">Minor</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-date">14-07-2023</span>
+                                                        <span class="acc-time">09:30 AM</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-location">NH-44, Kurnool</span>
+                                                    </td>
+                                                    <td>Andhra Pradesh</td>
+                                                    <td>518001</td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-no">No</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-yes">Yes</span>
+                                                        <span class="acc-deduction">₹ 5,000</span>
+                                                        <a href="javascript:void(0)" class="acc-escalation-link">
+                                                            <i class="uil uil-external-link-alt"></i> Driver Escalation
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-desc-text">
+                                                            <span class="acc-desc-short">Front bumper and left headlight...</span>
+                                                            <span class="acc-desc-full">Front bumper and left headlight damaged due to collision at toll plaza.</span>
+                                                            <br>
+                                                            <span class="acc-desc-meta">70 chars</span>
+                                                            <a href="javascript:void(0)" class="acc-desc-more">More</a>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="acc-cost">95,000</span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" class="acc-claim-yes">
+                                                            <i class="uil uil-shield-check"></i> Yes – View
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" class="acc-attach-link">
+                                                            <i class="uil uil-paperclip"></i> Photos
+                                                            <span class="acc-attach-count">3</span>
+                                                        </a>
+                                                    </td>
                                                     <td class="text-center">
                                                         <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
+
+                                                {{-- Row 2 — Major accident, driver injury yes, no driver mistake --}}
                                                 <tr>
-                                                    <td>08-12-2024</td>
-                                                    <td>Outer Ring Road, Hyderabad</td>
-                                                    <td>Side Panel, Rear Axle</td>
-                                                    <td><span class="tr-repair-pill is-major">Major</span></td>
-                                                    <td>SC-HYD (Own)</td>
-                                                    <td>CLM-2024-0048</td>
-                                                    <td class="text-end">2,40,000</td>
-                                                    <td><span class="badge badge-warning">Survey in Progress</span></td>
+                                                    <td>
+                                                        <span class="acc-driver-name">Ramesh Kumar</span>
+                                                        <span class="acc-driver-code">#4105</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-rag-pill acc-rag-red">Red</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-repair-pill is-major">Major</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-date">08-12-2024</span>
+                                                        <span class="acc-time">02:15 PM</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-location">Outer Ring Road, Hyderabad</span>
+                                                    </td>
+                                                    <td>Telangana</td>
+                                                    <td>500032</td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-yes">Yes</span>
+                                                        <span class="acc-injury-desc">Minor leg injury; hospitalised for 2 days.</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-no">No</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-desc-text">
+                                                            <span class="acc-desc-short">Side panel and rear axle heavily...</span>
+                                                            <span class="acc-desc-full">Side panel and rear axle heavily damaged after rear-end collision on ORR flyover.</span>
+                                                            <br>
+                                                            <span class="acc-desc-meta">81 chars</span>
+                                                            <a href="javascript:void(0)" class="acc-desc-more">More</a>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="acc-cost">2,40,000</span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" class="acc-claim-yes">
+                                                            <i class="uil uil-shield-check"></i> Yes – View
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" class="acc-attach-link">
+                                                            <i class="uil uil-paperclip"></i> Photos
+                                                            <span class="acc-attach-count">6</span>
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
+                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+
+                                                {{-- Row 3 — Minor accident, green RAG, no claim --}}
+                                                <tr>
+                                                    <td>
+                                                        <span class="acc-driver-name">Vijay Shankar</span>
+                                                        <span class="acc-driver-code">#3780</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-rag-pill acc-rag-green">Green</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="tr-repair-pill is-minor">Minor</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-date">22-03-2025</span>
+                                                        <span class="acc-time">11:00 AM</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-location">Nagpur–Mumbai Expressway</span>
+                                                    </td>
+                                                    <td>Maharashtra</td>
+                                                    <td>440001</td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-no">No</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-yn-pill acc-yn-no">No</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-desc-text">
+                                                            <span class="acc-desc-short">Tyre burst caused truck to skid...</span>
+                                                            <span class="acc-desc-full">Tyre burst caused truck to skid and graze the median barrier.</span>
+                                                            <br>
+                                                            <span class="acc-desc-meta">61 chars</span>
+                                                            <a href="javascript:void(0)" class="acc-desc-more">More</a>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="acc-cost">18,500</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="acc-claim-no">No</span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" class="acc-attach-link">
+                                                            <i class="uil uil-paperclip"></i> Photos
+                                                            <span class="acc-attach-count">2</span>
+                                                        </a>
+                                                    </td>
                                                     <td class="text-center">
                                                         <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
                                                         <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
