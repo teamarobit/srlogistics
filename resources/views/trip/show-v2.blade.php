@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=5.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=5.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -400,8 +400,8 @@
                                                         {{-- Vehicle Card 1 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh1" class="td2-veh-radio">
-                                                            <label for="td2Veh1" class="td2-veh-card td2-card-rag-green">
-                                                                <div class="td2-vc-num">WB-12-AB-1237</div>
+                                                            <label for="td2Veh1" class="td2-veh-card">
+                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-green"></span> WB-12-AB-1237</div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -443,8 +443,8 @@
                                                         {{-- Vehicle Card 2 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh2" class="td2-veh-radio">
-                                                            <label for="td2Veh2" class="td2-veh-card td2-card-rag-red">
-                                                                <div class="td2-vc-num">WB-34-CD-5678</div>
+                                                            <label for="td2Veh2" class="td2-veh-card">
+                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-red"></span> WB-34-CD-5678</div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -486,8 +486,8 @@
                                                         {{-- Vehicle Card 3 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh3" class="td2-veh-radio">
-                                                            <label for="td2Veh3" class="td2-veh-card td2-card-rag-yellow">
-                                                                <div class="td2-vc-num">WB-56-EF-9012</div>
+                                                            <label for="td2Veh3" class="td2-veh-card">
+                                                                <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-yellow"></span> WB-56-EF-9012</div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
