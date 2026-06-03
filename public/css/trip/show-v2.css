@@ -2928,6 +2928,7 @@
 .td2-vd-comp-item i { font-size: 13px; flex-shrink: 0; }
 .td2-vd-ok   { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
 .td2-vd-warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.td2-vd-na   { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
 .td2-vd-comp-lbl {
     display: inline;
     font-size: 9px;

@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=7.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -2066,29 +2066,25 @@
 
                     {{-- COMPLIANCE CHECK --}}
                     <div class="td2-scard td2-compliance-wrap">
-                        <p class="td2-scard-label">Compliance Check</p>
-                        <ul class="list-unstyled td2-compliance-list">
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker PAN</span>
-                                <span class="td2-ci-val">Valid</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker Bank Account</span>
-                                <span class="td2-ci-val">Active</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker Name match PAN</span>
-                                <span class="td2-ci-val td2-ci-high">High</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Vehicle Valid</span>
-                                <span class="td2-ci-val">—</span>
-                            </li>
-                        </ul>
+                        <p class="td2-vd-section-title"><i class="uil uil-shield-check"></i> Compliance</p>
+                        <div class="td2-vd-comp-grid">
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Broker PAN</span><span class="td2-vd-comp-val">Valid</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Bank Account</span><span class="td2-vd-comp-val">Active</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Name match PAN</span><span class="td2-vd-comp-val">High</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-na">
+                                <i class="uil uil-minus-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Vehicle Valid</span><span class="td2-vd-comp-val">—</span></div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- HISTORY --}}
