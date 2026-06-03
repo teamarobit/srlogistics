@@ -1489,6 +1489,19 @@
     background: #eef2ff;
 }
 
+/* Status-coloured left accent border (replaces the dot beside the vehicle number) */
+.td2-veh-card-green  { border-left: 5px solid #059669; }
+.td2-veh-card-yellow { border-left: 5px solid #d97706; }
+.td2-veh-card-red    { border-left: 5px solid #e11d48; }
+
+/* Keep the accent colour on hover / selected, which recolour the other borders */
+.td2-veh-card-green:hover,
+.td2-veh-radio:checked + .td2-veh-card-green  { border-left-color: #059669; }
+.td2-veh-card-yellow:hover,
+.td2-veh-radio:checked + .td2-veh-card-yellow { border-left-color: #d97706; }
+.td2-veh-card-red:hover,
+.td2-veh-radio:checked + .td2-veh-card-red    { border-left-color: #e11d48; }
+
 .td2-vc-header {
     display: flex;
     align-items: center;
