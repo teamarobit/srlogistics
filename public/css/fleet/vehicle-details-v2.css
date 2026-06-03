@@ -3704,3 +3704,468 @@
         font-size: 18px;
     }
 }
+
+/* ============================================================
+   Truck Scheduled Maintenance — Mini Dashboard  (tsmd-)
+   ============================================================ */
+#pills-truck-sched .tsmd-dashboard {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 10px 14px 12px;
+    margin-top: 12px;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#pills-truck-sched .tsmd-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #E4E8F3;
+    flex-wrap: wrap;
+}
+#pills-truck-sched .tsmd-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    letter-spacing: 0.2px;
+}
+#pills-truck-sched .tsmd-title i { font-size: 15px; color: #032671; }
+#pills-truck-sched .tsmd-sub {
+    font-size: 11px;
+    color: #8a92a8;
+    font-weight: 500;
+}
+
+/* Row 1 — KPI cards */
+#pills-truck-sched .tsmd-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0,1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+#pills-truck-sched .tsmd-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#pills-truck-sched .tsmd-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(3,38,113,0.08);
+}
+#pills-truck-sched .tsmd-kpi-primary {
+    background: linear-gradient(135deg, #032671 0%, #1a3a8f 100%);
+    border-color: #032671;
+}
+#pills-truck-sched .tsmd-kpi-primary .tsmd-kpi-icon { background: rgba(255,255,255,0.18); color: #fff; }
+#pills-truck-sched .tsmd-kpi-primary .tsmd-kpi-body p  { color: rgba(255,255,255,0.85); }
+#pills-truck-sched .tsmd-kpi-primary .tsmd-kpi-body h4 { color: #fff; }
+#pills-truck-sched .tsmd-kpi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+}
+#pills-truck-sched .tsmd-ic-total   { background: rgba(3,38,113,0.08);    color: #032671; }
+#pills-truck-sched .tsmd-ic-done    { background: rgba(45,197,111,0.10);  color: #1a9152; }
+#pills-truck-sched .tsmd-ic-missed  { background: rgba(237,76,92,0.10);   color: #C82F40; }
+#pills-truck-sched .tsmd-ic-pending { background: rgba(242,169,59,0.10);  color: #B97400; }
+#pills-truck-sched .tsmd-kpi-body { min-width: 0; }
+#pills-truck-sched .tsmd-kpi-body p {
+    margin: 0 0 1px 0;
+    font-size: 10px;
+    color: #6c7591;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+#pills-truck-sched .tsmd-kpi-body h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2042;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Row 2 — Operational Intelligence */
+#pills-truck-sched .tsmd-ops-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #E4E8F3;
+}
+#pills-truck-sched .tsmd-ops-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #F7F9FE;
+    border: 1px solid #E4E8F3;
+    border-radius: 8px;
+    min-width: 0;
+    transition: box-shadow .15s ease;
+}
+#pills-truck-sched .tsmd-ops-card:hover { box-shadow: 0 3px 10px rgba(3,38,113,0.07); }
+#pills-truck-sched .tsmd-ops-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+#pills-truck-sched .tsmd-ops-next  { background: rgba(237,76,92,0.10);   color: #C82F40; }
+#pills-truck-sched .tsmd-ops-last  { background: rgba(45,197,111,0.10);  color: #1a9152; }
+#pills-truck-sched .tsmd-ops-month { background: rgba(3,38,113,0.08);    color: #032671; }
+#pills-truck-sched .tsmd-ops-avg   { background: rgba(123,97,255,0.10);  color: #5a3fd1; }
+#pills-truck-sched .tsmd-ops-body  { min-width: 0; }
+#pills-truck-sched .tsmd-ops-label {
+    margin: 0 0 1px 0;
+    font-size: 10px;
+    color: #8a92a8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: block;
+}
+#pills-truck-sched .tsmd-ops-val {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1a2042;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+#pills-truck-sched .tsmd-ops-meta {
+    display: block;
+    font-size: 10.5px;
+    color: #8a92a8;
+    font-weight: 500;
+    margin-top: 1px;
+}
+#pills-truck-sched .tsmd-ops-meta.tsmd-ops-overdue { color: #C82F40; font-weight: 600; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    #pills-truck-sched .tsmd-kpi-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    #pills-truck-sched .tsmd-ops-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 767.98px) {
+    #pills-truck-sched .tsmd-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    #pills-truck-sched .tsmd-ops-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    #pills-truck-sched .tsmd-head     { flex-direction: column; align-items: flex-start; }
+}
+
+
+/* ============================================================
+/* ============================================================
+   Truck Accidental Repair — Table Design (v1.0)
+   ============================================================ */
+
+/* Driver name + code cell */
+#pills-truck-acc .acc-driver-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2340;
+    line-height: 1.3;
+    display: block;
+}
+#pills-truck-acc .acc-driver-code {
+    font-size: 11px;
+    color: #6b7a99;
+    font-weight: 500;
+    display: block;
+    margin-top: 2px;
+}
+
+/* RAG status pill — scoped to accident table */
+#pills-truck-acc .acc-rag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+#pills-truck-acc .acc-rag-pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+#pills-truck-acc .acc-rag-green {
+    background: #e6f7ef;
+    color: #0a7d46;
+    border-color: #bfe9d3;
+}
+#pills-truck-acc .acc-rag-green::before  { background: #22c55e; }
+#pills-truck-acc .acc-rag-amber {
+    background: #fff4e0;
+    color: #b76e00;
+    border-color: #ffd89a;
+}
+#pills-truck-acc .acc-rag-amber::before  { background: #f59e0b; }
+#pills-truck-acc .acc-rag-red {
+    background: #fde8ec;
+    color: #c01a36;
+    border-color: #f7c2cc;
+}
+#pills-truck-acc .acc-rag-red::before    { background: #ef4444; }
+
+/* Date + Time cell */
+#pills-truck-acc .acc-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2340;
+    display: block;
+    line-height: 1.3;
+}
+#pills-truck-acc .acc-time {
+    font-size: 11px;
+    color: #6b7a99;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Location + State + Pincode stacked display */
+#pills-truck-acc .acc-location {
+    font-size: 13px;
+    color: #1a2340;
+    font-weight: 500;
+    display: block;
+    line-height: 1.3;
+}
+
+/* Yes / No pill */
+#pills-truck-acc .acc-yn-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+#pills-truck-acc .acc-yn-yes {
+    background: #fde8ec;
+    color: #c01a36;
+    border-color: #f7c2cc;
+}
+#pills-truck-acc .acc-yn-no {
+    background: #e6f7ef;
+    color: #0a7d46;
+    border-color: #bfe9d3;
+}
+
+/* Injury description sub-line */
+#pills-truck-acc .acc-injury-desc {
+    font-size: 11px;
+    color: #6b7a99;
+    display: block;
+    margin-top: 3px;
+    font-style: italic;
+    max-width: 160px;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+/* Deduction amount + escalation link */
+#pills-truck-acc .acc-deduction {
+    font-size: 12px;
+    color: #b42318;
+    font-weight: 700;
+    display: block;
+    margin-top: 4px;
+}
+#pills-truck-acc .acc-escalation-link {
+    font-size: 11px;
+    color: #4f63d2;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 3px;
+    font-weight: 500;
+}
+#pills-truck-acc .acc-escalation-link:hover {
+    text-decoration: underline;
+    color: #2e46c0;
+}
+
+/* Accident description cell — short/full/more toggle handles truncation; no line-clamp */
+#pills-truck-acc .acc-desc-text {
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.5;
+    max-width: 200px;
+    white-space: normal;
+    display: block;
+}
+
+/* Repair cost */
+#pills-truck-acc .acc-cost {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2340;
+}
+
+/* Insurance claim cell */
+#pills-truck-acc .acc-claim-yes {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+#pills-truck-acc .acc-claim-yes:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+    text-decoration: none;
+}
+#pills-truck-acc .acc-claim-no {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+/* Attachment cell — pill chip with floating badge */
+#pills-truck-acc .acc-attach-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 8px;
+    border-radius: 999px;
+    background: #eef0fd;
+    border: 1px solid #c7cef7;
+    color: #3d52d5;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+}
+#pills-truck-acc .acc-attach-link:hover {
+    background: #dde1fb;
+    border-color: #9aa5f0;
+    color: #2538c2;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(61,82,213,0.12);
+}
+#pills-truck-acc .acc-attach-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: #3d52d5;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(61,82,213,0.30);
+}
+
+/* Accident Description — More/Less toggle (v1.0) */
+#pills-truck-acc .acc-desc-short {
+    display: block;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.5;
+}
+#pills-truck-acc .acc-desc-full {
+    display: none;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.5;
+    white-space: normal;
+    max-width: 220px;
+}
+#pills-truck-acc .acc-desc-meta {
+    display: none;
+}
+#pills-truck-acc .acc-desc-more {
+    display: inline-block;
+    font-size: 11px;
+    color: #4f63d2;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 2px;
+}
+#pills-truck-acc .acc-desc-more:hover {
+    text-decoration: underline;
+    color: #2e46c0;
+}
+
+/* Truck Accidental Repair — Table th / td design */
+#pills-truck-acc .table.custom-driver-table th {
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7a99;
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e9edf5;
+    vertical-align: middle;
+}
+#pills-truck-acc .table.custom-driver-table td {
+    padding: 12px;
+    vertical-align: top;
+    border-bottom: 1px solid #f0f3f9;
+    font-size: 13px;
+    color: #1a2340;
+}

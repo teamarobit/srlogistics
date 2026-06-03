@@ -1,25 +1,25 @@
 /* ============================================================
-   Trip Create Page — create.css v2.0
-   Scope: resources/views/trip/create.blade.php
+   Trip Edit Page — edit.css v1.0
+   Scope: resources/views/trip/edit.blade.php
    ============================================================ */
 
 /* ── Page wrapper ─────────────────────────────────────────── */
-.trip-create-bd {
+.trip-edit-bd {
     margin: 0;
 }
 
-.trip-create-bd .top-text {
+.trip-edit-bd .top-text {
     margin: 0;
     padding: 0;
     box-shadow: 0px 1px 3.3px 0px #00000040;
 }
 
-.trip-create-bd .top-text .container-fluid {
+.trip-edit-bd .top-text .container-fluid {
     padding-top: 11px;
     padding-bottom: 11px;
 }
 
-.trip-create-bd .top-text h1 {
+.trip-edit-bd .top-text h1 {
     margin: 0;
     font-family: Inter, sans-serif;
     font-weight: 700;

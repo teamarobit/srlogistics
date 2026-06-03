@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=4.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=6.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -222,11 +222,9 @@
                                  role="tabpanel" aria-labelledby="td2-tripInit-tab">
                                 <div class="td2-pane-header">
                                     <h5 class="td2-pane-title">Trip Initiations</h5>
-                                    <button class="td2-icon-btn" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#editTrip"
-                                            title="Edit Trip">
+                                    <a href="{{ route('trip.edit', 1) }}" class="td2-icon-btn" title="Edit Trip">
                                         <i class="uil uil-edit-alt"></i>
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="td2-pane-body">
 
@@ -391,9 +389,9 @@
                                     <div class="td2-section">
                                         <div class="accordion td2-veh-accordion" id="td2SuggestedVeh">
                                             <div class="accordion-item">
-                                                <h2 class="accordion-header">
+                                                <h2 class="accordion-header mb-2">
                                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2VehCollapse">
-                                                        Select from Suggested Vehicles <span class="badge bg-primary ms-2">3</span>
+                                                        Select from Suggested Vehicles <span class="ms-2 fw-bold d-inline-flex align-items-center justify-content-center" style="background:#16a34a; color:#fff; min-width:30px; height:30px; border-radius:50%; font-size:1rem; line-height:1; box-shadow:0 2px 8px rgba(22,163,74,0.5);">3</span>
                                                     </button>
                                                 </h2>
                                                 <div id="td2VehCollapse" class="accordion-collapse collapse show">
@@ -402,8 +400,11 @@
                                                         {{-- Vehicle Card 1 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh1" class="td2-veh-radio">
-                                                            <label for="td2Veh1" class="td2-veh-card">
-                                                                <div class="td2-vc-num">WB-12-AB-1237</div>
+                                                            <label for="td2Veh1" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-green"></span> WB-12-AB-1237</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -414,8 +415,8 @@
                                                                         <span class="td2-vc-val">+91 8879402641</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-green">Green (10 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">10 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
@@ -423,7 +424,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Free</span>
+                                                                        <span class="td2-vc-val">Yes</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
@@ -431,22 +432,24 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">5th | Total 12 | Line 5 | Local 7</span>
+                                                                        <span class="td2-vc-val">5th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>5 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>7 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
                                                                         <span class="td2-vc-val">10 Years 5 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
                                                         {{-- Vehicle Card 2 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh2" class="td2-veh-radio">
-                                                            <label for="td2Veh2" class="td2-veh-card">
-                                                                <div class="td2-vc-num">WB-34-CD-5678</div>
+                                                            <label for="td2Veh2" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-red"></span> WB-34-CD-5678</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -457,16 +460,16 @@
                                                                         <span class="td2-vc-val">+91 9432101234</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-yellow">Yellow (4 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-yellow"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">4 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
-                                                                        <span class="td2-vc-val"><span class="td2-veh-status-onway">On the Way (2 days)</span></span>
+                                                                        <span class="td2-vc-val"><span class="td2-veh-status-onway">Not Empty ✗</span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">In Trip</span>
+                                                                        <span class="td2-vc-val">On the Way (2 days)</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
@@ -474,22 +477,24 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">3rd | Total 12 | Line 8 | Local 4</span>
+                                                                        <span class="td2-vc-val">3rd <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>8 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>4 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
                                                                         <span class="td2-vc-val">7 Years 2 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
                                                         {{-- Vehicle Card 3 --}}
                                                         <div class="td2-veh-card-wrap">
                                                             <input type="radio" name="td2VehSelect" id="td2Veh3" class="td2-veh-radio">
-                                                            <label for="td2Veh3" class="td2-veh-card">
-                                                                <div class="td2-vc-num">WB-56-EF-9012</div>
+                                                            <label for="td2Veh3" class="td2-veh-card td2-open-map">
+                                                                <div class="td2-vc-header">
+                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-yellow"></span> WB-56-EF-9012</div>
+                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
+                                                                </div>
                                                                 <div class="td2-vc-grid">
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Driver Name</span>
@@ -500,8 +505,8 @@
                                                                         <span class="td2-vc-val">+91 7654321098</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Behaviour</span>
-                                                                        <span class="td2-vc-val"><span class="td2-rag td2-rag-green">Green (14 Mo)</span></span>
+                                                                        <span class="td2-vc-label">About Driver</span>
+                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">14 Mo</span></span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
@@ -509,7 +514,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Free</span>
+                                                                        <span class="td2-vc-val">Yes</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
@@ -517,14 +522,13 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">8th | Total 12 | Line 3 | Local 9</span>
+                                                                        <span class="td2-vc-val">8th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>3 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>9 Trips</span></div>"></i></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Associated Since</span>
                                                                         <span class="td2-vc-val">4 Years 9 Months</span>
                                                                     </div>
                                                                 </div>
-                                                                <button class="td2-vc-mapbtn td2-open-map" type="button">View Details</button>
                                                             </label>
                                                         </div>
 
@@ -656,26 +660,33 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Driver Detail View --}}
+                                            {{-- Driver Detail View — fields/values mirror the
+                                                 Vehicle Details modal > 'Assigned Driver Details' --}}
                                             <div class="td2-driver-detail td2-view-booking-det">
                                                 <div class="td2-section-title">Driver Details</div>
                                                 <div class="row g-2">
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
                                                             <span class="td2-di-label">Driver Name</span>
-                                                            <span class="td2-di-value">Ashok Ray</span>
+                                                            <span class="td2-di-value">Ashoke Pandey</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
-                                                            <span class="td2-di-label">Contact Number</span>
-                                                            <span class="td2-di-value">+91 8879402641</span>
+                                                            <span class="td2-di-label">Driver Number</span>
+                                                            <span class="td2-di-value">+91 9876543210</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6">
+                                                        <div class="td2-di">
+                                                            <span class="td2-di-label">Associated Since</span>
+                                                            <span class="td2-di-value">10 Years 11 Months</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
                                                             <span class="td2-di-label">Experience</span>
-                                                            <span class="td2-di-value">2 Years</span>
+                                                            <span class="td2-di-value">2 Years 4 Months</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
@@ -686,38 +697,8 @@
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
-                                                            <span class="td2-di-label">Vehicle Status</span>
-                                                            <span class="td2-di-value"><span class="td2-veh-status-empty">Empty</span></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Availability</span>
-                                                            <span class="td2-di-value">Free</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Live Location</span>
-                                                            <span class="td2-di-value">Kolkata</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Vehicle Rank</span>
-                                                            <span class="td2-di-value">5th</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Line Trips</span>
-                                                            <span class="td2-di-value">5</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Local Trips</span>
-                                                            <span class="td2-di-value">7</span>
+                                                            <span class="td2-di-label">Line / Local Trips</span>
+                                                            <span class="td2-di-value">5 &nbsp;/&nbsp; 7</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2269,98 +2250,236 @@
         <div class="td2-overlay map-popup">
             <div class="td2-overlay-header">
                 <h6 class="td2-overlay-title">Vehicle Details</h6>
+                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn">Assign</button>
                 <button class="td2-overlay-close close-overlay close-map" type="button">
                     <i class="uil uil-angle-right-b"></i>
                 </button>
             </div>
-            <div class="td2-overlay-body">
+            <div class="td2-overlay-body" style="padding:0;">
 
                 {{-- Vehicle identity --}}
                 <div class="td2-vd-identity">
-                    <div class="td2-vd-reg">WB-12-AB-1237</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="td2-vd-live-dot"></span>
+                        <div class="td2-vd-reg">WB-12-AB-1237</div>
+                    </div>
                     <div class="td2-vd-chips">
                         <span class="td2-vd-chip td2-vd-chip-empty">Empty</span>
                         <span class="td2-vd-chip td2-vd-chip-loc"><i class="uil uil-map-marker"></i> Kolkata</span>
                     </div>
                 </div>
 
-                {{-- Driver summary --}}
+                {{-- Live Location Map --}}
+                <div class="td2-map-embed">
+                    <div class="td2-map-proto-badge">
+                        <i class="fa fa-map-marker"></i> Live Location — Kolkata
+                        <span class="td2-map-proto-tag">GPS</span>
+                    </div>
+                    <iframe
+                        src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
+                        width="100%" height="155" frameborder="0"
+                        style="border:0;" allowfullscreen="" loading="lazy"
+                        title="Live Location — Kolkata"></iframe>
+                </div>
+
+                {{-- Vehicle Info --}}
                 <div class="td2-vd-section">
-                    <p class="td2-vd-section-title">Driver</p>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Name</span><span class="td2-di-value">Ashok Ray</span></div>
+                    <p class="td2-vd-section-title"><i class="uil uil-truck"></i> Vehicle Info</p>
+                    <div class="td2-vd-field-grid">
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Vehicle Age</span>
+                            <span class="td2-vd-field-val">10 Year 5 month</span>
                         </div>
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Contact</span><span class="td2-di-value">+91 8879402641</span></div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Vehicle Size</span>
+                            <span class="td2-vd-field-val">32Ft</span>
                         </div>
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Experience</span><span class="td2-di-value">2 Years</span></div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Vehicle Capacity</span>
+                            <span class="td2-vd-field-val">1000 KG</span>
                         </div>
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">RAG</span><span class="td2-di-value"><span class="td2-rag td2-rag-green">Green</span></span></div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Availability</span>
+                            <span class="td2-vd-field-val">Free</span>
                         </div>
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Line Trips</span><span class="td2-di-value">5</span></div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Vehicle Rank</span>
+                            <span class="td2-vd-field-val">5th</span>
                         </div>
-                        <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Local Trips</span><span class="td2-di-value">7</span></div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Total Trip</span>
+                            <span class="td2-vd-field-val">12 <small class="fw-normal" style="color:#94a3b8;font-size:11px;">(Line: 5 / Local: 7)</small></span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Vehicle compliance --}}
+                {{-- Estimated Time of Arrival --}}
                 <div class="td2-vd-section">
-                    <p class="td2-vd-section-title">Compliance</p>
+                    <div class="td2-vd-eta-card">
+                        <div class="td2-vd-eta-badge">
+                            <i class="uil uil-clock-three"></i> Estimated Time of Arrival
+                        </div>
+                        <div class="td2-vd-eta-row">
+                            <div class="td2-vd-eta-col">
+                                <span class="td2-vd-eta-col-lbl">Arrival Date</span>
+                                <span class="td2-vd-eta-col-val">12/11/2025</span>
+                            </div>
+                            <div class="td2-vd-eta-divider"></div>
+                            <div class="td2-vd-eta-col">
+                                <span class="td2-vd-eta-col-lbl">Arrival Time</span>
+                                <span class="td2-vd-eta-col-val">12:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Last Trip Details --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title"><i class="uil uil-history"></i> Last Trip Details</p>
+                    <div class="td2-vd-field-grid">
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Trip Type</span>
+                            <span class="td2-vd-field-val">Outside Booking</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Customer</span>
+                            <span class="td2-vd-field-val">John Doe</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Source</span>
+                            <span class="td2-vd-field-val">Kolkata</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Destination</span>
+                            <span class="td2-vd-field-val">Mumbai</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Stop 1</span>
+                            <span class="td2-vd-field-val">Kolaghat</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Stop 2</span>
+                            <span class="td2-vd-field-val">Patna</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Stop 3</span>
+                            <span class="td2-vd-field-val">Pune</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Duration</span>
+                            <span class="td2-vd-field-val">15 Hours</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Delivery Status</span>
+                            <span class="td2-vd-field-val" style="color:#16a34a;">On Time</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Route</span>
+                            <span class="td2-vd-field-val">Kolkata – Mumbai</span>
+                        </div>
+                        <div class="td2-vd-field td2-vd-field-full">
+                            <span class="td2-vd-field-lbl">Trip Date &amp; Time</span>
+                            <span class="td2-vd-field-val">12/11/2025 &nbsp;|&nbsp; 12:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Assigned Driver Details --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title"><i class="uil uil-user-circle"></i> Assigned Driver Details</p>
+                    <div class="td2-vd-field-grid">
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Driver Name</span>
+                            <span class="td2-vd-field-val">Ashoke Pandey</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Driver Number</span>
+                            <span class="td2-vd-field-val">+91 9876543210</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Associated Since</span>
+                            <span class="td2-vd-field-val">10 Years 11 Months</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Experience</span>
+                            <span class="td2-vd-field-val">2 Years 4 Months</span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">RAG Status</span>
+                            <span class="td2-vd-field-val"><span class="td2-rag td2-rag-green">Green</span></span>
+                        </div>
+                        <div class="td2-vd-field">
+                            <span class="td2-vd-field-lbl">Line / Local Trips</span>
+                            <span class="td2-vd-field-val">5 &nbsp;/&nbsp; 7</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Driver History — timeline --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title"><i class="uil uil-clock-eight"></i> Driver History</p>
+                    <div class="td2-vd-drv-hist">
+                        <div class="td2-vd-drv-hist-item">
+                            <span class="td2-vd-drv-hist-avatar">MS</span>
+                            <div class="td2-vd-drv-hist-body">
+                                <div class="td2-vd-drv-hist-name">Mohit Singh</div>
+                                <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Kolkata – Durgapur</div>
+                                <span class="td2-vd-drv-hist-exp"><i class="uil uil-briefcase"></i> 10 Years 2 Month 6 Days</span>
+                            </div>
+                        </div>
+                        <div class="td2-vd-drv-hist-item">
+                            <span class="td2-vd-drv-hist-avatar">LK</span>
+                            <div class="td2-vd-drv-hist-body">
+                                <div class="td2-vd-drv-hist-name">Litesh Kumar</div>
+                                <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Durgapur – Katoya</div>
+                                <span class="td2-vd-drv-hist-exp"><i class="uil uil-briefcase"></i> 12 Years 3 Month 4 Days</span>
+                            </div>
+                        </div>
+                        <div class="td2-vd-drv-hist-item">
+                            <span class="td2-vd-drv-hist-avatar">AM</span>
+                            <div class="td2-vd-drv-hist-body">
+                                <div class="td2-vd-drv-hist-name">Anjan Murthy</div>
+                                <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Bardhaman – Murshidabad</div>
+                                <span class="td2-vd-drv-hist-exp"><i class="uil uil-briefcase"></i> 8 Years 1 Month 25 Days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Compliance --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title"><i class="uil uil-shield-check"></i> Compliance</p>
                     <div class="td2-vd-comp-grid">
                         <div class="td2-vd-comp-item td2-vd-ok">
                             <i class="uil uil-check-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">Insurance</span>
-                                <span class="td2-vd-comp-val">22/07/2026</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">Insurance</span><span class="td2-vd-comp-val">22/07/2026</span></div>
                         </div>
                         <div class="td2-vd-comp-item td2-vd-ok">
                             <i class="uil uil-check-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">Fitness</span>
-                                <span class="td2-vd-comp-val">14/03/2026</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">Fitness</span><span class="td2-vd-comp-val">14/03/2026</span></div>
                         </div>
                         <div class="td2-vd-comp-item td2-vd-warn">
                             <i class="uil uil-exclamation-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">Permit</span>
-                                <span class="td2-vd-comp-val">20/11/2025</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">Permit</span><span class="td2-vd-comp-val">20/11/2025</span></div>
                         </div>
                         <div class="td2-vd-comp-item td2-vd-ok">
                             <i class="uil uil-check-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">PUCC</span>
-                                <span class="td2-vd-comp-val">10/06/2026</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">PUCC</span><span class="td2-vd-comp-val">10/06/2026</span></div>
                         </div>
                         <div class="td2-vd-comp-item td2-vd-ok">
                             <i class="uil uil-check-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">Tax</span>
-                                <span class="td2-vd-comp-val">31/03/2026</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">Tax</span><span class="td2-vd-comp-val">31/03/2026</span></div>
                         </div>
                         <div class="td2-vd-comp-item td2-vd-ok">
                             <i class="uil uil-check-circle"></i>
-                            <div>
-                                <span class="td2-vd-comp-lbl">FASTag</span>
-                                <span class="td2-vd-comp-val">Active</span>
-                            </div>
+                            <div><span class="td2-vd-comp-lbl">FASTag</span><span class="td2-vd-comp-val">Active</span></div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Trip history for this vehicle --}}
+                {{-- Trip History --}}
                 <div class="td2-vd-section">
-                    <p class="td2-vd-section-title">Trip History (Last 5)</p>
+                    <p class="td2-vd-section-title"><i class="uil uil-list-ul"></i> Trip History (Last 5)</p>
                     <table class="td2-table w-100">
                         <thead>
                             <tr>
@@ -2376,6 +2495,13 @@
                             <tr><td>TRIP0006</td><td>KOL–HYD</td><td><span class="td2-rag td2-rag-green">Done</span></td><td>02/09/2025</td></tr>
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Bottom Assign Action --}}
+                <div class="td2-vd-action-bar">
+                    <button type="button" class="btn btn-primary">
+                        <i class="uil uil-check me-1"></i> Assign This Vehicle
+                    </button>
                 </div>
 
             </div>
@@ -3356,5 +3482,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.3') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.6') }}"></script>
 @endsection

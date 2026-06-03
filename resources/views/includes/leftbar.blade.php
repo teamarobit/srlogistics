@@ -155,12 +155,8 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="warehouseH">
                 <a class="accordion-button no-dd" href="{{ route('warehouse.master.index') }}" style="background-color: #a2ffe0;">
-<<<<<<< HEAD
-                    <i class="uil uil-truck me-2"></i> Warehouse Master
-=======
                     <i class="uil uil-warehouse me-2"></i> Warehouse Master
                     <span style="color:#28a745; font-weight:bold;">✓</span>
->>>>>>> 409a53bb4e25279e903c697f24369bbd5b80febd
                 </a>
             </h2>
         </div>

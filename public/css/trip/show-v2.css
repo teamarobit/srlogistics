@@ -1257,6 +1257,42 @@
 .td2-rag-yellow { background: #fef3c7; color: #92400e; }
 .td2-rag-green  { background: #d1fae5; color: #065f46; }
 
+/* =============================================================
+   ABOUT DRIVER — Behaviour chip
+   ============================================================= */
+.td2-bhv-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.td2-bhv-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.td2-bhv-green  { background: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.18); }
+.td2-bhv-yellow { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.18); }
+.td2-bhv-red    { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.18); }
+
+.td2-bhv-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.01em;
+}
+
+.td2-bhv-exp {
+    font-size: 0.73rem;
+    font-weight: 500;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
 /* Priority */
 .td2-priority {
     display: inline-block;
@@ -1386,13 +1422,55 @@
     background: #eef2ff;
 }
 
+.td2-vc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
 .td2-vc-num {
     font-family: Inter, sans-serif;
     font-weight: 700;
     font-size: 15px;
     color: #032671;
-    margin-bottom: 10px;
 }
+
+.td2-vc-eye-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #032671;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(3,38,113,0.25);
+}
+.td2-vc-eye-btn:hover {
+    background: #1a3f8f;
+    transform: scale(1.08);
+}
+
+/* Vehicle RAG — status dot beside vehicle number */
+.td2-vc-status-dot {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    flex-shrink: 0;
+}
+.td2-dot-green  { background: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.18); }
+.td2-dot-yellow { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.18); }
+.td2-dot-red    { background: #e11d48; box-shadow: 0 0 0 3px rgba(225,29,72,0.18); }
 
 .td2-vc-grid {
     display: grid;
@@ -1654,7 +1732,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px 6px 18px;
+    padding: 4px 12px 4px 14px;
     background: #032671;
     color: #fff;
     font-family: Inter, sans-serif;
@@ -2292,91 +2370,366 @@
 .td2-file-del:hover  { background: #dc3545; color: #fff; }
 
 /* ─────────────────────────────────────────────────────────────
-   SPRINT 5 — Vehicle Details Panel
+   SPRINT 5 — Vehicle Details Panel (Redesign v2)
 ───────────────────────────────────────────────────────────── */
+
+/* Identity bar */
 .td2-vd-identity {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 14px 16px;
-    background: #032671;
-    border-radius: 10px;
-    margin-bottom: 16px;
+    gap: 6px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #032671 0%, #0a3d8a 100%);
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.18);
 }
 
 .td2-vd-reg {
-    font-family: Inter, sans-serif;
-    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
     font-weight: 700;
     color: #fff;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
 }
 
 .td2-vd-chips {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .td2-vd-chip {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 10px;
+    padding: 4px 11px;
     border-radius: 50px;
     font-size: 11px;
     font-weight: 600;
 }
 .td2-vd-chip-empty { background: #d1fae5; color: #065f46; }
-.td2-vd-chip-loc   { background: rgba(255,255,255,0.2); color: #fff; }
+.td2-vd-chip-loc   { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
 
+/* Live GPS pulse dot */
+.td2-vd-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    flex-shrink: 0;
+    animation: td2PulseLive 1.8s infinite;
+}
+@keyframes td2PulseLive {
+    0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+    70%  { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+
+/* Section wrapper */
 .td2-vd-section {
-    margin-bottom: 18px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #edf1f7;
+    background: #fff;
 }
+.td2-vd-section:last-child { border-bottom: none; }
 
+/* Section title with icon */
 .td2-vd-section-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-family: Inter, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #9ca3af;
-    margin: 0 0 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f3f4f6;
+    color: #032671;
+    margin: 0 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e8eef8;
+}
+.td2-vd-section-title i { font-size: 15px; opacity: 0.8; }
+
+/* 2-col field grid */
+.td2-vd-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+.td2-vd-field-full { grid-column: 1 / -1; }
+
+.td2-vd-field {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 9px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(3,38,113,0.04);
+    min-height: 0;
+}
+.td2-vd-field-lbl {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.td2-vd-field-val {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.2;
+    text-align: right;
+    word-break: break-word;
 }
 
+/* ETA card — rich dark card */
+.td2-vd-eta-card {
+    background: linear-gradient(135deg, #021e58 0%, #032671 45%, #0d47a1 100%);
+    border-radius: 10px;
+    padding: 7px 12px 8px;
+    box-shadow: 0 4px 16px rgba(3,38,113,0.28);
+    position: relative;
+    overflow: hidden;
+}
+/* Decorative background circles */
+.td2-vd-eta-card::before {
+    content: '';
+    position: absolute;
+    top: -28px; right: -28px;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    pointer-events: none;
+}
+.td2-vd-eta-card::after {
+    content: '';
+    position: absolute;
+    bottom: -36px; right: 24px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+}
+.td2-vd-eta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 20px;
+    padding: 2px 9px 2px 6px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 4px;
+    position: relative;
+}
+.td2-vd-eta-badge i { font-size: 11px; }
+
+.td2-vd-eta-row {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    align-items: center;
+    position: relative;
+}
+.td2-vd-eta-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.18);
+    justify-self: center;
+}
+.td2-vd-eta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 10px;
+}
+.td2-vd-eta-col:first-child { padding-left: 0; }
+.td2-vd-eta-col:last-child  { padding-right: 0; }
+.td2-vd-eta-col-lbl {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.50);
+    margin-bottom: 1px;
+}
+.td2-vd-eta-col-val {
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+}
+
+/* Driver History — timeline */
+.td2-vd-drv-hist {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+    padding-left: 24px;
+}
+.td2-vd-drv-hist::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+}
+.td2-vd-drv-hist-item {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #e9eef5;
+    border-radius: 8px;
+    padding: 7px 10px;
+    transition: box-shadow 0.15s;
+}
+.td2-vd-drv-hist-item:hover { box-shadow: 0 2px 8px rgba(3,38,113,0.08); }
+.td2-vd-drv-hist-item::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #032671;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #cbd5e1;
+}
+.td2-vd-drv-hist-avatar {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #032671;
+    color: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+}
+.td2-vd-drv-hist-body { flex: 1; min-width: 0; }
+.td2-vd-drv-hist-name {
+    font-family: Inter, sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+.td2-vd-drv-hist-meta {
+    font-size: 10.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.td2-vd-drv-hist-exp {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #032671;
+    background: #eff6ff;
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+.td2-vd-drv-hist-exp i { font-size: 11px; }
+
+/* Compliance grid */
 .td2-vd-comp-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 4px;
 }
-
 .td2-vd-comp-item {
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 10px;
-    border-radius: 8px;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    border-radius: 6px;
     font-size: 11px;
+    border: 1px solid transparent;
 }
-.td2-vd-comp-item i { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
-.td2-vd-ok   { background: #f0fdf4; color: #065f46; }
-.td2-vd-warn { background: #fffbeb; color: #92400e; }
-
+.td2-vd-comp-item > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 4px;
+    min-width: 0;
+}
+.td2-vd-comp-item i { font-size: 13px; flex-shrink: 0; }
+.td2-vd-ok   { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
+.td2-vd-warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
 .td2-vd-comp-lbl {
-    display: block;
-    color: #6b7280;
-    font-size: 10px;
+    display: inline;
+    font-size: 9px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    white-space: nowrap;
 }
 .td2-vd-comp-val {
-    display: block;
+    display: inline;
     font-weight: 700;
+    font-size: 11px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Assign button (header) */
+.td2-vd-assign-btn {
+    flex-shrink: 0;
+    font-family: Inter, sans-serif;
     font-size: 12px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+}
+
+/* Bottom action bar */
+.td2-vd-action-bar {
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-top: 1px solid #e9eef5;
+    margin-top: 0;
+}
+.td2-vd-action-bar .btn {
+    width: 100%;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -3241,4 +3594,56 @@
 /* Hide group labels on tablet scroll (they stack oddly) */
 @media (max-width: 991px) {
     .td2-tab-group-label { display: none; }
+}
+
+/* =============================================================
+   VEHICLE RANK TOOLTIP
+   ============================================================= */
+.rank-tooltip .tooltip-inner {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    min-width: 190px;
+    max-width: 220px;
+    text-align: left;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.rank-tooltip.bs-tooltip-top .tooltip-arrow::before,
+.rank-tooltip.bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before {
+    border-top-color: #1e293b;
+}
+
+.rank-tooltip .rtt-header {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #334155;
+}
+
+.rank-tooltip .rtt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.82rem;
+}
+
+.rank-tooltip .rtt-row:last-child {
+    margin-bottom: 0;
+}
+
+.rank-tooltip .rtt-label {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.rank-tooltip .rtt-val {
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-left: 16px;
 }

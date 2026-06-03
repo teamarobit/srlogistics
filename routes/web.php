@@ -814,10 +814,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post   ('/store',                        [App\Http\Controllers\TripController::class, 'store'])->name('store');
         Route::post   ('/{id}/delete',                  [App\Http\Controllers\TripController::class, 'destroy'])->name('destroy');
         Route::get    ('/vehicle-sizes/{vehicletype_id}',[App\Http\Controllers\TripController::class, 'getVehicleSizes'])->name('vehicle.sizes');
-        Route::get    ('/{trip}',[App\Http\Controllers\TripController::class, 'show'])->name('details');
-        
-        Route::get    ('/lr/create',[App\Http\Controllers\TripController::class, 'createLr'])->name('lr.create');
-        Route::get    ('/lr/print',[App\Http\Controllers\TripController::class, 'printLr'])->name('lr.print');
+        Route::get    ('/{trip}/edit',  [App\Http\Controllers\TripController::class, 'edit'])->name('edit');
+        Route::get    ('/{trip}',       [App\Http\Controllers\TripController::class, 'show'])->name('details');
+
+    });
+    
+    Route::controller(App\Http\Controllers\LrController::class)->group(function () {
+        Route::get('/lr/create', 'create')->name('trip.lr.create');
+        Route::get('/lr/print', 'print')->name('trip.lr.print');
     });
 
 }); // end auth middleware group

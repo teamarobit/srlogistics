@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/trip/create.css?v=2.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/edit.css?v=1.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -9,14 +9,14 @@
 
     @include('includes.header')
 
-    <div class="trip-create-bd srlog-bdwrapper">
+    <div class="trip-edit-bd srlog-bdwrapper">
 
         {{-- Page Header --}}
         <div class="top-text">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div>
-                    <h1>Create Trip</h1>
-                    <div class="tc-breadcrumb">Freight &rsaquo; Trips &rsaquo; New Trip</div>
+                    <h1>Edit Trip</h1>
+                    <div class="tc-breadcrumb">Freight &rsaquo; Trips &rsaquo; Edit Trip</div>
                 </div>
                 <a href="{{ route('trip.index') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="uil uil-arrow-left me-1"></i>Back to Trips
@@ -26,12 +26,11 @@
 
         <div class="container-fluid mt-4 pb-4">
 
-            <form id="createTripForm"
-                  action="{{ route('trip.store') }}"
-                  method="POST"
-                  data-index-url="{{ route('trip.index') }}"
-                  data-sizes-url="{{ route('trip.vehicle.sizes', ['vehicletype_id' => '__ID__']) }}">
+            <form id="editTripForm"
+                  action="#"
+                  method="POST">
                 @csrf
+                @method('PUT')
 
                 <div class="row g-4 align-items-start">
 
@@ -54,7 +53,7 @@
 
                                     <div class="col-md-6 form-group">
                                         <label class="form-label">Trip ID</label>
-                                        <input type="text" class="form-control bg-light" readonly placeholder="Will be auto generated" />
+                                        <input type="text" class="form-control bg-light" readonly placeholder="TRP-0001" />
                                     </div>
 
                                     <div class="col-md-6 form-group">
@@ -279,9 +278,9 @@
                         {{-- Actions --}}
                         <div class="tc-side-card">
                             <div class="tc-side-card-body">
-                                <button type="submit" id="btnSaveTrip" class="btn btn-primary w-100 mb-2">
-                                    <span id="btnSaveTripText">Save Trip</span>
-                                    <span id="btnSaveTripSpinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+                                <button type="submit" id="btnUpdateTrip" class="btn btn-primary w-100 mb-2">
+                                    <span id="btnUpdateTripText">Update Trip</span>
+                                    <span id="btnUpdateTripSpinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
                                 </button>
                                 <a href="{{ route('trip.index') }}" class="btn btn-outline-secondary w-100">Cancel</a>
                             </div>
@@ -298,5 +297,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Trip/create.js?v=1.0') }}"></script>
+<script src="{{ asset('js/Trip/edit.js?v=1.1') }}"></script>
 @endsection
