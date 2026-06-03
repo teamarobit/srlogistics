@@ -863,12 +863,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Save Button --}}
-                                        <div class="td2-alloc-actions">
-                                            <button type="button" class="btn btn-primary td2-alloc-save">
-                                                <i class="uil uil-check-circle me-1"></i> Save Allocation
-                                            </button>
-                                        </div>
 
                                     </div>
 
