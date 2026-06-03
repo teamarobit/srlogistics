@@ -2240,7 +2240,8 @@
         <div class="td2-overlay map-popup">
             <div class="td2-overlay-header">
                 <h6 class="td2-overlay-title">Vehicle Details</h6>
-                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn">Assign</button>
+                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn"
+                        data-bs-toggle="modal" data-bs-target="#assignModal">Assign</button>
                 <button class="td2-overlay-close close-overlay close-map" type="button">
                     <i class="uil uil-angle-right-b"></i>
                 </button>
@@ -2488,11 +2489,12 @@
                 </div>
 
                 {{-- Bottom Assign Action --}}
-                <div class="td2-vd-action-bar">
-                    <button type="button" class="btn btn-primary">
+                {{-- <div class="td2-vd-action-bar">
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#assignModal">
                         <i class="uil uil-check me-1"></i> Assign This Vehicle
                     </button>
-                </div>
+                </div> --}}
 
             </div>
         </div>
@@ -2924,6 +2926,113 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Assign Vehicle to This Trip — opened from the Vehicle Details panel "Assign" button --}}
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignVehicleForm">
+
+                    {{-- Row 1: Expected Start Date / Time --}}
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Expected Start Date</label>
+                            <input type="date" class="form-control" name="assign_start_date">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Expected Start Time</label>
+                            <input type="time" class="form-control" name="assign_start_time">
+                        </div>
+                    </div>
+
+                    {{-- Row 2: Loading / Unloading Point --}}
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Loading Point</label>
+                            <select class="form-select select2-modal" name="assign_loading_point">
+                                <option value="">Choose..</option>
+                                <option>Webel Gate</option>
+                                <option>SDF</option>
+                                <option>DLF 1</option>
+                                <option>DLF 2</option>
+                                <option>Laketown</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Unloading Point</label>
+                            <select class="form-select select2-modal" name="assign_unloading_point">
+                                <option value="">Choose..</option>
+                                <option>Webel Gate</option>
+                                <option>SDF</option>
+                                <option>DLF 1</option>
+                                <option>DLF 2</option>
+                                <option>Laketown</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Row 3: Midpoint 1 (Loading) --}}
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Midpoint 1</label>
+                            <input type="text" class="form-control bg-light" name="assign_midpoint_1" value="Bihar" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Midpoint 1 Type</label>
+                            <div><span class="badge bg-success">Loading</span></div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="form-label">Loading Location</label>
+                            <select class="form-select" name="assign_loading_location">
+                                <option value="">Choose..</option>
+                                <option>Webel Gate</option>
+                                <option>SDF</option>
+                                <option>DLF 1</option>
+                                <option>DLF 2</option>
+                                <option>Laketown</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Row 4: Midpoint 2 (Unloading) --}}
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Midpoint 2</label>
+                            <input type="text" class="form-control bg-light" name="assign_midpoint_2" value="Odisha" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Midpoint 2 Type</label>
+                            <div><span class="badge bg-danger">Unloading</span></div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="form-label">Unloading Location</label>
+                            <select class="form-select" name="assign_unloading_location">
+                                <option value="">Choose..</option>
+                                <option>Webel Gate</option>
+                                <option>SDF</option>
+                                <option>DLF 1</option>
+                                <option>DLF 2</option>
+                                <option>Laketown</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Assign</button>
+                    </div>
+
+                </form>
             </div>
         </div>
     </div>
@@ -3472,5 +3581,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.6') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.7') }}"></script>
 @endsection

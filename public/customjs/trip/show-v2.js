@@ -347,6 +347,11 @@ $(document).on('shown.bs.modal', '#editTrip', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
 });
 
+/* Select2 init for Assign Vehicle modal fields */
+$(document).on('shown.bs.modal', '#assignModal', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
 /* Daterangepicker for edit trip date */
 $(document).on('shown.bs.modal', '#editTrip', function () {
     if ($('#td2EditDateRange').length && typeof $.fn.daterangepicker !== 'undefined') {
