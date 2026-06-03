@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.1') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=7.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -724,46 +724,43 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Driver Detail View — fields/values mirror the
-                                                 Vehicle Details modal > 'Assigned Driver Details' --}}
-                                            <div class="td2-driver-detail td2-view-booking-det">
-                                                <div class="td2-section-title">Driver Details</div>
-                                                <div class="row g-2">
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Driver Name</span>
-                                                            <span class="td2-di-value">Ashoke Pandey</span>
-                                                        </div>
+                                            {{-- Selected vehicle summary — same card style as Suggested Vehicles --}}
+                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mt-3">
+                                                <div class="td2-vc-header">
+                                                    <div class="td2-vc-num">WB-12-AB-1237</div>
+                                                </div>
+                                                <div class="td2-vc-grid">
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Driver Name</span>
+                                                        <span class="td2-vc-val">Ashok Ray</span>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Driver Number</span>
-                                                            <span class="td2-di-value">+91 9876543210</span>
-                                                        </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Driver Number</span>
+                                                        <span class="td2-vc-val">+91 8879402641</span>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Associated Since</span>
-                                                            <span class="td2-di-value">10 Years 11 Months</span>
-                                                        </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">About Driver</span>
+                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">10 Mo</span></span></span>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Experience</span>
-                                                            <span class="td2-di-value">2 Years 4 Months</span>
-                                                        </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Status</span>
+                                                        <span class="td2-vc-val"><span class="td2-veh-status-empty">Empty ✓</span></span>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">RAG Status</span>
-                                                            <span class="td2-di-value"><span class="td2-rag td2-rag-green">Green</span></span>
-                                                        </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Availability</span>
+                                                        <span class="td2-vc-val">Yes</span>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Line / Local Trips</span>
-                                                            <span class="td2-di-value">5 &nbsp;/&nbsp; 7</span>
-                                                        </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Live Location</span>
+                                                        <span class="td2-vc-val">Kolkata</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Vehicle Rank</span>
+                                                        <span class="td2-vc-val">5th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>5 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>7 Trips</span></div>"></i></span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Associated Since</span>
+                                                        <span class="td2-vc-val">10 Years 5 Months</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -824,36 +821,44 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row g-3">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Expected Start Date</label>
-                                                    <input type="date" class="form-control" name="ext_start_date">
+                                            {{-- Selected vehicle summary — same card style (RAG-coloured border); driver fields blank for external --}}
+                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mb-3">
+                                                <div class="td2-vc-header">
+                                                    <div class="td2-vc-num">WB-99-ZZ-0001</div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Expected Start Time</label>
-                                                    <input type="time" class="form-control" name="ext_start_time">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Loading Point</label>
-                                                    <select class="form-select" name="ext_loading_point">
-                                                        <option value="">Select loading point...</option>
-                                                        <option>Webel Gate</option>
-                                                        <option>SDF</option>
-                                                        <option>DLF 1</option>
-                                                        <option>DLF 2</option>
-                                                        <option>Laketown</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Unloading Point</label>
-                                                    <select class="form-select" name="ext_unloading_point">
-                                                        <option value="">Select unloading point...</option>
-                                                        <option>Webel Gate</option>
-                                                        <option>SDF</option>
-                                                        <option>DLF 1</option>
-                                                        <option>DLF 2</option>
-                                                        <option>Laketown</option>
-                                                    </select>
+                                                <div class="td2-vc-grid">
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Driver Name</span>
+                                                        <span class="td2-vc-val">—</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Driver Number</span>
+                                                        <span class="td2-vc-val">—</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">About Driver</span>
+                                                        <span class="td2-vc-val">—</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Status</span>
+                                                        <span class="td2-vc-val"><span class="td2-veh-status-empty">Empty ✓</span></span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Availability</span>
+                                                        <span class="td2-vc-val">Yes</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Live Location</span>
+                                                        <span class="td2-vc-val">Mumbai</span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Vehicle Rank</span>
+                                                        <span class="td2-vc-val">5th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>5 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>7 Trips</span></div>"></i></span>
+                                                    </div>
+                                                    <div class="td2-vc-item">
+                                                        <span class="td2-vc-label">Associated Since</span>
+                                                        <span class="td2-vc-val">10 Years 5 Months</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
