@@ -2929,6 +2929,61 @@
 .td2-vd-ok   { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
 .td2-vd-warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
 .td2-vd-na   { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+
+/* VAHAN view (shown instead of map for External/Vendor vehicles) */
+.td2-vd-vahan-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 7px 10px 4px;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+.td2-vd-vahan-title i { font-size: 13px; opacity: 0.8; }
+.td2-vd-vahan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.td2-vd-vahan-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 4px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    min-width: 0;
+    line-height: 1.25;
+}
+.td2-vd-vahan-grid > .td2-vd-vahan-row:nth-child(4n+1),
+.td2-vd-vahan-grid > .td2-vd-vahan-row:nth-child(4n+2) {
+    background: #f8fafc;
+}
+.td2-vd-vahan-ico-ok    { color: #16a34a; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.td2-vd-vahan-ico-alert { color: #dc2626; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.td2-vd-vahan-key {
+    flex: 1 1 42%;
+    min-width: 0;
+    font-family: Inter, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748b;
+}
+.td2-vd-vahan-val {
+    flex: 1 1 58%;
+    min-width: 0;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
 .td2-vd-comp-lbl {
     display: inline;
     font-size: 9px;

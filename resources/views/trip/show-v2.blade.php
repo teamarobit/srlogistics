@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.6') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=7.8') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -822,7 +822,8 @@
                                             </div>
 
                                             {{-- Selected vehicle summary — same card style (RAG-coloured border); driver fields blank for external --}}
-                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mb-3">
+                                            {{-- data-vd-view="vahan": open Vehicle Details with VAHAN view instead of the map --}}
+                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mb-3" data-vd-view="vahan">
                                                 <div class="td2-vc-header">
                                                     <div class="td2-vc-num">WB-99-ZZ-0001</div>
                                                 </div>
@@ -2271,6 +2272,56 @@
                         title="Live Location — Kolkata"></iframe>
                 </div>
 
+                {{-- VAHAN Details — shown instead of the map for External/Vendor vehicles (JS toggles via data-vd-view) --}}
+                <div class="td2-vd-vahan-view d-none">
+                    <p class="td2-vd-vahan-title"><i class="uil uil-file-info-alt"></i> VAHAN Details</p>
+                    <div class="td2-vd-vahan-grid">
+                        @php
+                            $vdVahan = [
+                                ['Owner Name', 'Rajesh Kumar', 'ok'],
+                                ['Address', '12, Park Street, Kolkata - 700016', 'ok'],
+                                ['Status', 'Active', 'ok'],
+                                ['Registration Date', '15/03/2018', 'ok'],
+                                ['Fitness Certificate Expiry', '14/03/2026', 'alert'],
+                                ['Insurance Expiry', '22/07/2026', 'ok'],
+                                ['Tax Expiry', '31/03/2026', 'alert'],
+                                ['Permit Expiry', '20/11/2025', 'alert'],
+                                ['PUCC Expiry', '10/06/2026', 'ok'],
+                                ['National Permit Expiry', '20/11/2025', 'alert'],
+                                ['Permit Type', 'National', 'ok'],
+                                ['PUCC Number', 'PUC2024WB1237', 'ok'],
+                                ['Permit Number', 'WB/NP/2022/001237', 'ok'],
+                                ['Insurer', 'New India Assurance', 'ok'],
+                                ['Insurance Number', 'NIA/2024/098765', 'ok'],
+                                ['Financier', 'SBI Bank', 'ok'],
+                                ['Class', 'Medium Goods Vehicle', 'ok'],
+                                ['Body Type', 'Closed Body', 'ok'],
+                                ['Fuel Type', 'Diesel', 'ok'],
+                                ['Chassis Number', 'MAT451351MDE12345', 'ok'],
+                                ['Engine Number', '4HK1-WB12345', 'ok'],
+                                ['Manufacturer', 'Tata Motors', 'ok'],
+                                ['Norms Type', 'BS-VI', 'ok'],
+                                ['Model', 'LPT 1618', 'ok'],
+                                ['GVW', '16180 KG', 'ok'],
+                                ['Wheelbase', '4200 MM', 'ok'],
+                                ['FASTag ID', 'WB12AB1237FT', 'ok'],
+                                ['TID', 'TID20240012370', 'ok'],
+                            ];
+                        @endphp
+                        @foreach ($vdVahan as $vf)
+                        <div class="td2-vd-vahan-row">
+                            @if ($vf[2] === 'alert')
+                                <i class="uil uil-exclamation-circle td2-vd-vahan-ico-alert"></i>
+                            @else
+                                <i class="uil uil-check-circle td2-vd-vahan-ico-ok"></i>
+                            @endif
+                            <span class="td2-vd-vahan-key">{{ $vf[0] }}</span>
+                            <span class="td2-vd-vahan-val">{{ $vf[1] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- Vehicle Info --}}
                 <div class="td2-vd-section">
                     <p class="td2-vd-section-title"><i class="uil uil-truck"></i> Vehicle Info</p>
@@ -3583,5 +3634,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.0') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.1') }}"></script>
 @endsection

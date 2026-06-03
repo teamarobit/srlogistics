@@ -225,10 +225,17 @@ $(document).on('click', '.td2-bill-click', function () {
     $('.bill-popup').addClass('show');
 });
 
-/* Map / Vehicle Detail overlay — eye button or card click */
+/* Map / Vehicle Detail overlay — eye button or card click.
+   Cards with data-vd-view="vahan" (External/Vendor) show the VAHAN details
+   block in place of the live-location map. */
 $(document).on('click', '.td2-open-map', function (e) {
     e.stopPropagation();
     closeAllOverlays();
+
+    var showVahan = $(this).data('vd-view') === 'vahan';
+    $('.map-popup .td2-map-embed').toggleClass('d-none', showVahan);
+    $('.map-popup .td2-vd-vahan-view').toggleClass('d-none', !showVahan);
+
     $('.map-popup').addClass('show');
 });
 
