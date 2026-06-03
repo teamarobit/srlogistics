@@ -106,7 +106,9 @@ $(document).on('click', '.remove-attachment-btn', function () {
         title: 'Remove this attachment?',
         showCancelButton: true,
         confirmButtonText: 'Yes, remove',
+        confirmButtonColor:'#1F75A8',
         cancelButtonText: 'Cancel',
+        cancelButtonColor: '#d33',
         reverseButtons: true
     }).then((result) => {
         if (!result.isConfirmed) return;

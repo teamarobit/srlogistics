@@ -2510,3 +2510,13 @@ hr{
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
     color: #485D6B !important;
 }
+
+.contact-person{
+    position: relative;
+    padding-top: 25px;
+}
+.close-sec{
+    position: absolute;
+    right: 0;
+    top: 0;
+}
