@@ -1732,7 +1732,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px 6px 18px;
+    padding: 4px 12px 4px 14px;
     background: #032671;
     color: #fff;
     font-family: Inter, sans-serif;
@@ -2379,8 +2379,8 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 14px 18px;
+    gap: 6px;
+    padding: 10px 14px;
     background: linear-gradient(135deg, #032671 0%, #0a3d8a 100%);
     border-radius: 10px 10px 0 0;
     margin-bottom: 0;
@@ -2389,7 +2389,7 @@
 
 .td2-vd-reg {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
     color: #fff;
     letter-spacing: 0.08em;
@@ -2431,7 +2431,7 @@
 
 /* Section wrapper */
 .td2-vd-section {
-    padding: 16px 18px;
+    padding: 10px 14px;
     border-bottom: 1px solid #edf1f7;
     background: #fff;
 }
@@ -2448,8 +2448,8 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #032671;
-    margin: 0 0 12px;
-    padding-bottom: 8px;
+    margin: 0 0 8px;
+    padding-bottom: 5px;
     border-bottom: 2px solid #e8eef8;
 }
 .td2-vd-section-title i { font-size: 15px; opacity: 0.8; }
@@ -2458,7 +2458,7 @@
 .td2-vd-field-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 5px;
 }
 .td2-vd-field-full { grid-column: 1 / -1; }
 
@@ -2466,10 +2466,10 @@
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    padding: 9px 11px;
+    padding: 6px 9px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     box-shadow: 0 1px 3px rgba(3,38,113,0.04);
 }
 .td2-vd-field-lbl {
@@ -2481,7 +2481,7 @@
 }
 .td2-vd-field-val {
     font-family: Inter, sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #0f172a;
     line-height: 1.3;
@@ -2491,7 +2491,7 @@
 .td2-vd-eta-card {
     background: linear-gradient(135deg, #021e58 0%, #032671 45%, #0d47a1 100%);
     border-radius: 10px;
-    padding: 10px 14px 12px;
+    padding: 7px 12px 8px;
     box-shadow: 0 4px 16px rgba(3,38,113,0.28);
     position: relative;
     overflow: hidden;
@@ -2528,7 +2528,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.85);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     position: relative;
 }
 .td2-vd-eta-badge i { font-size: 11px; }
@@ -2574,14 +2574,14 @@
 .td2-vd-drv-hist {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
     position: relative;
-    padding-left: 28px;
+    padding-left: 24px;
 }
 .td2-vd-drv-hist::before {
     content: '';
     position: absolute;
-    left: 10px;
+    left: 8px;
     top: 8px;
     bottom: 8px;
     width: 2px;
@@ -2591,19 +2591,19 @@
 .td2-vd-drv-hist-item {
     position: relative;
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: flex-start;
     background: #fff;
     border: 1px solid #e9eef5;
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 7px 10px;
     transition: box-shadow 0.15s;
 }
 .td2-vd-drv-hist-item:hover { box-shadow: 0 2px 8px rgba(3,38,113,0.08); }
 .td2-vd-drv-hist-item::before {
     content: '';
     position: absolute;
-    left: -22px;
+    left: -18px;
     top: 50%;
     transform: translateY(-50%);
     width: 10px;
@@ -2659,13 +2659,13 @@
 .td2-vd-comp-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 7px;
+    gap: 5px;
 }
 .td2-vd-comp-item {
     display: flex;
     align-items: flex-start;
-    gap: 7px;
-    padding: 9px 10px;
+    gap: 6px;
+    padding: 6px 8px;
     border-radius: 8px;
     font-size: 11px;
     border: 1px solid transparent;
@@ -2697,16 +2697,16 @@
 
 /* Bottom action bar */
 .td2-vd-action-bar {
-    padding: 14px 18px;
+    padding: 10px 14px;
     background: #f8fafc;
     border-top: 1px solid #e9eef5;
-    margin-top: 4px;
+    margin-top: 0;
 }
 .td2-vd-action-bar .btn {
     width: 100%;
     font-weight: 700;
-    font-size: 14px;
-    padding: 10px;
+    font-size: 13px;
+    padding: 7px;
     border-radius: 8px;
     letter-spacing: 0.02em;
 }

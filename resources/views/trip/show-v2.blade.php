@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=6.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=6.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -2300,7 +2300,7 @@
                     </div>
                     <iframe
                         src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
-                        width="100%" height="200" frameborder="0"
+                        width="100%" height="155" frameborder="0"
                         style="border:0;" allowfullscreen="" loading="lazy"
                         title="Live Location — Kolkata"></iframe>
                 </div>
