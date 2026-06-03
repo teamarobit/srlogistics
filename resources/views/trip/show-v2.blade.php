@@ -424,7 +424,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Free</span>
+                                                                        <span class="td2-vc-val">Yes</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
@@ -465,11 +465,11 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Status</span>
-                                                                        <span class="td2-vc-val"><span class="td2-veh-status-onway">On the Way (2 days)</span></span>
+                                                                        <span class="td2-vc-val"><span class="td2-veh-status-onway">Not Empty ✗</span></span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">In Trip</span>
+                                                                        <span class="td2-vc-val">On the Way (2 days)</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
@@ -514,7 +514,7 @@
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Free</span>
+                                                                        <span class="td2-vc-val">Yes</span>
                                                                     </div>
                                                                     <div class="td2-vc-item">
                                                                         <span class="td2-vc-label">Live Location</span>
