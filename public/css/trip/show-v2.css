@@ -1586,27 +1586,69 @@
 }
 .td2-vahan-toggle:hover { background: #e9ecef; }
 
-/* VAHAN table */
-.td2-vahan-table {
-    width: 100%;
-    border-collapse: collapse;
+/* VAHAN details — compact two-column status grid */
+.td2-vahan-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     margin: 8px 0 12px;
-    font-size: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
 }
-.td2-vahan-table th {
-    background: #f8f9fa;
-    padding: 6px 10px;
-    text-align: left;
+.td2-vahan-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    line-height: 1.3;
+}
+/* vertical divider between the two columns */
+.td2-vahan-row:nth-child(odd) { border-right: 1px solid #f1f3f5; }
+/* zebra shade per visual row (cells 3-4, 7-8, …) */
+.td2-vahan-row:nth-child(4n+3),
+.td2-vahan-row:nth-child(4n)   { background: #fafbfc; }
+/* drop bottom border on the final visual row */
+.td2-vahan-row:nth-last-child(-n+2) { border-bottom: 0; }
+.td2-vahan-row:hover { background: #f1f6ff; }
+
+.td2-vahan-stat {
+    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1;
+}
+.td2-vahan-stat-ok    { color: #16a34a; }
+.td2-vahan-stat-alert { color: #dc2626; }
+.td2-vahan-stat-na    { color: #cbd5e1; }
+
+.td2-vahan-key {
+    flex: 0 0 46%;
+    max-width: 46%;
+    color: #6b7280;
     font-weight: 600;
-    color: #374151;
-    border: 1px solid #e9ecef;
-    width: 20%;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    font-size: 10.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.td2-vahan-table td {
-    padding: 6px 10px;
-    border: 1px solid #e9ecef;
+.td2-vahan-val {
+    flex: 1;
+    min-width: 0;
     color: #111827;
-    width: 30%;
+    font-weight: 600;
+    word-break: break-word;
+}
+.td2-vahan-val-empty { color: #9ca3af; font-weight: 500; }
+
+/* collapse to single column on narrow viewports */
+@media (max-width: 575.98px) {
+    .td2-vahan-list { grid-template-columns: 1fr; }
+    .td2-vahan-row:nth-child(odd) { border-right: 0; }
 }
 
 /* Driver detail card */

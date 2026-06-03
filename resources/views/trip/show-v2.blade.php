@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=6.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=6.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -571,92 +571,148 @@
                                                     <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
                                                 </button>
                                                 <div id="td2VahanDetails" class="collapse">
-                                                    <table class="td2-vahan-table w-100">
-                                                        <tr>
-                                                            <th>Owner Name</th>
-                                                            <td>Rajesh Kumar</td>
-                                                            <th>Address</th>
-                                                            <td>12, Park Street, Kolkata - 700016</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Registration Date</th>
-                                                            <td>15/03/2018</td>
-                                                            <th>Status</th>
-                                                            <td>Active</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Fitness Expiry</th>
-                                                            <td>14/03/2026</td>
-                                                            <th>Body Type</th>
-                                                            <td>Closed Body</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurance Expiry</th>
-                                                            <td>22/07/2026</td>
-                                                            <th>Fuel Type</th>
-                                                            <td>Diesel</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Tax Expiry</th>
-                                                            <td>31/03/2026</td>
-                                                            <th>Permit Type</th>
-                                                            <td>National</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Permit Expiry</th>
-                                                            <td>20/11/2025</td>
-                                                            <th>National Permit Expiry</th>
-                                                            <td>20/11/2025</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>PUCC Expiry</th>
-                                                            <td>10/06/2026</td>
-                                                            <th>PUCC Number</th>
-                                                            <td>PUC2024WB1237</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurer</th>
-                                                            <td>New India Assurance</td>
-                                                            <th>Permit Number</th>
-                                                            <td>WB/NP/2022/001237</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Chassis Number</th>
-                                                            <td>MAT451351MDE12345</td>
-                                                            <th>Insurance Number</th>
-                                                            <td>NIA/2024/098765</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Engine Number</th>
-                                                            <td>4HK1-WB12345</td>
-                                                            <th>Financier</th>
-                                                            <td>SBI Bank</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Manufacturer</th>
-                                                            <td>Tata Motors</td>
-                                                            <th>Norms Type</th>
-                                                            <td>BS-VI</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Model</th>
-                                                            <td>LPT 1618</td>
-                                                            <th>Vehicle Category</th>
-                                                            <td>Medium Goods Vehicle</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>GVW</th>
-                                                            <td>16180 KG</td>
-                                                            <th>Wheelbase</th>
-                                                            <td>4200 MM</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>FASTag ID</th>
-                                                            <td>WB12AB1237FT</td>
-                                                            <th>TID</th>
-                                                            <td>TID20240012370</td>
-                                                        </tr>
-                                                    </table>
+                                                    <div class="td2-vahan-list">
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Owner Name</span>
+                                                            <span class="td2-vahan-val">Rajesh Kumar</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Address</span>
+                                                            <span class="td2-vahan-val">12, Park Street, Kolkata - 700016</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Status</span>
+                                                            <span class="td2-vahan-val">Active</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Registration Date</span>
+                                                            <span class="td2-vahan-val">15/03/2018</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-exclamation-circle td2-vahan-stat td2-vahan-stat-alert"></i>
+                                                            <span class="td2-vahan-key">Fitness Certificate Expiry</span>
+                                                            <span class="td2-vahan-val">14/03/2026</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Insurance Expiry</span>
+                                                            <span class="td2-vahan-val">22/07/2026</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-exclamation-circle td2-vahan-stat td2-vahan-stat-alert"></i>
+                                                            <span class="td2-vahan-key">Tax Expiry</span>
+                                                            <span class="td2-vahan-val">31/03/2026</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-exclamation-circle td2-vahan-stat td2-vahan-stat-alert"></i>
+                                                            <span class="td2-vahan-key">Permit Expiry</span>
+                                                            <span class="td2-vahan-val">20/11/2025</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">PUCC Expiry</span>
+                                                            <span class="td2-vahan-val">10/06/2026</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-exclamation-circle td2-vahan-stat td2-vahan-stat-alert"></i>
+                                                            <span class="td2-vahan-key">National Permit Expiry</span>
+                                                            <span class="td2-vahan-val">20/11/2025</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Permit Type</span>
+                                                            <span class="td2-vahan-val">National</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">PUCC Number</span>
+                                                            <span class="td2-vahan-val">PUC2024WB1237</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Permit Number</span>
+                                                            <span class="td2-vahan-val">WB/NP/2022/001237</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Insurer</span>
+                                                            <span class="td2-vahan-val">New India Assurance</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Insurance Number</span>
+                                                            <span class="td2-vahan-val">NIA/2024/098765</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Financier</span>
+                                                            <span class="td2-vahan-val">SBI Bank</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Class</span>
+                                                            <span class="td2-vahan-val">Medium Goods Vehicle</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Body Type</span>
+                                                            <span class="td2-vahan-val">Closed Body</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Fuel Type</span>
+                                                            <span class="td2-vahan-val">Diesel</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Chassis Number</span>
+                                                            <span class="td2-vahan-val">MAT451351MDE12345</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Engine Number</span>
+                                                            <span class="td2-vahan-val">4HK1-WB12345</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Manufacturer</span>
+                                                            <span class="td2-vahan-val">Tata Motors</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Norms Type</span>
+                                                            <span class="td2-vahan-val">BS-VI</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Model</span>
+                                                            <span class="td2-vahan-val">LPT 1618</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">GVW</span>
+                                                            <span class="td2-vahan-val">16180 KG</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">Wheelbase</span>
+                                                            <span class="td2-vahan-val">4200 MM</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">FASTag ID</span>
+                                                            <span class="td2-vahan-val">WB12AB1237FT</span>
+                                                        </div>
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-check-circle td2-vahan-stat td2-vahan-stat-ok"></i>
+                                                            <span class="td2-vahan-key">TID</span>
+                                                            <span class="td2-vahan-val">TID20240012370</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -737,92 +793,26 @@
                                                     <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
                                                 </button>
                                                 <div id="td2VahanDetailsExt" class="collapse">
-                                                    <table class="td2-vahan-table w-100">
-                                                        <tr>
-                                                            <th>Owner Name</th>
-                                                            <td>—</td>
-                                                            <th>Address</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Registration Date</th>
-                                                            <td>—</td>
-                                                            <th>Status</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Fitness Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Body Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurance Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Fuel Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Tax Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Permit Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Permit Expiry</th>
-                                                            <td>—</td>
-                                                            <th>National Permit Expiry</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>PUCC Expiry</th>
-                                                            <td>—</td>
-                                                            <th>PUCC Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurer</th>
-                                                            <td>—</td>
-                                                            <th>Permit Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Chassis Number</th>
-                                                            <td>—</td>
-                                                            <th>Insurance Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Engine Number</th>
-                                                            <td>—</td>
-                                                            <th>Financier</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Manufacturer</th>
-                                                            <td>—</td>
-                                                            <th>Norms Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Model</th>
-                                                            <td>—</td>
-                                                            <th>Vehicle Category</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>GVW</th>
-                                                            <td>—</td>
-                                                            <th>Wheelbase</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>FASTag ID</th>
-                                                            <td>—</td>
-                                                            <th>TID</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                    </table>
+                                                    <div class="td2-vahan-list">
+                                                        @php
+                                                            $extVahanFields = [
+                                                                'Owner Name', 'Address', 'Status', 'Registration Date',
+                                                                'Fitness Certificate Expiry', 'Insurance Expiry', 'Tax Expiry',
+                                                                'Permit Expiry', 'PUCC Expiry', 'National Permit Expiry',
+                                                                'Permit Type', 'PUCC Number', 'Permit Number', 'Insurer',
+                                                                'Insurance Number', 'Financier', 'Class', 'Body Type',
+                                                                'Fuel Type', 'Chassis Number', 'Engine Number', 'Manufacturer',
+                                                                'Norms Type', 'Model', 'GVW', 'Wheelbase', 'FASTag ID', 'TID',
+                                                            ];
+                                                        @endphp
+                                                        @foreach ($extVahanFields as $extVahanField)
+                                                        <div class="td2-vahan-row">
+                                                            <i class="uil uil-minus-circle td2-vahan-stat td2-vahan-stat-na"></i>
+                                                            <span class="td2-vahan-key">{{ $extVahanField }}</span>
+                                                            <span class="td2-vahan-val td2-vahan-val-empty">—</span>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
 
