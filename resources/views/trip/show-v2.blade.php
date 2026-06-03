@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=6.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=6.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -542,19 +542,30 @@
                                     <div class="td2-or-divider"><span>OR</span></div>
 
                                     {{-- Part C: Add / Allocate Vehicle Form --}}
-                                    <div class="td2-section">
-                                        <p class="td2-section-title">Add / Allocate Vehicle</p>
+                                    <div class="td2-section td2-alloc-section">
 
-                                        {{-- Vehicle type toggle --}}
-                                        <div class="td2-veh-type-toggle mb-3">
-                                            <input type="radio" name="td2VehType" id="td2OwnVeh" value="Own" class="td2-vtype-radio td2-own-veh" checked>
-                                            <label for="td2OwnVeh" class="td2-vtype-label">Own Vehicle</label>
-                                            <input type="radio" name="td2VehType" id="td2ExtVeh" value="External" class="td2-vtype-radio td2-ext-veh">
-                                            <label for="td2ExtVeh" class="td2-vtype-label">External</label>
+                                        {{-- Section header --}}
+                                        <div class="td2-alloc-head">
+                                            <span class="td2-alloc-head-icon"><i class="uil uil-truck"></i></span>
+                                            <div class="td2-alloc-head-text">
+                                                <p class="td2-alloc-head-title">Add / Allocate Vehicle</p>
+                                                <p class="td2-alloc-head-sub">Pick a vehicle from your own fleet or assign an external vendor vehicle to this trip.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Vehicle source toggle --}}
+                                        <div class="td2-alloc-source mb-3">
+                                            <span class="td2-alloc-source-label">Vehicle Source</span>
+                                            <div class="td2-veh-type-toggle">
+                                                <input type="radio" name="td2VehType" id="td2OwnVeh" value="Own" class="td2-vtype-radio td2-own-veh" checked>
+                                                <label for="td2OwnVeh" class="td2-vtype-label"><i class="uil uil-truck"></i> Own Vehicle</label>
+                                                <input type="radio" name="td2VehType" id="td2ExtVeh" value="External" class="td2-vtype-radio td2-ext-veh">
+                                                <label for="td2ExtVeh" class="td2-vtype-label"><i class="uil uil-building"></i> External</label>
+                                            </div>
                                         </div>
 
                                         {{-- If Own Vehicle --}}
-                                        <div class="td2-if-own">
+                                        <div class="td2-if-own td2-alloc-body">
                                             <div class="mb-3">
                                                 <label class="form-label">Select Vehicle</label>
                                                 <select class="form-select td2-own-veh-select" id="td2OwnVehSelect">
@@ -762,7 +773,7 @@
                                         </div>
 
                                         {{-- If External Vehicle --}}
-                                        <div class="td2-if-ext">
+                                        <div class="td2-if-ext td2-alloc-body">
                                             <div class="mb-3">
                                                 <label class="form-label">Vendor</label>
                                                 <div class="d-flex gap-2 align-items-center">
@@ -772,7 +783,7 @@
                                                         <option>XYZ Transport</option>
                                                         <option>MNC Logistics</option>
                                                     </select>
-                                                    <a href="{{-- TODO: route --}}" class="text-nowrap small">+ Add Vendor</a>
+                                                    <a href="{{ route('contact.vehiclevendor.create') }}" target="_blank" rel="noopener" class="text-nowrap small">+ Add Vendor</a>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
@@ -783,7 +794,7 @@
                                                         <option>WB-99-ZZ-0001</option>
                                                         <option>DL-01-XX-5050</option>
                                                     </select>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addVeh">+ Add Vehicle</button>
+                                                    <a href="{{ route('vehiclemanagement.create') }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm text-nowrap">+ Add Vehicle</a>
                                                 </div>
                                             </div>
 
@@ -851,8 +862,10 @@
                                         </div>
 
                                         {{-- Save Button --}}
-                                        <div class="d-flex justify-content-end mt-4">
-                                            <button type="button" class="btn btn-primary">Save Allocation</button>
+                                        <div class="td2-alloc-actions">
+                                            <button type="button" class="btn btn-primary td2-alloc-save">
+                                                <i class="uil uil-check-circle me-1"></i> Save Allocation
+                                            </button>
                                         </div>
 
                                     </div>
