@@ -6137,59 +6137,82 @@
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
+                                                    <th>DEF Source</th>
+                                                    <th>Driver Name &amp; Code</th>
                                                     <th>Date</th>
-                                                    <th>Qty (Litres)</th>
-                                                    <th>Odometer (KM)</th>
-                                                    <th>Supplier / Source</th>
-                                                    <th class="text-end">Rate (₹/L)</th>
-                                                    <th class="text-end">Total Cost (₹)</th>
-                                                    <th>Allocated By</th>
-                                                    <th>Remarks</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th class="text-end">Odometer Reading</th>
+                                                    <th class="text-end">DEF Qty (in Litre)</th>
+                                                    <th class="text-end">DEF Amount</th>
+                                                    <th class="text-end">DEF in Tank (Litre) – Post Current Re-fill</th>
+                                                    <th class="text-end">DEF RUN KM</th>
+                                                    <th class="text-end">DEF Run KM Remaining</th>
+                                                    <th class="text-end">DEF ALERT Remaining KM</th>
+                                                    <th>Vendor Name &amp; Contact</th>
+                                                    <th>Vendor Location</th>
+                                                    <th class="text-center">GST Bill Applicable</th>
+                                                    <th class="text-center">GST Bill Received</th>
+                                                    <th>Invoice Number</th>
+                                                    <th>Note</th>
+                                                    <th class="text-center">Attachment</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
+                                                    <td>SR Garage</td>
+                                                    <td>Ramesh K. (DRV-101)</td>
                                                     <td>05-09-2025</td>
-                                                    <td>20</td>
-                                                    <td>1,25,400</td>
-                                                    <td>HP Pump – Hyderabad</td>
-                                                    <td class="text-end">85</td>
+                                                    <td class="text-end">1,25,400</td>
+                                                    <td class="text-end">20</td>
                                                     <td class="text-end">1,700</td>
-                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td class="text-end">45</td>
+                                                    <td class="text-end">3,150</td>
+                                                    <td class="text-end">1,750</td>
+                                                    <td class="text-end">1,120</td>
+                                                    <td>—</td>
+                                                    <td>SR Garage – Hyderabad</td>
+                                                    <td class="text-center">No</td>
+                                                    <td class="text-center">No</td>
+                                                    <td>—</td>
                                                     <td>Refill at depot</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                                 <tr>
+                                                    <td>External Vendor</td>
+                                                    <td>Suresh M. (DRV-118)</td>
                                                     <td>28-09-2025</td>
-                                                    <td>15</td>
-                                                    <td>1,27,820</td>
-                                                    <td>IOCL Pump – Vijayawada</td>
-                                                    <td class="text-end">88</td>
+                                                    <td class="text-end">1,27,820</td>
+                                                    <td class="text-end">15</td>
                                                     <td class="text-end">1,320</td>
-                                                    <td>Suresh M. (Driver)</td>
+                                                    <td class="text-end">38</td>
+                                                    <td class="text-end">2,660</td>
+                                                    <td class="text-end">1,420</td>
+                                                    <td class="text-end">708</td>
+                                                    <td>IOCL Pump – 98765 43210</td>
+                                                    <td>Vijayawada</td>
+                                                    <td class="text-center">Yes</td>
+                                                    <td class="text-center">Yes</td>
+                                                    <td>INV-2025-0928</td>
                                                     <td>Trip allocation</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                                 <tr>
+                                                    <td>SR Garage</td>
+                                                    <td>Yard Supervisor (STF-007)</td>
                                                     <td>20-10-2025</td>
-                                                    <td>25</td>
-                                                    <td>1,29,500</td>
-                                                    <td>Own Depot Stock</td>
-                                                    <td class="text-end">82</td>
+                                                    <td class="text-end">1,29,500</td>
+                                                    <td class="text-end">25</td>
                                                     <td class="text-end">2,050</td>
-                                                    <td>Yard Supervisor</td>
+                                                    <td class="text-end">55</td>
+                                                    <td class="text-end">3,850</td>
+                                                    <td class="text-end">2,100</td>
+                                                    <td class="text-end">980</td>
+                                                    <td>—</td>
+                                                    <td>SR Garage – Depot</td>
+                                                    <td class="text-center">No</td>
+                                                    <td class="text-center">No</td>
+                                                    <td>—</td>
                                                     <td>Bulk fill before line trip</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                             </tbody>
                                         </table>
