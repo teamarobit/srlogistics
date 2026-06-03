@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=6.6') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=6.7') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -391,7 +391,10 @@
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header mb-2">
                                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2VehCollapse">
-                                                        Select from Suggested Vehicles <span class="ms-2 fw-bold d-inline-flex align-items-center justify-content-center" style="background:#16a34a; color:#fff; min-width:30px; height:30px; border-radius:50%; font-size:1rem; line-height:1; box-shadow:0 2px 8px rgba(22,163,74,0.5);">3</span>
+                                                        <i class="uil uil-bolt-alt td2-veh-acc-icon"></i>
+                                                        <span class="td2-veh-acc-title">Select from Suggested Vehicles</span>
+                                                        <span class="td2-veh-acc-count">3</span>
+                                                        <span class="td2-veh-acc-pill">Recommended</span>
                                                     </button>
                                                 </h2>
                                                 <div id="td2VehCollapse" class="accordion-collapse collapse show">

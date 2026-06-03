@@ -1377,19 +1377,86 @@
    9. SPRINT 2 — Vehicle Allocation Tab
 ───────────────────────────────────────────────────────────── */
 
-/* Accordion */
-.td2-veh-accordion .accordion-button {
-    font-family: Inter, sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: #111827;
-    background: #f8f9fa;
-    padding: 12px 18px;
+/* Accordion — HIGHLIGHTED recommended section (draws the eye) */
+.td2-veh-accordion .accordion-item {
+    border: 1.5px solid #86efac;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.14);
+    animation: td2VehGlow 2.6s ease-in-out infinite;
 }
-.td2-veh-accordion .accordion-button:not(.collapsed) {
-    background: #eef2ff;
-    color: #032671;
+
+@keyframes td2VehGlow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(22, 163, 74, 0.14); }
+    50%      { box-shadow: 0 8px 26px rgba(22, 163, 74, 0.32); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .td2-veh-accordion .accordion-item { animation: none; }
+}
+
+.td2-veh-accordion .accordion-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #065f46;
+    background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+    padding: 15px 20px;
+    border-left: 5px solid #16a34a;
+}
+.td2-veh-accordion .accordion-button:not(.collapsed),
+.td2-veh-accordion .accordion-button:focus {
+    background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
     box-shadow: none;
+    border-left: 5px solid #16a34a;
+}
+
+/* Tint Bootstrap's chevron green to match */
+.td2-veh-accordion .accordion-button::after {
+    filter: invert(45%) sepia(85%) saturate(480%) hue-rotate(96deg) brightness(92%);
+}
+
+.td2-veh-acc-icon {
+    font-size: 20px;
+    line-height: 1;
+    color: #16a34a;
+}
+
+.td2-veh-acc-title {
+    letter-spacing: 0.01em;
+}
+
+.td2-veh-acc-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    background: #16a34a;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.5);
+}
+
+.td2-veh-acc-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: #16a34a;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 /* Vehicle cards */
