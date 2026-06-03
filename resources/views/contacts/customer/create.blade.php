@@ -32,6 +32,7 @@
                                         <div class="gst-inputbd" id="gstForm">
                                             <input type="text" name="gst_number" placeholder="27AAACT2727Q1ZW" class="gstinput form-control"
                                             id="gstNumber" />
+                                            
                                             <!--<button class="submit-btn" type="submit">-->
                                             <!--    <i class="uil uil-search"></i>Fetch Info-->
                                             <!--</button>-->
@@ -45,6 +46,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <small class="error text-danger" id="add_gst_number_error"></small>
                                 {{-- SD-4: error below field, never beside input --}}
                                 <small class="error text-danger d-block mt-1" id="add_gst_number_error"></small>
                                 <span class="gst-format">Format: 27AAACT2727Q1ZW</span>
