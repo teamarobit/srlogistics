@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=7.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -552,12 +552,12 @@
 
                                         {{-- Vehicle source toggle --}}
                                         <div class="td2-alloc-source mb-3">
-                                            <span class="td2-alloc-source-label">Vehicle Source</span>
+                                            <span class="td2-alloc-source-label">Select any of these below</span>
                                             <div class="td2-veh-type-toggle">
                                                 <input type="radio" name="td2VehType" id="td2OwnVeh" value="Own" class="td2-vtype-radio td2-own-veh" checked>
-                                                <label for="td2OwnVeh" class="td2-vtype-label"><i class="uil uil-truck"></i> Own Vehicle</label>
+                                                <label for="td2OwnVeh" class="td2-vtype-label">Own Vehicle</label>
                                                 <input type="radio" name="td2VehType" id="td2ExtVeh" value="External" class="td2-vtype-radio td2-ext-veh">
-                                                <label for="td2ExtVeh" class="td2-vtype-label"><i class="uil uil-building"></i> External</label>
+                                                <label for="td2ExtVeh" class="td2-vtype-label">External / Vendor</label>
                                             </div>
                                         </div>
 

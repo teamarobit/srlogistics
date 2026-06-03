@@ -1632,15 +1632,17 @@
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
-/* Vehicle type toggle — segmented control */
+/* Vehicle type toggle — centered radio-pill selector */
 .td2-veh-type-toggle {
-    display: inline-flex;
-    gap: 4px;
-    border: 1px solid #e5e9f2;
-    border-radius: 10px;
-    width: fit-content;
-    background: #eef1f7;
-    padding: 4px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    border: none;
+    border-radius: 0;
+    width: 100%;
+    background: transparent;
+    padding: 0;
 }
 
 .td2-vtype-radio { display: none; }
@@ -1648,27 +1650,45 @@
 .td2-vtype-label {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 9px 24px;
+    gap: 10px;
+    padding: 10px 26px;
     font-family: Inter, sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    color: #4b5563;
+    color: #1f2a5a;
     cursor: pointer;
-    background: transparent;
-    border: none;
-    border-radius: 7px;
-    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    background: #fff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 50px;
+    transition: border-color 0.18s, color 0.18s, box-shadow 0.18s;
 }
-.td2-vtype-label i { font-size: 15px; }
-.td2-vtype-label:hover { color: #032671; background: rgba(3, 38, 113, 0.06); }
+
+/* Radio circle indicator */
+.td2-vtype-label::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    transition: border-color 0.18s, background 0.18s;
+}
+
+.td2-vtype-label:hover {
+    color: #032671;
+    border-color: #032671;
+}
 
 .td2-vtype-radio:checked + .td2-vtype-label {
-    background: linear-gradient(135deg, #032671, #0a3a96);
-    color: #fff;
-    box-shadow: 0 3px 8px rgba(3, 38, 113, 0.28);
+    color: #032671;
+    border-color: #032671;
+    box-shadow: 0 2px 10px rgba(3, 38, 113, 0.15);
 }
-.td2-vtype-radio:checked + .td2-vtype-label:hover { color: #fff; }
+.td2-vtype-radio:checked + .td2-vtype-label::before {
+    border-color: #032671;
+    background: radial-gradient(circle at center, #032671 0 4px, #fff 5px);
+}
 
 .td2-if-ext { display: none; }
 
@@ -1708,15 +1728,18 @@
     line-height: 1.4;
 }
 
+.td2-alloc-source {
+    text-align: center;
+}
 .td2-alloc-source-label {
     display: block;
     font-family: Inter, sans-serif;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #9ca3af;
-    margin-bottom: 7px;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: #6b7280;
+    margin-bottom: 12px;
 }
 
 .td2-alloc-body {
