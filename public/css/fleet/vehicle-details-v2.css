@@ -4169,3 +4169,72 @@
     font-size: 13px;
     color: #1a2340;
 }
+
+/* ============================================================
+   DEF (AdBlue) — Mini Dashboard — STATIC
+   ============================================================ */
+#pills-def .def-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 12px;
+    margin: 14px 0 18px;
+}
+#pills-def .def-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#pills-def .def-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.08);
+}
+#pills-def .def-kpi-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+#pills-def .def-kpi-icon.dk-c2 { background: rgba(45,197,111,0.10); color: #1a9152; }
+#pills-def .def-kpi-icon.dk-c3 { background: rgba(123,97,255,0.10); color: #5a3fd1; }
+#pills-def .def-kpi-icon.dk-c4 { background: rgba(242,169,59,0.10); color: #B97400; }
+
+#pills-def .def-kpi-body { min-width: 0; }
+#pills-def .def-kpi-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+#pills-def .def-kpi-body h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #21263C;
+    line-height: 1.1;
+}
+#pills-def .def-kpi-body h4 span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6c7591;
+}
+
+@media (max-width: 1200px) {
+    #pills-def .def-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 576px) {
+    #pills-def .def-kpi-grid { grid-template-columns: 1fr; }
+}

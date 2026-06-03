@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.1') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.2') }}">
 
 @endsection
 
@@ -6097,8 +6097,40 @@
                           <div class="tab-pane fade" id="pills-def" role="tabpanel" aria-labelledby="pills-def-tab">
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
-                                        <span class="sec-title">DEF (AdBlue) – Allocation History</span>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a>
+                                        <span class="sec-title">DEF – Allocation History</span>
+                                        {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a> --}}
+                                    </div>
+
+                                    {{-- DEF mini dashboard (static) --}}
+                                    <div class="def-kpi-grid">
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon"><i class="uil uil-flask"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>Total DEF Filled</p>
+                                                <h4>60 <span>Litres</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c2"><i class="uil uil-truck"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>Total KM Driven</p>
+                                                <h4>4,100 <span>KM</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c3"><i class="uil uil-tachometer-fast"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>DEF Mileage (as per Software)</p>
+                                                <h4>70 <span>KM/L</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c4"><i class="uil uil-map-marker"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>DEF Run KM Remaining</p>
+                                                <h4>1,750 <span>KM</span></h4>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="table-responsive">
