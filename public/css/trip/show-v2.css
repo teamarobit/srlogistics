@@ -1587,18 +1587,36 @@
 .td2-or-divider {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    color: #9ca3af;
-    font-size: 13px;
-    font-weight: 600;
+    gap: 16px;
+    margin: 26px 0;
 }
 .td2-or-divider::before,
 .td2-or-divider::after {
     content: '';
     flex: 1;
-    height: 1px;
-    background: #e9ecef;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #d1d5db);
+}
+.td2-or-divider::after {
+    background: linear-gradient(90deg, #d1d5db, transparent);
+}
+.td2-or-divider span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 32px;
+    padding: 0 16px;
+    background: #fff;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 50px;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
 /* Vehicle type toggle — segmented control */
