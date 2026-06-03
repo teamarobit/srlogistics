@@ -2,7 +2,7 @@
  * Trip Details v2 — show-v2.js
  * SD-1: All logic in external JS file — no inline scripts in blade.
  * SD-7: Toast mixin defined at top.
- * v3.1 | 2026-06-01 — SOS floating FAB + panel + history
+ * v3.6 | 2026-06-03 — tab persistence across page refresh
  */
 
 /* =============================================================
@@ -712,12 +712,44 @@ function renderSosHistory() {
 }
 
 /* =============================================================
+   TAB PERSISTENCE — remember last active tab across page refresh
+   sessionStorage key is scoped to the trip URL so each trip
+   remembers its own active tab independently.
+   ============================================================= */
+var TAB_STORAGE_KEY = 'td2_active_tab_' + window.location.pathname;
+
+/* Save active tab whenever the user switches */
+$(document).on('shown.bs.tab', '#td2Tab button[data-bs-toggle="pill"]', function () {
+    sessionStorage.setItem(TAB_STORAGE_KEY, $(this).attr('data-bs-target'));
+});
+
+/**
+ * Restore the last active tab after conditional visibility rules have run.
+ * Only restores if the saved tab button is still visible (not hidden by rules).
+ */
+function restoreActiveTab() {
+    var saved = sessionStorage.getItem(TAB_STORAGE_KEY);
+    if (!saved) { return; }
+
+    var $btn = $('#td2Tab button[data-bs-target="' + saved + '"]');
+
+    /* Guard: tab must exist and its <li> must be visible after rule application */
+    if ($btn.length && $btn.closest('li').is(':visible')) {
+        var tabInstance = new bootstrap.Tab($btn[0]);
+        tabInstance.show();
+    }
+}
+
+/* =============================================================
    DOM READY
    ============================================================= */
 $(document).ready(function () {
 
     /* Apply all conditional visibility rules on page load */
     applyConditionalVisibility();
+
+    /* Restore last active tab AFTER visibility rules so hidden tabs are not restored */
+    restoreActiveTab();
 
     /* Initialise Bootstrap tooltips */
     var tooltipEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');

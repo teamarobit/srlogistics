@@ -3505,5 +3505,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.5') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=3.6') }}"></script>
 @endsection
