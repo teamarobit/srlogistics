@@ -660,26 +660,33 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Driver Detail View --}}
+                                            {{-- Driver Detail View — fields/values mirror the
+                                                 Vehicle Details modal > 'Assigned Driver Details' --}}
                                             <div class="td2-driver-detail td2-view-booking-det">
                                                 <div class="td2-section-title">Driver Details</div>
                                                 <div class="row g-2">
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
                                                             <span class="td2-di-label">Driver Name</span>
-                                                            <span class="td2-di-value">Ashok Ray</span>
+                                                            <span class="td2-di-value">Ashoke Pandey</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
-                                                            <span class="td2-di-label">Contact Number</span>
-                                                            <span class="td2-di-value">+91 8879402641</span>
+                                                            <span class="td2-di-label">Driver Number</span>
+                                                            <span class="td2-di-value">+91 9876543210</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6">
+                                                        <div class="td2-di">
+                                                            <span class="td2-di-label">Associated Since</span>
+                                                            <span class="td2-di-value">10 Years 11 Months</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
                                                             <span class="td2-di-label">Experience</span>
-                                                            <span class="td2-di-value">2 Years</span>
+                                                            <span class="td2-di-value">2 Years 4 Months</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
@@ -690,38 +697,8 @@
                                                     </div>
                                                     <div class="col-md-3 col-sm-6">
                                                         <div class="td2-di">
-                                                            <span class="td2-di-label">Vehicle Status</span>
-                                                            <span class="td2-di-value"><span class="td2-veh-status-empty">Empty</span></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Availability</span>
-                                                            <span class="td2-di-value">Free</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Live Location</span>
-                                                            <span class="td2-di-value">Kolkata</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Vehicle Rank</span>
-                                                            <span class="td2-di-value">5th</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Line Trips</span>
-                                                            <span class="td2-di-value">5</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Local Trips</span>
-                                                            <span class="td2-di-value">7</span>
+                                                            <span class="td2-di-label">Line / Local Trips</span>
+                                                            <span class="td2-di-value">5 &nbsp;/&nbsp; 7</span>
                                                         </div>
                                                     </div>
                                                 </div>
