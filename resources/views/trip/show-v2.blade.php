@@ -2041,6 +2041,7 @@
                 <div class="col-md-3 td2-sidebar">
 
                     {{-- STATUS — Admin only: JS applyRoleRules() toggles via .status-sidebar-wrap (dev-notes §4) --}}
+                    {{-- Commented out per request (2026-06-03)
                     <div class="td2-scard status-sidebar-wrap">
                         <p class="td2-scard-label">Status</p>
                         <select class="form-select form-select-sm">
@@ -2059,17 +2060,9 @@
                             <option>Accident</option>
                         </select>
                     </div>
+                    --}}
 
                     {{-- SOS moved to floating FAB — see #td2SosFab below --}}
-
-                    {{-- REVIEWS — Admin only: JS applyRoleRules() toggles via .reviews-sidebar-wrap (dev-notes §4) --}}
-                    <div class="td2-scard reviews-sidebar-wrap">
-                        <p class="td2-scard-label">Reviews</p>
-                        <button class="btn btn-primary btn-sm" type="button"
-                                data-bs-toggle="modal" data-bs-target="#addReview">
-                            + REVIEW
-                        </button>
-                    </div>
 
                     {{-- COMPLIANCE CHECK --}}
                     <div class="td2-scard td2-compliance-wrap">
