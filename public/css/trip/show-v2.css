@@ -2370,133 +2370,345 @@
 .td2-file-del:hover  { background: #dc3545; color: #fff; }
 
 /* ─────────────────────────────────────────────────────────────
-   SPRINT 5 — Vehicle Details Panel
+   SPRINT 5 — Vehicle Details Panel (Redesign v2)
 ───────────────────────────────────────────────────────────── */
+
+/* Identity bar */
 .td2-vd-identity {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 14px 16px;
-    background: #032671;
-    border-radius: 10px;
-    margin-bottom: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #032671 0%, #0a3d8a 100%);
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(3,38,113,0.18);
 }
 
 .td2-vd-reg {
-    font-family: Inter, sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 20px;
     font-weight: 700;
     color: #fff;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
 }
 
 .td2-vd-chips {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .td2-vd-chip {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 10px;
+    padding: 4px 11px;
     border-radius: 50px;
     font-size: 11px;
     font-weight: 600;
 }
 .td2-vd-chip-empty { background: #d1fae5; color: #065f46; }
-.td2-vd-chip-loc   { background: rgba(255,255,255,0.2); color: #fff; }
+.td2-vd-chip-loc   { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
 
+/* Live GPS pulse dot */
+.td2-vd-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    flex-shrink: 0;
+    animation: td2PulseLive 1.8s infinite;
+}
+@keyframes td2PulseLive {
+    0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+    70%  { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+
+/* Section wrapper */
 .td2-vd-section {
-    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #edf1f7;
+    background: #fff;
 }
+.td2-vd-section:last-child { border-bottom: none; }
 
+/* Section title with icon */
 .td2-vd-section-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-family: Inter, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #9ca3af;
-    margin: 0 0 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f3f4f6;
+    color: #032671;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8eef8;
 }
+.td2-vd-section-title i { font-size: 15px; opacity: 0.8; }
 
-.td2-vd-comp-grid {
+/* 2-col field grid */
+.td2-vd-field-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
 }
+.td2-vd-field-full { grid-column: 1 / -1; }
 
-.td2-vd-comp-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 10px;
+.td2-vd-field {
+    background: #fff;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 11px;
-}
-.td2-vd-comp-item i { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
-.td2-vd-ok   { background: #f0fdf4; color: #065f46; }
-.td2-vd-warn { background: #fffbeb; color: #92400e; }
-
-.td2-vd-comp-lbl {
-    display: block;
-    color: #6b7280;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-.td2-vd-comp-val {
-    display: block;
-    font-weight: 700;
-    font-size: 12px;
-}
-
-/* Assign button in Vehicle Details panel header */
-.td2-vd-assign-btn {
-    flex-shrink: 0;
-    font-size: 12px;
-    padding: 4px 14px;
-    border-radius: 6px;
-}
-
-/* Driver History list */
-.td2-vd-drv-hist {
+    padding: 9px 11px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 3px;
+    box-shadow: 0 1px 3px rgba(3,38,113,0.04);
 }
-
-.td2-vd-drv-hist-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid #032671;
-    padding: 8px 12px;
+.td2-vd-field-lbl {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
 }
-
-.td2-vd-drv-hist-name {
+.td2-vd-field-val {
     font-family: Inter, sans-serif;
     font-size: 13px;
     font-weight: 600;
-    color: #111827;
-    margin-bottom: 2px;
+    color: #0f172a;
+    line-height: 1.3;
 }
 
+/* ETA card — rich dark card */
+.td2-vd-eta-card {
+    background: linear-gradient(135deg, #021e58 0%, #032671 45%, #0d47a1 100%);
+    border-radius: 10px;
+    padding: 10px 14px 12px;
+    box-shadow: 0 4px 16px rgba(3,38,113,0.28);
+    position: relative;
+    overflow: hidden;
+}
+/* Decorative background circles */
+.td2-vd-eta-card::before {
+    content: '';
+    position: absolute;
+    top: -28px; right: -28px;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    pointer-events: none;
+}
+.td2-vd-eta-card::after {
+    content: '';
+    position: absolute;
+    bottom: -36px; right: 24px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+}
+.td2-vd-eta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 20px;
+    padding: 2px 9px 2px 6px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 8px;
+    position: relative;
+}
+.td2-vd-eta-badge i { font-size: 11px; }
+
+.td2-vd-eta-row {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    align-items: center;
+    position: relative;
+}
+.td2-vd-eta-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.18);
+    justify-self: center;
+}
+.td2-vd-eta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 10px;
+}
+.td2-vd-eta-col:first-child { padding-left: 0; }
+.td2-vd-eta-col:last-child  { padding-right: 0; }
+.td2-vd-eta-col-lbl {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.50);
+    margin-bottom: 1px;
+}
+.td2-vd-eta-col-val {
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+}
+
+/* Driver History — timeline */
+.td2-vd-drv-hist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    padding-left: 28px;
+}
+.td2-vd-drv-hist::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+}
+.td2-vd-drv-hist-item {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #e9eef5;
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: box-shadow 0.15s;
+}
+.td2-vd-drv-hist-item:hover { box-shadow: 0 2px 8px rgba(3,38,113,0.08); }
+.td2-vd-drv-hist-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #032671;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #cbd5e1;
+}
+.td2-vd-drv-hist-avatar {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #032671;
+    color: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+}
+.td2-vd-drv-hist-body { flex: 1; min-width: 0; }
+.td2-vd-drv-hist-name {
+    font-family: Inter, sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
 .td2-vd-drv-hist-meta {
+    font-size: 10.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.td2-vd-drv-hist-exp {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #032671;
+    background: #eff6ff;
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+.td2-vd-drv-hist-exp i { font-size: 11px; }
+
+/* Compliance grid */
+.td2-vd-comp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+.td2-vd-comp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 9px 10px;
+    border-radius: 8px;
     font-size: 11px;
-    color: #6b7280;
-    margin-bottom: 2px;
+    border: 1px solid transparent;
+}
+.td2-vd-comp-item i { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.td2-vd-ok   { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
+.td2-vd-warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.td2-vd-comp-lbl {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 1px;
+}
+.td2-vd-comp-val { display: block; font-weight: 700; font-size: 12px; }
+
+/* Assign button (header) */
+.td2-vd-assign-btn {
+    flex-shrink: 0;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
 }
 
-.td2-vd-drv-hist-exp {
-    font-size: 11px;
-    color: #374151;
-    font-weight: 500;
+/* Bottom action bar */
+.td2-vd-action-bar {
+    padding: 14px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e9eef5;
+    margin-top: 4px;
+}
+.td2-vd-action-bar .btn {
+    width: 100%;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
 }
 
 /* ─────────────────────────────────────────────────────────────
