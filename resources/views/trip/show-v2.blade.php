@@ -1051,7 +1051,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
@@ -1104,7 +1104,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
@@ -1165,7 +1165,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
