@@ -762,4 +762,9 @@ $(document).ready(function () {
         new bootstrap.Tooltip(el);
     });
 
+    /* Searchable dropdowns — Add / Allocate Vehicle section (Select2) */
+    $('#td2OwnVehSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
+    $('#td2ExtVendorSelect').select2({ placeholder: 'Select vendor...', width: '100%', allowClear: true });
+    $('#td2ExtVehicleSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
+
 });
