@@ -2289,6 +2289,19 @@
                     </div>
                 </div>
 
+                {{-- Live Location Map --}}
+                <div class="td2-map-embed">
+                    <div class="td2-map-proto-badge">
+                        <i class="fa fa-map-marker"></i> Live Location — Kolkata
+                        <span class="td2-map-proto-tag">GPS</span>
+                    </div>
+                    <iframe
+                        src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
+                        width="100%" height="220" frameborder="0"
+                        style="border:0;" allowfullscreen="" loading="lazy"
+                        title="Live Location — Kolkata"></iframe>
+                </div>
+
                 {{-- Vehicle Info --}}
                 <div class="td2-vd-section">
                     <p class="td2-vd-section-title">Vehicle Info</p>
@@ -2485,18 +2498,6 @@
                     </table>
                 </div>
 
-                {{-- Live Location Map --}}
-                <div class="td2-map-embed">
-                    <div class="td2-map-proto-badge">
-                        <i class="fa fa-map-marker"></i> Live Location — Kolkata
-                        <span class="td2-map-proto-tag">GPS</span>
-                    </div>
-                    <iframe
-                        src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
-                        width="100%" height="220" frameborder="0"
-                        style="border:0;" allowfullscreen="" loading="lazy"
-                        title="Live Location — Kolkata"></iframe>
-                </div>
 
             </div>
         </div>
