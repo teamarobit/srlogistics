@@ -2457,6 +2457,48 @@
     font-size: 12px;
 }
 
+/* Assign button in Vehicle Details panel header */
+.td2-vd-assign-btn {
+    flex-shrink: 0;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 6px;
+}
+
+/* Driver History list */
+.td2-vd-drv-hist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.td2-vd-drv-hist-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #032671;
+    padding: 8px 12px;
+}
+
+.td2-vd-drv-hist-name {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.td2-vd-drv-hist-meta {
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.td2-vd-drv-hist-exp {
+    font-size: 11px;
+    color: #374151;
+    font-weight: 500;
+}
+
 /* ─────────────────────────────────────────────────────────────
    SPRINT 5 — Bill Entry Panel
 ───────────────────────────────────────────────────────────── */

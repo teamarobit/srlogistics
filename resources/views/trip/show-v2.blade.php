@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=5.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=5.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -2273,6 +2273,7 @@
         <div class="td2-overlay map-popup">
             <div class="td2-overlay-header">
                 <h6 class="td2-overlay-title">Vehicle Details</h6>
+                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn">Assign</button>
                 <button class="td2-overlay-close close-overlay close-map" type="button">
                     <i class="uil uil-angle-right-b"></i>
                 </button>
@@ -2288,27 +2289,129 @@
                     </div>
                 </div>
 
-                {{-- Driver summary --}}
+                {{-- Vehicle Info --}}
                 <div class="td2-vd-section">
-                    <p class="td2-vd-section-title">Driver</p>
+                    <p class="td2-vd-section-title">Vehicle Info</p>
                     <div class="row g-2">
                         <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Name</span><span class="td2-di-value">Ashok Ray</span></div>
+                            <div class="td2-di"><span class="td2-di-label">Vehicle Age</span><span class="td2-di-value">10 Year 5 month</span></div>
                         </div>
                         <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Contact</span><span class="td2-di-value">+91 8879402641</span></div>
+                            <div class="td2-di"><span class="td2-di-label">Vehicle Size</span><span class="td2-di-value">32Ft</span></div>
                         </div>
                         <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">Experience</span><span class="td2-di-value">2 Years</span></div>
+                            <div class="td2-di"><span class="td2-di-label">Vehicle Capacity</span><span class="td2-di-value">1000 KG</span></div>
                         </div>
                         <div class="col-6">
-                            <div class="td2-di"><span class="td2-di-label">RAG</span><span class="td2-di-value"><span class="td2-rag td2-rag-green">Green</span></span></div>
+                            <div class="td2-di"><span class="td2-di-label">Availability</span><span class="td2-di-value">Free</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Vehicle Rank</span><span class="td2-di-value">5th</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di">
+                                <span class="td2-di-label">Total Trip</span>
+                                <span class="td2-di-value">12 <small class="text-muted">(Line: 5 / Local: 7)</small></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Estimated Time of Arrival --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title">Estimated Time of Arrival</p>
+                    <div class="td2-di">
+                        <span class="td2-di-label">ETA</span>
+                        <span class="td2-di-value">12/11/2025 | 12:00 PM</span>
+                    </div>
+                </div>
+
+                {{-- Last Trip Details --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title">Last Trip Details</p>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Trip Type</span><span class="td2-di-value">Outside Booking</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Customer</span><span class="td2-di-value">John Doe</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Source</span><span class="td2-di-value">Kolkata</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Destination</span><span class="td2-di-value">Mumbai</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Stop 1</span><span class="td2-di-value">Kolaghat</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Stop 2</span><span class="td2-di-value">Patna</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Stop 3</span><span class="td2-di-value">Pune</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Duration</span><span class="td2-di-value">15 Hours</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Delivery Status</span><span class="td2-di-value">On Time</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Route</span><span class="td2-di-value">Kolkata – Mumbai</span></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="td2-di"><span class="td2-di-label">Trip Date &amp; Time</span><span class="td2-di-value">12/11/2025 | 12:00 PM</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Assigned Driver Details --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title">Assigned Driver Details</p>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Driver Name</span><span class="td2-di-value">Ashoke Pandey</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Driver Number</span><span class="td2-di-value">+91 9876543210</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Associated Since</span><span class="td2-di-value">10 Years 11 Months</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">Experience</span><span class="td2-di-value">2 Years 4 Months</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="td2-di"><span class="td2-di-label">RAG Status</span><span class="td2-di-value"><span class="td2-rag td2-rag-green">Green</span></span></div>
                         </div>
                         <div class="col-6">
                             <div class="td2-di"><span class="td2-di-label">Line Trips</span><span class="td2-di-value">5</span></div>
                         </div>
                         <div class="col-6">
                             <div class="td2-di"><span class="td2-di-label">Local Trips</span><span class="td2-di-value">7</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Driver History --}}
+                <div class="td2-vd-section">
+                    <p class="td2-vd-section-title">Driver History</p>
+                    <div class="td2-vd-drv-hist">
+                        <div class="td2-vd-drv-hist-item">
+                            <div class="td2-vd-drv-hist-name">Mohit Singh</div>
+                            <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Kolkata – Durgapur</div>
+                            <div class="td2-vd-drv-hist-exp">10 Years 2 Month 6 Days</div>
+                        </div>
+                        <div class="td2-vd-drv-hist-item">
+                            <div class="td2-vd-drv-hist-name">Litesh Kumar</div>
+                            <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Durgapur – Katoya</div>
+                            <div class="td2-vd-drv-hist-exp">12 Years 3 Month 4 Days</div>
+                        </div>
+                        <div class="td2-vd-drv-hist-item">
+                            <div class="td2-vd-drv-hist-name">Anjan Murthy</div>
+                            <div class="td2-vd-drv-hist-meta">25/10/2025 – 28/10/2025 &nbsp;·&nbsp; Bardhaman – Murshidabad</div>
+                            <div class="td2-vd-drv-hist-exp">8 Years 1 Month 25 Days</div>
                         </div>
                     </div>
                 </div>
@@ -2380,6 +2483,19 @@
                             <tr><td>TRIP0006</td><td>KOL–HYD</td><td><span class="td2-rag td2-rag-green">Done</span></td><td>02/09/2025</td></tr>
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Live Location Map --}}
+                <div class="td2-map-embed">
+                    <div class="td2-map-proto-badge">
+                        <i class="fa fa-map-marker"></i> Live Location — Kolkata
+                        <span class="td2-map-proto-tag">GPS</span>
+                    </div>
+                    <iframe
+                        src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
+                        width="100%" height="220" frameborder="0"
+                        style="border:0;" allowfullscreen="" loading="lazy"
+                        title="Live Location — Kolkata"></iframe>
                 </div>
 
             </div>
