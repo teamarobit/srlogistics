@@ -6101,6 +6101,99 @@
                                         {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a> --}}
                                     </div>
 
+                                    {{-- Filter Card (static) --}}
+                                    <div class="accordion mt-3" id="accordionDefBook">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="def_filter">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseDefBook"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseDefBook"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+
+                                            <div
+                                                id="collapseDefBook"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="def_filter"
+                                                data-bs-parent="#accordionDefBook">
+                                                <div class="accordion-body">
+                                                    <form class="vehicle_dform p-4">
+                                                        <div class="filtersearch-bd justify-content-between">
+
+                                                            <div class="vehicletype">
+                                                                <label>Date Range</label>
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control daterange"
+                                                                    id="def_daterange"
+                                                                    name="def_daterange"
+                                                                    autocomplete="off"
+                                                                    placeholder="Select date range..."
+                                                                />
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>DEF Source</label>
+                                                                <select class="form-select select2" id="def_source">
+                                                                    <option value="">Choose..</option>
+                                                                    <option value="SR Garage">SR Garage</option>
+                                                                    <option value="External Vendor">External Vendor</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>GST Bill Received</label>
+                                                                <select class="form-select select2" id="def_gst_received">
+                                                                    <option value="">Choose..</option>
+                                                                    <option value="Yes">Yes</option>
+                                                                    <option value="No">No</option>
+                                                                </select>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                            <button class="btn btn-primary ms-1" type="button">
+                                                                <i class="uil uil-sync me-1"></i>Reset
+                                                            </button>
+
+                                                            <div class="dropdown ms-1">
+                                                                <button
+                                                                    class="btn btn-primary dropdown-toggle d-flex"
+                                                                    type="button"
+                                                                    id="exportBtnDefBook"
+                                                                    data-bs-toggle="dropdown"
+                                                                    aria-expanded="false"
+                                                                >
+                                                                    Export <i class="uil uil-upload ms-1"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="exportBtnDefBook">
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {{-- DEF mini dashboard (static) --}}
                                     <div class="def-kpi-grid">
                                         <div class="def-kpi">
