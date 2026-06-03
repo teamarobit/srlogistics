@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=7.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -3510,12 +3510,16 @@
                 <input type="checkbox" value="Accident">
                 <span><i class="uil uil-ambulance"></i> #Accident</span>
             </label>
+            {{-- Add a custom incident if not listed; custom incidents share a common icon --}}
+            <button type="button" class="td2-sos-chip-add" id="td2SosAddIncidentBtn">
+                <i class="uil uil-plus-circle"></i> Add Incident
+            </button>
         </div>
 
-        {{-- Manual / Other free text --}}
+        {{-- Note free text --}}
         <div class="td2-sos-manual-wrap">
             <label class="td2-sos-manual-lbl">
-                <i class="uil uil-edit-alt"></i> #Manual — describe incident
+                <i class="uil uil-edit-alt"></i> Note
             </label>
             <textarea class="form-control form-control-sm td2-sos-manual-input" id="td2SosManual"
                       rows="3" placeholder="Enter incident details…"></textarea>
@@ -3579,5 +3583,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.8') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.0') }}"></script>
 @endsection

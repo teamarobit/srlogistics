@@ -583,6 +583,45 @@ $('#td2SosHistoryBtn').on('click', function () {
 
 /* ── "Other" free-text chip (no checkbox — always visible as textarea) ── */
 
+/* ── Add custom incident type (common icon for all user-added incidents) ── */
+$('#td2SosAddIncidentBtn').on('click', function () {
+    Swal.fire({
+        title: 'Add Incident',
+        input: 'text',
+        inputLabel: 'Incident name',
+        inputPlaceholder: 'e.g. Tyre Burst',
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        confirmButtonColor: '#dc2626',
+        inputValidator: function (value) {
+            if (!$.trim(value)) { return 'Please enter an incident name.'; }
+        }
+    }).then(function (result) {
+        if (!result.isConfirmed) { return; }
+        var name = $.trim(result.value);
+        var tag  = name.replace(/\s/g, '');
+
+        /* Build chip via DOM (avoids HTML injection) — common icon for all custom incidents */
+        var $input  = $('<input type="checkbox" checked>').val(name);
+        var $span   = $('<span></span>')
+            .append($('<i class="uil uil-exclamation-octagon"></i>'))
+            .append(document.createTextNode(' #' + tag));
+        var $remove = $('<button type="button" class="td2-sos-chip-remove" aria-label="Remove incident" title="Remove">&times;</button>');
+        var $chip   = $('<label class="td2-sos-chip td2-sos-chip-custom"></label>')
+            .append($input).append($span).append($remove);
+
+        $('#td2SosAddIncidentBtn').before($chip);
+        Toast.fire({ icon: 'success', title: 'Incident added: #' + tag });
+    });
+});
+
+/* ── Remove a custom-added incident ── */
+$('#td2SosCheckboxes').on('click', '.td2-sos-chip-remove', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).closest('.td2-sos-chip').remove();
+});
+
 /* ── Submit SOS ── */
 $('#td2SosSubmitBtn').on('click', function () {
     var selected = [];
@@ -590,7 +629,7 @@ $('#td2SosSubmitBtn').on('click', function () {
         selected.push('#' + $(this).val().replace(/\s/g, ''));
     });
     var manual = $.trim($('#td2SosManual').val());
-    if (manual) selected.push('#Manual: ' + manual);
+    if (manual) selected.push('Note: ' + manual);
 
     if (!selected.length) {
         Toast.fire({ icon: 'warning', title: 'Select at least one incident type.' });

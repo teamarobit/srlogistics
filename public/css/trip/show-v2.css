@@ -3563,6 +3563,56 @@
     background: #fff8f8;
 }
 
+/* Add custom incident — dashed chip button */
+.td2-sos-chip-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.td2-sos-chip-add i { font-size: 14px; }
+.td2-sos-chip-add:hover {
+    border-color: #fca5a5;
+    background: #fff8f8;
+    color: #991b1b;
+}
+
+/* Custom incident chip — remove (×) button */
+.td2-sos-chip-custom { position: relative; }
+.td2-sos-chip-custom > span { padding-right: 30px; }
+.td2-sos-chip-remove {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.td2-sos-chip-remove:hover { background: #dc2626; color: #fff; }
+
 /* Manual text input */
 .td2-sos-manual-wrap {
     margin-bottom: 16px;
