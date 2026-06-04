@@ -113,11 +113,6 @@
                         <span class="td2-step-label">Vehicle Assigned</span>
                     </div>
                     <div class="td2-step-line"></div>
-                    <div class="td2-step td2-step-pending" data-status="Loading">
-                        <div class="td2-step-dot"></div>
-                        <span class="td2-step-label">Loading</span>
-                    </div>
-                    <div class="td2-step-line"></div>
                     <div class="td2-step td2-step-pending" data-status="In Transit">
                         <div class="td2-step-dot"></div>
                         <span class="td2-step-label">In Transit</span>
@@ -3279,11 +3274,27 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Status</label>
-                            <select class="form-select" name="vehicle_stage">
-                                <option>Reported at Loading Point</option>
-                                <option>On the Way</option>
-                                <option>Reported at Unloading Point</option>
-                                <option>Empty</option>
+                            <select class="form-select" id="td2StatusSelect" name="vehicle_stage">
+                                <option value="">Select status…</option>
+                                <option>Kolkata — Loading Point</option>
+                                <option>Kolaghat — Load &amp; Unload Point</option>
+                                <option>Patna — Loading Point</option>
+                                <option>Mumbai — Unloading Point (Destination)</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        {{-- Shown only when Status = Other (toggle handled in show-v2.js) --}}
+                        <div class="col-12 d-none" id="td2StatusOtherWrap">
+                            <label class="form-label">Other Status</label>
+                            <select class="form-select" id="td2StatusOther" name="vehicle_stage_other">
+                                <option value="">Select reason…</option>
+                                <option>Halt</option>
+                                <option>Breakdown</option>
+                                <option>Accident</option>
+                                <option>Detained (RTO / Police Check)</option>
+                                <option>Under Repair / Maintenance</option>
+                                <option>Diversion / Re-route</option>
+                                <option>Weather / Road Block Delay</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -3715,5 +3726,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.1') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.3') }}"></script>
 @endsection

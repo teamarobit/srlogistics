@@ -158,14 +158,15 @@ function applyDamagePodRules() {
  * Activates the correct step based on tripConfig.tripStatus.
  */
 function updateStepper() {
-    var statusOrder = ['Initiated', 'Vehicle Assigned', 'Loading', 'In Transit', 'Completed'];
+    var statusOrder = ['Initiated', 'Vehicle Assigned', 'In Transit', 'Completed'];
     var $stepper    = $('#td2Stepper');
     var s           = tripConfig.tripStatus;
 
     /* Map aliases to canonical status */
     if (s === 'Vehicle Not Assigned' || s === 'New')                                                      { s = 'Initiated'; }
     if (s === 'Ongoing' || s === 'Reported' || s === 'Delayed' || s === 'Detained' ||
-        s === 'Unloaded' || s === 'Breakdown' || s === 'In Repair' || s === 'Accident')                  { s = 'In Transit'; }
+        s === 'Unloaded' || s === 'Breakdown' || s === 'In Repair' || s === 'Accident' ||
+        s === 'Loading')                                                                                  { s = 'In Transit'; }
 
     if (s === 'Cancelled') {
         $stepper.addClass('td2-stepper-cancelled');
@@ -521,7 +522,26 @@ $(document).on('click', '.td2-review-save-btn', function () {
 /* =============================================================
    SPRINT 5 — CHANGE STATUS MODAL
    ============================================================= */
+
+/* Status = route point + "Other". Reveal the "Other" sub-status
+   dropdown (Halt, Breakdown, etc.) only when "Other" is selected. */
+$(document).on('change', '#td2StatusSelect', function () {
+    var isOther = $(this).val() === 'Other';
+    $('#td2StatusOtherWrap').toggleClass('d-none', !isOther);
+    if (!isOther) { $('#td2StatusOther').val(''); }
+});
+
+/* Reset the modal's status fields whenever it is closed */
+$(document).on('hidden.bs.modal', '#changeStatus', function () {
+    $('#td2StatusOtherWrap').addClass('d-none');
+    $('#td2StatusOther').val('');
+});
+
 $(document).on('click', '.td2-status-save-btn', function () {
+    if ($('#td2StatusSelect').val() === 'Other' && !$('#td2StatusOther').val()) {
+        Toast.fire({ icon: 'warning', title: 'Please select an "Other" status.' });
+        return;
+    }
     Toast.fire({ icon: 'success', title: 'Status updated (prototype).' });
     $('#changeStatus').modal('hide');
 });
