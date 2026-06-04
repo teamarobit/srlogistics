@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.2') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.4') }}">
 
 @endsection
 
@@ -6393,115 +6393,117 @@
                           <div class="tab-pane fade" id="pills-tagged" role="tabpanel" aria-labelledby="pills-tagged-tab">
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
-                                        <span class="sec-title">Tagged Assets — Stopper, Jack, Rod, Tools, Fan etc.</span>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a>
+                                        <span class="sec-title">Tagged Assets</span>
+                                        {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a> --}}
                                     </div>
 
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Asset Name</th>
-                                                    <th>Category</th>
-                                                    <th>Tag / Serial No</th>
-                                                    <th>Qty</th>
-                                                    <th>Tagged Date</th>
-                                                    <th>Issued By</th>
-                                                    <th>Last Verified</th>
-                                                    <th>Condition</th>
-                                                    <th>Status</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th>Asset Name &amp; Code</th>
+                                                    <th>Issue Source</th>
+                                                    <th>Issue Date</th>
+                                                    <th>Old Tagged Asset Return</th>
+                                                    <th>Driver Deduction</th>
+                                                    <th>Attachment</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Wheel Stopper</td>
-                                                    <td>Safety</td>
-                                                    <td>STP-001A</td>
-                                                    <td>2</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Wheel Stopper</div>
+                                                        <small class="text-muted">STP-001A</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Hydraulic Jack (10 Ton)</td>
-                                                    <td>Tool</td>
-                                                    <td>JCK-7842</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Hydraulic Jack (10 Ton)</div>
+                                                        <small class="text-muted">JCK-7842</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹1,200</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Wheel Spanner Rod</td>
-                                                    <td>Tool</td>
-                                                    <td>ROD-3321</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Wheel Spanner Rod</div>
+                                                        <small class="text-muted">ROD-3321</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-warning">Worn</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Tool Kit (Standard)</td>
-                                                    <td>Tool Box</td>
-                                                    <td>TLK-1108</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Tool Kit (Standard)</div>
+                                                        <small class="text-muted">TLK-1108</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹850</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Cabin Fan (12V)</td>
-                                                    <td>Accessory</td>
-                                                    <td>FAN-2205</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Cabin Fan (12V)</div>
+                                                        <small class="text-muted">FAN-2205</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>14-03-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Working</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>First Aid Box</td>
-                                                    <td>Safety</td>
-                                                    <td>FAB-0091</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">First Aid Box</div>
+                                                        <small class="text-muted">FAB-0091</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-warning">Restock Needed</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹300</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -9251,6 +9253,7 @@
 <script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/fleet/truck-repair.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/tagged-assets.js?v=1.0') }}"></script>
 
 <script>
 
