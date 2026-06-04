@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -3070,100 +3070,97 @@
                         </div>
                     </div>
 
-                    {{-- Route stops — one card per stop, single row --}}
+                    {{-- Route stops — Source first, Destination last, with 0..n Mid Points between --}}
                     <div class="td2-assign-section-head">
                         <span class="td2-assign-section-title">Route Stops</span>
                         <span class="td2-assign-section-sub">Select the location at each point along the route</span>
                     </div>
 
-                    <div class="row g-3 td2-assign-stops">
+                    {{--
+                        Flex container adapts to any number of stops:
+                        Source + Destination always present and highlighted; Mid Points (.td2-assign-stop-mid)
+                        are repeatable 0..n — add or remove a mid block and the layout reflows automatically.
+                    --}}
+                    <div class="td2-assign-stops">
 
-                        {{-- Source — Kolkata (Loading) --}}
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="td2-assign-stop td2-assign-stop-source">
-                                <div class="td2-assign-stop-head">
-                                    <span class="td2-route-dot td2-route-dot-source"></span>
-                                    <span class="td2-assign-stage">Source</span>
-                                </div>
-                                <div class="td2-assign-city">Kolkata</div>
-                                <span class="td2-route-type td2-route-type-load">Loading Point</span>
-                                <div class="td2-assign-field">
-                                    <label class="form-label td2-assign-loc-label">Location</label>
-                                    <select class="form-select select2-modal" name="assign_loc_kolkata">
-                                        <option value="">Choose location…</option>
-                                        <option>Webel Gate</option>
-                                        <option>SDF Building</option>
-                                        <option>DLF 1</option>
-                                        <option>DLF 2</option>
-                                        <option>Laketown Depot</option>
-                                    </select>
-                                </div>
+                        {{-- Source (endpoint — highlighted) — Kolkata (Loading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-source">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-source"></span>
+                                <span class="td2-assign-stage">Source</span>
+                            </div>
+                            <div class="td2-assign-city">Kolkata</div>
+                            <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_kolkata">
+                                    <option value="">Choose location…</option>
+                                    <option>Webel Gate</option>
+                                    <option>SDF Building</option>
+                                    <option>DLF 1</option>
+                                    <option>DLF 2</option>
+                                    <option>Laketown Depot</option>
+                                </select>
                             </div>
                         </div>
 
-                        {{-- Mid — Kolaghat (Loading & Unloading) --}}
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="td2-assign-stop td2-assign-stop-mid">
-                                <div class="td2-assign-stop-head">
-                                    <span class="td2-route-dot td2-route-dot-mid"></span>
-                                    <span class="td2-assign-stage">Mid Point</span>
-                                </div>
-                                <div class="td2-assign-city">Kolaghat</div>
-                                <span class="td2-route-type td2-route-type-both">Loading &amp; Unloading</span>
-                                <div class="td2-assign-field">
-                                    <label class="form-label td2-assign-loc-label">Location</label>
-                                    <select class="form-select select2-modal" name="assign_loc_kolaghat">
-                                        <option value="">Choose location…</option>
-                                        <option>Kolaghat Mecheda Yard</option>
-                                        <option>NH-16 Truck Bay</option>
-                                        <option>Kolaghat Town Godown</option>
-                                        <option>Denan Warehouse</option>
-                                    </select>
-                                </div>
+                        {{-- Mid Point (repeatable 0..n) — Kolaghat (Loading & Unloading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-mid">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-mid"></span>
+                                <span class="td2-assign-stage">Mid Point</span>
+                            </div>
+                            <div class="td2-assign-city">Kolaghat</div>
+                            <span class="td2-route-type td2-route-type-both">Loading &amp; Unloading</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_kolaghat">
+                                    <option value="">Choose location…</option>
+                                    <option>Kolaghat Mecheda Yard</option>
+                                    <option>NH-16 Truck Bay</option>
+                                    <option>Kolaghat Town Godown</option>
+                                    <option>Denan Warehouse</option>
+                                </select>
                             </div>
                         </div>
 
-                        {{-- Mid — Patna (Loading) --}}
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="td2-assign-stop td2-assign-stop-mid">
-                                <div class="td2-assign-stop-head">
-                                    <span class="td2-route-dot td2-route-dot-mid"></span>
-                                    <span class="td2-assign-stage">Mid Point</span>
-                                </div>
-                                <div class="td2-assign-city">Patna</div>
-                                <span class="td2-route-type td2-route-type-load">Loading Point</span>
-                                <div class="td2-assign-field">
-                                    <label class="form-label td2-assign-loc-label">Location</label>
-                                    <select class="form-select select2-modal" name="assign_loc_patna">
-                                        <option value="">Choose location…</option>
-                                        <option>Patliputra Industrial Area</option>
-                                        <option>Bihta Logistics Park</option>
-                                        <option>Fatuha Godown</option>
-                                        <option>Bypass Truck Stand</option>
-                                    </select>
-                                </div>
+                        {{-- Mid Point (repeatable 0..n) — Patna (Loading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-mid">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-mid"></span>
+                                <span class="td2-assign-stage">Mid Point</span>
+                            </div>
+                            <div class="td2-assign-city">Patna</div>
+                            <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_patna">
+                                    <option value="">Choose location…</option>
+                                    <option>Patliputra Industrial Area</option>
+                                    <option>Bihta Logistics Park</option>
+                                    <option>Fatuha Godown</option>
+                                    <option>Bypass Truck Stand</option>
+                                </select>
                             </div>
                         </div>
 
-                        {{-- Destination — Mumbai (Unloading) --}}
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="td2-assign-stop td2-assign-stop-dest">
-                                <div class="td2-assign-stop-head">
-                                    <span class="td2-route-dot td2-route-dot-dest"></span>
-                                    <span class="td2-assign-stage">Destination</span>
-                                </div>
-                                <div class="td2-assign-city">Mumbai</div>
-                                <span class="td2-route-type td2-route-type-unload">Unloading Point</span>
-                                <div class="td2-assign-field">
-                                    <label class="form-label td2-assign-loc-label">Location</label>
-                                    <select class="form-select select2-modal" name="assign_loc_mumbai">
-                                        <option value="">Choose location…</option>
-                                        <option>JNPT Nhava Sheva</option>
-                                        <option>Bhiwandi Warehouse Hub</option>
-                                        <option>Vashi APMC Yard</option>
-                                        <option>Kalamboli Truck Terminal</option>
-                                    </select>
-                                </div>
+                        {{-- Destination (endpoint — highlighted) — Mumbai (Unloading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-dest">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-dest"></span>
+                                <span class="td2-assign-stage">Destination</span>
+                            </div>
+                            <div class="td2-assign-city">Mumbai</div>
+                            <span class="td2-route-type td2-route-type-unload">Unloading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_mumbai">
+                                    <option value="">Choose location…</option>
+                                    <option>JNPT Nhava Sheva</option>
+                                    <option>Bhiwandi Warehouse Hub</option>
+                                    <option>Vashi APMC Yard</option>
+                                    <option>Kalamboli Truck Terminal</option>
+                                </select>
                             </div>
                         </div>
 
