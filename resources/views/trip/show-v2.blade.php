@@ -905,7 +905,23 @@
                                     </div>
                                 </div>
 
-                                {{-- SECTION 1 - Route Summary --}}
+                                {{-- SECTION 1 - Current Status (moved above Route Summary) --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-docs-header">
+                                        <p class="td2-docs-title"><i class="uil uil-info-circle td2-docs-ico"></i> Current Status</p>
+                                    </div>
+                                    <div class="td2-vstatus-current">
+                                        <span class="td2-vstatus-cur-dot"></span>
+                                        <span class="td2-vstatus-cur-label">Current Status</span>
+                                        <span class="td2-vstatus-cur-badge">Unloading at Mumbai</span>
+                                        <span class="td2-vstatus-cur-meta"><i class="uil uil-clock"></i> Updated 22/12/2025 · 09:00 AM</span>
+                                        <a class="td2-vstage-change"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#changeStatus">Update Status</a>
+                                    </div>
+                                </div>
+
+                                {{-- SECTION 2 - Route Summary --}}
                                 <div class="td2-docs-section">
                                     <div class="td2-docs-header">
                                         <p class="td2-docs-title"><i class="uil uil-location-point td2-docs-ico"></i> Route Summary</p>
@@ -944,22 +960,6 @@
                                             <span class="td2-route-here">You are here</span>
                                         </div>
 
-                                    </div>
-                                </div>
-
-                                {{-- SECTION 2 - Current Status --}}
-                                <div class="td2-docs-section">
-                                    <div class="td2-docs-header">
-                                        <p class="td2-docs-title"><i class="uil uil-info-circle td2-docs-ico"></i> Current Status</p>
-                                    </div>
-                                    <div class="td2-vstatus-current">
-                                        <span class="td2-vstatus-cur-dot"></span>
-                                        <span class="td2-vstatus-cur-label">Current Status</span>
-                                        <span class="td2-vstatus-cur-badge">Unloading at Mumbai</span>
-                                        <span class="td2-vstatus-cur-meta"><i class="uil uil-clock"></i> Updated 22/12/2025 · 09:00 AM</span>
-                                        <a class="td2-vstage-change"
-                                           data-bs-toggle="modal"
-                                           data-bs-target="#changeStatus">Change</a>
                                     </div>
                                 </div>
 
@@ -1055,24 +1055,15 @@
                                             </div>
                                         </div>
 
-                                        {{-- Unloading at Destination (manual entry) --}}
-                                        <div class="td2-tl-item td2-tl-manual">
+                                        {{-- Unloading at Destination (Mumbai) --}}
+                                        <div class="td2-tl-item td2-tl-done">
                                             <span class="td2-tl-marker td2-tl-marker-unload"><i class="uil uil-export"></i></span>
                                             <div class="td2-tl-body">
                                                 <div class="td2-tl-head">
-                                                    <span class="td2-tl-title">Unloading at <span class="td2-tl-loc">Mumbai</span> <small class="fw-normal text-muted">(Manual Entry)</small></span>
+                                                    <span class="td2-tl-title">Unloading at <span class="td2-tl-loc">Mumbai</span></span>
                                                     <span class="td2-tl-time">23/12/2025 &middot; 10:00 AM</span>
                                                 </div>
-                                                <div class="row g-3 mt-1">
-                                                    <div class="col-md-4">
-                                                        <label class="td2-doc-label">Unloading Date</label>
-                                                        <input type="date" class="form-control form-control-sm" name="unloading_date" value="2025-12-23">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="td2-doc-label">Unloading Time</label>
-                                                        <input type="time" class="form-control form-control-sm" name="unloading_time" value="10:00">
-                                                    </div>
-                                                </div>
+                                                <p class="td2-tl-note">Consignment unloaded at the destination. Timestamp captured automatically via GPS.</p>
                                             </div>
                                         </div>
 
