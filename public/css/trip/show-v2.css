@@ -3383,6 +3383,16 @@
     padding: 5px 16px;
     border-radius: 20px;
     letter-spacing: 0.03em;
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+.td2-vd-assign-btn:hover,
+.td2-vd-assign-btn:focus,
+.td2-vd-assign-btn:active {
+    background: #157347;
+    border-color: #146c43;
+    color: #fff;
 }
 
 /* Bottom action bar */
