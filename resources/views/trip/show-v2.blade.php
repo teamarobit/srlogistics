@@ -158,14 +158,14 @@
                                 type="button" role="tab">Vehicle Allocation</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link td2-tab" id="td2-vehStatus-tab"
-                                data-bs-toggle="pill" data-bs-target="#td2-vehStatus"
-                                type="button" role="tab">Vehicle Status</button>
-                    </li>
-                    <li class="nav-item">
                         <button class="nav-link td2-tab" id="td2-ewayLr-tab"
                                 data-bs-toggle="pill" data-bs-target="#td2-ewayLr"
                                 type="button" role="tab">Eway + LR</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link td2-tab" id="td2-vehStatus-tab"
+                                data-bs-toggle="pill" data-bs-target="#td2-vehStatus"
+                                type="button" role="tab">Vehicle Status</button>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link td2-tab" id="td2-pod-tab"
