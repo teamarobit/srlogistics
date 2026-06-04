@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=7.8') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -877,144 +877,225 @@
                                     <h5 class="td2-pane-title">Vehicle Status</h5>
                                 </div>
                                 <div class="td2-pane-body">
-                                <div class="td2-vstage-list">
 
-                                    {{-- ─── Stage 1: Reported at Loading Point ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">Reported at Loading Point</span>
-                                            <span class="td2-vstage-time">12/01/2026 12:00 PM</span>
-                                            <a class="td2-vstage-change"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#changeStatus">Change</a>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Loading Point — Kolkata</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Loading Point — Kolkata"></iframe>
+                                {{-- SECTION 0 - Status Overview (at-a-glance KPIs) --}}
+                                <div class="td2-vs-overview">
+                                    <div class="td2-vs-stat td2-vs-stat-status">
+                                        <span class="td2-vs-stat-icon td2-vs-icon-navy"><i class="uil uil-truck"></i></span>
+                                        <div class="td2-vs-stat-body">
+                                            <span class="td2-vs-stat-label">Current Status</span>
+                                            <span class="td2-vs-stat-value">Unloading at Mumbai</span>
                                         </div>
                                     </div>
-
-                                    {{-- ─── Stage 2: On the Way ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">On the Way</span>
-                                            <span class="td2-vstage-time">12/01/2026 02:00 PM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-truck"></i> En Route — Patna (last known)</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Patna,Bihar,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="En Route — Patna"></iframe>
+                                    <div class="td2-vs-stat">
+                                        <span class="td2-vs-stat-icon td2-vs-icon-blue"><i class="uil uil-map-marker"></i></span>
+                                        <div class="td2-vs-stat-body">
+                                            <span class="td2-vs-stat-label">Last GPS Update</span>
+                                            <span class="td2-vs-stat-value">22/12/2025 · 09:00 AM</span>
                                         </div>
                                     </div>
-
-                                    {{-- ─── Stage 3: Reported at Unloading Point ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">Reported at Unloading Point</span>
-                                            <span class="td2-vstage-time">22/01/2026 08:00 AM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Unloading Point — Mumbai</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Mumbai,Maharashtra,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Unloading Point — Mumbai"></iframe>
+                                    <div class="td2-vs-stat">
+                                        <span class="td2-vs-stat-icon td2-vs-icon-green"><i class="uil uil-location-arrow"></i></span>
+                                        <div class="td2-vs-stat-body">
+                                            <span class="td2-vs-stat-label">Route Distance</span>
+                                            <span class="td2-vs-stat-value">2,465 KM</span>
                                         </div>
                                     </div>
-
-                                    {{-- ─── Stage 4: Unloading (Manual Entry / Pending) ─── --}}
-                                    <div class="td2-vstage td2-vstage-pending">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-circle td2-vstage-icon-pending"></i>
-                                            <span class="td2-vstage-name">Unloading <small class="fw-normal text-muted">(Manual Entry)</small></span>
-                                            <span class="td2-vstage-time">23/01/2026 10:00 AM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge td2-map-proto-pending"><i class="fa fa-clock-o"></i> Unloading — Pending GPS fix</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Mumbai,Maharashtra,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Unloading — Mumbai"></iframe>
+                                    <div class="td2-vs-stat">
+                                        <span class="td2-vs-stat-icon td2-vs-icon-amber"><i class="uil uil-clock"></i></span>
+                                        <div class="td2-vs-stat-body">
+                                            <span class="td2-vs-stat-label">Total Halting</span>
+                                            <span class="td2-vs-stat-value">1 Day <small class="td2-vs-stat-note">&gt; 24 hrs chargeable</small></span>
                                         </div>
                                     </div>
+                                </div>
 
-                                </div>{{-- /.td2-vstage-list --}}
+                                {{-- SECTION 1 - Route Summary --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-docs-header">
+                                        <p class="td2-docs-title"><i class="uil uil-location-point td2-docs-ico"></i> Route Summary</p>
+                                    </div>
+                                    <div class="td2-route-summary">
+
+                                        {{-- Source --}}
+                                        <div class="td2-route-point">
+                                            <span class="td2-route-dot td2-route-dot-source"></span>
+                                            <span class="td2-route-loc">Kolkata</span>
+                                            <span class="td2-route-type td2-route-type-load">Source &middot; Loading Point</span>
+                                        </div>
+                                        <i class="uil uil-angle-right-b td2-route-arrow"></i>
+
+                                        {{-- Mid Point 1 - Loading and Unloading both --}}
+                                        <div class="td2-route-point">
+                                            <span class="td2-route-dot td2-route-dot-mid"></span>
+                                            <span class="td2-route-loc">Kolaghat</span>
+                                            <span class="td2-route-type td2-route-type-both">Midpoint &middot; Load &amp; Unload</span>
+                                        </div>
+                                        <i class="uil uil-angle-right-b td2-route-arrow"></i>
+
+                                        {{-- Mid Point 2 - Loading --}}
+                                        <div class="td2-route-point">
+                                            <span class="td2-route-dot td2-route-dot-mid"></span>
+                                            <span class="td2-route-loc">Patna</span>
+                                            <span class="td2-route-type td2-route-type-load">Midpoint &middot; Loading</span>
+                                        </div>
+                                        <i class="uil uil-angle-right-b td2-route-arrow"></i>
+
+                                        {{-- Destination --}}
+                                        <div class="td2-route-point td2-route-point-active">
+                                            <span class="td2-route-dot td2-route-dot-dest"></span>
+                                            <span class="td2-route-loc">Mumbai</span>
+                                            <span class="td2-route-type td2-route-type-unload">Destination &middot; Unloading Point</span>
+                                            <span class="td2-route-here">You are here</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                {{-- SECTION 2 - Current Status --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-docs-header">
+                                        <p class="td2-docs-title"><i class="uil uil-info-circle td2-docs-ico"></i> Current Status</p>
+                                    </div>
+                                    <div class="td2-vstatus-current">
+                                        <span class="td2-vstatus-cur-dot"></span>
+                                        <span class="td2-vstatus-cur-label">Current Status</span>
+                                        <span class="td2-vstatus-cur-badge">Unloading at Mumbai</span>
+                                        <span class="td2-vstatus-cur-meta"><i class="uil uil-clock"></i> Updated 22/12/2025 · 09:00 AM</span>
+                                        <a class="td2-vstage-change"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#changeStatus">Change</a>
+                                    </div>
+                                </div>
+
+                                {{-- SECTION 3 - Map View (route path + all points) --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-docs-header">
+                                        <p class="td2-docs-title"><i class="uil uil-map td2-docs-ico"></i> Route Map</p>
+                                    </div>
+                                    <div class="td2-map-embed">
+                                        <div class="td2-map-proto-badge">
+                                            <i class="fa fa-map-marker"></i> Route &mdash; Kolkata &rarr; Kolaghat &rarr; Patna &rarr; Mumbai
+                                            <span class="td2-map-proto-tag">Live Tracking</span>
+                                        </div>
+                                        <iframe
+                                            src="https://maps.google.com/maps?saddr=Kolkata,West+Bengal&daddr=Kolaghat,West+Bengal+to:Patna,Bihar+to:Mumbai,Maharashtra&output=embed"
+                                            width="100%" height="320" frameborder="0"
+                                            style="border:0;" allowfullscreen="" loading="lazy"
+                                            title="Trip Route Map"></iframe>
+                                        <div class="td2-route-legend">
+                                            <span class="td2-route-legend-item"><span class="td2-route-legend-dot td2-route-dot-source"></span> Source &mdash; Kolkata</span>
+                                            <span class="td2-route-legend-item"><span class="td2-route-legend-dot td2-route-dot-mid"></span> Midpoint &mdash; Kolaghat</span>
+                                            <span class="td2-route-legend-item"><span class="td2-route-legend-dot td2-route-dot-mid"></span> Midpoint &mdash; Patna</span>
+                                            <span class="td2-route-legend-item"><span class="td2-route-legend-dot td2-route-dot-halt"></span> Halt &mdash; Dhanbad (en route)</span>
+                                            <span class="td2-route-legend-item"><span class="td2-route-legend-dot td2-route-dot-dest"></span> Destination &mdash; Mumbai</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- SECTION 4 - Status Timeline --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-docs-header">
+                                        <p class="td2-docs-title"><i class="uil uil-history td2-docs-ico"></i> Status Timeline</p>
+                                    </div>
+                                    <div class="td2-tl">
+
+                                        {{-- Loading at Source --}}
+                                        <div class="td2-tl-item td2-tl-done">
+                                            <span class="td2-tl-marker td2-tl-marker-load"><i class="uil uil-import"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Loading at <span class="td2-tl-loc">Kolkata</span></span>
+                                                    <span class="td2-tl-time">20/12/2025 &middot; 10:00 AM</span>
+                                                </div>
+                                                <p class="td2-tl-note">Consignment loaded at the source loading point. Timestamp captured automatically via GPS.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Unloading at Mid (Kolaghat) --}}
+                                        <div class="td2-tl-item td2-tl-done">
+                                            <span class="td2-tl-marker td2-tl-marker-unload"><i class="uil uil-export"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Unloading at <span class="td2-tl-loc">Kolaghat</span></span>
+                                                    <span class="td2-tl-time">20/12/2025 &middot; 02:30 PM</span>
+                                                </div>
+                                                <p class="td2-tl-note">Consignment partially unloaded at the midpoint. Timestamp captured automatically via GPS.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Loading at Mid (Kolaghat) --}}
+                                        <div class="td2-tl-item td2-tl-done">
+                                            <span class="td2-tl-marker td2-tl-marker-load"><i class="uil uil-import"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Loading at <span class="td2-tl-loc">Kolaghat</span></span>
+                                                    <span class="td2-tl-time">20/12/2025 &middot; 04:00 PM</span>
+                                                </div>
+                                                <p class="td2-tl-note">Consignment loaded at the midpoint. Timestamp captured automatically via GPS.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Halt - can occur at ANY location between source and destination --}}
+                                        <div class="td2-tl-item td2-tl-done">
+                                            <span class="td2-tl-marker td2-tl-marker-halt"><i class="uil uil-clock"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Halt at <span class="td2-tl-loc">Dhanbad</span> <small class="fw-normal text-muted">(en route)</small> <span class="td2-tl-badge">1 Day</span></span>
+                                                    <span class="td2-tl-time">20/12/2025 &middot; 11:00 PM</span>
+                                                </div>
+                                                <p class="td2-tl-note">Vehicle halted en route. A halt may occur at any location between the source and destination. Halting charges apply when the halt exceeds 24 hours.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Loading at Mid (Patna) --}}
+                                        <div class="td2-tl-item td2-tl-done">
+                                            <span class="td2-tl-marker td2-tl-marker-load"><i class="uil uil-import"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Loading at <span class="td2-tl-loc">Patna</span></span>
+                                                    <span class="td2-tl-time">22/12/2025 &middot; 09:00 AM</span>
+                                                </div>
+                                                <p class="td2-tl-note">Consignment loaded at the midpoint. Timestamp captured automatically via GPS.</p>
+                                            </div>
+                                        </div>
+
+                                        {{-- Unloading at Destination (manual entry) --}}
+                                        <div class="td2-tl-item td2-tl-manual">
+                                            <span class="td2-tl-marker td2-tl-marker-unload"><i class="uil uil-export"></i></span>
+                                            <div class="td2-tl-body">
+                                                <div class="td2-tl-head">
+                                                    <span class="td2-tl-title">Unloading at <span class="td2-tl-loc">Mumbai</span> <small class="fw-normal text-muted">(Manual Entry)</small></span>
+                                                    <span class="td2-tl-time">23/12/2025 &middot; 10:00 AM</span>
+                                                </div>
+                                                <div class="row g-3 mt-1">
+                                                    <div class="col-md-4">
+                                                        <label class="td2-doc-label">Unloading Date</label>
+                                                        <input type="date" class="form-control form-control-sm" name="unloading_date" value="2025-12-23">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="td2-doc-label">Unloading Time</label>
+                                                        <input type="time" class="form-control form-control-sm" name="unloading_time" value="10:00">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>{{-- /.td2-tl --}}
+                                </div>
+
+                                {{-- SECTION 5 - Halting Summary --}}
+                                <div class="td2-docs-section">
+                                    <div class="td2-halting-summary">
+                                        <span class="td2-halting-icon"><i class="uil uil-clock"></i></span>
+                                        <div class="td2-halting-text">
+                                            <span class="td2-halting-label">Total Halting</span>
+                                            <span class="td2-halting-val">1 Day</span>
+                                        </div>
+                                        <span class="td2-halting-note">Auto-calculated from halt events along the route. Halting charges apply when the total halt exceeds 24 hours.</span>
+                                    </div>
+                                </div>
+
                                 </div>{{-- /.td2-pane-body --}}
                             </div>
 
@@ -3197,12 +3278,12 @@
                 <form id="changeStatusForm">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">Stage</label>
+                            <label class="form-label">Status</label>
                             <select class="form-select" name="vehicle_stage">
                                 <option>Reported at Loading Point</option>
                                 <option>On the Way</option>
                                 <option>Reported at Unloading Point</option>
-                                <option>Unloading</option>
+                                <option>Empty</option>
                             </select>
                         </div>
                         <div class="col-md-6">
