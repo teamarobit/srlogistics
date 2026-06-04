@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.2') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -3049,7 +3049,7 @@
 
 {{-- Assign Vehicle to This Trip — opened from the Vehicle Details panel "Assign" button --}}
 <div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
@@ -3058,92 +3058,119 @@
             <div class="modal-body">
                 <form id="assignVehicleForm">
 
-                    {{-- Row 1: Expected Start Date / Time --}}
-                    <div class="row mb-3">
+                    {{-- Expected start --}}
+                    <div class="row g-3 mb-4">
                         <div class="col-12 col-md-6">
-                            <label class="form-label">Expected Start Date</label>
+                            <label class="form-label td2-assign-label">Expected Start Date</label>
                             <input type="date" class="form-control" name="assign_start_date">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label">Expected Start Time</label>
+                            <label class="form-label td2-assign-label">Expected Start Time</label>
                             <input type="time" class="form-control" name="assign_start_time">
                         </div>
                     </div>
 
-                    {{-- Row 2: Loading / Unloading Point --}}
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Loading Point</label>
-                            <select class="form-select select2-modal" name="assign_loading_point">
-                                <option value="">Choose..</option>
-                                <option>Webel Gate</option>
-                                <option>SDF</option>
-                                <option>DLF 1</option>
-                                <option>DLF 2</option>
-                                <option>Laketown</option>
-                            </select>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Unloading Point</label>
-                            <select class="form-select select2-modal" name="assign_unloading_point">
-                                <option value="">Choose..</option>
-                                <option>Webel Gate</option>
-                                <option>SDF</option>
-                                <option>DLF 1</option>
-                                <option>DLF 2</option>
-                                <option>Laketown</option>
-                            </select>
-                        </div>
+                    {{-- Route stops — one card per stop, single row --}}
+                    <div class="td2-assign-section-head">
+                        <span class="td2-assign-section-title">Route Stops</span>
+                        <span class="td2-assign-section-sub">Select the location at each point along the route</span>
                     </div>
 
-                    {{-- Row 3: Midpoint 1 (Loading) --}}
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Midpoint 1</label>
-                            <input type="text" class="form-control bg-light" name="assign_midpoint_1" value="Bihar" readonly>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Midpoint 1 Type</label>
-                            <div><span class="badge bg-success">Loading</span></div>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <label class="form-label">Loading Location</label>
-                            <select class="form-select" name="assign_loading_location">
-                                <option value="">Choose..</option>
-                                <option>Webel Gate</option>
-                                <option>SDF</option>
-                                <option>DLF 1</option>
-                                <option>DLF 2</option>
-                                <option>Laketown</option>
-                            </select>
-                        </div>
-                    </div>
+                    <div class="row g-3 td2-assign-stops">
 
-                    {{-- Row 4: Midpoint 2 (Unloading) --}}
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Midpoint 2</label>
-                            <input type="text" class="form-control bg-light" name="assign_midpoint_2" value="Odisha" readonly>
+                        {{-- Source — Kolkata (Loading) --}}
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="td2-assign-stop td2-assign-stop-source">
+                                <div class="td2-assign-stop-head">
+                                    <span class="td2-route-dot td2-route-dot-source"></span>
+                                    <span class="td2-assign-stage">Source</span>
+                                </div>
+                                <div class="td2-assign-city">Kolkata</div>
+                                <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                                <div class="td2-assign-field">
+                                    <label class="form-label td2-assign-loc-label">Location</label>
+                                    <select class="form-select select2-modal" name="assign_loc_kolkata">
+                                        <option value="">Choose location…</option>
+                                        <option>Webel Gate</option>
+                                        <option>SDF Building</option>
+                                        <option>DLF 1</option>
+                                        <option>DLF 2</option>
+                                        <option>Laketown Depot</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Midpoint 2 Type</label>
-                            <div><span class="badge bg-danger">Unloading</span></div>
+
+                        {{-- Mid — Kolaghat (Loading & Unloading) --}}
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="td2-assign-stop td2-assign-stop-mid">
+                                <div class="td2-assign-stop-head">
+                                    <span class="td2-route-dot td2-route-dot-mid"></span>
+                                    <span class="td2-assign-stage">Mid Point</span>
+                                </div>
+                                <div class="td2-assign-city">Kolaghat</div>
+                                <span class="td2-route-type td2-route-type-both">Loading &amp; Unloading</span>
+                                <div class="td2-assign-field">
+                                    <label class="form-label td2-assign-loc-label">Location</label>
+                                    <select class="form-select select2-modal" name="assign_loc_kolaghat">
+                                        <option value="">Choose location…</option>
+                                        <option>Kolaghat Mecheda Yard</option>
+                                        <option>NH-16 Truck Bay</option>
+                                        <option>Kolaghat Town Godown</option>
+                                        <option>Denan Warehouse</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-12 mt-2">
-                            <label class="form-label">Unloading Location</label>
-                            <select class="form-select" name="assign_unloading_location">
-                                <option value="">Choose..</option>
-                                <option>Webel Gate</option>
-                                <option>SDF</option>
-                                <option>DLF 1</option>
-                                <option>DLF 2</option>
-                                <option>Laketown</option>
-                            </select>
+
+                        {{-- Mid — Patna (Loading) --}}
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="td2-assign-stop td2-assign-stop-mid">
+                                <div class="td2-assign-stop-head">
+                                    <span class="td2-route-dot td2-route-dot-mid"></span>
+                                    <span class="td2-assign-stage">Mid Point</span>
+                                </div>
+                                <div class="td2-assign-city">Patna</div>
+                                <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                                <div class="td2-assign-field">
+                                    <label class="form-label td2-assign-loc-label">Location</label>
+                                    <select class="form-select select2-modal" name="assign_loc_patna">
+                                        <option value="">Choose location…</option>
+                                        <option>Patliputra Industrial Area</option>
+                                        <option>Bihta Logistics Park</option>
+                                        <option>Fatuha Godown</option>
+                                        <option>Bypass Truck Stand</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
+                        {{-- Destination — Mumbai (Unloading) --}}
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="td2-assign-stop td2-assign-stop-dest">
+                                <div class="td2-assign-stop-head">
+                                    <span class="td2-route-dot td2-route-dot-dest"></span>
+                                    <span class="td2-assign-stage">Destination</span>
+                                </div>
+                                <div class="td2-assign-city">Mumbai</div>
+                                <span class="td2-route-type td2-route-type-unload">Unloading Point</span>
+                                <div class="td2-assign-field">
+                                    <label class="form-label td2-assign-loc-label">Location</label>
+                                    <select class="form-select select2-modal" name="assign_loc_mumbai">
+                                        <option value="">Choose location…</option>
+                                        <option>JNPT Nhava Sheva</option>
+                                        <option>Bhiwandi Warehouse Hub</option>
+                                        <option>Vashi APMC Yard</option>
+                                        <option>Kalamboli Truck Terminal</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     {{-- Actions --}}
-                    <div class="text-end">
+                    <div class="text-end mt-4">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Assign</button>
                     </div>
