@@ -1377,19 +1377,86 @@
    9. SPRINT 2 — Vehicle Allocation Tab
 ───────────────────────────────────────────────────────────── */
 
-/* Accordion */
-.td2-veh-accordion .accordion-button {
-    font-family: Inter, sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: #111827;
-    background: #f8f9fa;
-    padding: 12px 18px;
+/* Accordion — HIGHLIGHTED recommended section (draws the eye) */
+.td2-veh-accordion .accordion-item {
+    border: 1.5px solid #86efac;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.14);
+    animation: td2VehGlow 2.6s ease-in-out infinite;
 }
-.td2-veh-accordion .accordion-button:not(.collapsed) {
-    background: #eef2ff;
-    color: #032671;
+
+@keyframes td2VehGlow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(22, 163, 74, 0.14); }
+    50%      { box-shadow: 0 8px 26px rgba(22, 163, 74, 0.32); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .td2-veh-accordion .accordion-item { animation: none; }
+}
+
+.td2-veh-accordion .accordion-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #065f46;
+    background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+    padding: 15px 20px;
+    border-left: 5px solid #16a34a;
+}
+.td2-veh-accordion .accordion-button:not(.collapsed),
+.td2-veh-accordion .accordion-button:focus {
+    background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
     box-shadow: none;
+    border-left: 5px solid #16a34a;
+}
+
+/* Tint Bootstrap's chevron green to match */
+.td2-veh-accordion .accordion-button::after {
+    filter: invert(45%) sepia(85%) saturate(480%) hue-rotate(96deg) brightness(92%);
+}
+
+.td2-veh-acc-icon {
+    font-size: 20px;
+    line-height: 1;
+    color: #16a34a;
+}
+
+.td2-veh-acc-title {
+    letter-spacing: 0.01em;
+}
+
+.td2-veh-acc-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    background: #16a34a;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.5);
+}
+
+.td2-veh-acc-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: #16a34a;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 /* Vehicle cards */
@@ -1421,6 +1488,19 @@
     border-color: #032671;
     background: #eef2ff;
 }
+
+/* Status-coloured left accent border (replaces the dot beside the vehicle number) */
+.td2-veh-card-green  { border-left: 5px solid #059669; }
+.td2-veh-card-yellow { border-left: 5px solid #d97706; }
+.td2-veh-card-red    { border-left: 5px solid #e11d48; }
+
+/* Keep the accent colour on hover / selected, which recolour the other borders */
+.td2-veh-card-green:hover,
+.td2-veh-radio:checked + .td2-veh-card-green  { border-left-color: #059669; }
+.td2-veh-card-yellow:hover,
+.td2-veh-radio:checked + .td2-veh-card-yellow { border-left-color: #d97706; }
+.td2-veh-card-red:hover,
+.td2-veh-radio:checked + .td2-veh-card-red    { border-left-color: #e11d48; }
 
 .td2-vc-header {
     display: flex;
@@ -1520,51 +1600,169 @@
 .td2-or-divider {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    color: #9ca3af;
-    font-size: 13px;
-    font-weight: 600;
+    gap: 16px;
+    margin: 26px 0;
 }
 .td2-or-divider::before,
 .td2-or-divider::after {
     content: '';
     flex: 1;
-    height: 1px;
-    background: #e9ecef;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #d1d5db);
+}
+.td2-or-divider::after {
+    background: linear-gradient(90deg, #d1d5db, transparent);
+}
+.td2-or-divider span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 32px;
+    padding: 0 16px;
+    background: #fff;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 50px;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
-/* Vehicle type toggle */
+/* Vehicle type toggle — centered radio-pill selector */
 .td2-veh-type-toggle {
     display: flex;
-    gap: 0;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    overflow: hidden;
-    width: fit-content;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    border: none;
+    border-radius: 0;
+    width: 100%;
+    background: transparent;
+    padding: 0;
 }
 
 .td2-vtype-radio { display: none; }
 
 .td2-vtype-label {
-    padding: 8px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 26px;
     font-family: Inter, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2a5a;
     cursor: pointer;
-    background: #f9fafb;
-    transition: background 0.15s, color 0.15s;
-    border-right: 1px solid #e9ecef;
+    background: #fff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 50px;
+    transition: border-color 0.18s, color 0.18s, box-shadow 0.18s;
 }
-.td2-vtype-label:last-child { border-right: none; }
+
+/* Radio circle indicator */
+.td2-vtype-label::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    transition: border-color 0.18s, background 0.18s;
+}
+
+.td2-vtype-label:hover {
+    color: #032671;
+    border-color: #032671;
+}
 
 .td2-vtype-radio:checked + .td2-vtype-label {
-    background: #032671;
-    color: #fff;
+    color: #032671;
+    border-color: #032671;
+    box-shadow: 0 2px 10px rgba(3, 38, 113, 0.15);
+}
+.td2-vtype-radio:checked + .td2-vtype-label::before {
+    border-color: #032671;
+    background: radial-gradient(circle at center, #032671 0 4px, #fff 5px);
 }
 
 .td2-if-ext { display: none; }
+
+/* ── Add / Allocate Vehicle — section polish ── */
+.td2-alloc-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.td2-alloc-head-icon {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #032671, #0a3a96);
+    color: #fff;
+    font-size: 18px;
+    box-shadow: 0 3px 8px rgba(3, 38, 113, 0.25);
+}
+.td2-alloc-head-title {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.3;
+}
+.td2-alloc-head-sub {
+    margin: 2px 0 0;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    color: #8a94a6;
+    line-height: 1.4;
+}
+
+.td2-alloc-source {
+    text-align: center;
+}
+.td2-alloc-source-label {
+    display: block;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.td2-alloc-body {
+    border: 1px solid #eef1f7;
+    border-radius: 12px;
+    background: #fcfdff;
+    padding: 18px 18px 4px;
+    margin-top: 2px;
+}
+
+.td2-alloc-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eef1f7;
+}
+.td2-alloc-save {
+    padding: 9px 26px;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(3, 38, 113, 0.2);
+}
 
 /* VAHAN toggle button */
 .td2-vahan-toggle {
@@ -1586,27 +1784,69 @@
 }
 .td2-vahan-toggle:hover { background: #e9ecef; }
 
-/* VAHAN table */
-.td2-vahan-table {
-    width: 100%;
-    border-collapse: collapse;
+/* VAHAN details — compact two-column status grid */
+.td2-vahan-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     margin: 8px 0 12px;
-    font-size: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
 }
-.td2-vahan-table th {
-    background: #f8f9fa;
-    padding: 6px 10px;
-    text-align: left;
+.td2-vahan-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    line-height: 1.3;
+}
+/* vertical divider between the two columns */
+.td2-vahan-row:nth-child(odd) { border-right: 1px solid #f1f3f5; }
+/* zebra shade per visual row (cells 3-4, 7-8, …) */
+.td2-vahan-row:nth-child(4n+3),
+.td2-vahan-row:nth-child(4n)   { background: #fafbfc; }
+/* drop bottom border on the final visual row */
+.td2-vahan-row:nth-last-child(-n+2) { border-bottom: 0; }
+.td2-vahan-row:hover { background: #f1f6ff; }
+
+.td2-vahan-stat {
+    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1;
+}
+.td2-vahan-stat-ok    { color: #16a34a; }
+.td2-vahan-stat-alert { color: #dc2626; }
+.td2-vahan-stat-na    { color: #cbd5e1; }
+
+.td2-vahan-key {
+    flex: 0 0 46%;
+    max-width: 46%;
+    color: #6b7280;
     font-weight: 600;
-    color: #374151;
-    border: 1px solid #e9ecef;
-    width: 20%;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    font-size: 10.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.td2-vahan-table td {
-    padding: 6px 10px;
-    border: 1px solid #e9ecef;
+.td2-vahan-val {
+    flex: 1;
+    min-width: 0;
     color: #111827;
-    width: 30%;
+    font-weight: 600;
+    word-break: break-word;
+}
+.td2-vahan-val-empty { color: #9ca3af; font-weight: 500; }
+
+/* collapse to single column on narrow viewports */
+@media (max-width: 575.98px) {
+    .td2-vahan-list { grid-template-columns: 1fr; }
+    .td2-vahan-row:nth-child(odd) { border-right: 0; }
 }
 
 /* Driver detail card */
@@ -1763,6 +2003,379 @@
     display: block;
     width: 100%;
     border: none;
+}
+
+/* ── Current status strip (Section 2) ── */
+.td2-vstatus-current {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e9edf5;
+    border-radius: 12px;
+}
+.td2-vstatus-cur-label {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+.td2-vstatus-cur-badge {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    padding: 4px 12px;
+}
+.td2-vstatus-current .td2-vstage-change {
+    margin-left: auto;
+}
+
+/* ── Route Summary strip (Section 1) ── */
+.td2-route-summary {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px 4px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e9edf5;
+    border-radius: 12px;
+}
+.td2-route-point {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 96px;
+    text-align: center;
+}
+.td2-route-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #cbd5e1;
+}
+.td2-route-dot-source { background: #032671; }
+.td2-route-dot-mid    { background: #d97706; }
+.td2-route-dot-halt   { background: #dc2626; }
+.td2-route-dot-dest   { background: #16a34a; }
+.td2-route-loc {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #111827;
+}
+.td2-route-type {
+    font-family: Inter, sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 1px 8px;
+}
+.td2-route-type-load   { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
+.td2-route-type-unload { color: #032671; background: #eef2ff; border: 1px solid #c7d2fe; }
+.td2-route-type-both   { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; }
+.td2-route-type-halt   { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
+.td2-route-arrow {
+    color: #9ca3af;
+    font-size: 20px;
+    align-self: center;
+    margin-top: 4px;
+}
+
+/* ── Route map legend (Section 3) ── */
+.td2-route-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 9px 14px 11px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f5;
+}
+.td2-route-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #374151;
+}
+.td2-route-legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── Status Timeline (Section 4) ── */
+.td2-tl {
+    display: flex;
+    flex-direction: column;
+}
+.td2-tl-item {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    padding-bottom: 22px;
+}
+.td2-tl-item:last-child { padding-bottom: 0; }
+.td2-tl-done { /* completed event - default marker colours apply */ }
+.td2-tl-manual .td2-tl-body {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+.td2-tl-item::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 32px;
+    bottom: -2px;
+    width: 2px;
+    background: #e5e7eb;
+}
+.td2-tl-item:last-child::before { display: none; }
+.td2-tl-marker {
+    position: relative;
+    z-index: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+.td2-tl-marker-load   { background: #16a34a; }
+.td2-tl-marker-unload { background: #032671; }
+.td2-tl-marker-halt   { background: #d97706; }
+.td2-tl-body {
+    flex: 1;
+    padding-top: 3px;
+}
+.td2-tl-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.td2-tl-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #111827;
+}
+.td2-tl-loc { color: #032671; }
+.td2-tl-time {
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    color: #6b7280;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+.td2-tl-badge {
+    font-family: Inter, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #b45309;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 5px;
+    padding: 1px 7px;
+}
+.td2-tl-note {
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    color: #6b7280;
+    margin: 6px 0 0;
+}
+
+/* ── Status Overview KPI strip (Section 0) ── */
+.td2-vs-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.td2-vs-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #e9edf5;
+    border-radius: 12px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+.td2-vs-stat:hover {
+    border-color: #d4dcec;
+    box-shadow: 0 2px 8px rgba(3, 38, 113, 0.06);
+}
+.td2-vs-stat-status {
+    background: #f6f8ff;
+    border-color: #c7d2fe;
+}
+.td2-vs-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+}
+.td2-vs-icon-navy  { background: #eef2ff; color: #032671; }
+.td2-vs-icon-blue  { background: #e0f2fe; color: #0369a1; }
+.td2-vs-icon-green { background: #dcfce7; color: #16a34a; }
+.td2-vs-icon-amber { background: #fef3c7; color: #b45309; }
+.td2-vs-stat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.td2-vs-stat-label {
+    font-family: Inter, sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #8a93a5;
+}
+.td2-vs-stat-value {
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+}
+.td2-vs-stat-note {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #b45309;
+    letter-spacing: 0.01em;
+}
+
+/* ── Section title icon ── */
+.td2-docs-ico {
+    color: #032671;
+    font-size: 15px;
+    margin-right: 2px;
+    vertical-align: -1px;
+}
+
+/* ── Current status strip — live dot + meta ── */
+.td2-vstatus-cur-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+    flex-shrink: 0;
+}
+.td2-vstatus-cur-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+}
+.td2-vstatus-cur-meta .uil { color: #9ca3af; font-size: 13px; }
+
+/* ── Route Summary — active (current) point highlight ── */
+.td2-route-point-active {
+    position: relative;
+    background: #f6f8ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 6px 8px;
+    margin-top: -6px;
+}
+.td2-route-here {
+    font-family: Inter, sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #16a34a;
+    background: #dcfce7;
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+/* ── Halting Summary strip (Section 5) ── */
+.td2-halting-summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+}
+.td2-halting-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #b45309;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.td2-halting-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.td2-halting-label {
+    font-family: Inter, sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #a16207;
+}
+.td2-halting-val {
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #92400e;
+}
+.td2-halting-note {
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    color: #a16207;
+    flex: 1;
+    min-width: 220px;
+}
+
+/* ── Vehicle Status — responsive ── */
+@media (max-width: 991px) {
+    .td2-vs-overview { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 575px) {
+    .td2-vs-overview { grid-template-columns: 1fr; }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -2688,6 +3301,62 @@
 .td2-vd-comp-item i { font-size: 13px; flex-shrink: 0; }
 .td2-vd-ok   { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
 .td2-vd-warn { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.td2-vd-na   { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+
+/* VAHAN view (shown instead of map for External/Vendor vehicles) */
+.td2-vd-vahan-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 7px 10px 4px;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+.td2-vd-vahan-title i { font-size: 13px; opacity: 0.8; }
+.td2-vd-vahan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.td2-vd-vahan-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 4px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    min-width: 0;
+    line-height: 1.25;
+}
+.td2-vd-vahan-grid > .td2-vd-vahan-row:nth-child(4n+1),
+.td2-vd-vahan-grid > .td2-vd-vahan-row:nth-child(4n+2) {
+    background: #f8fafc;
+}
+.td2-vd-vahan-ico-ok    { color: #16a34a; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.td2-vd-vahan-ico-alert { color: #dc2626; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.td2-vd-vahan-key {
+    flex: 1 1 42%;
+    min-width: 0;
+    font-family: Inter, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748b;
+}
+.td2-vd-vahan-val {
+    flex: 1 1 58%;
+    min-width: 0;
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
 .td2-vd-comp-lbl {
     display: inline;
     font-size: 9px;
@@ -2714,6 +3383,16 @@
     padding: 5px 16px;
     border-radius: 20px;
     letter-spacing: 0.03em;
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+.td2-vd-assign-btn:hover,
+.td2-vd-assign-btn:focus,
+.td2-vd-assign-btn:active {
+    background: #157347;
+    border-color: #146c43;
+    color: #fff;
 }
 
 /* Bottom action bar */
@@ -3322,6 +4001,56 @@
     background: #fff8f8;
 }
 
+/* Add custom incident — dashed chip button */
+.td2-sos-chip-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.td2-sos-chip-add i { font-size: 14px; }
+.td2-sos-chip-add:hover {
+    border-color: #fca5a5;
+    background: #fff8f8;
+    color: #991b1b;
+}
+
+/* Custom incident chip — remove (×) button */
+.td2-sos-chip-custom { position: relative; }
+.td2-sos-chip-custom > span { padding-right: 30px; }
+.td2-sos-chip-remove {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.td2-sos-chip-remove:hover { background: #dc2626; color: #fff; }
+
 /* Manual text input */
 .td2-sos-manual-wrap {
     margin-bottom: 16px;
@@ -3646,4 +4375,177 @@
     font-weight: 600;
     color: #f1f5f9;
     margin-left: 16px;
+}
+\n
+
+/* ── Assign Vehicle modal — route-stop sections (v8.3) ── */
+.td2-assign-label {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: #374151;
+}
+.td2-assign-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e9edf5;
+}
+.td2-assign-section-title {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #111827;
+}
+.td2-assign-section-sub {
+    font-family: Inter, sans-serif;
+    font-size: 11.5px;
+    color: #6b7280;
+}
+/* Flex container — adapts to any number of stops (0..n mid points) */
+.td2-assign-stops {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 14px;
+}
+.td2-assign-stop {
+    flex: 1 1 200px;
+    min-width: 190px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 14px 16px;
+    background: #fff;
+    border: 1px solid #e9edf5;
+    border-top: 3px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+}
+.td2-assign-stop:hover {
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.08);
+}
+
+/* Mid points — lighter, secondary weighting */
+.td2-assign-stop-mid {
+    border-top-color: #f59e0b;
+    background: #fcfcfd;
+    flex-grow: 0.85;
+}
+
+/* Source & Destination — emphasised endpoints (thicker accent, tint, lift) */
+.td2-assign-stop-source,
+.td2-assign-stop-dest {
+    border-top-width: 5px;
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.10);
+}
+.td2-assign-stop-source {
+    border-top-color: #032671;
+    border-color: #c7d2fe;
+    background: linear-gradient(180deg, #f3f6ff 0%, #ffffff 62%);
+}
+.td2-assign-stop-dest {
+    border-top-color: #16a34a;
+    border-color: #bbf7d0;
+    background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 62%);
+}
+.td2-assign-stop-source:hover,
+.td2-assign-stop-dest:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.15);
+}
+/* Bigger role dot on endpoints */
+.td2-assign-stop-source .td2-route-dot,
+.td2-assign-stop-dest .td2-route-dot {
+    width: 18px;
+    height: 18px;
+}
+.td2-assign-stop-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.td2-assign-stage {
+    font-family: Inter, sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+/* Endpoint stage labels become filled pills */
+.td2-assign-stop-source .td2-assign-stage,
+.td2-assign-stop-dest .td2-assign-stage {
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+}
+.td2-assign-stop-source .td2-assign-stage { background: #032671; }
+.td2-assign-stop-dest   .td2-assign-stage { background: #16a34a; }
+/* Endpoint city names slightly larger */
+.td2-assign-stop-source .td2-assign-city,
+.td2-assign-stop-dest .td2-assign-city {
+    font-size: 17.5px;
+}
+.td2-assign-city {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #111827;
+    line-height: 1.1;
+}
+.td2-assign-stop .td2-route-type {
+    align-self: flex-start;
+}
+.td2-assign-field {
+    margin-top: auto;
+    padding-top: 6px;
+}
+.td2-assign-loc-label {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 11.5px;
+    color: #4b5563;
+    margin-bottom: 4px;
+}
+
+
+/* ── Allocated Vehicle view (Vehicle Allocation tab, v8.5) ── */
+.td2-alloc-done-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.td2-alloc-done-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #111827;
+}
+.td2-alloc-done-title .uil { color: #16a34a; font-size: 18px; }
+.td2-change-alloc-btn { white-space: nowrap; }
+.td2-alloc-route-pill {
+    display: inline-block;
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 2px 10px;
 }

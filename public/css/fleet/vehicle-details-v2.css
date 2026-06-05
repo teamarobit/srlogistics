@@ -4112,7 +4112,7 @@
     padding: 0 5px;
     border-radius: 10px;
     background: #3d52d5;
-    color: #fff;
+    color: #fff !important;
     font-size: 11px;
     font-weight: 700;
     line-height: 1;
@@ -4168,4 +4168,184 @@
     border-bottom: 1px solid #f0f3f9;
     font-size: 13px;
     color: #1a2340;
+}
+
+/* ============================================================
+   DEF (AdBlue) — Mini Dashboard — STATIC
+   ============================================================ */
+#pills-def .def-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 12px;
+    margin: 14px 0 18px;
+}
+#pills-def .def-kpi {
+    background: #fff;
+    border: 1px solid #E4E8F3;
+    border-radius: 10px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(3,38,113,0.04);
+}
+#pills-def .def-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3,38,113,0.08);
+}
+#pills-def .def-kpi-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(3,38,113,0.08);
+    color: #032671;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+#pills-def .def-kpi-icon.dk-c2 { background: rgba(45,197,111,0.10); color: #1a9152; }
+#pills-def .def-kpi-icon.dk-c3 { background: rgba(123,97,255,0.10); color: #5a3fd1; }
+#pills-def .def-kpi-icon.dk-c4 { background: rgba(242,169,59,0.10); color: #B97400; }
+
+#pills-def .def-kpi-body { min-width: 0; }
+#pills-def .def-kpi-body p {
+    margin: 0 0 2px 0;
+    font-size: 11.5px;
+    color: #6c7591;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+#pills-def .def-kpi-body h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #21263C;
+    line-height: 1.1;
+}
+#pills-def .def-kpi-body h4 span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6c7591;
+}
+
+@media (max-width: 1200px) {
+    #pills-def .def-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 576px) {
+    #pills-def .def-kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Tagged Assets — Issue Source / Return pills ── */
+#pills-tagged .src-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+#pills-tagged .src-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+#pills-tagged .src-badge.src-garage {
+    color: #1c5bd6;
+    background: #eef3ff;
+    border-color: #d4e1fb;
+}
+#pills-tagged .src-badge.src-vendor {
+    color: #0d8a6a;
+    background: #e9f8f2;
+    border-color: #cdeee2;
+}
+#pills-tagged .ret-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 11px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+#pills-tagged .ret-badge.ret-yes {
+    color: #0d8a6a;
+    background: #e9f8f2;
+    border-color: #cdeee2;
+}
+#pills-tagged .ret-badge.ret-no {
+    color: #c0392b;
+    background: #fdecea;
+    border-color: #f6d2cd;
+}
+#pills-tagged .ret-hint {
+    font-size: 10.5px;
+    color: #8a93a6;
+    margin-top: 3px;
+}
+
+/* ── Tagged Assets — Photos button + gallery ── */
+#pills-tagged .ta-photos-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    color: #1c5bd6;
+    background: #eef3ff;
+    border: 1px solid #d4e1fb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+#pills-tagged .ta-photos-btn:hover {
+    background: #1c5bd6;
+    border-color: #1c5bd6;
+    color: #fff;
+}
+#pills-tagged .ta-photos-btn i { font-size: 13px; }
+
+/* Gallery inside SweetAlert */
+.ta-gallery { text-align: left; }
+.ta-gallery .ta-main {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e4e7ef;
+    background: #f4f6fb;
+}
+.ta-gallery .ta-thumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.ta-gallery .ta-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: .7;
+    transition: all .15s ease;
+}
+.ta-gallery .ta-thumb:hover { opacity: 1; }
+.ta-gallery .ta-thumb.active {
+    border-color: #1c5bd6;
+    opacity: 1;
 }

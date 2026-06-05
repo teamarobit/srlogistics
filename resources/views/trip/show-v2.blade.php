@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=6.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -113,11 +113,6 @@
                         <span class="td2-step-label">Vehicle Assigned</span>
                     </div>
                     <div class="td2-step-line"></div>
-                    <div class="td2-step td2-step-pending" data-status="Loading">
-                        <div class="td2-step-dot"></div>
-                        <span class="td2-step-label">Loading</span>
-                    </div>
-                    <div class="td2-step-line"></div>
                     <div class="td2-step td2-step-pending" data-status="In Transit">
                         <div class="td2-step-dot"></div>
                         <span class="td2-step-label">In Transit</span>
@@ -158,14 +153,14 @@
                                 type="button" role="tab">Vehicle Allocation</button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link td2-tab" id="td2-vehStatus-tab"
-                                data-bs-toggle="pill" data-bs-target="#td2-vehStatus"
-                                type="button" role="tab">Vehicle Status</button>
-                    </li>
-                    <li class="nav-item">
                         <button class="nav-link td2-tab" id="td2-ewayLr-tab"
                                 data-bs-toggle="pill" data-bs-target="#td2-ewayLr"
                                 type="button" role="tab">Eway + LR</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link td2-tab" id="td2-vehStatus-tab"
+                                data-bs-toggle="pill" data-bs-target="#td2-vehStatus"
+                                type="button" role="tab">Vehicle Status</button>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link td2-tab" id="td2-pod-tab"
@@ -217,1821 +212,67 @@
                     <div class="td2-hcontent">
                         <div class="tab-content" id="td2TabContent">
 
-                            {{-- ─── TAB 1: Trip Initiation ─── --}}
+                            {{-- ─── TAB 1: Trip Initiation (lazy — auto-fetched on DOM ready) ─── --}}
                             <div class="tab-pane fade show active" id="td2-tripInit"
-                                 role="tabpanel" aria-labelledby="td2-tripInit-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Trip Initiations</h5>
-                                    <a href="{{ route('trip.edit', 1) }}" class="td2-icon-btn" title="Edit Trip">
-                                        <i class="uil uil-edit-alt"></i>
-                                    </a>
-                                </div>
-                                <div class="td2-pane-body">
-
-                                    {{-- Section 1: Info Grid --}}
-                                    <div class="td2-section">
-                                        <div class="row g-3">
-                                            {{-- Row 1 --}}
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Trip ID</span>
-                                                    <span class="td2-di-value">#001</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Trip Type</span>
-                                                    <span class="td2-di-value">Own Booking</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Trip Category</span>
-                                                    <span class="td2-di-value">Line</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Internal Trip ID</span>
-                                                    <span class="td2-di-value">#001001765</span>
-                                                </div>
-                                            </div>
-
-                                            {{-- Row 2 --}}
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Trip Date</span>
-                                                    <span class="td2-di-value">25/10/2025</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">RAG Status</span>
-                                                    <span class="td2-di-value"><span class="td2-rag td2-rag-red">Red</span></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Load Vendor</span>
-                                                    <span class="td2-di-value">Blue Dart</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Customer</span>
-                                                    <span class="td2-di-value">Nestle</span>
-                                                </div>
-                                            </div>
-
-                                            {{-- Row 3 --}}
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Vehicle Type</span>
-                                                    <span class="td2-di-value">Large Truck</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Vehicle Size</span>
-                                                    <span class="td2-di-value">14 FT – XXM 14M × 9M × 12M</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Consigner</span>
-                                                    <span class="td2-di-value">Britania Kolkata</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Consignee</span>
-                                                    <span class="td2-di-value">Samsung Hydrabad</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Section 2: Route Strip --}}
-                                    <div class="td2-section td2-section-compact">
-                                        <div class="td2-route-strip">
-                                            <div class="td2-rs-stop">
-                                                <span class="td2-rs-label">Source</span>
-                                                <span class="td2-rs-dot td2-rs-dot-source"></span>
-                                                <span class="td2-rs-name">Kolkata</span>
-                                            </div>
-                                            <span class="td2-rs-arrow">›</span>
-                                            <div class="td2-rs-stop">
-                                                <span class="td2-rs-label">Stop 1</span>
-                                                <span class="td2-rs-dot td2-rs-dot-mid"></span>
-                                                <span class="td2-rs-name">Kolaghat</span>
-                                            </div>
-                                            <span class="td2-rs-arrow">›</span>
-                                            <div class="td2-rs-stop">
-                                                <span class="td2-rs-label">Stop 2</span>
-                                                <span class="td2-rs-dot td2-rs-dot-mid"></span>
-                                                <span class="td2-rs-name">Patna</span>
-                                            </div>
-                                            <span class="td2-rs-arrow">›</span>
-                                            <div class="td2-rs-stop">
-                                                <span class="td2-rs-label">Destination</span>
-                                                <span class="td2-rs-dot td2-rs-dot-dest"></span>
-                                                <span class="td2-rs-name">Mumbai</span>
-                                            </div>
-                                        </div>
-                                        <div class="row g-3">
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Route</span>
-                                                    <span class="td2-di-value">Kolkata - Mumbai</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Distance</span>
-                                                    <span class="td2-di-value">150 KM</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Priority</span>
-                                                    <span class="td2-di-value"><span class="td2-priority td2-priority-urgent">Urgent</span></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-sm-6">
-                                                <div class="td2-di">
-                                                    <span class="td2-di-label">Tarpaulin</span>
-                                                    <span class="td2-di-value"><span class="td2-tarp-yes"><i class="uil uil-check-circle"></i> Yes</span></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Section 3: Comment --}}
-                                    <div class="td2-section">
-                                        <div class="td2-di">
-                                            <span class="td2-di-label">Comment</span>
-                                            <p class="td2-comment-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                                        </div>
-                                    </div>
-
-                                </div>
+                                 role="tabpanel" aria-labelledby="td2-tripInit-tab"
+                                 data-tab-key="tripInit" data-tab-url="{{ route('trip.tab', [$trip, 'tripInit']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 2: Vehicle Allocation ─── --}}
-                            <div class="tab-pane fade" id="td2-vehAlloc"
-                                 role="tabpanel" aria-labelledby="td2-vehAlloc-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Vehicle Allocation</h5>
-                                </div>
-                                <div class="td2-pane-body">
+                            {{-- ─── TABS 2–10: lazy-loaded on first activation — see public/js/Trip/tab-loader.js ─── --}}
 
-                                    {{-- Part A: Suggested Vehicles Accordion --}}
-                                    <div class="td2-section">
-                                        <div class="accordion td2-veh-accordion" id="td2SuggestedVeh">
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header mb-2">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2VehCollapse">
-                                                        Select from Suggested Vehicles <span class="ms-2 fw-bold d-inline-flex align-items-center justify-content-center" style="background:#16a34a; color:#fff; min-width:30px; height:30px; border-radius:50%; font-size:1rem; line-height:1; box-shadow:0 2px 8px rgba(22,163,74,0.5);">3</span>
-                                                    </button>
-                                                </h2>
-                                                <div id="td2VehCollapse" class="accordion-collapse collapse show">
-                                                    <div class="accordion-body p-0">
-
-                                                        {{-- Vehicle Card 1 --}}
-                                                        <div class="td2-veh-card-wrap">
-                                                            <input type="radio" name="td2VehSelect" id="td2Veh1" class="td2-veh-radio">
-                                                            <label for="td2Veh1" class="td2-veh-card td2-open-map">
-                                                                <div class="td2-vc-header">
-                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-green"></span> WB-12-AB-1237</div>
-                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
-                                                                </div>
-                                                                <div class="td2-vc-grid">
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Name</span>
-                                                                        <span class="td2-vc-val">Ashok Ray</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Number</span>
-                                                                        <span class="td2-vc-val">+91 8879402641</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">About Driver</span>
-                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">10 Mo</span></span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Status</span>
-                                                                        <span class="td2-vc-val"><span class="td2-veh-status-empty">Empty ✓</span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Yes</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Live Location</span>
-                                                                        <span class="td2-vc-val">Kolkata</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">5th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>5 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>7 Trips</span></div>"></i></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Associated Since</span>
-                                                                        <span class="td2-vc-val">10 Years 5 Months</span>
-                                                                    </div>
-                                                                </div>
-                                                            </label>
-                                                        </div>
-
-                                                        {{-- Vehicle Card 2 --}}
-                                                        <div class="td2-veh-card-wrap">
-                                                            <input type="radio" name="td2VehSelect" id="td2Veh2" class="td2-veh-radio">
-                                                            <label for="td2Veh2" class="td2-veh-card td2-open-map">
-                                                                <div class="td2-vc-header">
-                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-red"></span> WB-34-CD-5678</div>
-                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
-                                                                </div>
-                                                                <div class="td2-vc-grid">
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Name</span>
-                                                                        <span class="td2-vc-val">Ranjit Das</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Number</span>
-                                                                        <span class="td2-vc-val">+91 9432101234</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">About Driver</span>
-                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-yellow"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">4 Mo</span></span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Status</span>
-                                                                        <span class="td2-vc-val"><span class="td2-veh-status-onway">Not Empty ✗</span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">On the Way (2 days)</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Live Location</span>
-                                                                        <span class="td2-vc-val">Mumbai</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">3rd <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>8 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>4 Trips</span></div>"></i></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Associated Since</span>
-                                                                        <span class="td2-vc-val">7 Years 2 Months</span>
-                                                                    </div>
-                                                                </div>
-                                                            </label>
-                                                        </div>
-
-                                                        {{-- Vehicle Card 3 --}}
-                                                        <div class="td2-veh-card-wrap">
-                                                            <input type="radio" name="td2VehSelect" id="td2Veh3" class="td2-veh-radio">
-                                                            <label for="td2Veh3" class="td2-veh-card td2-open-map">
-                                                                <div class="td2-vc-header">
-                                                                    <div class="td2-vc-num"><span class="td2-vc-status-dot td2-dot-yellow"></span> WB-56-EF-9012</div>
-                                                                    <button class="td2-vc-eye-btn td2-open-map" type="button"><i class="uil uil-eye"></i></button>
-                                                                </div>
-                                                                <div class="td2-vc-grid">
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Name</span>
-                                                                        <span class="td2-vc-val">Manoj Kumar</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Driver Number</span>
-                                                                        <span class="td2-vc-val">+91 7654321098</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">About Driver</span>
-                                                                        <span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-green"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">14 Mo</span></span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Status</span>
-                                                                        <span class="td2-vc-val"><span class="td2-veh-status-empty">Empty ✓</span></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Availability</span>
-                                                                        <span class="td2-vc-val">Yes</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Live Location</span>
-                                                                        <span class="td2-vc-val">Durgapur</span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Vehicle Rank</span>
-                                                                        <span class="td2-vc-val">8th <i class="uil uil-info-circle ms-1" style="cursor:pointer;font-size:1rem;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="rank-tooltip" data-bs-title="<div class='rtt-header'>Trip Breakdown</div><div class='rtt-row'><span class='rtt-label'>Total Trips</span><span class='rtt-val'>12</span></div><div class='rtt-row'><span class='rtt-label'>Line</span><span class='rtt-val'>3 Trips</span></div><div class='rtt-row'><span class='rtt-label'>Local</span><span class='rtt-val'>9 Trips</span></div>"></i></span>
-                                                                    </div>
-                                                                    <div class="td2-vc-item">
-                                                                        <span class="td2-vc-label">Associated Since</span>
-                                                                        <span class="td2-vc-val">4 Years 9 Months</span>
-                                                                    </div>
-                                                                </div>
-                                                            </label>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- OR Divider --}}
-                                    <div class="td2-or-divider"><span>OR</span></div>
-
-                                    {{-- Part C: Add / Allocate Vehicle Form --}}
-                                    <div class="td2-section">
-                                        <p class="td2-section-title">Add / Allocate Vehicle</p>
-
-                                        {{-- Vehicle type toggle --}}
-                                        <div class="td2-veh-type-toggle mb-3">
-                                            <input type="radio" name="td2VehType" id="td2OwnVeh" value="Own" class="td2-vtype-radio td2-own-veh" checked>
-                                            <label for="td2OwnVeh" class="td2-vtype-label">Own Vehicle</label>
-                                            <input type="radio" name="td2VehType" id="td2ExtVeh" value="External" class="td2-vtype-radio td2-ext-veh">
-                                            <label for="td2ExtVeh" class="td2-vtype-label">External</label>
-                                        </div>
-
-                                        {{-- If Own Vehicle --}}
-                                        <div class="td2-if-own">
-                                            <div class="mb-3">
-                                                <label class="form-label">Select Vehicle</label>
-                                                <select class="form-select td2-own-veh-select" id="td2OwnVehSelect">
-                                                    <option value="">Select vehicle...</option>
-                                                    <option>WB-12-AB-1237</option>
-                                                    <option>WB-34-CD-5678</option>
-                                                    <option>WB-56-EF-9012</option>
-                                                </select>
-                                            </div>
-
-                                            {{-- VAHAN Details collapsible --}}
-                                            <div class="td2-vahan-wrap">
-                                                <button class="td2-vahan-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#td2VahanDetails">
-                                                    <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
-                                                </button>
-                                                <div id="td2VahanDetails" class="collapse">
-                                                    <table class="td2-vahan-table w-100">
-                                                        <tr>
-                                                            <th>Owner Name</th>
-                                                            <td>Rajesh Kumar</td>
-                                                            <th>Address</th>
-                                                            <td>12, Park Street, Kolkata - 700016</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Registration Date</th>
-                                                            <td>15/03/2018</td>
-                                                            <th>Status</th>
-                                                            <td>Active</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Fitness Expiry</th>
-                                                            <td>14/03/2026</td>
-                                                            <th>Body Type</th>
-                                                            <td>Closed Body</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurance Expiry</th>
-                                                            <td>22/07/2026</td>
-                                                            <th>Fuel Type</th>
-                                                            <td>Diesel</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Tax Expiry</th>
-                                                            <td>31/03/2026</td>
-                                                            <th>Permit Type</th>
-                                                            <td>National</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Permit Expiry</th>
-                                                            <td>20/11/2025</td>
-                                                            <th>National Permit Expiry</th>
-                                                            <td>20/11/2025</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>PUCC Expiry</th>
-                                                            <td>10/06/2026</td>
-                                                            <th>PUCC Number</th>
-                                                            <td>PUC2024WB1237</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurer</th>
-                                                            <td>New India Assurance</td>
-                                                            <th>Permit Number</th>
-                                                            <td>WB/NP/2022/001237</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Chassis Number</th>
-                                                            <td>MAT451351MDE12345</td>
-                                                            <th>Insurance Number</th>
-                                                            <td>NIA/2024/098765</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Engine Number</th>
-                                                            <td>4HK1-WB12345</td>
-                                                            <th>Financier</th>
-                                                            <td>SBI Bank</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Manufacturer</th>
-                                                            <td>Tata Motors</td>
-                                                            <th>Norms Type</th>
-                                                            <td>BS-VI</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Model</th>
-                                                            <td>LPT 1618</td>
-                                                            <th>Vehicle Category</th>
-                                                            <td>Medium Goods Vehicle</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>GVW</th>
-                                                            <td>16180 KG</td>
-                                                            <th>Wheelbase</th>
-                                                            <td>4200 MM</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>FASTag ID</th>
-                                                            <td>WB12AB1237FT</td>
-                                                            <th>TID</th>
-                                                            <td>TID20240012370</td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                            {{-- Driver Detail View — fields/values mirror the
-                                                 Vehicle Details modal > 'Assigned Driver Details' --}}
-                                            <div class="td2-driver-detail td2-view-booking-det">
-                                                <div class="td2-section-title">Driver Details</div>
-                                                <div class="row g-2">
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Driver Name</span>
-                                                            <span class="td2-di-value">Ashoke Pandey</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Driver Number</span>
-                                                            <span class="td2-di-value">+91 9876543210</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Associated Since</span>
-                                                            <span class="td2-di-value">10 Years 11 Months</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Experience</span>
-                                                            <span class="td2-di-value">2 Years 4 Months</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">RAG Status</span>
-                                                            <span class="td2-di-value"><span class="td2-rag td2-rag-green">Green</span></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 col-sm-6">
-                                                        <div class="td2-di">
-                                                            <span class="td2-di-label">Line / Local Trips</span>
-                                                            <span class="td2-di-value">5 &nbsp;/&nbsp; 7</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- If External Vehicle --}}
-                                        <div class="td2-if-ext">
-                                            <div class="mb-3">
-                                                <label class="form-label">Vendor</label>
-                                                <div class="d-flex gap-2 align-items-center">
-                                                    <select class="form-select" id="td2ExtVendorSelect">
-                                                        <option value="">Select vendor...</option>
-                                                        <option>ABC Logistics</option>
-                                                        <option>XYZ Transport</option>
-                                                        <option>MNC Logistics</option>
-                                                    </select>
-                                                    <a href="{{-- TODO: route --}}" class="text-nowrap small">+ Add Vendor</a>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Vehicle</label>
-                                                <div class="d-flex gap-2 align-items-center">
-                                                    <select class="form-select" id="td2ExtVehicleSelect">
-                                                        <option value="">Select vehicle...</option>
-                                                        <option>WB-99-ZZ-0001</option>
-                                                        <option>DL-01-XX-5050</option>
-                                                    </select>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addVeh">+ Add Vehicle</button>
-                                                </div>
-                                            </div>
-
-                                            {{-- VAHAN Details collapsible (external) --}}
-                                            <div class="td2-vahan-wrap mb-3">
-                                                <button class="td2-vahan-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#td2VahanDetailsExt">
-                                                    <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
-                                                </button>
-                                                <div id="td2VahanDetailsExt" class="collapse">
-                                                    <table class="td2-vahan-table w-100">
-                                                        <tr>
-                                                            <th>Owner Name</th>
-                                                            <td>—</td>
-                                                            <th>Address</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Registration Date</th>
-                                                            <td>—</td>
-                                                            <th>Status</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Fitness Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Body Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurance Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Fuel Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Tax Expiry</th>
-                                                            <td>—</td>
-                                                            <th>Permit Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Permit Expiry</th>
-                                                            <td>—</td>
-                                                            <th>National Permit Expiry</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>PUCC Expiry</th>
-                                                            <td>—</td>
-                                                            <th>PUCC Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Insurer</th>
-                                                            <td>—</td>
-                                                            <th>Permit Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Chassis Number</th>
-                                                            <td>—</td>
-                                                            <th>Insurance Number</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Engine Number</th>
-                                                            <td>—</td>
-                                                            <th>Financier</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Manufacturer</th>
-                                                            <td>—</td>
-                                                            <th>Norms Type</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Model</th>
-                                                            <td>—</td>
-                                                            <th>Vehicle Category</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>GVW</th>
-                                                            <td>—</td>
-                                                            <th>Wheelbase</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>FASTag ID</th>
-                                                            <td>—</td>
-                                                            <th>TID</th>
-                                                            <td>—</td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                            <div class="row g-3">
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Expected Start Date</label>
-                                                    <input type="date" class="form-control" name="ext_start_date">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Expected Start Time</label>
-                                                    <input type="time" class="form-control" name="ext_start_time">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Loading Point</label>
-                                                    <select class="form-select" name="ext_loading_point">
-                                                        <option value="">Select loading point...</option>
-                                                        <option>Webel Gate</option>
-                                                        <option>SDF</option>
-                                                        <option>DLF 1</option>
-                                                        <option>DLF 2</option>
-                                                        <option>Laketown</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Unloading Point</label>
-                                                    <select class="form-select" name="ext_unloading_point">
-                                                        <option value="">Select unloading point...</option>
-                                                        <option>Webel Gate</option>
-                                                        <option>SDF</option>
-                                                        <option>DLF 1</option>
-                                                        <option>DLF 2</option>
-                                                        <option>Laketown</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Save Button --}}
-                                        <div class="d-flex justify-content-end mt-4">
-                                            <button type="button" class="btn btn-primary">Save Allocation</button>
-                                        </div>
-
-                                    </div>
-
-                                </div>
+                            {{-- TAB 2: Vehicle Allocation --}}
+                            <div class="tab-pane fade" id="td2-vehAlloc" role="tabpanel" aria-labelledby="td2-vehAlloc-tab"
+                                 data-tab-key="vehAlloc" data-tab-url="{{ route('trip.tab', [$trip, 'vehAlloc']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 3: Vehicle Status ─── --}}
-                            <div class="tab-pane fade" id="td2-vehStatus"
-                                 role="tabpanel" aria-labelledby="td2-vehStatus-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Vehicle Status</h5>
-                                </div>
-                                <div class="td2-pane-body">
-                                <div class="td2-vstage-list">
-
-                                    {{-- ─── Stage 1: Reported at Loading Point ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">Reported at Loading Point</span>
-                                            <span class="td2-vstage-time">12/01/2026 12:00 PM</span>
-                                            <a class="td2-vstage-change"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#changeStatus">Change</a>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Loading Point — Kolkata</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Kolkata,West+Bengal,India&z=13&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Loading Point — Kolkata"></iframe>
-                                        </div>
-                                    </div>
-
-                                    {{-- ─── Stage 2: On the Way ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">On the Way</span>
-                                            <span class="td2-vstage-time">12/01/2026 02:00 PM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-truck"></i> En Route — Patna (last known)</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Patna,Bihar,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="En Route — Patna"></iframe>
-                                        </div>
-                                    </div>
-
-                                    {{-- ─── Stage 3: Reported at Unloading Point ─── --}}
-                                    <div class="td2-vstage td2-vstage-done">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-check-circle td2-vstage-icon-done"></i>
-                                            <span class="td2-vstage-name">Reported at Unloading Point</span>
-                                            <span class="td2-vstage-time">22/01/2026 08:00 AM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge"><i class="fa fa-map-marker"></i> Unloading Point — Mumbai</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Mumbai,Maharashtra,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Unloading Point — Mumbai"></iframe>
-                                        </div>
-                                    </div>
-
-                                    {{-- ─── Stage 4: Unloading (Manual Entry / Pending) ─── --}}
-                                    <div class="td2-vstage td2-vstage-pending">
-                                        <div class="td2-vstage-header">
-                                            <i class="uil uil-circle td2-vstage-icon-pending"></i>
-                                            <span class="td2-vstage-name">Unloading <small class="fw-normal text-muted">(Manual Entry)</small></span>
-                                            <span class="td2-vstage-time">23/01/2026 10:00 AM</span>
-                                        </div>
-                                        <div class="td2-vstage-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label class="td2-doc-label">Halting</label>
-                                                    <div class="input-group input-group-sm">
-                                                        <input type="number" class="form-control" placeholder="0">
-                                                        <span class="input-group-text">Day</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <label class="td2-doc-label">Manual Entry</label>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Enter note">
-                                                </div>
-                                            </div>
-                                            <p class="td2-vstage-gps-note"><i class="fa fa-map-marker"></i> Auto-fetched via GPS coordinates</p>
-                                        </div>
-                                        <div class="td2-map-embed">
-                                            <div class="td2-map-proto-badge td2-map-proto-pending"><i class="fa fa-clock-o"></i> Unloading — Pending GPS fix</div>
-                                            <iframe
-                                                src="https://maps.google.com/maps?q=Mumbai,Maharashtra,India&z=12&output=embed"
-                                                width="100%" height="220" frameborder="0"
-                                                style="border:0;" allowfullscreen="" loading="lazy"
-                                                title="Unloading — Mumbai"></iframe>
-                                        </div>
-                                    </div>
-
-                                </div>{{-- /.td2-vstage-list --}}
-                                </div>{{-- /.td2-pane-body --}}
+                            {{-- TAB 3: Vehicle Status --}}
+                            <div class="tab-pane fade" id="td2-vehStatus" role="tabpanel" aria-labelledby="td2-vehStatus-tab"
+                                 data-tab-key="vehStatus" data-tab-url="{{ route('trip.tab', [$trip, 'vehStatus']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 4: Eway + LR ─── --}}
-                            <div class="tab-pane fade" id="td2-ewayLr"
-                                 role="tabpanel" aria-labelledby="td2-ewayLr-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Eway + LR</h5>
-                                    <button class="btn btn-primary btn-sm" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#addEwayTable">
-                                        + Add Eway
-                                    </button>
-                                </div>
-                                <div class="td2-pane-body">
-
-                                    {{-- ─── E-Way Bills ─── --}}
-                                    <div class="td2-docs-section">
-                                        <div class="td2-docs-header">
-                                            <p class="td2-docs-title">E-Way Bills</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#addEwayTable">
-                                                + Add Eway
-                                            </button>
-                                        </div>
-
-                                        {{-- Eway Card 1 --}}
-                                        <div class="td2-doc-card">
-                                            <div class="td2-card-accent td2-card-accent-orange"></div>
-                                            <div class="td2-doc-card-body">
-                                                <div class="td2-dot-menu-wrap dropdown">
-                                                    <button class="td2-dot-trigger dropdown-toggle" type="button"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
-                                                        {{-- Print REMOVED per feedback.md §6/§19 --}}
-                                                    </ul>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Invoice Number</div>
-                                                        <div class="td2-doc-val">#INV-2025-001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Invoice Date</div>
-                                                        <div class="td2-doc-val">02/11/2025</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Number</div>
-                                                        <div class="td2-doc-val">#LR001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Date</div>
-                                                        <div class="td2-doc-val">20/10/2025</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Quantity</div>
-                                                        <div class="td2-doc-val">40 Units</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Value with Tax</div>
-                                                        <div class="td2-doc-val">&#8377;1,000</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Gross Weight</div>
-                                                        <div class="td2-doc-val">10 KG</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Charged Weight</div>
-                                                        <div class="td2-doc-val">20 KG</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Eway Card 2 --}}
-                                        <div class="td2-doc-card">
-                                            <div class="td2-card-accent td2-card-accent-blue"></div>
-                                            <div class="td2-doc-card-body">
-                                                <div class="td2-dot-menu-wrap dropdown">
-                                                    <button class="td2-dot-trigger dropdown-toggle" type="button"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
-                                                        {{-- Print REMOVED per feedback.md §6/§19 --}}
-                                                    </ul>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Invoice Number</div>
-                                                        <div class="td2-doc-val">#INV-2025-001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Invoice Date</div>
-                                                        <div class="td2-doc-val">02/11/2025</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Number</div>
-                                                        <div class="td2-doc-val">#LR001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Date</div>
-                                                        <div class="td2-doc-val">20/10/2025</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Quantity</div>
-                                                        <div class="td2-doc-val">40 Units</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Value with Tax</div>
-                                                        <div class="td2-doc-val">&#8377;1,000</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Gross Weight</div>
-                                                        <div class="td2-doc-val">10 KG</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Charged Weight</div>
-                                                        <div class="td2-doc-val">20 KG</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- ─── Lorry Receipts ─── --}}
-                                    <div class="td2-docs-section">
-                                        <div class="td2-docs-header">
-                                            <p class="td2-docs-title">Lorry Receipts</p>
-                                            <a href="{{ route('trip.lr.create') }}" class="btn btn-primary btn-sm">+ Add LR</a>
-                                        </div>
-
-                                        {{-- LR Card 1 --}}
-                                        <div class="td2-doc-card">
-                                            <div class="td2-card-accent td2-card-accent-green"></div>
-                                            <div class="td2-doc-card-body">
-                                                <div class="td2-dot-menu-wrap dropdown">
-                                                    <button class="td2-dot-trigger dropdown-toggle" type="button"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#">View Details</a></li>
-                                                        {{-- Print REMOVED per feedback.md §6/§19 --}}
-                                                    </ul>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Vehicle Number</div>
-                                                        <div class="td2-doc-val">WB-12-AB-1237</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Vehicle Size</div>
-                                                        <div class="td2-doc-val">14 FT</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Number</div>
-                                                        <div class="td2-doc-val">#LR001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Party LR#</div>
-                                                        <div class="td2-doc-val">PTY-20251020</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">LR Date</div>
-                                                        <div class="td2-doc-val">20/10/2025</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Seal Number</div>
-                                                        <div class="td2-doc-val">SEAL-001</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Transport Mode</div>
-                                                        <div class="td2-doc-val">Road</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Payment Terms</div>
-                                                        <div class="td2-doc-val">To Pay</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Consignor</div>
-                                                        <div class="td2-doc-val">Britania Kolkata</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Consignee</div>
-                                                        <div class="td2-doc-val">Samsung Hydrabad</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Billing Party</div>
-                                                        <div class="td2-doc-val">Gitanjali LLP</div>
-                                                    </div>
-                                                </div>
-                                                <div class="td2-doc-row">
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Gross Weight</div>
-                                                        <div class="td2-doc-val">10 KG</div>
-                                                    </div>
-                                                    <div class="td2-doc-item">
-                                                        <div class="td2-doc-label">Charged Weight</div>
-                                                        <div class="td2-doc-val">20 KG</div>
-                                                    </div>
-                                                    <div class="td2-doc-item col-span-2">
-                                                        <div class="td2-doc-label">Remarks</div>
-                                                        <div class="td2-doc-val">Handle with care</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
+                            {{-- TAB 4: Eway + LR --}}
+                            <div class="tab-pane fade" id="td2-ewayLr" role="tabpanel" aria-labelledby="td2-ewayLr-tab"
+                                 data-tab-key="ewayLr" data-tab-url="{{ route('trip.tab', [$trip, 'ewayLr']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 5: POD ─── --}}
-                            <div class="tab-pane fade" id="td2-pod"
-                                 role="tabpanel" aria-labelledby="td2-pod-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">LR-POD</h5>
-                                    <button class="btn btn-primary btn-sm" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#addPOD">
-                                        + Add POD
-                                    </button>
-                                </div>
-                                <div class="td2-pane-body">
-
-                                    {{-- ─── POD Card 1 ─── --}}
-                                    <div class="td2-pod-card">
-                                        <div class="td2-pod-grid">
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Material Description</div>
-                                                <div class="td2-doc-val">Hydrabad - Kolkata</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Invoice Number &amp; Date</div>
-                                                <div class="td2-doc-val">#INV001 | 02/11/2025</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">LR Number &amp; Date</div>
-                                                <div class="td2-doc-val">#LR001 | 20/10/2025</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Net Quantity</div>
-                                                <div class="td2-doc-val">40</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Value with Tax</div>
-                                                <div class="td2-doc-val">&#8377;1,000</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Gross Weight</div>
-                                                <div class="td2-doc-val">10 KG</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Charged Weight</div>
-                                                <div class="td2-doc-val">20 KG</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Billing Customer</div>
-                                                <div class="td2-doc-val">Gitanjali LLP</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Source</div>
-                                                <div class="td2-doc-val">Hydrabad</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Destination</div>
-                                                <div class="td2-doc-val">Kolkata</div>
-                                            </div>
-                                            <div class="td2-pod-item">
-                                                <div class="td2-doc-label">Product Type</div>
-                                                <div class="td2-doc-val">Electronics</div>
-                                            </div>
-                                        </div>
-                                        <div class="td2-party-row">
-                                            <div class="td2-party-block">
-                                                <div class="td2-party-label">Consignor</div>
-                                                <div class="td2-party-name">Britania Kolkata</div>
-                                                <div class="td2-party-addr">123 Park Street, Kolkata</div>
-                                            </div>
-                                            <div class="td2-party-block">
-                                                <div class="td2-party-label">Consignee</div>
-                                                <div class="td2-party-name">Samsung Hydrabad</div>
-                                                <div class="td2-party-addr">45 Tech Hub, Hydrabad</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
+                            {{-- TAB 5: POD --}}
+                            <div class="tab-pane fade" id="td2-pod" role="tabpanel" aria-labelledby="td2-pod-tab"
+                                 data-tab-key="pod" data-tab-url="{{ route('trip.tab', [$trip, 'pod']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 6: Trip Payout ─── --}}
-                            <div class="tab-pane fade" id="td2-tripPayout"
-                                 role="tabpanel" aria-labelledby="td2-tripPayout-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Trip Payout</h5>
-                                </div>
-                                <div class="td2-pane-body">
-                                    <p class="td2-payout-subhead">Trip ID: #TRIP001 | Vehicle: XY-55-TY6788 | Driver: Ramesh Singh</p>
-
-                                    {{-- Payout stat cards --}}
-                                    <div class="td2-payout-stats row g-3 mb-2">
-                                        {{-- Card 1: Diesel --}}
-                                        <div class="col-md-4">
-                                            <div class="td2-stat-card">
-                                                <p class="td2-stat-card-title">Diesel</p>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Fixed Diesel</span>
-                                                    <span class="td2-stat-val">200 L</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Issued Diesel</span>
-                                                    <span class="td2-stat-val">150 L</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Pending Diesel</span>
-                                                    <span class="td2-stat-val">50 L</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {{-- Card 2: Advance --}}
-                                        <div class="col-md-4">
-                                            <div class="td2-stat-card">
-                                                <p class="td2-stat-card-title">Advance</p>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Fixed Advance</span>
-                                                    <span class="td2-stat-val">₹10,000</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Issued Advance</span>
-                                                    <span class="td2-stat-val">₹6,000</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Pending Advance</span>
-                                                    <span class="td2-stat-val">₹4,000</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {{-- Card 3: Margin --}}
-                                        <div class="col-md-4">
-                                            <div class="td2-stat-card">
-                                                <p class="td2-stat-card-title">Margin</p>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Fuel Rate</span>
-                                                    <span class="td2-stat-val">₹90 / L</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Diesel Margin</span>
-                                                    <span class="td2-stat-val">70 L × ₹90 = ₹6,300</span>
-                                                </div>
-                                                <div class="td2-stat-row">
-                                                    <span class="td2-stat-label">Advance Margin</span>
-                                                    <span class="td2-stat-val">₹4,000</span>
-                                                </div>
-                                                <div class="td2-stat-row td2-stat-total">
-                                                    <span class="td2-stat-label">Total</span>
-                                                    <span class="td2-stat-val">₹10,300</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <p class="td2-payout-disclaimer">⚠ Trip Margin can apply across multiple trips. Figures shown are for this trip only.</p>
-
-                                    {{-- Driver Transactions --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Driver Transactions</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#driverExpense">
-                                                + Add Expense
-                                            </button>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Expense Head</th>
-                                                        <th>Expense Type</th>
-                                                        <th>Debit (₹)</th>
-                                                        <th>Credit (₹)</th>
-                                                        <th>Notes</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Vehicle Challan</td>
-                                                        <td>Credit</td>
-                                                        <td>—</td>
-                                                        <td>200</td>
-                                                        <td>Traffic challan</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Material Shortage</td>
-                                                        <td>Debit</td>
-                                                        <td>100</td>
-                                                        <td>—</td>
-                                                        <td>Short delivery</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                            {{-- TAB 6: Trip Payout --}}
+                            <div class="tab-pane fade" id="td2-tripPayout" role="tabpanel" aria-labelledby="td2-tripPayout-tab"
+                                 data-tab-key="tripPayout" data-tab-url="{{ route('trip.tab', [$trip, 'tripPayout']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 7: Expenses ─── --}}
-                            <div class="tab-pane fade" id="td2-expenses"
-                                 role="tabpanel" aria-labelledby="td2-expenses-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Expenses</h5>
-                                    <button class="btn btn-primary btn-sm" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#addExpense">
-                                        + Add Expense
-                                    </button>
-                                </div>
-                                <div class="td2-pane-body">
-                                    {{-- Expense summary cards --}}
-                                    <div class="td2-exp-summary row g-2 mb-3">
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Diesel</span>
-                                                <span class="td2-exp-amt">₹15,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Toll Charges</span>
-                                                <span class="td2-exp-amt">₹10,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Driver Advance</span>
-                                                <span class="td2-exp-amt">₹50,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Maintenance</span>
-                                                <span class="td2-exp-amt">₹3,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Fooding</span>
-                                                <span class="td2-exp-amt">₹5,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-6">
-                                            <div class="td2-exp-card">
-                                                <span class="td2-exp-head">Misc. Exp</span>
-                                                <span class="td2-exp-amt">₹2,000</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="td2-exp-total-card">
-                                                <span class="td2-exp-total-label">Total</span>
-                                                <span class="td2-exp-total-amt">₹85,000</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Expense detail table --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Expense Detail</p>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Expense Head</th>
-                                                        <th>Date &amp; Time</th>
-                                                        <th>Recorded By</th>
-                                                        <th>Description</th>
-                                                        <th>Type</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Diesel</td>
-                                                        <td>25/10/2025 10:00 AM</td>
-                                                        <td>Ramesh Singh</td>
-                                                        <td>Fuel fill-up Kolkata</td>
-                                                        <td>Debit</td>
-                                                        <td>₹5,000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Toll Charges</td>
-                                                        <td>25/10/2025 02:00 PM</td>
-                                                        <td>Ramesh Singh</td>
-                                                        <td>NH-6 toll</td>
-                                                        <td>Debit</td>
-                                                        <td>₹800</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Driver Advance</td>
-                                                        <td>26/10/2025 09:00 AM</td>
-                                                        <td>Admin</td>
-                                                        <td>Pre-trip advance</td>
-                                                        <td>Debit</td>
-                                                        <td>₹6,000</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                            {{-- TAB 7: Expenses --}}
+                            <div class="tab-pane fade" id="td2-expenses" role="tabpanel" aria-labelledby="td2-expenses-tab"
+                                 data-tab-key="expenses" data-tab-url="{{ route('trip.tab', [$trip, 'expenses']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 8: Profit or Loss ─── --}}
-                            <div class="tab-pane fade" id="td2-profitLoss"
-                                 role="tabpanel" aria-labelledby="td2-profitLoss-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Profit or Loss</h5>
-                                    <div class="td2-pane-actions">
-                                        <button class="btn btn-outline-primary btn-sm td2-bill-click" type="button">
-                                            Bill Entry
-                                        </button>
-                                        <a href="#" class="btn btn-success btn-sm">Finalise Bill</a>
-                                    </div>
-                                </div>
-                                <div class="td2-pane-body">
-                                    {{-- P&L Summary card --}}
-                                    <div class="td2-pl-card">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="td2-pl-section-title">Total Income</p>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Freight</span>
-                                                    <span class="td2-pl-val">₹35,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Loading/Unloading</span>
-                                                    <span class="td2-pl-val">₹2,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Multi-Point</span>
-                                                    <span class="td2-pl-val">₹1,500</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Halting</span>
-                                                    <span class="td2-pl-val">₹1,000</span>
-                                                </div>
-                                                <div class="td2-pl-subtotal">
-                                                    <span>TOTAL INCOME</span>
-                                                    <span>₹39,500</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="td2-pl-section-title">Total Expense</p>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Diesel</span>
-                                                    <span class="td2-pl-val">₹15,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Toll Charges</span>
-                                                    <span class="td2-pl-val">₹10,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Driver Advance</span>
-                                                    <span class="td2-pl-val">₹50,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Maintenance</span>
-                                                    <span class="td2-pl-val">₹3,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Fooding</span>
-                                                    <span class="td2-pl-val">₹5,000</span>
-                                                </div>
-                                                <div class="td2-pl-row">
-                                                    <span class="td2-pl-label">Misc. Exp</span>
-                                                    <span class="td2-pl-val">₹2,000</span>
-                                                </div>
-                                                <div class="td2-pl-subtotal">
-                                                    <span>TOTAL EXPENSE</span>
-                                                    <span>₹85,000</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="td2-pl-result td2-pl-loss">
-                                            <span>PROFIT / LOSS</span>
-                                            <span>–₹45,500</span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Addition table --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Addition</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#addAddition">
-                                                + Add Addition
-                                            </button>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Addition Head</th>
-                                                        <th>Amount</th>
-                                                        <th>Recorded By</th>
-                                                        <th>Date</th>
-                                                        <th>Notes</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Fixed Fee</td>
-                                                        <td>₹7,000</td>
-                                                        <td>Vinay Goyel</td>
-                                                        <td>12/11/2025</td>
-                                                        <td>—</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Loading/Unloading Charge</td>
-                                                        <td>₹1,000</td>
-                                                        <td>Abhishek Nayak</td>
-                                                        <td>13/11/2025</td>
-                                                        <td>—</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    {{-- Deduction table --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Deduction</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#addDeduction">
-                                                + Add Deduction
-                                            </button>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Deduction Head</th>
-                                                        <th>Amount</th>
-                                                        <th>Recorded By</th>
-                                                        <th>Date</th>
-                                                        <th>Notes</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>TDS</td>
-                                                        <td>₹7,000</td>
-                                                        <td>Vinay Goyel</td>
-                                                        <td>12/11/2025</td>
-                                                        <td>—</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Mamul</td>
-                                                        <td>₹3,000</td>
-                                                        <td>Vinay Goyel</td>
-                                                        <td>12/11/2025</td>
-                                                        <td>—</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    {{-- Transaction table --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Transactions</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#addTransaction">
-                                                + Add Transaction
-                                            </button>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Type</th>
-                                                        <th>Mode of Payment</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>12/11/2025</td>
-                                                        <td>Advance</td>
-                                                        <td>Cash</td>
-                                                        <td>₹3,000</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    {{-- Summary totals --}}
-                                    <div class="td2-section td2-pl-totals">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Summary</p>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
-                                                <span>Total Addition</span>
-                                                <span>5,000.00</span>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <span>Total Deduction</span>
-                                                <span>10,000.00</span>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <span>Net Payable</span>
-                                                <span>15,000.00</span>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <span>Net Amount Paid</span>
-                                                <span>3,000.00</span>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <span class="td2-pl-due">Due Balance</span>
-                                                <span class="td2-pl-due">9,000.00</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                            {{-- TAB 8: Profit or Loss --}}
+                            <div class="tab-pane fade" id="td2-profitLoss" role="tabpanel" aria-labelledby="td2-profitLoss-tab"
+                                 data-tab-key="profitLoss" data-tab-url="{{ route('trip.tab', [$trip, 'profitLoss']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 9: Memo (Outside Booking only) ─── --}}
-                            <div class="tab-pane fade" id="td2-memo"
-                                 role="tabpanel" aria-labelledby="td2-memo-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Memo</h5>
-                                </div>
-                                <div class="td2-pane-body">
-                                    <span class="td2-conditional-note">Outside Booking Only</span>
-
-                                    {{-- Memo form --}}
-                                    <form class="td2-memo-form" action="#">
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label class="form-label">Memo Number</label>
-                                                <input type="text" class="form-control bg-light" name="memo_number"
-                                                       value="Memo00120" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Load Vendor Name</label>
-                                                <input type="text" class="form-control bg-light" name="vendor_name"
-                                                       value="Samsung" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Date</label>
-                                                <input type="date" class="form-control" name="memo_date"
-                                                       value="2026-06-01">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Vehicle Num</label>
-                                                <input type="text" class="form-control bg-light" name="vehicle_num"
-                                                       value="WB-12-VH-1234" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Source</label>
-                                                <select class="form-select" name="source">
-                                                    <option value="">Choose...</option>
-                                                    <option selected>Kolkata</option>
-                                                    <option>Chennai</option>
-                                                    <option>Delhi</option>
-                                                    <option>Mumbai</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Destination</label>
-                                                <select class="form-select" name="destination">
-                                                    <option value="">Choose...</option>
-                                                    <option>Kolkata</option>
-                                                    <option>Chennai</option>
-                                                    <option>Delhi</option>
-                                                    <option>Mumbai</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Weight</label>
-                                                <input type="text" class="form-control bg-light" name="weight"
-                                                       value="7mt/9mt" readonly>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Freight</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">₹</span>
-                                                    <input type="text" class="form-control" name="freight">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Advance</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">₹</span>
-                                                    <input type="text" class="form-control" name="advance">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Balance</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">₹</span>
-                                                    <input type="text" class="form-control" name="balance">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Halting</label>
-                                                <input type="text" class="form-control" name="halting">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Multi Points</label>
-                                                <input type="text" class="form-control" name="multi_points"
-                                                       placeholder="Point 1, Point 2">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Loading Charges</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">₹</span>
-                                                    <input type="text" class="form-control" name="loading_charges">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Unloading Charges</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">₹</span>
-                                                    <input type="text" class="form-control" name="unloading_charges">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label">Remarks</label>
-                                                <textarea class="form-control" name="remarks" rows="3"></textarea>
-                                            </div>
-                                        </div>
-                                    </form>
-
-                                    {{-- Memo Transactions --}}
-                                    <div class="td2-section mt-4">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Transactions</p>
-                                            <button class="btn btn-primary btn-sm" type="button"
-                                                    data-bs-toggle="modal" data-bs-target="#addTransaction">
-                                                + Add Transaction
-                                            </button>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="td2-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Type</th>
-                                                        <th>Mode</th>
-                                                        <th>Amount</th>
-                                                        <th>Notes</th>
-                                                        <th>Advance Received</th>
-                                                        <th>Balance Received</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>12/11/2025</td>
-                                                        <td>Advance</td>
-                                                        <td>Cash</td>
-                                                        <td>₹5,000</td>
-                                                        <td>—</td>
-                                                        <td>₹5,000</td>
-                                                        <td>—</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end mt-3">
-                                        <button type="button" class="btn btn-primary td2-memo-save">Save Memo</button>
-                                    </div>
-                                </div>
+                            {{-- TAB 9: Memo --}}
+                            <div class="tab-pane fade" id="td2-memo" role="tabpanel" aria-labelledby="td2-memo-tab"
+                                 data-tab-key="memo" data-tab-url="{{ route('trip.tab', [$trip, 'memo']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
-                            {{-- ─── TAB 10: Broker Payment (External vehicle only) ─── --}}
-                            <div class="tab-pane fade" id="td2-brokerPayment"
-                                 role="tabpanel" aria-labelledby="td2-brokerPayment-tab">
-                                <div class="td2-pane-header">
-                                    <h5 class="td2-pane-title">Broker Payment</h5>
-                                </div>
-                                <div class="td2-pane-body">
-                                    <span class="td2-conditional-note">External Vehicle Only</span>
-                                    <div class="td2-lock-note">Vehicle number and freight amount cannot be changed after allocation. Contact Admin to modify.</div>
-
-                                    {{-- Payment type radio --}}
-                                    <div class="mb-3">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="brokerPaymentType"
-                                                   id="bpAdvance" value="Advance Request" checked>
-                                            <label class="form-check-label" for="bpAdvance">Advance Request</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="brokerPaymentType"
-                                                   id="bpBalance" value="Balance Request">
-                                            <label class="form-check-label" for="bpBalance">Balance Request</label>
-                                        </div>
-                                    </div>
-
-                                    {{-- Addition (Credit) --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Addition (Credit)</p>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Freight</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control td2-broker-locked"
-                                                       value="35,000" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Bonus</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" placeholder="—">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Loading/Unloading Labour</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" value="2,000">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Halting</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" value="1,000">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Others</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" placeholder="—">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Deduction (Debit) --}}
-                                    <div class="td2-section">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Deduction (Debit)</p>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">TDS</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" value="3,500">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Damage/Shortage Charges</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" placeholder="—">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Mamul</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" value="500">
-                                            </div>
-                                        </div>
-                                        <div class="td2-broker-row">
-                                            <span class="td2-broker-label">Others</span>
-                                            <div class="input-group td2-broker-input">
-                                                <span class="input-group-text">₹</span>
-                                                <input type="text" class="form-control" placeholder="—">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Net Payable --}}
-                                    <div class="td2-section td2-broker-net">
-                                        <div class="td2-section-header">
-                                            <p class="td2-section-head-title">Net Payable</p>
-                                        </div>
-                                        <div class="td2-broker-net-row">
-                                            <span>Gross Addition</span>
-                                            <span>₹38,000</span>
-                                        </div>
-                                        <div class="td2-broker-net-row">
-                                            <span>Total Deduction</span>
-                                            <span>₹4,000</span>
-                                        </div>
-                                        <div class="td2-broker-net-row">
-                                            <span>Net Payable</span>
-                                            <span>₹34,000</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end mt-3">
-                                        <button type="button" class="btn btn-primary td2-broker-submit">Submit Payment Request</button>
-                                    </div>
-                                </div>
+                            {{-- TAB 10: Broker Payment --}}
+                            <div class="tab-pane fade" id="td2-brokerPayment" role="tabpanel" aria-labelledby="td2-brokerPayment-tab"
+                                 data-tab-key="brokerPayment" data-tab-url="{{ route('trip.tab', [$trip, 'brokerPayment']) }}">
+                                @include('trip.tabs._loading')
                             </div>
 
                         </div>{{-- /.tab-content --}}
@@ -2042,6 +283,7 @@
                 <div class="col-md-3 td2-sidebar">
 
                     {{-- STATUS — Admin only: JS applyRoleRules() toggles via .status-sidebar-wrap (dev-notes §4) --}}
+                    {{-- Commented out per request (2026-06-03)
                     <div class="td2-scard status-sidebar-wrap">
                         <p class="td2-scard-label">Status</p>
                         <select class="form-select form-select-sm">
@@ -2060,43 +302,31 @@
                             <option>Accident</option>
                         </select>
                     </div>
+                    --}}
 
                     {{-- SOS moved to floating FAB — see #td2SosFab below --}}
 
-                    {{-- REVIEWS — Admin only: JS applyRoleRules() toggles via .reviews-sidebar-wrap (dev-notes §4) --}}
-                    <div class="td2-scard reviews-sidebar-wrap">
-                        <p class="td2-scard-label">Reviews</p>
-                        <button class="btn btn-primary btn-sm" type="button"
-                                data-bs-toggle="modal" data-bs-target="#addReview">
-                            + REVIEW
-                        </button>
-                    </div>
-
                     {{-- COMPLIANCE CHECK --}}
                     <div class="td2-scard td2-compliance-wrap">
-                        <p class="td2-scard-label">Compliance Check</p>
-                        <ul class="list-unstyled td2-compliance-list">
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker PAN</span>
-                                <span class="td2-ci-val">Valid</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker Bank Account</span>
-                                <span class="td2-ci-val">Active</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Broker Name match PAN</span>
-                                <span class="td2-ci-val td2-ci-high">High</span>
-                            </li>
-                            <li class="td2-compliance-item">
-                                <i class="uil uil-check-circle td2-ci-ok"></i>
-                                <span class="td2-ci-key">Vehicle Valid</span>
-                                <span class="td2-ci-val">—</span>
-                            </li>
-                        </ul>
+                        <p class="td2-vd-section-title"><i class="uil uil-shield-check"></i> Compliance</p>
+                        <div class="td2-vd-comp-grid">
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Broker PAN</span><span class="td2-vd-comp-val">Valid</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Bank Account</span><span class="td2-vd-comp-val">Active</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-ok">
+                                <i class="uil uil-check-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Name match PAN</span><span class="td2-vd-comp-val">High</span></div>
+                            </div>
+                            <div class="td2-vd-comp-item td2-vd-na">
+                                <i class="uil uil-minus-circle"></i>
+                                <div><span class="td2-vd-comp-lbl">Vehicle Valid</span><span class="td2-vd-comp-val">—</span></div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- HISTORY --}}
@@ -2250,7 +480,8 @@
         <div class="td2-overlay map-popup">
             <div class="td2-overlay-header">
                 <h6 class="td2-overlay-title">Vehicle Details</h6>
-                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn">Assign</button>
+                <button type="button" class="btn btn-primary btn-sm td2-vd-assign-btn"
+                        data-bs-toggle="modal" data-bs-target="#assignModal">Assign</button>
                 <button class="td2-overlay-close close-overlay close-map" type="button">
                     <i class="uil uil-angle-right-b"></i>
                 </button>
@@ -2280,6 +511,56 @@
                         width="100%" height="155" frameborder="0"
                         style="border:0;" allowfullscreen="" loading="lazy"
                         title="Live Location — Kolkata"></iframe>
+                </div>
+
+                {{-- VAHAN Details — shown instead of the map for External/Vendor vehicles (JS toggles via data-vd-view) --}}
+                <div class="td2-vd-vahan-view d-none">
+                    <p class="td2-vd-vahan-title"><i class="uil uil-file-info-alt"></i> VAHAN Details</p>
+                    <div class="td2-vd-vahan-grid">
+                        @php
+                            $vdVahan = [
+                                ['Owner Name', 'Rajesh Kumar', 'ok'],
+                                ['Address', '12, Park Street, Kolkata - 700016', 'ok'],
+                                ['Status', 'Active', 'ok'],
+                                ['Registration Date', '15/03/2018', 'ok'],
+                                ['Fitness Certificate Expiry', '14/03/2026', 'alert'],
+                                ['Insurance Expiry', '22/07/2026', 'ok'],
+                                ['Tax Expiry', '31/03/2026', 'alert'],
+                                ['Permit Expiry', '20/11/2025', 'alert'],
+                                ['PUCC Expiry', '10/06/2026', 'ok'],
+                                ['National Permit Expiry', '20/11/2025', 'alert'],
+                                ['Permit Type', 'National', 'ok'],
+                                ['PUCC Number', 'PUC2024WB1237', 'ok'],
+                                ['Permit Number', 'WB/NP/2022/001237', 'ok'],
+                                ['Insurer', 'New India Assurance', 'ok'],
+                                ['Insurance Number', 'NIA/2024/098765', 'ok'],
+                                ['Financier', 'SBI Bank', 'ok'],
+                                ['Class', 'Medium Goods Vehicle', 'ok'],
+                                ['Body Type', 'Closed Body', 'ok'],
+                                ['Fuel Type', 'Diesel', 'ok'],
+                                ['Chassis Number', 'MAT451351MDE12345', 'ok'],
+                                ['Engine Number', '4HK1-WB12345', 'ok'],
+                                ['Manufacturer', 'Tata Motors', 'ok'],
+                                ['Norms Type', 'BS-VI', 'ok'],
+                                ['Model', 'LPT 1618', 'ok'],
+                                ['GVW', '16180 KG', 'ok'],
+                                ['Wheelbase', '4200 MM', 'ok'],
+                                ['FASTag ID', 'WB12AB1237FT', 'ok'],
+                                ['TID', 'TID20240012370', 'ok'],
+                            ];
+                        @endphp
+                        @foreach ($vdVahan as $vf)
+                        <div class="td2-vd-vahan-row">
+                            @if ($vf[2] === 'alert')
+                                <i class="uil uil-exclamation-circle td2-vd-vahan-ico-alert"></i>
+                            @else
+                                <i class="uil uil-check-circle td2-vd-vahan-ico-ok"></i>
+                            @endif
+                            <span class="td2-vd-vahan-key">{{ $vf[0] }}</span>
+                            <span class="td2-vd-vahan-val">{{ $vf[1] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Vehicle Info --}}
@@ -2498,11 +779,12 @@
                 </div>
 
                 {{-- Bottom Assign Action --}}
-                <div class="td2-vd-action-bar">
-                    <button type="button" class="btn btn-primary">
+                {{-- <div class="td2-vd-action-bar">
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#assignModal">
                         <i class="uil uil-check me-1"></i> Assign This Vehicle
                     </button>
-                </div>
+                </div> --}}
 
             </div>
         </div>
@@ -2939,6 +1221,137 @@
     </div>
 </div>
 
+{{-- Assign Vehicle to This Trip — opened from the Vehicle Details panel "Assign" button --}}
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignVehicleForm">
+
+                    {{-- Expected start --}}
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-assign-label">Expected Start Date</label>
+                            <input type="date" class="form-control" name="assign_start_date">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-assign-label">Expected Start Time</label>
+                            <input type="time" class="form-control" name="assign_start_time">
+                        </div>
+                    </div>
+
+                    {{-- Route stops — Source first, Destination last, with 0..n Mid Points between --}}
+                    <div class="td2-assign-section-head">
+                        <span class="td2-assign-section-title">Route Stops</span>
+                        <span class="td2-assign-section-sub">Select the location at each point along the route</span>
+                    </div>
+
+                    {{--
+                        Flex container adapts to any number of stops:
+                        Source + Destination always present and highlighted; Mid Points (.td2-assign-stop-mid)
+                        are repeatable 0..n — add or remove a mid block and the layout reflows automatically.
+                    --}}
+                    <div class="td2-assign-stops">
+
+                        {{-- Source (endpoint — highlighted) — Kolkata (Loading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-source">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-source"></span>
+                                <span class="td2-assign-stage">Source</span>
+                            </div>
+                            <div class="td2-assign-city">Kolkata</div>
+                            <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_kolkata">
+                                    <option value="">Choose location…</option>
+                                    <option>Webel Gate</option>
+                                    <option>SDF Building</option>
+                                    <option>DLF 1</option>
+                                    <option>DLF 2</option>
+                                    <option>Laketown Depot</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Mid Point (repeatable 0..n) — Kolaghat (Loading & Unloading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-mid">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-mid"></span>
+                                <span class="td2-assign-stage">Mid Point</span>
+                            </div>
+                            <div class="td2-assign-city">Kolaghat</div>
+                            <span class="td2-route-type td2-route-type-both">Loading &amp; Unloading</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_kolaghat">
+                                    <option value="">Choose location…</option>
+                                    <option>Kolaghat Mecheda Yard</option>
+                                    <option>NH-16 Truck Bay</option>
+                                    <option>Kolaghat Town Godown</option>
+                                    <option>Denan Warehouse</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Mid Point (repeatable 0..n) — Patna (Loading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-mid">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-mid"></span>
+                                <span class="td2-assign-stage">Mid Point</span>
+                            </div>
+                            <div class="td2-assign-city">Patna</div>
+                            <span class="td2-route-type td2-route-type-load">Loading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_patna">
+                                    <option value="">Choose location…</option>
+                                    <option>Patliputra Industrial Area</option>
+                                    <option>Bihta Logistics Park</option>
+                                    <option>Fatuha Godown</option>
+                                    <option>Bypass Truck Stand</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Destination (endpoint — highlighted) — Mumbai (Unloading) --}}
+                        <div class="td2-assign-stop td2-assign-stop-dest">
+                            <div class="td2-assign-stop-head">
+                                <span class="td2-route-dot td2-route-dot-dest"></span>
+                                <span class="td2-assign-stage">Destination</span>
+                            </div>
+                            <div class="td2-assign-city">Mumbai</div>
+                            <span class="td2-route-type td2-route-type-unload">Unloading Point</span>
+                            <div class="td2-assign-field">
+                                <label class="form-label td2-assign-loc-label">Location</label>
+                                <select class="form-select select2-modal" name="assign_loc_mumbai">
+                                    <option value="">Choose location…</option>
+                                    <option>JNPT Nhava Sheva</option>
+                                    <option>Bhiwandi Warehouse Hub</option>
+                                    <option>Vashi APMC Yard</option>
+                                    <option>Kalamboli Truck Terminal</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Assign</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Add Review --}}
 <div class="modal fade" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -3049,12 +1462,28 @@
                 <form id="changeStatusForm">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">Stage</label>
-                            <select class="form-select" name="vehicle_stage">
-                                <option>Reported at Loading Point</option>
-                                <option>On the Way</option>
-                                <option>Reported at Unloading Point</option>
-                                <option>Unloading</option>
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="td2StatusSelect" name="vehicle_stage">
+                                <option value="">Select status…</option>
+                                <option>Kolkata — Loading Point</option>
+                                <option>Kolaghat — Load &amp; Unload Point</option>
+                                <option>Patna — Loading Point</option>
+                                <option>Mumbai — Unloading Point (Destination)</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        {{-- Shown only when Status = Other (toggle handled in show-v2.js) --}}
+                        <div class="col-12 d-none" id="td2StatusOtherWrap">
+                            <label class="form-label">Other Status</label>
+                            <select class="form-select" id="td2StatusOther" name="vehicle_stage_other">
+                                <option value="">Select reason…</option>
+                                <option>Halt</option>
+                                <option>Breakdown</option>
+                                <option>Accident</option>
+                                <option>Detained (RTO / Police Check)</option>
+                                <option>Under Repair / Maintenance</option>
+                                <option>Diversion / Re-route</option>
+                                <option>Weather / Road Block Delay</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -3413,12 +1842,16 @@
                 <input type="checkbox" value="Accident">
                 <span><i class="uil uil-ambulance"></i> #Accident</span>
             </label>
+            {{-- Add a custom incident if not listed; custom incidents share a common icon --}}
+            <button type="button" class="td2-sos-chip-add" id="td2SosAddIncidentBtn">
+                <i class="uil uil-plus-circle"></i> Add Incident
+            </button>
         </div>
 
-        {{-- Manual / Other free text --}}
+        {{-- Note free text --}}
         <div class="td2-sos-manual-wrap">
             <label class="td2-sos-manual-lbl">
-                <i class="uil uil-edit-alt"></i> #Manual — describe incident
+                <i class="uil uil-edit-alt"></i> Note
             </label>
             <textarea class="form-control form-control-sm td2-sos-manual-input" id="td2SosManual"
                       rows="3" placeholder="Enter incident details…"></textarea>
@@ -3482,5 +1915,6 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=3.6') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.5') }}"></script>
+<script src="{{ asset('js/Trip/tab-loader.js?v=1.1') }}"></script>
 @endsection

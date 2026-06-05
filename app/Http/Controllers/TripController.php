@@ -61,6 +61,34 @@ class TripController extends Controller
     }
 
     /**
+     * Return a single trip-detail tab's content (AJAX, lazy-loaded).
+     * Keeps the show-v2 first paint minimal — the server renders only empty
+     * tab shells; every tab (incl. tripInit) fetches its partial via AJAX after
+     * page load. Whitelisted to prevent arbitrary view inclusion.
+     */
+    public function tabContent($trip, string $tab)
+    {
+        $allowed = [
+            'tripInit'      => 'trip.tabs.tripInit',
+            'vehAlloc'      => 'trip.tabs.vehAlloc',
+            'vehStatus'     => 'trip.tabs.vehStatus',
+            'ewayLr'        => 'trip.tabs.ewayLr',
+            'pod'           => 'trip.tabs.pod',
+            'tripPayout'    => 'trip.tabs.tripPayout',
+            'expenses'      => 'trip.tabs.expenses',
+            'profitLoss'    => 'trip.tabs.profitLoss',
+            'memo'          => 'trip.tabs.memo',
+            'brokerPayment' => 'trip.tabs.brokerPayment',
+        ];
+
+        if (! array_key_exists($tab, $allowed)) {
+            return response('Invalid tab.', 404);
+        }
+
+        return view($allowed[$tab], compact('trip'));
+    }
+
+    /**
      * Store a new trip (AJAX).
      * SD-3: jQuery AJAX — returns JSON.
      * SD-5: DB::transaction() with try-catch and return.

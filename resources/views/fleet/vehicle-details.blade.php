@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 <link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details.css?v=1.4') }}">
 <link rel="stylesheet" href="{{ asset('css/vehicle-details.css?v=1.0') }}">
-<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.0') }}">
+<link rel="stylesheet" href="{{ asset('css/fleet/vehicle-details-v2.css?v=9.4') }}">
 
 @endsection
 
@@ -6097,67 +6097,215 @@
                           <div class="tab-pane fade" id="pills-def" role="tabpanel" aria-labelledby="pills-def-tab">
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
-                                        <span class="sec-title">DEF (AdBlue) – Allocation History</span>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a>
+                                        <span class="sec-title">DEF – Allocation History</span>
+                                        {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Allocate DEF</a> --}}
+                                    </div>
+
+                                    {{-- DEF mini dashboard (static) --}}
+                                    <div class="def-kpi-grid">
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon"><i class="uil uil-flask"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>Total DEF Filled</p>
+                                                <h4>60 <span>Litres</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c2"><i class="uil uil-truck"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>Total KM Driven</p>
+                                                <h4>4,100 <span>KM</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c3"><i class="uil uil-tachometer-fast"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>DEF Mileage (as per Software)</p>
+                                                <h4>70 <span>KM/L</span></h4>
+                                            </div>
+                                        </div>
+                                        <div class="def-kpi">
+                                            <div class="def-kpi-icon dk-c4"><i class="uil uil-map-marker"></i></div>
+                                            <div class="def-kpi-body">
+                                                <p>DEF Run KM Remaining</p>
+                                                <h4>1,750 <span>KM</span></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Filter Card (static) --}}
+                                    <div class="accordion mt-3" id="accordionDefBook">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="def_filter">
+                                                <button
+                                                    class="accordion-button filter-options"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseDefBook"
+                                                    aria-expanded="true"
+                                                    aria-controls="collapseDefBook"
+                                                >
+                                                    <div class="item-filter">
+                                                        <span class="filter-icon">
+                                                            <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon" />
+                                                        </span>
+                                                        <p>Filter Options</p>
+                                                    </div>
+                                                </button>
+                                            </h2>
+
+                                            <div
+                                                id="collapseDefBook"
+                                                class="accordion-collapse collapse show"
+                                                aria-labelledby="def_filter"
+                                                data-bs-parent="#accordionDefBook">
+                                                <div class="accordion-body">
+                                                    <form class="vehicle_dform p-4">
+                                                        <div class="filtersearch-bd justify-content-between">
+
+                                                            <div class="vehicletype">
+                                                                <label>Date Range</label>
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control daterange"
+                                                                    id="def_daterange"
+                                                                    name="def_daterange"
+                                                                    autocomplete="off"
+                                                                    placeholder="Select date range..."
+                                                                />
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>DEF Source</label>
+                                                                <select class="form-select select2" id="def_source">
+                                                                    <option value="">Choose..</option>
+                                                                    <option value="SR Garage">SR Garage</option>
+                                                                    <option value="External Vendor">External Vendor</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="vehicletype ms-1">
+                                                                <label>GST Bill Received</label>
+                                                                <select class="form-select select2" id="def_gst_received">
+                                                                    <option value="">Choose..</option>
+                                                                    <option value="Yes">Yes</option>
+                                                                    <option value="No">No</option>
+                                                                </select>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="filtersearch-bd searchfield justify-content-start mt-3">
+                                                            <button class="btn btn-primary ms-1" type="button">
+                                                                <i class="uil uil-sync me-1"></i>Reset
+                                                            </button>
+
+                                                            <div class="dropdown ms-1">
+                                                                <button
+                                                                    class="btn btn-primary dropdown-toggle d-flex"
+                                                                    type="button"
+                                                                    id="exportBtnDefBook"
+                                                                    data-bs-toggle="dropdown"
+                                                                    aria-expanded="false"
+                                                                >
+                                                                    Export <i class="uil uil-upload ms-1"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="exportBtnDefBook">
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)">Excel</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="javascript:void(0)">PDF</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
+                                                    <th>DEF Source</th>
+                                                    <th>Driver Name &amp; Code</th>
                                                     <th>Date</th>
-                                                    <th>Qty (Litres)</th>
-                                                    <th>Odometer (KM)</th>
-                                                    <th>Supplier / Source</th>
-                                                    <th class="text-end">Rate (₹/L)</th>
-                                                    <th class="text-end">Total Cost (₹)</th>
-                                                    <th>Allocated By</th>
-                                                    <th>Remarks</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th class="text-end">Odometer Reading</th>
+                                                    <th class="text-end">DEF Qty (in Litre)</th>
+                                                    <th class="text-end">DEF Amount</th>
+                                                    <th class="text-end">DEF in Tank (Litre) – Post Current Re-fill</th>
+                                                    <th class="text-end">DEF RUN KM</th>
+                                                    <th class="text-end">DEF Run KM Remaining</th>
+                                                    <th class="text-end">DEF ALERT Remaining KM</th>
+                                                    <th>Vendor Name &amp; Contact</th>
+                                                    <th>Vendor Location</th>
+                                                    <th class="text-center">GST Bill Applicable</th>
+                                                    <th class="text-center">GST Bill Received</th>
+                                                    <th>Invoice Number</th>
+                                                    <th>Note</th>
+                                                    <th class="text-center">Attachment</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
+                                                    <td>SR Garage</td>
+                                                    <td>Ramesh K. (DRV-101)</td>
                                                     <td>05-09-2025</td>
-                                                    <td>20</td>
-                                                    <td>1,25,400</td>
-                                                    <td>HP Pump – Hyderabad</td>
-                                                    <td class="text-end">85</td>
+                                                    <td class="text-end">1,25,400</td>
+                                                    <td class="text-end">20</td>
                                                     <td class="text-end">1,700</td>
-                                                    <td>Ramesh K. (Driver)</td>
+                                                    <td class="text-end">45</td>
+                                                    <td class="text-end">3,150</td>
+                                                    <td class="text-end">1,750</td>
+                                                    <td class="text-end">1,120</td>
+                                                    <td>—</td>
+                                                    <td>SR Garage – Hyderabad</td>
+                                                    <td class="text-center">No</td>
+                                                    <td class="text-center">No</td>
+                                                    <td>—</td>
                                                     <td>Refill at depot</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                                 <tr>
+                                                    <td>External Vendor</td>
+                                                    <td>Suresh M. (DRV-118)</td>
                                                     <td>28-09-2025</td>
-                                                    <td>15</td>
-                                                    <td>1,27,820</td>
-                                                    <td>IOCL Pump – Vijayawada</td>
-                                                    <td class="text-end">88</td>
+                                                    <td class="text-end">1,27,820</td>
+                                                    <td class="text-end">15</td>
                                                     <td class="text-end">1,320</td>
-                                                    <td>Suresh M. (Driver)</td>
+                                                    <td class="text-end">38</td>
+                                                    <td class="text-end">2,660</td>
+                                                    <td class="text-end">1,420</td>
+                                                    <td class="text-end">708</td>
+                                                    <td>IOCL Pump – 98765 43210</td>
+                                                    <td>Vijayawada</td>
+                                                    <td class="text-center">Yes</td>
+                                                    <td class="text-center">Yes</td>
+                                                    <td>INV-2025-0928</td>
                                                     <td>Trip allocation</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                                 <tr>
+                                                    <td>SR Garage</td>
+                                                    <td>Yard Supervisor (STF-007)</td>
                                                     <td>20-10-2025</td>
-                                                    <td>25</td>
-                                                    <td>1,29,500</td>
-                                                    <td>Own Depot Stock</td>
-                                                    <td class="text-end">82</td>
+                                                    <td class="text-end">1,29,500</td>
+                                                    <td class="text-end">25</td>
                                                     <td class="text-end">2,050</td>
-                                                    <td>Yard Supervisor</td>
+                                                    <td class="text-end">55</td>
+                                                    <td class="text-end">3,850</td>
+                                                    <td class="text-end">2,100</td>
+                                                    <td class="text-end">980</td>
+                                                    <td>—</td>
+                                                    <td>SR Garage – Depot</td>
+                                                    <td class="text-center">No</td>
+                                                    <td class="text-center">No</td>
+                                                    <td>—</td>
                                                     <td>Bulk fill before line trip</td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
-                                                    </td>
+                                                    <td class="text-center"><a href="{{ asset('images/id-proof.png') }}" target="_blank" rel="noopener" class="text-primary" title="View DEF Bill"><i class="uil uil-file-download-alt"></i></a></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -6245,115 +6393,117 @@
                           <div class="tab-pane fade" id="pills-tagged" role="tabpanel" aria-labelledby="pills-tagged-tab">
                               <div class="vehiclestable">
                                     <div class="itemtop d-flex justify-content-between align-items-center">
-                                        <span class="sec-title">Tagged Assets — Stopper, Jack, Rod, Tools, Fan etc.</span>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a>
+                                        <span class="sec-title">Tagged Assets</span>
+                                        {{-- <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="uil uil-plus me-1"></i> Tag Asset</a> --}}
                                     </div>
 
                                     <div class="table-responsive">
                                         <table class="table custom-driver-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Asset Name</th>
-                                                    <th>Category</th>
-                                                    <th>Tag / Serial No</th>
-                                                    <th>Qty</th>
-                                                    <th>Tagged Date</th>
-                                                    <th>Issued By</th>
-                                                    <th>Last Verified</th>
-                                                    <th>Condition</th>
-                                                    <th>Status</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th>Asset Name &amp; Code</th>
+                                                    <th>Issue Source</th>
+                                                    <th>Issue Date</th>
+                                                    <th>Old Tagged Asset Return</th>
+                                                    <th>Driver Deduction</th>
+                                                    <th>Attachment</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Wheel Stopper</td>
-                                                    <td>Safety</td>
-                                                    <td>STP-001A</td>
-                                                    <td>2</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Wheel Stopper</div>
+                                                        <small class="text-muted">STP-001A</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Hydraulic Jack (10 Ton)</td>
-                                                    <td>Tool</td>
-                                                    <td>JCK-7842</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Hydraulic Jack (10 Ton)</div>
+                                                        <small class="text-muted">JCK-7842</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹1,200</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Wheel Spanner Rod</td>
-                                                    <td>Tool</td>
-                                                    <td>ROD-3321</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Wheel Spanner Rod</div>
+                                                        <small class="text-muted">ROD-3321</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-warning">Worn</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Tool Kit (Standard)</td>
-                                                    <td>Tool Box</td>
-                                                    <td>TLK-1108</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Tool Kit (Standard)</div>
+                                                        <small class="text-muted">TLK-1108</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Good</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹850</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Cabin Fan (12V)</td>
-                                                    <td>Accessory</td>
-                                                    <td>FAN-2205</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">Cabin Fan (12V)</div>
+                                                        <small class="text-muted">FAN-2205</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-garage">SR Garage</span></td>
                                                     <td>14-03-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-success">Working</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-yes">Yes</span>
+                                                        <div class="ret-hint">Shown in Waste Stock</div>
+                                                    </td>
+                                                    <td>—</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>First Aid Box</td>
-                                                    <td>Safety</td>
-                                                    <td>FAB-0091</td>
-                                                    <td>1</td>
+                                                    <td>
+                                                        <div class="fw-semibold">First Aid Box</div>
+                                                        <small class="text-muted">FAB-0091</small>
+                                                    </td>
+                                                    <td><span class="src-badge src-vendor">Direct Vendor</span></td>
                                                     <td>10-01-2024</td>
-                                                    <td>Yard Supervisor</td>
-                                                    <td>15-10-2025</td>
-                                                    <td><span class="badge badge-warning">Restock Needed</span></td>
-                                                    <td><span class="badge badge-success">On Vehicle</span></td>
-                                                    <td class="text-center">
-                                                        <a class="item-edit text-success"><i class="uil uil-pen me-2"></i></a>
-                                                        <a class="item-delete text-danger"><i class="uil uil-trash-alt"></i></a>
+                                                    <td>
+                                                        <span class="ret-badge ret-no">No</span>
+                                                        <div class="ret-hint">Driver Deduction</div>
+                                                    </td>
+                                                    <td>₹300</td>
+                                                    <td>
+                                                        <button type="button" class="ta-photos-btn"><i class="uil uil-image me-1"></i>Photos</button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -9099,10 +9249,11 @@
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.5') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/truck-repair.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/pl-book.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/truck-repair.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/tagged-assets.js?v=1.0') }}"></script>
 
 <script>
 

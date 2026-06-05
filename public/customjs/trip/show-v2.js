@@ -158,14 +158,15 @@ function applyDamagePodRules() {
  * Activates the correct step based on tripConfig.tripStatus.
  */
 function updateStepper() {
-    var statusOrder = ['Initiated', 'Vehicle Assigned', 'Loading', 'In Transit', 'Completed'];
+    var statusOrder = ['Initiated', 'Vehicle Assigned', 'In Transit', 'Completed'];
     var $stepper    = $('#td2Stepper');
     var s           = tripConfig.tripStatus;
 
     /* Map aliases to canonical status */
     if (s === 'Vehicle Not Assigned' || s === 'New')                                                      { s = 'Initiated'; }
     if (s === 'Ongoing' || s === 'Reported' || s === 'Delayed' || s === 'Detained' ||
-        s === 'Unloaded' || s === 'Breakdown' || s === 'In Repair' || s === 'Accident')                  { s = 'In Transit'; }
+        s === 'Unloaded' || s === 'Breakdown' || s === 'In Repair' || s === 'Accident' ||
+        s === 'Loading')                                                                                  { s = 'In Transit'; }
 
     if (s === 'Cancelled') {
         $stepper.addClass('td2-stepper-cancelled');
@@ -225,10 +226,17 @@ $(document).on('click', '.td2-bill-click', function () {
     $('.bill-popup').addClass('show');
 });
 
-/* Map / Vehicle Detail overlay — eye button or card click */
+/* Map / Vehicle Detail overlay — eye button or card click.
+   Cards with data-vd-view="vahan" (External/Vendor) show the VAHAN details
+   block in place of the live-location map. */
 $(document).on('click', '.td2-open-map', function (e) {
     e.stopPropagation();
     closeAllOverlays();
+
+    var showVahan = $(this).data('vd-view') === 'vahan';
+    $('.map-popup .td2-map-embed').toggleClass('d-none', showVahan);
+    $('.map-popup .td2-vd-vahan-view').toggleClass('d-none', !showVahan);
+
     $('.map-popup').addClass('show');
 });
 
@@ -345,6 +353,33 @@ $(document).on('change', '#td2EditTripType', function () {
 /* Select2 init for edit trip modal fields */
 $(document).on('shown.bs.modal', '#editTrip', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+/* Select2 init for Assign Vehicle modal fields */
+$(document).on('shown.bs.modal', '#assignModal', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+/* =============================================================
+   Assign  ->  Allocated Vehicle view  (Vehicle Allocation tab)
+   On Assign: hide the selection view, reveal the allocated view.
+   Change Allocation: return to the selection view.
+   ============================================================= */
+$(document).on('submit', '#assignVehicleForm', function (e) {
+    e.preventDefault();
+    var modalEl = document.getElementById('assignModal');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    $('.td2-overlay').removeClass('show');   // close the Vehicle Details side panel
+    $('#td2AllocSelectView').hide();
+    $('#td2AllocatedView').fadeIn(150);
+    Toast.fire({ icon: 'success', title: 'Vehicle assigned to trip.' });
+});
+
+$(document).on('click', '.td2-change-alloc-btn', function () {
+    $('#td2AllocatedView').hide();
+    $('#td2AllocSelectView').fadeIn(150);
 });
 
 /* Daterangepicker for edit trip date */
@@ -509,7 +544,26 @@ $(document).on('click', '.td2-review-save-btn', function () {
 /* =============================================================
    SPRINT 5 — CHANGE STATUS MODAL
    ============================================================= */
+
+/* Status = route point + "Other". Reveal the "Other" sub-status
+   dropdown (Halt, Breakdown, etc.) only when "Other" is selected. */
+$(document).on('change', '#td2StatusSelect', function () {
+    var isOther = $(this).val() === 'Other';
+    $('#td2StatusOtherWrap').toggleClass('d-none', !isOther);
+    if (!isOther) { $('#td2StatusOther').val(''); }
+});
+
+/* Reset the modal's status fields whenever it is closed */
+$(document).on('hidden.bs.modal', '#changeStatus', function () {
+    $('#td2StatusOtherWrap').addClass('d-none');
+    $('#td2StatusOther').val('');
+});
+
 $(document).on('click', '.td2-status-save-btn', function () {
+    if ($('#td2StatusSelect').val() === 'Other' && !$('#td2StatusOther').val()) {
+        Toast.fire({ icon: 'warning', title: 'Please select an "Other" status.' });
+        return;
+    }
     Toast.fire({ icon: 'success', title: 'Status updated (prototype).' });
     $('#changeStatus').modal('hide');
 });
@@ -578,6 +632,45 @@ $('#td2SosHistoryBtn').on('click', function () {
 
 /* ── "Other" free-text chip (no checkbox — always visible as textarea) ── */
 
+/* ── Add custom incident type (common icon for all user-added incidents) ── */
+$('#td2SosAddIncidentBtn').on('click', function () {
+    Swal.fire({
+        title: 'Add Incident',
+        input: 'text',
+        inputLabel: 'Incident name',
+        inputPlaceholder: 'e.g. Tyre Burst',
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        confirmButtonColor: '#dc2626',
+        inputValidator: function (value) {
+            if (!$.trim(value)) { return 'Please enter an incident name.'; }
+        }
+    }).then(function (result) {
+        if (!result.isConfirmed) { return; }
+        var name = $.trim(result.value);
+        var tag  = name.replace(/\s/g, '');
+
+        /* Build chip via DOM (avoids HTML injection) — common icon for all custom incidents */
+        var $input  = $('<input type="checkbox" checked>').val(name);
+        var $span   = $('<span></span>')
+            .append($('<i class="uil uil-exclamation-octagon"></i>'))
+            .append(document.createTextNode(' #' + tag));
+        var $remove = $('<button type="button" class="td2-sos-chip-remove" aria-label="Remove incident" title="Remove">&times;</button>');
+        var $chip   = $('<label class="td2-sos-chip td2-sos-chip-custom"></label>')
+            .append($input).append($span).append($remove);
+
+        $('#td2SosAddIncidentBtn').before($chip);
+        Toast.fire({ icon: 'success', title: 'Incident added: #' + tag });
+    });
+});
+
+/* ── Remove a custom-added incident ── */
+$('#td2SosCheckboxes').on('click', '.td2-sos-chip-remove', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).closest('.td2-sos-chip').remove();
+});
+
 /* ── Submit SOS ── */
 $('#td2SosSubmitBtn').on('click', function () {
     var selected = [];
@@ -585,7 +678,7 @@ $('#td2SosSubmitBtn').on('click', function () {
         selected.push('#' + $(this).val().replace(/\s/g, ''));
     });
     var manual = $.trim($('#td2SosManual').val());
-    if (manual) selected.push('#Manual: ' + manual);
+    if (manual) selected.push('Note: ' + manual);
 
     if (!selected.length) {
         Toast.fire({ icon: 'warning', title: 'Select at least one incident type.' });
@@ -756,5 +849,10 @@ $(document).ready(function () {
     tooltipEls.forEach(function (el) {
         new bootstrap.Tooltip(el);
     });
+
+    /* Searchable dropdowns — Add / Allocate Vehicle section (Select2) */
+    $('#td2OwnVehSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
+    $('#td2ExtVendorSelect').select2({ placeholder: 'Select vendor...', width: '100%', allowClear: true });
+    $('#td2ExtVehicleSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
 
 });
