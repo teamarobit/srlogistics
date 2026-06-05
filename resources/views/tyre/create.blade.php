@@ -3,8 +3,8 @@
 @section('css')
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
-<link rel="stylesheet" href="{{ asset('css/Tyre/create.css') }}">
-<!--<link rel="stylesheet" href="{{ asset('css/Tyre/create.css') }}">-->
+<link rel="stylesheet" href="{{ asset('css/tyre/create.css') }}">
+<!--<link rel="stylesheet" href="{{ asset('css/tyre/create.css') }}">-->
 
 @endsection
 

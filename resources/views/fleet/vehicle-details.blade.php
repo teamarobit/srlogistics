@@ -9249,10 +9249,10 @@
 <script type="text/javascript" src="{{ asset('customjs/fleet/vehicle-details.js?v=2.5') }}"></script>
 <script type="text/javascript" src="{{ asset('customjs/fleet/html-related-scripts.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/vehicle-details-tyre.js?v=3.6') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/pl-book.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
-<script type="text/javascript" src="{{ asset('js/fleet/truck-repair.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/pl-book.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/vehicle-tabs-scroll.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/maintenance-tabs-scroll.js?v=1.0') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Fleet/truck-repair.js?v=1.0') }}"></script>
 <script type="text/javascript" src="{{ asset('js/Fleet/tagged-assets.js?v=1.0') }}"></script>
 
 <script>

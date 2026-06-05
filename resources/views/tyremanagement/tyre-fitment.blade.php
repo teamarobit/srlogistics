@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/Inventory/battery-wizard.css?v=1.2') }}" rel="stylesheet">
-<link href="{{ asset('css/Tyre/tyre-fitment.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/tyre/tyre-fitment.css?v=1.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
