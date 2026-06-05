@@ -2,7 +2,7 @@
 
 @section('css')
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.4') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -379,6 +379,7 @@
                                     <h5 class="td2-pane-title">Vehicle Allocation</h5>
                                 </div>
                                 <div class="td2-pane-body">
+                                    <div id="td2AllocSelectView">
 
                                     {{-- Part A: Suggested Vehicles Accordion --}}
                                     <div class="td2-section">
@@ -861,6 +862,91 @@
 
 
                                     </div>
+
+                                    </div>{{-- /#td2AllocSelectView --}}
+
+                                    {{-- Allocated Vehicle view — shown after Assign; hidden until then --}}
+                                    <div id="td2AllocatedView" style="display:none;">
+
+                                        <div class="td2-section">
+                                            <div class="td2-alloc-done-head">
+                                                <h6 class="td2-alloc-done-title"><i class="uil uil-check-circle"></i> Allocated Vehicle</h6>
+                                                <button type="button" class="btn btn-primary td2-change-alloc-btn">Change Allocation</button>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Vehicle Number</span><span class="td2-di-value">WB-12-AB-1237</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Status</span><span class="td2-di-value">In Trip</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Live Location</span><span class="td2-di-value">Kolkata</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Empty Since</span><span class="td2-di-value">12/09/2025</span></div></div>
+
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Driver Name</span><span class="td2-di-value">Ashoke Roy</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Driver Number</span><span class="td2-di-value">+91 9876543210</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Driver RAG Status</span><span class="td2-di-value"><span class="td2-rag td2-rag-yellow">Yellow</span></span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Associated Since</span><span class="td2-di-value">12/01/2026</span></div></div>
+
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Trip Start Date &amp; Time</span><span class="td2-di-value">12/01/2026 | 12:00 AM</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Trip End Date &amp; Time</span><span class="td2-di-value">15/01/2026 | 01:00 PM</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Trip Created By</span><span class="td2-di-value">Andrew Jackson</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Trip Created On</span><span class="td2-di-value">20/12/2025</span></div></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="td2-section">
+                                            <div class="td2-map-embed">
+                                                <div class="td2-map-proto-badge">
+                                                    <span class="td2-map-proto-dot"></span>
+                                                    <span class="td2-map-proto-tag">Live Tracking</span>
+                                                </div>
+                                                <iframe
+                                                    src="https://maps.google.com/maps?saddr=Kolkata,West+Bengal&daddr=Durgapur,West+Bengal&output=embed"
+                                                    width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy"
+                                                    referrerpolicy="no-referrer-when-downgrade"
+                                                    title="Vehicle Live Location"></iframe>
+                                            </div>
+                                        </div>
+
+                                        <div class="td2-section">
+                                            <div class="row g-3">
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Vehicle Age</span><span class="td2-di-value">10 Year 5 month</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Vehicle Size</span><span class="td2-di-value">14 FT – XXM 14M × 9M × 12M</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Vehicle Capacity</span><span class="td2-di-value">1000KG</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Live Location</span><span class="td2-di-value">Kolkata</span></div></div>
+
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Availability</span><span class="td2-di-value">Free</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Estimated Time of Arrival</span><span class="td2-di-value">12/11/2025 | 12:00 PM</span></div></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="td2-section">
+                                            <p class="td2-section-title">Vehicle Rank</p>
+                                            <div class="row g-3">
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Total Trip</span><span class="td2-di-value">10</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Line</span><span class="td2-di-value">4</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Local</span><span class="td2-di-value">6</span></div></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="td2-section">
+                                            <p class="td2-section-title">Last Trip Details</p>
+                                            <div class="row g-3">
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Trip Type</span><span class="td2-di-value">Line</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Customer</span><span class="td2-di-value">John Doe</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Source</span><span class="td2-di-value">Kolkata</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Destination</span><span class="td2-di-value">Delhi</span></div></div>
+
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Stop 1</span><span class="td2-di-value">Durgapur</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Stop 2</span><span class="td2-di-value">Patna</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Duration</span><span class="td2-di-value">15 Hours</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Route</span><span class="td2-di-value"><span class="td2-alloc-route-pill">KOL - DEL</span></span></div></div>
+
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Start Date &amp; Time</span><span class="td2-di-value">06/11/2025 | 12:00 PM</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Expected End Date &amp; Time</span><span class="td2-di-value">12/11/2025 | 12:00 PM</span></div></div>
+                                                <div class="col-md-3 col-sm-6"><div class="td2-di"><span class="td2-di-label">Actual End Date &amp; Time</span><span class="td2-di-value">16/11/2025 | 12:00 PM</span></div></div>
+                                            </div>
+                                        </div>
+
+                                    </div>{{-- /#td2AllocatedView --}}
 
                                 </div>
                             </div>
@@ -3741,5 +3827,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.3') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.5') }}"></script>
 @endsection

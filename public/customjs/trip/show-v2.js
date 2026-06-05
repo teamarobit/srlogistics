@@ -360,6 +360,28 @@ $(document).on('shown.bs.modal', '#assignModal', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
 });
 
+/* =============================================================
+   Assign  ->  Allocated Vehicle view  (Vehicle Allocation tab)
+   On Assign: hide the selection view, reveal the allocated view.
+   Change Allocation: return to the selection view.
+   ============================================================= */
+$(document).on('submit', '#assignVehicleForm', function (e) {
+    e.preventDefault();
+    var modalEl = document.getElementById('assignModal');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    $('.td2-overlay').removeClass('show');   // close the Vehicle Details side panel
+    $('#td2AllocSelectView').hide();
+    $('#td2AllocatedView').fadeIn(150);
+    Toast.fire({ icon: 'success', title: 'Vehicle assigned to trip.' });
+});
+
+$(document).on('click', '.td2-change-alloc-btn', function () {
+    $('#td2AllocatedView').hide();
+    $('#td2AllocSelectView').fadeIn(150);
+});
+
 /* Daterangepicker for edit trip date */
 $(document).on('shown.bs.modal', '#editTrip', function () {
     if ($('#td2EditDateRange').length && typeof $.fn.daterangepicker !== 'undefined') {
