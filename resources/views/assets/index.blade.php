@@ -22,7 +22,7 @@
                                     
                                     <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
                                         <select name="status" id="search_status" class="form-select">
-                                            <option value="">Select Status</option>
+                                            <option value="">Filter by Assignment</option>
                                             <option value="Assigned" {{ request('status')=='Assigned' ? 'selected' : '' }}>Assigned</option>
                                             <option value="Unassigned" {{ request('status')=='Unassigned' ? 'selected' : '' }}>Unassigned</option>
                                         </select>

@@ -80,7 +80,11 @@
                                         <label>Monthly Total Allowed Kilometer <span class="text-danger">*</span> </label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input type="text" name="total_allowed_kilometer" class="form-control">
+                                        <div class="input-group mb-3">
+                                            <input type="text" name="total_allowed_kilometer" class="form-control" aria-describedby="basic-addon2">
+                                            <span class="input-group-text" id="basic-addon2">KM</span>
+                                        </div>
+                                        
                                         <small class="error text-danger" id="add_total_allowed_kilometer_error"></small>
                                     </div>
                                 </div>
@@ -89,7 +93,10 @@
                                         <label>Monthly Total Price<span class="text-danger">*</span> </label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input type="text" name="monthly_total_price" class="form-control">
+                                        <div class="input-group"> 
+                                            <span class="input-group-text" id="rate">₹</span> 
+                                            <input type="text" name="monthly_total_price" class="form-control">
+                                        </div>                                        
                                         <small class="error text-danger" id="add_monthly_total_price_error"></small>
                                     </div>
                                 </div>
@@ -135,9 +142,9 @@
                                 <div class="col-12 col-md-6">
                                     <div class="input-group"> 
                                       <span class="input-group-text" id="rate">₹</span> 
-                                      <input type="text" name="advance_payment" class="form-control text-end" placeholder="0.00" aria-describedby="rate">
-                                      <small class="error text-danger" id="add_advance_payment_error"></small>
+                                      <input type="text" name="advance_payment" class="form-control" placeholder="0.00" aria-describedby="rate">
                                     </div>
+                                    <small class="error text-danger" id="add_advance_payment_error"></small>
                                 </div>
     
                             </div>
@@ -147,7 +154,10 @@
                                     <label>Payment Within Day <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input type="text" name="payment_within_day" class="form-control numericonly">
+                                    <div class="input-group"> 
+                                      <span class="input-group-text" id="rate">₹</span> 
+                                      <input type="text" name="payment_within_day" class="form-control numericonly">
+                                    </div>                                    
                                     <small class="error text-danger" id="add_payment_within_day_error"></small>
                                 </div>
                             </div>

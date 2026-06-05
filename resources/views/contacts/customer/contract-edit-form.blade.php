@@ -158,9 +158,9 @@
                                 <div class="col-12 col-md-6">
                                     <div class="input-group"> 
                                       <span class="input-group-text" id="rate">₹</span> 
-                                      <input type="text" name="advance_payment" value="{{ old('advance_payment', $contract->advance_payment) }}" class="form-control text-end" placeholder="0.00" aria-describedby="rate">
-                                      <small class="error text-danger" id="add_advance_payment_error"></small>
+                                      <input type="text" name="advance_payment" value="{{ old('advance_payment', $contract->advance_payment) }}" class="form-control" placeholder="0.00" aria-describedby="rate">
                                     </div>
+                                    <small class="error text-danger" id="add_advance_payment_error"></small>
                                 </div>
     
                             </div>
@@ -170,7 +170,10 @@
                                     <label>Payment Within Day</label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input type="text" name="payment_within_day" value="{{ old('payment_within_day', $contract->payment_within_day) }}" class="form-control numericonly">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="price">₹</span> 
+                                        <input type="text" name="payment_within_day" value="{{ old('payment_within_day', $contract->payment_within_day) }}" class="form-control numericonly">
+                                    </div>                                    
                                     <small class="error text-danger" id="add_payment_within_day_error"></small>
                                 </div>
                             </div>

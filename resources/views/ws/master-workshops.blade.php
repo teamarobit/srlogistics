@@ -352,7 +352,7 @@
                         </div>
                         <div class="col-md-8">
                             <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="name" id="editWsName">
+                            <input type="text" class="form-control" placeholder="e.g. SR Logistics Workshop — Hyderabad````````````````````````````````````" name="name" id="editWsName">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Ownership</label>
@@ -406,19 +406,19 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact</label>
-                            <input type="text" class="form-control" name="manager_name" id="editWsManager">
+                            <input type="text" class="form-control" placeholder="Name" name="manager_name" id="editWsManager">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Phone</label>
-                            <input type="text" class="form-control" name="contact_phone" id="editWsPhone">
+                            <input type="text" class="form-control" placeholder="+91 XXXXX XXXXX" name="contact_phone" id="editWsPhone">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email</label>
-                            <input type="email" class="form-control" name="contact_email" id="editWsEmail">
+                            <input type="email" class="form-control" placeholder="workshop@example.com" name="contact_email" id="editWsEmail">
                         </div>
                         <div class="col-md-3 ws-edit-own-only">
                             <label class="form-label fw-semibold">Technicians</label>
-                            <input type="number" class="form-control" name="technician_count" id="editWsTechs" min="0">
+                            <input type="number" class="form-control" placeholder="0" name="technician_count" id="editWsTechs" min="0">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">Status</label>
@@ -426,7 +426,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold">Notes</label>
-                            <textarea class="form-control" name="notes" id="editWsNotes" rows="2"></textarea>
+                            <textarea class="form-control" name="notes" placeholder="Any Notes..." id="editWsNotes" rows="2"></textarea>
                         </div>
                     </div>
                 </form>
