@@ -697,7 +697,7 @@
                                                     
                                                     <td>
                                                         @if(optional($contract->detail)->contract_file)
-                                                            <a href="{{ asset('media/customer-contract/' . $contract->detail->contract_file) }}" 
+                                                            <a href="{{ asset('medias/customer-contract/' . $contract->detail->contract_file) }}" 
                                                                target="_blank" >
                                                                 View Contract
                                                             </a>
