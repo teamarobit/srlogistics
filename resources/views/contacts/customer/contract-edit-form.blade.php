@@ -118,7 +118,7 @@
                                 </div>
                                 @if(optional($contract->detail)->contract_file)
                                     <p class="mt-2">
-                                        <a href="{{ asset('media/customer-contract/'.$contract->detail->contract_file) }}"
+                                        <a href="{{ asset('medias/customer-contract/'.$contract->detail->contract_file) }}"
                                            target="_blank">
                                            View Existing File
                                         </a>
