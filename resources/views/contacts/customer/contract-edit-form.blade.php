@@ -244,7 +244,7 @@
                             <div class="text-right">
                               <button id="editContractBtn" class="btn btn-dark mb-4">Save</button>
                               
-                              <a href="{{ route('contact.customer.contract.list') }}" class="btn btn-danger mb-4"> Close </a>
+                              <a href="{{ route('contact.customer.edit', $contract->contact_id) }}" class="btn btn-danger mb-4 ms-2"> Close </a>
                             </div>
                         </form>         
                     </div>
