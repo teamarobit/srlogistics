@@ -9,6 +9,8 @@ class Contactbank extends Model
 {
     use SoftDeletes;
     
+    protected $guarded = [];
+
     public function contact()
     {
         return $this->belongsTo(Contact::class);
