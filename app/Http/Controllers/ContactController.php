@@ -2734,6 +2734,18 @@ class ContactController extends Controller
                 'message' => 'Pricing already exists for this route.'
             ], 422);
         }
+
+        // Ensure the customer has a configured Location for every point of the selected route
+        // (Source, Destination, each Midpoint) before a Rate Chart can be created.
+        $missingPoints = $this->routePointsSetupMissing($request->contact_id, $request->customercontract_route_id);
+        if (! empty($missingPoints)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Location setup is incomplete for this route. Configure locations for: '
+                             . implode(', ', $missingPoints)
+                             . ' in the Location tab before creating a Rate Chart.'
+            ], 422);
+        }
         
         
     
@@ -2897,6 +2909,99 @@ class ContactController extends Controller
     }
     
     
+
+
+    /**
+     * Returns the list of route points (Source / Destination / each Midpoint) that do NOT
+     * yet have a matching customer Location configured. Empty array = route fully configured.
+     * Used by both the Rate Chart save guard and the client-side pre-check endpoint.
+     */
+    private function routePointsSetupMissing($contactId, $contractRouteId): array
+    {
+        $missing = [];
+
+        $contractRoute = Contractroute::with('route.midpoints.city')->find($contractRouteId);
+
+        // Cannot resolve the route - let the normal exists: validation report the bad id.
+        if (! $contractRoute || ! $contractRoute->route) {
+            return $missing;
+        }
+
+        $route = $contractRoute->route;
+
+        // Source point - needs a Source location (Loading/Both) on the route's source city.
+        if ($route->source_city_id) {
+            $hasSource = Customerlocation::where('contact_id', $contactId)
+                ->where('route_type', 'source')
+                ->whereIn('location_type', ['Loading', 'Both'])
+                ->where('source_city_id', $route->source_city_id)
+                ->exists();
+
+            if (! $hasSource) {
+                $missing[] = 'Source';
+            }
+        }
+
+        // Destination point - needs a Destination location (Unloading/Both) on the route's destination city.
+        if ($route->destination_city_id) {
+            $hasDestination = Customerlocation::where('contact_id', $contactId)
+                ->where('route_type', 'destination')
+                ->whereIn('location_type', ['Unloading', 'Both'])
+                ->where('destination_city_id', $route->destination_city_id)
+                ->exists();
+
+            if (! $hasDestination) {
+                $missing[] = 'Destination';
+            }
+        }
+
+        // Each midpoint - needs a Midpoint location on that midpoint city.
+        foreach ($route->midpoints as $midpoint) {
+            if (! $midpoint->city_id) {
+                continue;
+            }
+
+            $hasMidpoint = Customerlocation::where('contact_id', $contactId)
+                ->where('route_type', 'midpoint')
+                ->where('midpoint_city_id', $midpoint->city_id)
+                ->exists();
+
+            if (! $hasMidpoint) {
+                $cityName = optional($midpoint->city)->name ?? ('City #' . $midpoint->city_id);
+                $missing[] = 'Midpoint (' . $cityName . ')';
+            }
+        }
+
+        return $missing;
+    }
+
+
+    /**
+     * Client-side pre-check for the Rate Chart tab: reports whether the customer has a
+     * configured Location for every point of the chosen contract-route.
+     * GET /contacts/customer/contract-route/{id}/points-setup?contact_id=...
+     */
+    public function checkRoutePointsSetup(Request $request, $id)
+    {
+        $contactId = $request->query('contact_id');
+
+        if (! $contactId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer is required.'
+            ], 422);
+        }
+
+        $missing = $this->routePointsSetupMissing($contactId, $id);
+
+        return response()->json([
+            'success'  => true,
+            'complete' => count($missing) === 0,
+            'missing'  => $missing,
+        ], 200);
+    }
+
+
     public function deleteCustomerContractPricing(Request $request)
     {
         $location = Customerlocation::find($request->location_id);

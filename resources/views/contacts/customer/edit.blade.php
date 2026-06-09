@@ -2139,6 +2139,7 @@
     var LABOUR_CHARGE_URL = "{{ route('contact.customer.contract.pricing.labour.charges', ':id') }}";
     var VEHICLE_DETAIL_URL = "{{ route('contact.customer.contract.pricing.vehicles', ':id') }}";
     var PRICING_HISTORY_URL = "{{ route('contact.customer.contract.pricing.history', ':id') }}";
+    var ROUTE_POINTS_SETUP = "{{ route('contact.customer.contract.route.points.setup', ':id') }}";
 
     
     window.UPLOAD_URL = "{{ route('contact.upload.images') }}";
@@ -2163,7 +2164,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.2') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

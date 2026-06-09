@@ -1183,32 +1183,73 @@ $(document).ready(function(){
     // Route Change – Generate Rows
     // ===============================
     $(document).on('change', '#customercontract_route_id', function () {
-    
+
+        let routeId = $(this).val();
         let selectedOption = $(this).find('option:selected');
         let midpointCount = selectedOption.data('midpoints') || 0;
-    
+
         $('#midpoint_count').val(midpointCount);
-    
+
         let container = $('#midpointContainer');
         container.empty();
-    
+
         if (midpointCount > 0) {
-    
+
             for (let i = 1; i <= midpointCount; i++) {
                 container.append(generateMidpointRow(i));
             }
-    
+
             // Initialize Select2 ONLY for new elements
             container.find('.select2').select2({
                 width: '100%'
             });
-    
+
             $('#MidpointDiv').show();
-    
+
         } else {
             $('#MidpointDiv').hide();
         }
-    
+
+        // Route point setup check - a Rate Chart cannot be created unless the customer
+        // has a configured Location for every point of the selected route.
+        if (routeId) {
+
+            let contactId = $('#edit_contactid_input').val();
+            let setupUrl = ROUTE_POINTS_SETUP.replace(':id', routeId);
+
+            $.ajax({
+                url: setupUrl,
+                type: 'GET',
+                data: { contact_id: contactId },
+                success: function (res) {
+
+                    if (res.success && !res.complete) {
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Location setup incomplete',
+                            html: 'Configure locations in the <b>Location</b> tab for:<br><b>'
+                                  + res.missing.join('<br>')
+                                  + '</b><br>before creating a Rate Chart for this route.',
+                            confirmButtonColor: '#032671'
+                        });
+
+                        $('#customercontract_route_id').val('').trigger('change');
+                        $('#addContractPricingBtn').prop('disabled', true);
+
+                    } else {
+                        $('#addContractPricingBtn').prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Could not verify location setup for this route.'
+                    });
+                }
+            });
+        }
+
     });
 
 

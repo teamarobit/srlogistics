@@ -115,6 +115,7 @@ Route::group(['middleware' => ['auth']], function() {
             Route::get('/customer/contract-pricing/{id}/labour-charges/', [App\Http\Controllers\ContactController::class, 'getLabourCharges'])->name('customer.contract.pricing.labour.charges');
             Route::get('/customer/contract-pricing/{id}/vehicles', [App\Http\Controllers\ContactController::class, 'getVehicleFreight'])->name('customer.contract.pricing.vehicles');
             Route::get('/customer/contract-pricing/{id}/history', [App\Http\Controllers\ContactController::class, 'getPricingHistory'])->name('customer.contract.pricing.history');
+            Route::get('/customer/contract-route/{id}/points-setup', [App\Http\Controllers\ContactController::class, 'checkRoutePointsSetup'])->name('customer.contract.route.points.setup');
             
             
             // customer vehicle allocation
