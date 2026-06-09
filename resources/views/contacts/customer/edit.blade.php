@@ -1496,7 +1496,7 @@
                         </div>
                         
                         <div class="col-12 col-md-6 form-group">
-                            <label>Route Type <span class="text-danger">*</span></label>
+                            <label>Route <span class="text-danger">*</span></label>
                             <select name="customercontract_route_id" id="customercontract_route_id" class="form-select select2">
                                 <option value="">Choose...</option>
                             </select>
