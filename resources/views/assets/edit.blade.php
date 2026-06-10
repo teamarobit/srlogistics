@@ -325,6 +325,6 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/edit.js?v=1.3')}}"></script>
 
 @endsection

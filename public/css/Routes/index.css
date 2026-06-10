@@ -1,22 +1,131 @@
+/* ============================================================
+   Routes — List page (index)
+   Kankana fix: header toolbar was cramped (truncated search
+   placeholders) and the wide table overflowed awkwardly.
+   This sheet only styles list-page wrappers + new toolbar
+   classes; no JS-bound IDs/classes were renamed.
+   ============================================================ */
 
-/**/
+.main-wrap .addroute-bd {
+    margin: 0 15px;
+    padding: 30px 50px;
+    background: #fcfcfc;
+    border-radius: 6px;
+}
 
-.main-wrap .addroute-bd {	margin: 0 15px;	padding: 30px 50px;	background: #fcfcfc;
-	border-radius: 6px; }
+/* ---------- Header toolbar ---------- */
+.route-list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    width: 100%;
+}
 
+.route-list-toolbar__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 6px;
+}
 
+.route-list-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2733;
+}
 
+.route-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    margin: 0;
+}
 
+.route-list-filters .route-filter-input {
+    width: 160px;
+    min-width: 140px;
+    height: 38px;
+}
 
+.route-list-toolbar .route-reset-btn {
+    white-space: nowrap;
+    margin-left: auto;
+}
 
+/* ---------- List body / table ---------- */
+.addroutelist-bd {
+    margin: 0 15px;
+}
 
+.addroutelist-bd .table-responsive {
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
+    background: #fff;
+}
 
+.addroutelist-bd table.invoice-table {
+    margin-bottom: 0;
+}
 
+.addroutelist-bd table.invoice-table thead th {
+    background: #f7f8fa;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    color: #5b6573;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-bottom: 1px solid #eef0f4;
+    padding: 12px 14px;
+}
 
+.addroutelist-bd table.invoice-table tbody td {
+    font-size: 13px;
+    vertical-align: middle;
+    color: #303a46;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f2f4f7;
+}
 
-/**/
+.addroutelist-bd table.invoice-table tbody tr:hover {
+    background: #fafbfc;
+}
 
+.addroutelist-bd .tag {
+    display: inline-block;
+    background: #eef3ff;
+    color: #2a4bdb;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
 
+.addroutelist-bd .toll-detail-btn,
+.addroutelist-bd .rto-detail-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2a4bdb;
+    text-decoration: none;
+}
 
+.addroutelist-bd .toll-detail-btn:hover,
+.addroutelist-bd .rto-detail-btn:hover {
+    text-decoration: underline;
+}
 
-
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+    .route-list-filters .route-filter-input {
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 100%;
+    }
+    .route-list-toolbar .route-reset-btn {
+        margin-left: 0;
+    }
+}

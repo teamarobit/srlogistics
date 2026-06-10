@@ -59,14 +59,20 @@ class TollstationController extends Controller
                         ->get();
 
 
-        // BUG-002 fix: cities now cascade from selected state.
-        // If a state is selected, return only cities of that state;
-        // otherwise return an empty list — the JS cascade populates it on state change.
-        $cities = collect();
+        // Kankana fix: the city filter must be usable on its own (search by city
+        // without first picking a state). Load all Indian cities by default — same
+        // as the RTO Checkpoint list. When a state IS selected, narrow to that
+        // state's cities; the JS state→city cascade still re-populates on change.
         if ($search_state) {
             $cities = City::where('state_id', $search_state)
                           ->orderBy('name')
                           ->get();
+        } else {
+            $cities = City::whereHas('state.country', function ($q) {
+                            $q->where('iso2', 'IN');
+                        })
+                        ->orderBy('name')
+                        ->get();
         }
 
 
@@ -96,9 +102,9 @@ class TollstationController extends Controller
             'city_id'            => 'required|exists:cities,id',
             'embed_map_location' => 'required',
             'address'       => 'nullable',
-            'large_vehicle_charge'   => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'medium_vehicle_charge'  => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'small_vehicle_charge'  => 'nullable|numeric|min:1|max:999999999999999.99999',
+            'large_vehicle_charge'   => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'medium_vehicle_charge'  => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'small_vehicle_charge'  => 'nullable|numeric|min:0|max:999999999999999.99999',
             'status'         => 'required|in:Active,Inactive', 
 
         ], [
@@ -261,9 +267,9 @@ class TollstationController extends Controller
             'city_id'            => 'required|exists:cities,id',
             'embed_map_location'       => 'required',
             'address'       => 'nullable',
-            'large_vehicle_charge'   => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'medium_vehicle_charge'  => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'small_vehicle_charge'  => 'nullable|numeric|min:1|max:999999999999999.99999',
+            'large_vehicle_charge'   => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'medium_vehicle_charge'  => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'small_vehicle_charge'  => 'nullable|numeric|min:0|max:999999999999999.99999',
             'status'         => 'required|in:Active,Inactive', 
 
         ], [

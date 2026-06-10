@@ -55,8 +55,13 @@
                                 <label>Employee Name <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-12 col-md-6">
-                                <input type="text" name="managed_by_employee" value="{{ $record->managed_by_employee ?? '' }}" class="form-control"> 
-                                <small class="error text-danger" id="edit_managed_by_employee_error"></small>
+                                <select class="form-select select2" name="managed_by_employee_id" data-placeholder="Choose..">
+                                    <option value="">Choose..</option>
+                                    @foreach($employees as $employee)
+                                        <option value="{{ $employee->id }}" {{ $record->managed_by_employee_id == $employee->id ? 'selected' : '' }}>{{ $employee->contact_name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="error text-danger" id="edit_managed_by_employee_id_error"></small>
                             </div>
                           </div>
                           

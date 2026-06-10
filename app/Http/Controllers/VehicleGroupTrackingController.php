@@ -14,6 +14,7 @@ use App\Models\Vehicle;
 
 use App\Models\Vehiclegrouptracking;
 use App\Models\Trackingvehicle;
+use App\Models\Contact;
 
 
 use Spatie\Permission\Models\Role;
@@ -35,7 +36,10 @@ use App\Traits\Useractivity;
 class VehicleGroupTrackingController extends Controller
 {
     use Useractivity;
-    
+
+    // Employee master = contacts where cotype_id = 3 (CONTACT_TYPE_EMPLOYEE)
+    const CONTACT_TYPE_EMPLOYEE = 3;
+
     public function index(Request $request): View
     {
         $search_name = $request->get('name');
@@ -61,8 +65,9 @@ class VehicleGroupTrackingController extends Controller
     {   
         $vehiclegroup = Vehiclegroup::where('status','Active')->orderBy('name')->get();
         $vehicles = Vehicle::where('status','Active')->orderBy('vehicle_no')->get();
-        
-        return view('vehicle.tracking.create',compact('vehiclegroup','vehicles'));
+        $employees = Contact::where('cotype_id', self::CONTACT_TYPE_EMPLOYEE)->orderBy('contact_name')->get();
+
+        return view('vehicle.tracking.create',compact('vehiclegroup','vehicles','employees'));
     }
     
     
@@ -71,7 +76,7 @@ class VehicleGroupTrackingController extends Controller
         // Step 1: Validate main fields and dynamic rows
         $validator = Validator::make($request->all(), [
             'vehicle_group_id'      => 'required|exists:vehiclegroups,id',
-            'managed_by_employee'   => 'required|string|max:255',
+            'managed_by_employee_id'=> 'required|exists:contacts,id',
             'no_of_vehicles'        => 'required|integer|min:1',
             'vehicle_ids'           => 'required|array|min:1',
             'vehicle_ids.*'         => 'exists:vehicles,id',
@@ -83,9 +88,10 @@ class VehicleGroupTrackingController extends Controller
             'min'      => 'Value must be at least :min.',
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
+            'exists'   => 'Invalid selection.',
         ]);
-    
-    
+
+
         if ($validator->fails()) {
             // \Log::error('Validation failed', [
             //     'errors' => $validator->errors()->toArray(),
@@ -106,10 +112,13 @@ class VehicleGroupTrackingController extends Controller
             
             DB::transaction(function () use ($request, &$tracking) {
                 
-                $tracking = new Vehiclegrouptracking(); 
+                $employee = Contact::find($request->managed_by_employee_id);
+
+                $tracking = new Vehiclegrouptracking();
                 $tracking->organisation_id = optional(Auth::user()->organisation)->id;
                 $tracking->vehicle_group_id = $request->vehicle_group_id;
-                $tracking->managed_by_employee = $request->managed_by_employee;
+                $tracking->managed_by_employee_id = $request->managed_by_employee_id;
+                $tracking->managed_by_employee = $employee?->contact_name; // denormalised name for display + existing search
                 $tracking->no_of_vehicles = $request->no_of_vehicles;
                 $tracking->created_by = Auth::user()->id;
                 $tracking->save();
@@ -165,12 +174,13 @@ class VehicleGroupTrackingController extends Controller
         
         $vehiclegroup = Vehiclegroup::where('status','Active')->orderBy('name')->get();
         $vehicles = Vehicle::where('status','Active')->orderBy('vehicle_no')->get();
-        
+        $employees = Contact::where('cotype_id', self::CONTACT_TYPE_EMPLOYEE)->orderBy('contact_name')->get();
+
         // Log activity
         $description = 'Retrieve a vehicle group tracking named '.$record->name.' to edit.';
         $useractivity = $this->storeUseractivity(16, 5, Auth::user()->id, $record->id, $description);
         
-        return view('vehicle.tracking.edit',compact('record','vehiclegroup','vehicles'));
+        return view('vehicle.tracking.edit',compact('record','vehiclegroup','vehicles','employees'));
         
     }
     
@@ -186,7 +196,7 @@ class VehicleGroupTrackingController extends Controller
         
         $validator = Validator::make($request->all(), [
             'vehicle_group_id'      => 'required|exists:vehiclegroups,id',
-            'managed_by_employee'   => 'required|string|max:255',
+            'managed_by_employee_id'=> 'required|exists:contacts,id',
             'no_of_vehicles'        => 'required|integer|min:1',
             'vehicle_ids'           => 'required|array|min:1',
             'vehicle_ids.*'         => 'exists:vehicles,id',
@@ -198,9 +208,10 @@ class VehicleGroupTrackingController extends Controller
             'min'      => 'Value must be at least :min.',
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
+            'exists'   => 'Invalid selection.',
         ]);
-        
-        
+
+
         if ($validator->fails()) {
             \Log::error('Validation failed', [
                 'errors' => $validator->errors()->toArray(),
@@ -219,8 +230,11 @@ class VehicleGroupTrackingController extends Controller
             
             DB::transaction(function () use($request, &$record){
                 
+                $employee = Contact::find($request->managed_by_employee_id);
+
                 $record->vehicle_group_id = $request->vehicle_group_id;
-                $record->managed_by_employee = $request->managed_by_employee;
+                $record->managed_by_employee_id = $request->managed_by_employee_id;
+                $record->managed_by_employee = $employee?->contact_name; // denormalised name for display + existing search
                 $record->no_of_vehicles = $request->no_of_vehicles;
                 $record->updated_by = Auth::id();
                 $record->save();

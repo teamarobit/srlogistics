@@ -753,13 +753,43 @@ $(document).ready(function(){
     
     // =========================================================================
     
+    // Re-initialise Select2 inside a work-type section once it becomes visible.
+    // Select2 widgets initialised while their wrapper is display:none (especially
+    // multiple-selects like User Roles) render broken and never open on click,
+    // which blocked role selection and triggered the "office role ids is required" error.
+    function reinitWorkTypeSelect2($wrap) {
+        $wrap.find('.select2').each(function () {
+            var $el = $(this);
+            if ($el.hasClass('select2-hidden-accessible')) {
+                $el.select2('destroy');
+            }
+            var opts = { width: '100%' };
+            var ph = $el.attr('data-placeholder');
+            if (ph) { opts.placeholder = ph; }
+            $el.select2(opts);
+        });
+    }
+
     $(document).on('change', '.WorkTypeRadio', function () {
         if ($(this).val() === 'Office Work') {
             $('.office-work-wrap').show();
             $('.service-center-wrap').hide();
+            reinitWorkTypeSelect2($('.office-work-wrap'));
         } else if ($(this).val() === 'Service Center') {
             $('.service-center-wrap').show();
             $('.office-work-wrap').hide();
+            reinitWorkTypeSelect2($('.service-center-wrap'));
+        }
+    });
+
+    // Edit form loads with a work type pre-selected — re-init the visible section's
+    // Select2 widgets so the role multi-select is functional without a manual toggle.
+    $(document).ready(function () {
+        var checkedType = $('.WorkTypeRadio:checked').val();
+        if (checkedType === 'Office Work') {
+            reinitWorkTypeSelect2($('.office-work-wrap'));
+        } else if (checkedType === 'Service Center') {
+            reinitWorkTypeSelect2($('.service-center-wrap'));
         }
     });
     

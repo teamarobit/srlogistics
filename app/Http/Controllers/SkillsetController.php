@@ -31,20 +31,24 @@ class SkillsetController extends Controller
     public function index(Request $request): View
     {
         $search_skillset_name = $request->get('skillset');
-        
+        $search_status        = $request->get('status');
+
         $skillsets = Skillset::query()
                                     ->when($search_skillset_name, function ($query, $search_skillset_name) {
                                         $query->where('name', 'like', '%' . $search_skillset_name . '%');
                                     })
+                                    ->when($search_status, function ($query, $search_status) {
+                                        $query->where('status', $search_status);
+                                    })
                                     ->orderBy('id', 'DESC')
                                     ->paginate(10)
                                     ->withQueryString(); // preserves search query in pagination links
-        
-        
-        
+
+
+
         //dd($skillsets);
-        
-        return view('skillset.index', compact('skillsets','search_skillset_name'));
+
+        return view('skillset.index', compact('skillsets','search_skillset_name','search_status'));
     }
     
     

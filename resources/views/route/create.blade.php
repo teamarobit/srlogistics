@@ -268,7 +268,12 @@
                                             <i class="uil uil-trash-alt"></i>
                                         </span>
                                     </div>
-                                      
+
+                                    <!-- Per-row error placeholder -->
+                                    <div class="col-12 px-1">
+                                        <small class="error text-danger toll-row-error"></small>
+                                    </div>
+
                                 </div>
                                 <!-- Error placeholder for tollstation array -->
                                 <small class="error text-danger tollstation-error"></small>
@@ -333,7 +338,12 @@
                                             <i class="uil uil-trash-alt"></i>
                                         </span>
                                     </div>
-                                  
+
+                                    <!-- Per-row error placeholder -->
+                                    <div class="col-12 px-1">
+                                        <small class="error text-danger rto-row-error"></small>
+                                    </div>
+
                                 </div>
                                 <!-- Error placeholder for rto array -->
                                 <small class="error text-danger rto-error"></small>
@@ -441,7 +451,7 @@ let getCitiesUrlTemplate = "{{ route('getcities', ':id') }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('js/Routes/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Routes/create.js?v=1.1')}}"></script>
 
 @endsection
 

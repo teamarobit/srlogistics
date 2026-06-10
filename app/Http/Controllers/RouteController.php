@@ -55,6 +55,12 @@ class RouteController extends Controller
                             'destinationCity',
                             'currency'
                         ])
+                        ->withCount(['customercontracts as active_contracts_count' => function ($q) {
+                            $q->where(function ($w) {
+                                $w->whereNull('customercontracts.end_date')
+                                  ->orWhereDate('customercontracts.end_date', '>=', now()->toDateString());
+                            });
+                        }])
                         ->when($search_route_name, function ($q) use ($search_route_name) {
                             $q->where('name', 'like', '%' . $search_route_name . '%');
                         })
@@ -280,7 +286,15 @@ class RouteController extends Controller
         if($route == NULL){
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Route not found!']);
         }
-        
+
+        // Lock: a route bound to a non-expired customer contract cannot be edited
+        // until every linked contract has expired (end_date in the past).
+        if ($route->isLockedByContract()) {
+            return redirect()
+                ->route('route.index')
+                ->with('error', 'This route is linked to an active contract and cannot be edited until the contract expires.');
+        }
+
         $countries = Country::all();
         
         $states = State::whereHas('country', function ($q) {
@@ -309,6 +323,15 @@ class RouteController extends Controller
 
         if ($route == NULL) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! Route not found.'], 422);
+        }
+
+        // Lock: block the save if the route is still bound to a non-expired contract.
+        if ($route->isLockedByContract()) {
+            return response()->json([
+                'success' => false,
+                'data' => [],
+                'message' => 'This route is linked to an active contract and cannot be edited until the contract expires.'
+            ], 422);
         }
 
 

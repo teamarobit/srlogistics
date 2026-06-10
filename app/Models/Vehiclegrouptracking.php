@@ -13,6 +13,11 @@ class Vehiclegrouptracking extends Model
     {
         return $this->belongsTo(Vehiclegroup::class, 'vehicle_group_id');
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(Contact::class, 'managed_by_employee_id');
+    }
     
     public function vehicles()
     {

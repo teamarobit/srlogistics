@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/Contacts/InsuranceProvider/index.css?v=1.1') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/InsuranceProvider/index.css?v=1.2') }}">
 @endsection
 
 @section('content')
@@ -35,17 +35,17 @@
             </span>
             <input type="text" name="name" value="{{ request('name') }}"
                    class="form-control ip-filter-search" placeholder="Search company or contact…">
-            <select name="city" class="form-select ip-filter-city" onchange="this.form.submit()">
-                <option value="">All Cities</option>
-                @foreach($cities as $city)
-                <option value="{{ $city->id }}" {{ request('city') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+            <select name="state" id="ipFilterState" class="form-select ip-filter-state">
+                <option value="">All States</option>
+                @foreach($states as $state)
+                <option value="{{ $state->id }}" {{ request('state') == $state->id ? 'selected' : '' }}>{{ $state->name }}</option>
                 @endforeach
             </select>
             <button type="submit" class="btn btn-sm btn-primary ip-filter-btn">
                 <i class="uil uil-search me-1"></i>Search
             </button>
-            <a href="{{ route('contact.insuranceprovider.index') }}" class="btn btn-sm ip-filter-reset">
-                <i class="uil uil-sync me-1"></i>Reset
+            <a href="{{ route('contact.insuranceprovider.index') }}" class="btn btn-sm btn-primary reset-btn">
+                <i class="uil uil-history me-1"></i>Reset
             </a>
         </div>
         </form>
@@ -57,7 +57,7 @@
             <div class="ip-meta-row">
                 <span class="ip-count-label">
                     <strong>{{ $contacts->total() }}</strong> provider{{ $contacts->total() !== 1 ? 's' : '' }}
-                    @if(request()->hasAny(['name','city']))
+                    @if(request()->hasAny(['name','state']))
                         &nbsp;·&nbsp;<a href="{{ route('contact.insuranceprovider.index') }}" class="ip-clear-link"><i class="uil uil-times-circle me-1"></i>Clear filters</a>
                     @endif
                 </span>
@@ -135,7 +135,7 @@
                 <i class="uil uil-building"></i>
                 <p class="ip-empty-title">No insurance providers found</p>
                 <span class="ip-empty-sub">
-                    @if(request()->hasAny(['name','city']))
+                    @if(request()->hasAny(['name','state']))
                         No providers match the filters.
                         <a href="{{ route('contact.insuranceprovider.index') }}" class="ip-clear-link">Clear filters</a>
                     @else
@@ -147,7 +147,7 @@
 
             @if($contacts->total() > $contacts->perPage())
             <div class="mt-3">
-                {{ $contacts->appends(request()->only(['name','city']))->links('pagination::bootstrap-5') }}
+                {{ $contacts->appends(request()->only(['name','state']))->links('pagination::bootstrap-5') }}
             </div>
             @endif
 
@@ -365,5 +365,5 @@
 window.IP_SAVE     = '{{ route("contact.insuranceprovider.save") }}';
 window.IP_JSON_URL = '{{ url("contacts/insurance-provider") }}';
 </script>
-<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.2') }}"></script>
+<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.4') }}"></script>
 @endsection

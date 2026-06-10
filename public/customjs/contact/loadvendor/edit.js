@@ -353,30 +353,24 @@ $(document).ready(function(){
     });
     
     
-    function assignContactPersonErrorIds(prefix = "add") {
+    function assignContactPersonErrorIds(prefix = "edit") {
 
+        // Map helper classes (present only on dynamically-added partial rows) to field names.
         const errorMap = {
             cpnameerr: 'contact_person_name',
             cpdgerr:   'contact_person_designation',
-            cpphcd:    'contact_person_ph_code',
             cpph:      'contact_person_phone',
             cpeml:     'contact_person_email',
             cpcmt:     'contact_person_comment'
         };
-    
-        $('.contact-person').each(function () {
-    
-            let rowIndex = $(this).data('index'); // use actual row index
-    
+
+        // Index by DOM order so the span id matches the server's array key.
+        // Pre-existing rows (rendered in the blade) carry no helper class and keep
+        // their own edit_<field>_<index>_error ids; only added rows are (re)assigned.
+        $('#contactPersonContainer .contact-person').each(function (i) {
             Object.entries(errorMap).forEach(([className, baseId]) => {
-    
-                $(this).find('.' + className).attr(
-                    'id',
-                    `${prefix}_${baseId}_${rowIndex}_error`
-                );
-    
+                $(this).find('.' + className).attr('id', `${prefix}_${baseId}_${i}_error`);
             });
-    
         });
     }
     
@@ -601,8 +595,9 @@ $(document).ready(function(){
             $('.LocationTypeBoth').show();
         } else if (val === 'midpoint') {
             $('.midpoint-wrap').show();
-            
-            $('.LocationTypeBoth').hide();
+            // Midpoint can act as both a loading and an unloading point, so offer the
+            // "Loading & Unloading" (Both) option just like Source/Destination.
+            $('.LocationTypeBoth').show();
         }
     });
     

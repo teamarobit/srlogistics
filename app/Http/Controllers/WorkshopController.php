@@ -270,6 +270,10 @@ class WorkshopController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
+            // Log the real exception — the generic user message hides the cause,
+            // which previously made the "Add Workshop" 500 impossible to diagnose.
+            \Illuminate\Support\Facades\Log::error('Workshop create failed: ' . $e->getMessage(), ['exception' => $e]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add workshop. Please try again.',

@@ -80,11 +80,11 @@ const Toast = Swal.mixin({
         var sp  = document.getElementById('addSpinner');
         btn.disabled = true; sp.classList.remove('d-none');
 
-        // SD-12: write full E.164 number back to input before FormData serialises
-        var addPhoneEl = document.getElementById('add_phone');
-        var addIti = addPhoneEl ? $(addPhoneEl).data('iti') : null;
-        if (addIti) { $(addPhoneEl).val(addIti.getNumber()); }
-
+        // Phone is submitted as the 10-digit national number already present in the
+        // input (server validates digits:10 + stores ph_prefix separately, matching the
+        // rest of the contacts module). The intl-tel-input getNumber() write-back was
+        // removed: utils is not loaded on this page, so getNumber() returns "" and was
+        // blanking the phone field on Save.
         apiFetch(window.IP_SAVE, 'POST', this)
             .then(function (d) {
                 if (d.success) {
@@ -184,11 +184,9 @@ const Toast = Swal.mixin({
         var sp  = document.getElementById('editSpinner');
         btn.disabled = true; sp.classList.remove('d-none');
 
-        // SD-12: write full E.164 number back to input before FormData serialises
-        var editPhoneElSubmit = document.getElementById('edit_phone');
-        var editItiSubmit = editPhoneElSubmit ? $(editPhoneElSubmit).data('iti') : null;
-        if (editItiSubmit) { $(editPhoneElSubmit).val(editItiSubmit.getNumber()); }
-
+        // Phone submitted as the 10-digit national value in the input (see note in the
+        // add handler). getNumber() write-back removed — it returned "" without utils
+        // and blanked the field on Save.
         apiFetch(window.IP_JSON_URL + '/' + id + '/update', 'POST', this)
             .then(function (d) {
                 if (d.success) {
@@ -212,45 +210,77 @@ const Toast = Swal.mixin({
 
     /* ── Toggle status ── */
     window.toggleStatus = function (id, currentStatus) {
-        var action = currentStatus === 'Active' ? 'Deactivate' : 'Activate';
-        if (!confirm(action + ' this provider?')) { return; }
-        fetch(window.IP_JSON_URL + '/' + id + '/toggle-status', {
-            method : 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-        })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            if (d.success) { showToast(d.message); setTimeout(function () { location.reload(); }, 700); }
-            else           { showToast(d.message || 'Could not update status.', false); }
-        })
-        .catch(function () { showToast('Server error.', false); });
+        var action  = currentStatus === 'Active' ? 'Deactivate' : 'Activate';
+        var isOff   = currentStatus === 'Active';
+        // SD-7 exception: confirm dialog uses Swal.fire (not native confirm)
+        Swal.fire({
+            title: action + ' provider?',
+            text: 'Do you want to ' + action.toLowerCase() + ' this provider?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, ' + action,
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: isOff ? '#d33' : '#032671',
+            reverseButtons: true
+        }).then(function (result) {
+            if (!result.isConfirmed) { return; }
+            fetch(window.IP_JSON_URL + '/' + id + '/toggle-status', {
+                method : 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d.success) { showToast(d.message); setTimeout(function () { location.reload(); }, 700); }
+                else           { showToast(d.message || 'Could not update status.', false); }
+            })
+            .catch(function () { showToast('Server error.', false); });
+        });
     };
 
     /* ── Delete ── */
     window.deleteProvider = function (id, name) {
-        if (!confirm('Remove "' + name + '"?\n\nThis can be restored by an administrator.')) { return; }
-        fetch(window.IP_JSON_URL + '/' + id, {
-            method : 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-            body   : '_method=DELETE',
-        })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            if (d.success) {
-                showToast(d.message);
-                var row = document.getElementById('ip-row-' + id);
-                if (row) { row.style.transition = 'opacity .3s'; row.style.opacity = '0'; setTimeout(function () { row.remove(); }, 300); }
-            } else {
-                showToast(d.message || 'Could not delete.', false);
-            }
-        })
-        .catch(function () { showToast('Server error.', false); });
+        // SD-7 exception: delete confirmation uses Swal.fire (not native confirm)
+        Swal.fire({
+            title: 'Delete provider?',
+            html: 'Remove <strong>' + $('<div>').text(name).html() + '</strong>?<br><span class="text-muted small">This can be restored by an administrator.</span>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            reverseButtons: true
+        }).then(function (result) {
+            if (!result.isConfirmed) { return; }
+            fetch(window.IP_JSON_URL + '/' + id, {
+                method : 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+                body   : '_method=DELETE',
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d.success) {
+                    showToast(d.message);
+                    var row = document.getElementById('ip-row-' + id);
+                    if (row) { row.style.transition = 'opacity .3s'; row.style.opacity = '0'; setTimeout(function () { row.remove(); }, 300); }
+                } else {
+                    showToast(d.message || 'Could not delete.', false);
+                }
+            })
+            .catch(function () { showToast('Server error.', false); });
+        });
     };
 
     /* ── Select2 init ── */
     $(document).ready(function () {
         $('#add_state_id').select2({ dropdownParent: $('#addProviderModal'),  width: '100%', placeholder: '— Select State —', allowClear: true });
         $('#edit_state_id').select2({ dropdownParent: $('#editProviderModal'), width: '100%', placeholder: '— Select State —', allowClear: true });
+
+        // Issue 22: searchable Select2 on the list State filter; auto-submit on change
+        var $ipFilterState = $('#ipFilterState');
+        if ($ipFilterState.length) {
+            $ipFilterState.select2({ width: '180px', placeholder: 'All States', allowClear: true });
+            $ipFilterState.on('change', function () { document.getElementById('ipFilterForm').submit(); });
+        }
     });
 
     /* ── Clear add modal on close ── */

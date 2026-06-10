@@ -373,13 +373,12 @@
                                             <i class="uil uil-trash-alt"></i>
                                         </span>
                                     </div>
-                                    
-                                    <!--<div class="col-12 col-md-1 text-center">-->
-                                    <!--    <span class="removeTollField text-danger" style="cursor:pointer; font-size: 20px;">-->
-                                    <!--        <i class="uil uil-trash-alt"></i>-->
-                                    <!--    </span>-->
-                                    <!--</div>-->
-                            
+
+                                    <!-- Per-row error placeholder -->
+                                    <div class="col-12 px-1">
+                                        <small class="error text-danger toll-row-error"></small>
+                                    </div>
+
                                 </div>
                                 @empty
                                     {{-- fallback empty row (for create OR no tolls yet) --}}
@@ -463,7 +462,12 @@
                                             <i class="uil uil-trash-alt"></i>
                                         </span>
                                     </div>
-                            
+
+                                    <!-- Per-row error placeholder -->
+                                    <div class="col-12 px-1">
+                                        <small class="error text-danger rto-row-error"></small>
+                                    </div>
+
                                 </div>
                                 @empty
                                     {{-- fallback empty row --}}
@@ -582,7 +586,7 @@ window.editDestinationCityId = "{{ $route->destination_city_id ?? '' }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('js/Routes/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Routes/edit.js?v=1.1')}}"></script>
 
 
 

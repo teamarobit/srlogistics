@@ -94,21 +94,21 @@ $(document).ready(function() {
     
         if (type === "Motor Vehicle") {
     
-            $(".motor_vehicle").show();
+            $(".motor_vehicle").css("display", "block");
     
             $(".MotorVehicleNumber, .MakeDiv, .ModelDiv, .MotorVehicleNumberRCDate, .MotorVehicleAge, .IssueDateDiv, .AssignedOnDiv, .AssignedByDiv").show();
     
         } 
         else if (type === "Electronics") {
     
-            $(".motor_vehicle").show();
+            $(".motor_vehicle").css("display", "block");
     
             $(".MakeDiv, .ModelDiv, .ElectronicsDiv, .IssueDateDiv, .AssignedOnDiv, .AssignedByDiv, .WarrantyStartDiv, .WarrantyEndDiv, .AgeDiv").show();
     
         } 
         else if (type === "Others") {
-            $(".motor_vehicle").show();
-            $(".AssetTypeName").show();
+            $(".motor_vehicle").css("display", "block");
+            $(".AssetTypeName, .ElectronicsDiv, .WarrantyStartDiv, .WarrantyEndDiv").show();
         }
     }
 

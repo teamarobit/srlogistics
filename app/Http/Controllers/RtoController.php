@@ -90,9 +90,9 @@ class RtoController extends Controller
             'state_id'                 => 'required|exists:states,id',
             'city_id'                  => 'required|exists:cities,id',
             'embed_map_location'       => 'required',
-            'charge_for_large_truck'   => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'charge_for_medium_truck'  => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'charge_for_small_truck'  => 'nullable|numeric|min:1|max:999999999999999.99999',
+            'charge_for_large_truck'   => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'charge_for_medium_truck'  => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'charge_for_small_truck'  => 'nullable|numeric|min:0|max:999999999999999.99999',
             'status'         => 'required|in:Active,Inactive', 
 
         ], [
@@ -229,9 +229,9 @@ class RtoController extends Controller
             'state_id'                => 'required|exists:states,id',
             'city_id'                 => 'required|exists:cities,id',
             'embed_map_location'      => 'required',
-            'charge_for_large_truck'  => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'charge_for_medium_truck' => 'nullable|numeric|min:1|max:999999999999999.99999',
-            'charge_for_small_truck'  => 'nullable|numeric|min:1|max:999999999999999.99999',
+            'charge_for_large_truck'  => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'charge_for_medium_truck' => 'nullable|numeric|min:0|max:999999999999999.99999',
+            'charge_for_small_truck'  => 'nullable|numeric|min:0|max:999999999999999.99999',
             'status'                  => 'required|in:Active,Inactive', 
 
         ], [

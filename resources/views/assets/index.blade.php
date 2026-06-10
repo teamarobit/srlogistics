@@ -27,7 +27,15 @@
                                             <option value="Unassigned" {{ request('status')=='Unassigned' ? 'selected' : '' }}>Unassigned</option>
                                         </select>
                                     </div>
-                                    
+
+                                    <div class="search-wrap d-inline-block ms-2" style="width: 200px;">
+                                        <select name="asset_status" id="search_asset_status" class="form-select">
+                                            <option value="">Filter By Status</option>
+                                            <option value="Active" {{ request('asset_status')=='Active' ? 'selected' : '' }}>Active</option>
+                                            <option value="Inactive" {{ request('asset_status')=='Inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                    </div>
+
                                     <a href="{{ route('asset.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
                                     
                                 </form>
@@ -66,8 +74,11 @@
                                     <td><span class="badge {{ $typeClass }}">{{ $data->type ?? '-' }}</span></td>
                                     <td>{{ $data->asset_no ?? '-' }}</td>
                                     <td>
-                                        {{ $data->issue_date 
-                                            ? \Carbon\Carbon::parse($data->issue_date)->format('d-m-Y') 
+                                        @php
+                                            $purchaseDate = $data->issue_date ?: $data->warranty_start_date;
+                                        @endphp
+                                        {{ $purchaseDate
+                                            ? \Carbon\Carbon::parse($purchaseDate)->format('d-m-Y')
                                             : '-' }}
                                     </td>
                                     <td>
@@ -227,5 +238,5 @@
     
    
 </script>
-<script type="text/javascript" src="{{ asset('js/Assets/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/Assets/index.js?v=1.1') }}"></script>
 @endsection

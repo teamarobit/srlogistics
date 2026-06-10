@@ -13,10 +13,19 @@ body { background-color: #fff; }
 .ip-filter .form-control,
 .ip-filter .form-select { font-size: 12px; height: 34px; border-color: #dde4f5; }
 .ip-filter-search { width: 220px; }
-.ip-filter-city   { width: 160px; }
+.ip-filter-state  { width: 180px; }
 .ip-filter-btn    { font-size: 12px; height: 34px; padding: 0 14px; }
-.ip-filter-reset  { font-size: 12px; height: 34px; padding: 0 12px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
-.ip-filter-reset:hover { background: #e2e8f0; color: #1e293b; }
+/* Issue 22: size the Select2-rendered State filter to match the filter bar */
+.ip-filter .select2-container { min-width: 180px; }
+.ip-filter .select2-container--default .select2-selection--single {
+    height: 34px; border-color: #dde4f5;
+    display: flex; align-items: center;
+}
+.ip-filter .select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-size: 12px; line-height: 34px; color: #475569; padding-left: 8px;
+}
+.ip-filter .select2-container--default .select2-selection--single .select2-selection__arrow { height: 32px; }
+/* Issue 23: reset button now uses the global .reset-btn style (btn-primary + history icon) */
 
 /* ── Body wrapper ── */
 .ip-body { padding: 14px 20px 30px; }

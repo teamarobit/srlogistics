@@ -49,7 +49,31 @@ class Route extends Model
             'customercontract_id'
         );
     }
-    
+
+    /**
+     * Contracts that still bind this route (block editing).
+     * A contract releases the route only once it has EXPIRED
+     * (end_date in the past). Soft-deleted contracts are already
+     * excluded by the SoftDeletes scope on Customercontract.
+     */
+    public function activeCustomercontracts()
+    {
+        return $this->customercontracts()
+            ->where(function ($q) {
+                $q->whereNull('customercontracts.end_date')
+                  ->orWhereDate('customercontracts.end_date', '>=', now()->toDateString());
+            });
+    }
+
+    /**
+     * True when at least one non-expired contract is attached,
+     * meaning the route must not be edited.
+     */
+    public function isLockedByContract(): bool
+    {
+        return $this->activeCustomercontracts()->exists();
+    }
+
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_id');

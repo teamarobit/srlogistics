@@ -66,10 +66,6 @@
                                     </select>
                                   </div>
 
-                                  <button type="submit" class="btn btn-secondary ms-2 d-flex align-items-center">
-                                      <i class="uil uil-search"></i>
-                                  </button>
-
                                 </form>
                                 
                                 <a href="{{ route('rto.index') }}" class="btn btn-primary ms-1 d-flex"><i class="uil uil-sync me-1"></i>Reset</a>

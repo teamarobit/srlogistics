@@ -44,6 +44,7 @@ class DesignationController extends Controller
         $departments = Department::where('status', 'Active')->orderBy('name')->get();
         
         $designations = Designation::with('department')
+                                ->withCount(['jobranks', 'officeContacts', 'serviceCenterContacts'])
                                 ->when($search_name, function ($query, $search_name) {
                                     $query->where('name', 'like', '%' . $search_name . '%');
                                 })
@@ -176,6 +177,11 @@ class DesignationController extends Controller
         if ($designation->jobranks()->exists()) {
 
             return redirect()->back()->with('error', 'This designation has jobrank. You cannot edit it.');
+        }
+
+        if ($designation->officeContacts()->exists() || $designation->serviceCenterContacts()->exists()) {
+
+            return redirect()->back()->with('error', 'This designation is assigned to an employee. You cannot edit it.');
         }
         
         $departments = Department::where('status', 'Active')->orderBy('name')->get();

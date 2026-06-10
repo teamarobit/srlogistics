@@ -245,10 +245,23 @@
                                     <textarea name="comment" class="form-control" rows="3" placeholder=""></textarea>
                                     <small class="error text-danger" id="add_comment_error"></small>
                                 </div>
-                              </div> 
-                              
-                           
-    
+                              </div>
+
+                              <div class="form-group row pb-1">
+                                <div class="col-12 col-md-3">
+                                    <label>Status <span class="text-danger">*</span></label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <select name="status" class="form-select">
+                                        <option value="Active" selected>Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                    <small class="error text-danger" id="add_status_error"></small>
+                                </div>
+                              </div>
+
+
+
                               <div class="text-right">
                                   <button id="addBtn" class="btn btn-dark mb-4">Save</button>
                                   

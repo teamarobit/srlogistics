@@ -103,7 +103,11 @@ class Workshop extends Model
 
         $prefix = 'WS-' . $cityTag . '-';
 
-        $last = static::where('workshop_code', 'like', $prefix . '%')
+        // withTrashed(): soft-deleted workshops still hold their workshop_code in
+        // the UNIQUE index. Excluding them here would regenerate an existing code
+        // and trigger a duplicate-key 500 on insert. Count trashed rows too.
+        $last = static::withTrashed()
+                      ->where('workshop_code', 'like', $prefix . '%')
                       ->orderByDesc('workshop_code')
                       ->value('workshop_code');
 

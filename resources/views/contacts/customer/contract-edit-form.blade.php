@@ -40,7 +40,7 @@
                                     <label>Customer Name <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <select name="customer" class="form-control not-clickable">
+                                    <select name="customer" class="form-control not-clickable" disabled>
                                         <option value="">Select Customer</option>
                                         @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}"
@@ -150,6 +150,27 @@
                                 <div class="col-12 col-md-6">
                                     <input type="date" name="end_date" value="{{ old('end_date', $contract->end_date) }}" class="form-control end_date" disabled>
                                     <small class="error text-danger" id="add_end_date_error"></small>
+                                </div>
+                            </div>
+
+                            @php
+                                $today = \Carbon\Carbon::today();
+                                if ($contract->contract_type_id == 6) {
+                                    $contractStatus = 'Life Time';
+                                } elseif (empty($contract->end_date)) {
+                                    $contractStatus = 'Active';
+                                } elseif ($contract->start_date <= $today && $contract->end_date >= $today) {
+                                    $contractStatus = 'Active';
+                                } else {
+                                    $contractStatus = 'Inactive';
+                                }
+                            @endphp
+                            <div class="form-group row">
+                                <div class="col-12 col-md-3">
+                                    <label>Status</label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="text" class="form-control not-clickable" value="{{ $contractStatus }}" readonly>
                                 </div>
                             </div>
                             
@@ -265,6 +286,6 @@
 
 @section('js')
 
-<script src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.2') }}"></script>
+<script src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.3') }}"></script>
 
 @endsection

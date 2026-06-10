@@ -80,7 +80,16 @@
                                         <i class="uil uil-ellipsis-h"></i>
                                       </span>
                                       <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
+                                        @php
+                                            $isTagged = ($designation->office_contacts_count ?? 0) > 0
+                                                     || ($designation->service_center_contacts_count ?? 0) > 0
+                                                     || ($designation->jobranks_count ?? 0) > 0;
+                                        @endphp
+                                        @if($isTagged)
+                                        <li><a class="dropdown-item disabled" href="javascript:void(0)" aria-disabled="true" tabindex="-1" title="This designation is assigned to an employee. You cannot edit it."><i class="uil uil-pen me-2"></i>Edit</a></li>
+                                        @else
                                         <li><a class="dropdown-item" href="{{ route('designation.edit', $designation->id) }}"><i class="uil uil-pen me-2"></i>Edit</a></li>
+                                        @endif
                                         {{--<li><a class="dropdown-item text-danger deleteDesignation" data-id="{{ $designation->id }}" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
                                       </ul>
                                     </div>

@@ -1975,7 +1975,8 @@ class ContactController extends Controller
             ['start_date', 'end_date'],
             'required|date',
             function ($input) {
-                return (int) $input->contract_type_id !== 6;
+                // Trip Wise (5) & Life Time (6) have no fixed dates
+                return ! in_array((int) $input->contract_type_id, [5, 6]);
             }
         );
         
@@ -1986,7 +1987,8 @@ class ContactController extends Controller
             'end_date',
             'after_or_equal:start_date',
             function ($input) {
-                return (int) $input->contract_type_id !== 6;
+                // Trip Wise (5) & Life Time (6) have no fixed dates
+                return ! in_array((int) $input->contract_type_id, [5, 6]);
             }
         );
         
@@ -2020,13 +2022,13 @@ class ContactController extends Controller
         
         $contactId = $request->contact_id;
 
-        if ((int) $request->contract_type_id !== 6) {
+        if (! in_array((int) $request->contract_type_id, [5, 6])) {
         
             $start = $request->start_date;
             $end   = $request->end_date;
         
             $overlap = Customercontract::where('contact_id', $contactId)
-                ->where('contract_type_id', '!=', 6) // ignore lifetime contracts
+                ->whereNotIn('contract_type_id', [5, 6]) // ignore Trip Wise & Life Time contracts
                 ->where(function ($query) use ($start, $end) {
                     $query->whereBetween('start_date', [$start, $end])
                           ->orWhereBetween('end_date', [$start, $end])
@@ -12840,15 +12842,15 @@ class ContactController extends Controller
     {
         $cotypeId    = self::CONTACT_TYPE_INSURANCE_PROVIDER;
         $search_name = $request->name;
-        $search_city = $request->city;
+        $search_state = $request->state;
 
         $contacts = Contact::query()->where('cotype_id', $cotypeId);
 
         if ($request->filled('name')) {
             $contacts->where('contact_name', 'like', '%' . $request->name . '%');
         }
-        if ($request->filled('city')) {
-            $contacts->where('city_id', $request->city);
+        if ($request->filled('state')) {
+            $contacts->where('state_id', $request->state);
         }
 
         $contacts = $contacts
@@ -12867,7 +12869,7 @@ class ContactController extends Controller
                         ->orderBy('name')->get();
 
         return view('contacts.insuranceprovider.index',
-            compact('contacts', 'cities', 'states', 'cotype', 'search_name', 'search_city'));
+            compact('contacts', 'cities', 'states', 'cotype', 'search_name', 'search_state'));
     }
 
     /** GET /contacts/insurance-provider/{id}/json — used by edit modal */
@@ -13092,25 +13094,3 @@ class ContactController extends Controller
     
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

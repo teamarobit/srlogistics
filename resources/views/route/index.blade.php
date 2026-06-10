@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Routes/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Routes/index.css?v=1.1') }}">
 
 
 
@@ -19,44 +19,33 @@
 
                 <div class="topbar">
                    <div class="container-fluid page-head">
-                      <div class="row align-items-end">
-                          <div class="col-12">
-                              <h5 class="d-inline-block mb-0">Routes</h5>
+                      <div class="route-list-toolbar">
+                          <div class="route-list-toolbar__head">
+                              <h5 class="route-list-title mb-0">Routes</h5>
                               <a href="{{ route('route.create') }}" class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Route</a>
-                              
-                              <form action="{{ route('route.index') }}" id="searchform" class="d-inline-block">
-                                  <div class="search-wrap d-inline-block" style="width: 115px;">
-                                      <input type="text" name="route" id="search_route" value="{{ old('route', $search_route_name) }}" class="form-control" placeholder="Search by Route" />
-                                  </div>
-                                  
-                                  <div class="search-wrap d-inline-block" style="width: 120px;">
-                                      <input type="text" name="source" id="search_source" value="{{ old('source', $search_source) }}" class="form-control" placeholder="Search by Source" />
-                                  </div>
-                                  
-                                  <div class="search-wrap d-inline-block" style="width: 140px;">
-                                      <input type="text" name="destination" id="search_destination" value="{{ old('destination', $search_destination) }}" class="form-control" placeholder="Search by Destination" />
-                                  </div>
-                                  
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 140px;">
-                                      <select name="route_type" id="route_type" class="form-select">
-                                          <option value="">Filter by Type</option>
-                                          <option value="Line" @if($search_route_type == 'Line') selected @endif>Line</option>
-                                          <option value="Local" @if($search_route_type == 'Local') selected @endif>Local</option>
-                                      </select>
-                                  </div>
-                                  
-                                  <div class="search-wrap d-inline-block ms-2" style="width: 130px;">
-                                      <select name="status" id="search_status" class="form-select">
-                                          <option value="">Filter by Status</option>
-                                          <option value="Active" @if($search_status == 'Active') selected @endif>Active</option>
-                                          <option value="Inactive" @if($search_status == 'Inactive') selected @endif>Inactive</option>
-                                      </select>
-                                  </div>
-                                  
-                              </form>
-                              
-                              <a href="{{ route('route.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
                           </div>
+
+                          <form action="{{ route('route.index') }}" id="searchform" class="route-list-filters">
+                              <input type="text" name="route" id="search_route" value="{{ old('route', $search_route_name) }}" class="form-control route-filter-input" placeholder="Search by Route" />
+
+                              <input type="text" name="source" id="search_source" value="{{ old('source', $search_source) }}" class="form-control route-filter-input" placeholder="Search by Source" />
+
+                              <input type="text" name="destination" id="search_destination" value="{{ old('destination', $search_destination) }}" class="form-control route-filter-input" placeholder="Search by Destination" />
+
+                              <select name="route_type" id="route_type" class="form-select route-filter-input">
+                                  <option value="">Filter by Type</option>
+                                  <option value="Line" @if($search_route_type == 'Line') selected @endif>Line</option>
+                                  <option value="Local" @if($search_route_type == 'Local') selected @endif>Local</option>
+                              </select>
+
+                              <select name="status" id="search_status" class="form-select route-filter-input">
+                                  <option value="">Filter by Status</option>
+                                  <option value="Active" @if($search_status == 'Active') selected @endif>Active</option>
+                                  <option value="Inactive" @if($search_status == 'Inactive') selected @endif>Inactive</option>
+                              </select>
+                          </form>
+
+                          <a href="{{ route('route.index') }}" class="btn btn-primary reset-btn route-reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
                       </div>
                   </div>
                 </div>
@@ -206,7 +195,16 @@
                                                 <i class="uil uil-ellipsis-h"></i>
                                               </span>
                                               <ul class="dropdown-menu" aria-labelledby="moreTable" style="">
-                                                <li><a class="dropdown-item" href="{{ route('route.edit', $route->id) }}"><i class="uil uil-pen me-2"></i>Edit</a></li>
+                                                @if(($route->active_contracts_count ?? 0) > 0)
+                                                    <li>
+                                                        <a class="dropdown-item disabled" href="javascript:void(0)" tabindex="-1" aria-disabled="true"
+                                                           title="Locked — linked to an active contract. Editable once the contract expires.">
+                                                            <i class="uil uil-lock me-2"></i>Locked
+                                                        </a>
+                                                    </li>
+                                                @else
+                                                    <li><a class="dropdown-item" href="{{ route('route.edit', $route->id) }}"><i class="uil uil-pen me-2"></i>Edit</a></li>
+                                                @endif
                                                 {{--<li><a class="dropdown-item text-danger delete-route" data-id="{{ $route->id }}" href="javascript:void(0)"><i class="uil uil-trash-alt me-2"></i>Delete</a></li>--}}
                                               </ul>
                                             </div>

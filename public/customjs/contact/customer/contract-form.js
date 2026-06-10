@@ -43,6 +43,7 @@ $(document).ready(function () {
     $('.end_date').on('apply.daterangepicker', function (ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY'));
         $('#end_date_hidden').val(picker.startDate.format('YYYY-MM-DD'));
+        updateContractStatus();
     });
 
     function calcEndDate() {
@@ -63,6 +64,38 @@ $(document).ready(function () {
             $('.end_date').val(end.format('DD/MM/YYYY'));
             $('#end_date_hidden').val(end.format('YYYY-MM-DD'));
         }
+        updateContractStatus();
+    }
+
+    // Issue 5: Trip Wise & Life Time have no End Date (perpetual). Hide & clear End Date.
+    function applyContractTypeRules() {
+        const selectedText = $('#contract_type_id option:selected').text().trim();
+        const noEndDate = (selectedText === 'Trip Wise' || selectedText === 'Life Time');
+        if (noEndDate) {
+            $('#end_date_display').val('');
+            $('#end_date_hidden').val('');
+            $('#endDateRow').hide();
+        } else {
+            $('#endDateRow').show();
+        }
+        updateContractStatus();
+    }
+
+    // Issue 4: derive Status (Active / Inactive / Life Time) from contract type + end date.
+    function updateContractStatus() {
+        const selectedText = $('#contract_type_id option:selected').text().trim();
+        let status = 'Active';
+        if (selectedText === 'Life Time') {
+            status = 'Life Time';
+        } else if (selectedText === 'Trip Wise') {
+            status = 'Active';
+        } else {
+            const endVal = $('#end_date_hidden').val();
+            if (endVal) {
+                status = moment(endVal, 'YYYY-MM-DD').isSameOrAfter(moment().startOf('day')) ? 'Active' : 'Inactive';
+            }
+        }
+        $('#contract_status_display').val(status);
     }
     
     
@@ -91,6 +124,7 @@ $(document).ready(function () {
             $('#MonthlyDiv').hide();
         }
         calcEndDate();
+        applyContractTypeRules();
     });
     
     

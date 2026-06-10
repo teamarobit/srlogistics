@@ -278,7 +278,7 @@
                                         <option value="{{ $i }}" {{ (isset($branch->rent_due_count) && $branch->rent_due_count == $i) ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
-                                <small class="error text-danger error_msg" id="edit_rent_due_date_error"></small>
+                                <small class="error text-danger error_msg" id="edit_rent_due_count_error"></small>
                             </div>
                           </div>
                       </div>
@@ -411,7 +411,7 @@ var BRANCHES = "{{ route('branch.index') }}";
 
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}?v=0.1"></script>
+<script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}?v=0.2"></script>
 
 @endsection
 

@@ -191,7 +191,7 @@ $(function () {
             var match = true;
             if (ownership && $tr.data('ownership') !== ownership.toLowerCase()) { match = false; }
             if (type   && $tr.data('type').indexOf(type)     === -1) { match = false; }
-            if (status && $tr.data('status').indexOf(status) === -1) { match = false; }
+            if (status && String($tr.data('status')) !== status) { match = false; }
             if (search) {
                 var haystack = ($tr.data('name')  || '') + ' ' +
                                ($tr.data('city')  || '') + ' ' +

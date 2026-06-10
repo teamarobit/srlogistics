@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/HR/skillset-index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/HR/skillset-index.css?v=1.1') }}">
 
 
 @endsection
@@ -23,11 +23,19 @@
                                 <a href="{{ route('skillset.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Skill Set</a>
                                 
                                 <form action="{{ route('skillset.index') }}" id="searchform" class="d-inline-block">
-                                    
+
                                     <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
                                         <input type="text" name="skillset" id="search_skillset" value="{{ old('skillset', $search_skillset_name) }}" class="form-control" placeholder="Search by Skill Set">
                                     </div>
-                                    
+
+                                    <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
+                                        <select name="status" id="search_status" class="form-select select2">
+                                            <option value="">Filter by Status</option>
+                                            <option value="Active" {{ old('status', $search_status) == 'Active' ? 'selected' : '' }}>Active</option>
+                                            <option value="Inactive" {{ old('status', $search_status) == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                    </div>
+
                                 </form>
                                 
                                 <a href="{{ route('skillset.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
@@ -125,7 +133,7 @@
     var DELETE_SKILLSET  = "{{route('skillset.delete')}}";
     
 </script>
-<script type="text/javascript" src="{{ asset('customjs/skillset/index.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/skillset/index.js?v=1.1') }}"></script>
 
 @endsection
 

@@ -446,5 +446,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.4') }}"></script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.5') }}"></script>
 @endsection

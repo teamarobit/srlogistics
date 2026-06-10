@@ -39,7 +39,7 @@
                                     <label>Customer Name <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <select name="contact_id" class="form-control {{ !empty($customerid) ? 'not-clickable' : '' }}" readonly>
+                                    <select class="form-control not-clickable" disabled>
                                         <option value="">Select Customer</option>
                                         @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}" {{ (isset($customerid) && $customerid == $customer->id) ? 'selected' : '' }}>{{ $customer->contact_name }}</option>
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row" id="endDateRow">
                                 <div class="col-12 col-md-3">
                                     <label>End Date <span class="text-danger">*</span></label>
                                 </div>
@@ -130,6 +130,15 @@
                                     <input type="text" name="end_date_display" id="end_date_display" class="form-control end_date" placeholder="Select End Date" readonly>
                                     <input type="hidden" name="end_date" id="end_date_hidden">
                                     <small class="error text-danger" id="add_end_date_error"></small>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-12 col-md-3">
+                                    <label>Status</label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="text" id="contract_status_display" class="form-control not-clickable" value="Active" readonly>
                                 </div>
                             </div>
                           
@@ -288,7 +297,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.3') }}"></script>
 
 @endsection
 

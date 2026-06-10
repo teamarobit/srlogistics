@@ -43,6 +43,11 @@
             <i class="uil uil-trash-alt"></i>
         </span>
     </div>
-      
+
+    <!-- Per-row error placeholder -->
+    <div class="col-12 px-1">
+        <small class="error text-danger toll-row-error"></small>
+    </div>
+
 </div>
                             

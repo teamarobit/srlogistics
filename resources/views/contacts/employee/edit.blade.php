@@ -483,8 +483,7 @@
                                                         <label>User Roles <span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
-                                                        <select name="office_role_ids[]" class="form-select select2" multiple>
-                                                            <option value="">Select Roles</option>
+                                                        <select name="office_role_ids[]" class="form-select select2" data-placeholder="Select Roles" multiple>
                                                             @foreach ($roles as $role)
                                                                 <option value="{{ $role->id }}" {{ in_array($role->id, $contactroles) ? 'selected' : '' }}>
                                                                     {{ $role->name }}
@@ -610,8 +609,7 @@
                                                                 <label>User Roles <span class="text-danger">*</span></label>
                                                             </div>
                                                             <div class="col-12 col-md-7">
-                                                                <select name="service_center_role_ids[]" class="form-select select2" multiple>
-                                                                    <option value="">Select Roles</option>
+                                                                <select name="service_center_role_ids[]" class="form-select select2" data-placeholder="Select Roles" multiple>
                                                                     @foreach ($roles as $role)
                                                                         <option value="{{ $role->id }}" {{ in_array($role->id, $contactroles) ? 'selected' : '' }}>
                                                                             {{ $role->name }}
@@ -2323,7 +2321,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

@@ -141,6 +141,48 @@ $(document).ready(function(){
     // ── Contact Persons ───────────────────────────────────────────────────────
     var contactperson_rowindex = 1;
 
+    // Re-assign per-row validation error-span ids so they match the server's array
+    // keys. All inputs submit as name[] => the server keys them 0,1,2… in DOM order.
+    // Each row's index is its position among all same-named inputs (works even though
+    // the first bank row is rendered without a .bank-data wrapper). Row 0 carries the
+    // correct add_<field>_0_error ids in the blade (no helper class) and is untouched.
+    function assignSpareErrorIds() {
+        var cpNames = $('#contactPersonContainer [name="contact_person_name[]"]').toArray();
+        var cpMap = {
+            cpnameerr: 'contact_person_name',
+            cpdgerr:   'contact_person_designation',
+            cpph:      'contact_person_phone',
+            cpeml:     'contact_person_email',
+            cpcmt:     'contact_person_comment'
+        };
+        $('#contactPersonContainer .contact-person').each(function () {
+            var $row = $(this);
+            var i = cpNames.indexOf($row.find('[name="contact_person_name[]"]')[0]);
+            if (i < 0) return;
+            Object.entries(cpMap).forEach(function (e) {
+                $row.find('.' + e[0]).attr('id', 'add_' + e[1] + '_' + i + '_error');
+            });
+        });
+
+        var bankSelects = $('#bankDetailsContainer [name="bank_id[]"]').toArray();
+        var bankMap = {
+            b_primary_err: 'is_primary',
+            b_id_err:      'bank_id',
+            b_name_err:    'beneficiary_name',
+            b_accno_err:   'account_number',
+            b_ifsc_err:    'ifsc_code',
+            b_upi_err:     'upi_id'
+        };
+        $('#bankDetailsContainer .bank-data').each(function () {
+            var $row = $(this);
+            var i = bankSelects.indexOf($row.find('[name="bank_id[]"]')[0]);
+            if (i < 0) return;
+            Object.entries(bankMap).forEach(function (e) {
+                $row.find('.' + e[0]).attr('id', 'add_' + e[1] + '_' + i + '_error');
+            });
+        });
+    }
+
     $(document).on('click', '.add-person', function (e) {
         e.preventDefault();
         var idx = contactperson_rowindex++;
@@ -155,6 +197,7 @@ $(document).ready(function(){
                     const $newSection = $(response.html);
                     $('#contactPersonContainer').append($newSection);
                     $newSection.find('.select2').select2();
+                    assignSpareErrorIds();
                 }
             }
         });
@@ -183,6 +226,7 @@ $(document).ready(function(){
                     const $newSection = $(response.html);
                     $('#bankDetailsContainer').append($newSection);
                     $newSection.find('.select2').select2();
+                    assignSpareErrorIds();
                 }
             }
         });

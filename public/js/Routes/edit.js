@@ -137,6 +137,7 @@ $(document).ready(function() {
         // reset values
         $row.find('input').val('');
         $row.find('select').val('');
+        $row.find('.toll-row-error').text('');
 
         $wrapper.append($row);
 
@@ -163,6 +164,7 @@ $(document).ready(function() {
         $row.find('select.select2-hidden-accessible').select2('destroy');
         $row.find('input').val('');
         $row.find('select').val('');
+        $row.find('.rto-row-error').text('');
 
         $wrapper.append($row);
 
@@ -170,7 +172,7 @@ $(document).ready(function() {
 
         toggleDeleteIcons();
     });
-    
+
 
     /* ================= REMOVE RTO ================= */
     $(document).on('click', '.removeRtoField', function () {
@@ -734,14 +736,26 @@ $(document).ready(function() {
             
                     let msg = messages[0];
             
-                    // ---------------- Tollstation validation ----------------
-                    if(field === 'tollstation_id' || field.startsWith('tollstation_id.')){
+                    // ---------------- Tollstation validation (per-row) ----------------
+                    let tollMatch = field.match(/^tollstation_id\.(\d+)$/);
+                    if(tollMatch){
+                        $('.toll-row').eq(parseInt(tollMatch[1], 10))
+                                      .find('.toll-row-error').text(msg);
+                        return;
+                    }
+                    if(field === 'tollstation_id'){ // array-level fallback
                         $('.tollstation-error').text(msg);
                         return;
                     }
-            
-                    // ---------------- RTO validation ----------------
-                    if(field === 'rto_id' || field.startsWith('rto_id.')){
+
+                    // ---------------- RTO validation (per-row) ----------------
+                    let rtoMatch = field.match(/^rto_id\.(\d+)$/);
+                    if(rtoMatch){
+                        $('.rto-row').eq(parseInt(rtoMatch[1], 10))
+                                     .find('.rto-row-error').text(msg);
+                        return;
+                    }
+                    if(field === 'rto_id'){ // array-level fallback
                         $('.rto-error').text(msg);
                         return;
                     }

@@ -48,18 +48,22 @@ class AssetController extends Controller
     public function index(Request $request): View
     {
         $search_status = $request->get('status');
-        
+        $search_asset_status = $request->get('asset_status');
+
         $datas = Asset::query()
                                 ->withExists(['employeeAssets as is_assigned' => function ($q) {
                                     $q->where('status','Assigned')->whereNull('revoke_date');
                                 }])
+                                ->when($search_asset_status, function ($q) use ($search_asset_status) {
+                                    $q->where('status', $search_asset_status);
+                                })
                                 ->latest()
                                 ->paginate(10)
                                 ->withQueryString();
 
         //dd($supervisors);
-        
-        return view('assets.index', compact('datas','search_status'));
+
+        return view('assets.index', compact('datas','search_status','search_asset_status'));
     }
     
     
@@ -112,9 +116,9 @@ class AssetController extends Controller
             'comment'     => 'nullable|string|max:2000',
             'documents'   => 'nullable|array',
             'documents.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
-            
-            //'status'          => 'required|in:Active,Inactive', 
-            
+
+            'status'      => 'required|in:Active,Inactive',
+
         ], [
                 'required' => 'This field is required.',
                 'max'      => 'Maximum allowed value is :max.',
@@ -178,8 +182,8 @@ class AssetController extends Controller
                 $asset->assigned_on = $request->get('assigned_on') ?? null;
                 $asset->assigned_by = $request->get('assigned_by') ?? null;
                 $asset->comment = $request->get('comment') ?? null;
-                $asset->status = 'Active';
-                
+                $asset->status = $request->get('status', 'Active');
+
                 $asset->created_by = Auth::user()->id;
                 $asset->save();
                 
