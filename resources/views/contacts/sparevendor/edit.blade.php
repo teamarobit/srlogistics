@@ -19,13 +19,14 @@
         <input type="hidden" name="contactid" id="edit_contactid_input" value="{{ $contact->id }}">
 
         <div class="itemtop-secwrap">
-            <div class="container-fluid">
-                <h5 class="d-inline-block">Edit Spare Part Vendor</h5>
+            <div class="container-fluid">               
 
                 <div class="item1-cbdhed">
                     <div class="row align-items-end">
-
-                        <div class="col-12 text-end item_016btn">
+                        <div class="col-12 col-md-4">
+                            <h5 class="d-inline-block">Edit Spare Part Vendor</h5>
+                        </div>
+                        <div class="col-12 col-md-8 text-end item_016btn">
 
                             @if($contact->status === 'Blacklisted' && $contact->blacklisted_at)
                             <div class="item_blacklisted">

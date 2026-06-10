@@ -93,7 +93,7 @@
                         <div class="col-12 col-md-4">
                             
                                 
-                                <div class="form-bg">
+                                <div class="form-bg mt-4">
                                     <div class="row">
                                         <div class="col-12 col-md-6">
                                             <h6>About</h6>
@@ -127,7 +127,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Name <span class="text-danger">*</span></label>
+                                                    <label>Name<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="contact_name" class="form-control" />
@@ -140,7 +140,7 @@
                                             
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Allocate Vehicle <span class="text-danger">*</span></label>
+                                                        <label>Allocate Vehicle<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <select class="form-select select2" name="vehicle_id" id="vehicle_id">
@@ -158,7 +158,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Driver Code <span class="text-danger">*</span></label>
+                                                    <label>Driver Code<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="contact_code" value="{{$driverCode}}" class="form-control" />
@@ -169,7 +169,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Driver Category <span class="text-danger">*</span></label>
+                                                    <label>Driver Category<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select name="driver_category" class="form-select">
@@ -184,7 +184,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Phone <span class="text-danger">*</span></label>
+                                                    <label>Phone<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="hidden" name="phone_code" class="phone_code"> 
@@ -231,7 +231,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Blood Group <span class="text-danger">*</span></label>
+                                                    <label>Blood Group<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">  
                                                     <select name="blood_group" class="form-select select2">
@@ -249,7 +249,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Religion <span class="text-danger">*</span></label>
+                                                    <label>Religion<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select class="form-select select2" name="religion_id">
@@ -269,7 +269,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Date of Joining <span class="text-danger">*</span></label>
+                                                    <label>Date of Joining<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="date" name="doj" id="doj" class="form-control" max="{{ date('Y-m-d') }}" />
@@ -292,7 +292,7 @@
                                                     <label>Status</label>
                                                 </div>
 
-                                                <div class="col-12 col-md-7 d-flex">
+                                                <div class="col-12 col-md-7 d-flex flex-wrap">
     
                                                     <div class="form-check">
                                                         <input class="form-check-input driver-status" type="radio" name="status" id="active" value="Active" />
@@ -376,7 +376,7 @@
                                                         
                                                         <div class="row form-group">
                                                           <div class="col-12 col-md-5">
-                                                              <label>Exit Reason <span class="text-danger">*</span></label>
+                                                              <label>Exit Reason<span class="text-danger">*</span></label>
                                                           </div>
                                                           <div class="col-12 col-md-7">
                                                              <textarea class="form-control" name="exit_reason" rows="3" placeholder=""></textarea>
@@ -387,9 +387,9 @@
                                                         <!---->
                                                         <div class="row">
                                                             <div class="col-12 col-md-6">
-                                                                <label>Vehicle Photos <span class="text-danger">*</span></label>
+                                                                <label>Vehicle Photos<span class="text-danger">*</span></label>
                                                             </div>
-                                                            <div class="col-12 col-md-6 text-end">
+                                                            <div class="col-12 col-md-6">
                                                                 <div class="collapse show" id="collapseImage">
                                                                     <div class="upload__box">
                                                                       <div class="upload__btn-box">
@@ -420,7 +420,7 @@
                                             <div class="status-content statusblacklist" style="display:none;">
                                                 <div class="row form-group">
                                                   <div class="col-12 col-md-5">
-                                                      <label>Blacklist Reason <span class="text-danger">*</span></label>
+                                                      <label>Blacklist Reason<span class="text-danger">*</span></label>
                                                   </div>
                                                   <div class="col-12 col-md-7">
                                                       <textarea class="form-control" name="blacklist_reason" rows="3" placeholder=""></textarea>
@@ -464,7 +464,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Hisab Category <span class="text-danger">*</span></label>
+                                                    <label>Hisab Category<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select name="hisab_category" class="form-select">
@@ -478,7 +478,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Opening Balance Date <span class="text-danger">*</span></label>
+                                                    <label>Opening Balance Date<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input name="opening_balance_date" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
@@ -488,7 +488,7 @@
                                         
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Opening Balance Type <span class="text-danger">*</span></label>
+                                                    <label>Opening Balance Type<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select name="opening_balance_type" class="form-select select2">
@@ -502,7 +502,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Opening Balance <span class="text-danger">*</span></label>
+                                                    <label>Opening Balance<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="opening_balance" class="form-control">
@@ -512,7 +512,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Guarantor Name <span class="text-danger">*</span></label>
+                                                    <label>Guarantor Name<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="guarantor_name" class="form-control">
@@ -522,7 +522,7 @@
                                         
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Guarantor Number <span class="text-danger">*</span></label>
+                                                    <label>Guarantor Number<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="hidden" name="guarantor_phone_code" class="phone_code"> 
@@ -566,7 +566,7 @@
                                                 
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Name <span class="text-danger">*</span></label>
+                                                        <label>Name<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" class="form-control" name="contact_person_name[]">
@@ -576,7 +576,7 @@
                                               
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label><span class="cpdglbl">Relation </span> <span class="text-danger">*</span></label>
+                                                        <label><span class="cpdglbl">Relation </span><span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" class="form-control" name="contact_person_relation[]">
@@ -586,7 +586,7 @@
                                                 
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                          <label>Phone <span class="text-danger">*</span></label>
+                                                          <label>Phone<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <div class="row">
@@ -675,7 +675,7 @@
                                     <div class="collapse show" id="collapse03">
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Address <span class="text-danger">*</span></label>
+                                                <label>Address<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <textarea name="permanent_address" id="permanentAddr" class="form-control" rows="3" placeholder=""></textarea>
@@ -685,7 +685,7 @@
 
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>State <span class="text-danger">*</span></label>
+                                                <label>State<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select class="form-select select2 dependent-select" name="permanent_addr_state_id" id="permanentAddrState" data-target="permanentAddrCity">
@@ -715,7 +715,7 @@
 
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Postal Code  <span class="text-danger">*</span></label>
+                                                <label>Postal Code<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="permanent_addr_postal_code" id="permanentAddrPostalCode" class="form-control" />
@@ -753,7 +753,7 @@
                                     <div class="collapse show" id="collapse03">
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Address <span class="text-danger">*</span></label>
+                                                <label>Address<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <textarea name="present_address" id="presentAddr" class="form-control" rows="3" placeholder=""></textarea>
@@ -765,7 +765,7 @@
 
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>State <span class="text-danger">*</span></label>
+                                                <label>State<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select class="form-select select2 dependent-select" name="present_addr_state_id" id="presentAddrState" data-target="presentAddrCity">
@@ -795,7 +795,7 @@
 
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Postal Code  <span class="text-danger">*</span></label>
+                                                <label>Postal Code<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="present_addr_postal_code" id="presentAddrPostalCode" class="form-control" />
@@ -833,10 +833,10 @@
                                         
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Is Primary ? <span class="text-danger">*</span></label>
+                                                        <label>Is Primary ?<span class="text-danger">*</span></label>
                                                     </div>
             
-                                                    <div class="col-12 col-md-7 d-flex">
+                                                    <div class="col-12 col-md-7 d-flex flex-wrap">
             
                                                         <div class="form-check">
                                                             <input class="form-check-input bank-status" type="radio" name="is_primary[]" id="is_primary_yes" value="Yes" />
@@ -859,7 +859,7 @@
             
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Bank Name <span class="text-danger">*</span></label>
+                                                        <label>Bank Name<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <select name="bank_id[]" class="form-select select2">
@@ -886,7 +886,7 @@
             
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Account Number <span class="text-danger">*</span></label>
+                                                        <label>Account Number<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="account_number[]" class="form-control" />
@@ -896,7 +896,7 @@
                                                 
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>IFSC Code <span class="text-danger">*</span></label>
+                                                        <label>IFSC Code<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="ifsc_code[]" class="form-control" />
@@ -979,7 +979,7 @@
                                                         <div class="row">
                                                             
                                                             <div class="col-12 col-md-3 d-flex align-items-center">
-                                                                <label>Total Work Experience <span class="text-danger">*</span></label>    
+                                                                <label>Total Work Experience<span class="text-danger">*</span></label>    
                                                             </div>
                                                             
                                                             <div class="col-12 col-md-3 d-flex align-items-center">
@@ -1110,31 +1110,31 @@
                                             <h5 class="mt-3">Driving License Details</h5>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Driving License Number <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Driving License Number<span class="text-danger">*</span></label>
                                                     <input type="text" name="driving_licence_no" class="form-control">
                                                     <small class="error text-danger" id="add_driving_licence_no_error"></small>
                                                 </div>
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">License Issue Date <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">License Issue Date<span class="text-danger">*</span></label>
                                                     <input type="date" name="licence_issue_date" class="form-control" >
                                                     <small class="error text-danger" id="add_licence_issue_date_error"></small>
                                                 </div>
                                             </div>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">License Expiry Date <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">License Expiry Date<span class="text-danger">*</span></label>
                                                     <input type="date" name="licence_expiry_date" class="form-control">
                                                     <small class="error text-danger" id="add_licence_expiry_date_error"></small>
                                                 </div>
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Original License Location <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Original License Location<span class="text-danger">*</span></label>
                                                     <input type="text" name="original_licence_location" class="form-control">
                                                     <small class="error text-danger" id="add_original_licence_location_error"></small>
                                                 </div>
                                             </div>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Driving License Proof <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Driving License Proof<span class="text-danger">*</span></label>
                                                     <input type="file" name="driving_license_proof_file" class="form-control" >
                                                     <small class="error text-danger" id="add_driving_license_proof_file_error"></small>
                                                 </div>
@@ -1143,7 +1143,7 @@
                                             <h5 class="mt-5">ID & Proof Details</h5>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Aadhaar Number <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Aadhaar Number<span class="text-danger">*</span></label>
                                                     <input type="text" name="aadhaar_no" class="form-control">
                                                     <small class="error text-danger" id="add_aadhaar_no_error"></small>
                                                 </div>
@@ -1230,17 +1230,17 @@
                                                 <div class="row form-group">
                                                     
                                                     <div class="col-12 col-md-6 mb-4">
-                                                        <label class="mb-2">Reason for Exit <span class="text-danger">*</span></label>
+                                                        <label class="mb-2">Reason for Exit<span class="text-danger">*</span></label>
                                                         <textarea class="form-control" rows="3" placeholder=""></textarea>
                                                     </div>
                                                     
                                                     <div class="col-12 col-md-6 mb-4">
-                                                        <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
+                                                        <label class="mb-2">Exit Date<span class="text-danger">*</span></label>
                                                         <input class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
                                                     </div>
                                                     
                                                     <div class="col-12 col-md-6 mb-4">
-                                                        <label class="mb-2">Feedback <span class="text-danger">*</span></label>
+                                                        <label class="mb-2">Feedback<span class="text-danger">*</span></label>
                                                         <textarea class="form-control" rows="3" placeholder=""></textarea>
                                                     </div>
                                                     
@@ -1317,17 +1317,17 @@
                 <form>
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6">
-                            <label>Basic Pay <span class="text-danger">*</span></label>
+                            <label>Basic Pay<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                         <div class="col-12 col-md-6">
-                            <label>Salary/Day <span class="text-danger">*</span></label>
+                            <label>Salary/Day<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                     </div>
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6 form-group mb-2">
-                            <label>Salary/Hour <span class="text-danger">*</span></label>
+                            <label>Salary/Hour<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                         <div class="col-12 col-md-6">
@@ -1337,11 +1337,11 @@
                     </div>
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6 form-group mb-2">
-                            <label>Effective Date <span class="text-danger">*</span></label>
+                            <label>Effective Date<span class="text-danger">*</span></label>
                             <input type="date" class="form-control" />
                         </div>
                         <div class="col-12 col-md-6 form-group mb-2">
-                            <label>Overtime Pay/Hour <span class="text-danger">*</span></label>
+                            <label>Overtime Pay/Hour<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                     </div>
@@ -1367,7 +1367,7 @@
                     <div class="row form-group mb-2">
                         
                         <div class="col-12 col-md-12">
-                            <label>Asset Type <span class="text-danger">*</span></label>
+                            <label>Asset Type<span class="text-danger">*</span></label>
                             
                                 <div class="d-flex">
                                     <div class="form-check me-3">
@@ -1387,14 +1387,14 @@
                     
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6">
-                            <label>Asset Id <span class="text-danger">*</span></label>
+                            <label>Asset Id<span class="text-danger">*</span></label>
                             <select class="form-select select2">
                                 <option>485547</option>
                                 <option>565224</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label>Asset Name <span class="text-danger">*</span></label>
+                            <label>Asset Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control bg-light" readonly />
                         </div>
                     </div>
@@ -1433,12 +1433,12 @@
                     <div class="row form-group">
                                                                     
                             <div class="col-12 col-md-6">
-                                <label>Previous Company Name <span class="text-danger">*</span></label>
+                                <label>Previous Company Name<span class="text-danger">*</span></label>
                                 <input type="text" name="company[]" class="form-control" required>
                             </div>
                         
                             <div class="col-12 col-md-6">
-                                <label>Designation <span class="text-danger">*</span></label>
+                                <label>Designation<span class="text-danger">*</span></label>
                                 <input type="text" name="designation[]" class="form-control" required>
                             </div>
                             
@@ -1447,12 +1447,12 @@
                         <div class="row form-group">
                             
                             <div class="col-12 col-md-6">
-                                <label>Employment Duration <span class="text-danger">*</span></label>
+                                <label>Employment Duration<span class="text-danger">*</span></label>
                                <input type="text" id="daterange" name="daterange" class="form-control"  />
                             </div>
                             
                             <div class="col-12 col-md-6">
-                                <label>Exit Reason <span class="text-danger">*</span></label>
+                                <label>Exit Reason<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" >
                             </div>
                             
@@ -1460,12 +1460,12 @@
                         
                         <div class="row form-group">
                             <div class="col-12 col-md-6">
-                                <label>Salary (₹) <span class="text-danger">*</span></label>
+                                <label>Salary (₹)<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control">
                             </div>
                             
                             <div class="col-12 col-md-6">
-                                    <label>Any Police / Legal Case <span class="text-danger">*</span></label>
+                                    <label>Any Police / Legal Case<span class="text-danger">*</span></label>
                                     
                                     <div class="item_check d-flex">
                                         
@@ -1500,7 +1500,7 @@
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
-                                        <label>State <span class="text-danger">*</span></label>
+                                        <label>State<span class="text-danger">*</span></label>
                                         <select class="form-select select2" name="district">
                                             <option value="">Select District</option>
                                             <option>Alipurduar</option>
@@ -1531,7 +1531,7 @@
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
-                                        <label>Police Station <span class="text-danger">*</span></label>
+                                        <label>Police Station<span class="text-danger">*</span></label>
                                         <select class="form-select select2" name="district">
                                             <option value="">Select District</option>
                                             <option>Haringhata</option>
@@ -1549,7 +1549,7 @@
                         
                         <div class="row form-group">
                              <div class="col-12 col-md-12">
-                                <label>Notes <span class="text-danger">*</span></label>
+                                <label>Notes<span class="text-danger">*</span></label>
                                 <textarea class="form-control" rows="3" placeholder=""></textarea>
                             </div>
                         </div>
@@ -1582,7 +1582,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=0.01') }}"></script>
 
 <!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 

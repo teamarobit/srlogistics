@@ -18,10 +18,12 @@
 
         <div class="itemtop-secwrap">
             <div class="container-fluid">
-                <div class="item1-cbdhed">
-                    <h5 class="d-inline-block">Add Spare Part Vendor</h5>
+                <div class="item1-cbdhed">                    
                     <div class="row align-items-end">
-                        <div class="col-12 text-end item_016btn">
+                        <div class="col-12 col-md-4">
+                            <h5 class="d-inline-block">Add Spare Part Vendor</h5>
+                        </div>
+                        <div class="col-12 col-md-8 text-end item_016btn">
                             <a href="javascript:void(0)" class="btn btn-dark me-2" id="addContactBtn">Save</a>
                             <a href="{{ route('contact.sparevendor.index') }}" class="btn btn-danger me-2">Close</a>
                         </div>

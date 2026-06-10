@@ -363,6 +363,7 @@ $(document).ready(function(){
         } else {
             $('.voluntaryexe-wrap').hide();
             $('.leavevoluntary_wrap').hide();
+            $('.statusinactive').hide();
         }
         
         if ($(this).val() === 'Blacklisted') {  

@@ -53,7 +53,7 @@ body{
                                     </select>
                                 </div>
                                 
-                                <div class="search-wrap d-inline-block ms-1" style="width:110px;">
+                                <div class="search-wrap d-inline-block ms-1" style="width:135px;">
                                     <select name="rag" id="search_rag" class="form-select select2">
                                         <option value="">Filter by RAG</option>
                                         <option value="Red" {{ $search_rag == 'Red' ? 'selected' : '' }}>Red</option>
@@ -167,10 +167,6 @@ body{
                                 </td>
                             </tr>
                             @endif
-                            
-                            
-                        
-
                         </tbody>
                     </table>
                 </div>

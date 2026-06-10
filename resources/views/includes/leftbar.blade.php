@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!input) return;
 
     input.addEventListener('input', function () {
-        var q = this.value.toLowerCase().trim();
+        var q = this.value.toLowerCase().trim(); 
         var accordion = document.getElementById('accordionExample');
         if (!accordion) return;
 

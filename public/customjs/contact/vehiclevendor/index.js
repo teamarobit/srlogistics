@@ -18,7 +18,7 @@ $(document).ready(function(){
     
     // Re-init filter selects with descriptive placeholders (destroy first to override global "Please Select")
     $('#search_city').select2('destroy').select2({ placeholder: 'Filter by City', allowClear: true });
-    $('#search_rag').select2('destroy').select2({ placeholder: 'Filter by RAG Status', allowClear: true });
+    $('#search_rag').select2('destroy').select2({ placeholder: 'Filter by RAG', allowClear: true });
     $('#search_size').select2('destroy').select2({ placeholder: 'Filter by Size', allowClear: true });
 
     $('#search_name , #search_city , #search_rag, #search_size').on('change blur', function () {

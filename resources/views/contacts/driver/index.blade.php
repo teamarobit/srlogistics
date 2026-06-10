@@ -24,7 +24,7 @@
                                 <h5 class="d-inline-block mb-0">Driver</h5>
 
                                 @if (Route::has('contact.driver.create')) 
-                                <a href="{{ route('contact.driver.create') }}" style="padding: 8px 10px !important;" class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i> Driver</a>
+                                <a href="{{ route('contact.driver.create') }}" class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Driver</a>
                                 @endif
                             
                                 <form action="{{ route('contact.driver.index') }}" id="searchform" class="d-inline-block">
@@ -33,7 +33,7 @@
                                         <input type="text" name="name" id="search_name" value="{{ $search_name ?? '' }}"  class="form-control" placeholder="Search by Name">
                                     </div>
                                     
-                                    <div class="search-wrap d-inline-block" style="width: 130px;">
+                                    <div class="search-wrap d-inline-block" style="width: 140px;">
                                         <select class="form-select" id="" name="">
                                             <option value="">Filter By Vehicle</option>
                                             <option value="Red">WB-12-VH09-9890</option>
@@ -42,7 +42,7 @@
                                          </select>
                                     </div>
                                     
-                                    <div class="search-wrap d-inline-block" style="width: 120px;">
+                                    <div class="search-wrap d-inline-block" style="width: 130px;">
                                         <select name="rag" id="search_rag" class="form-select">
                                             <option value="">Filter by RAG</option>
                                             <option value="Red" {{ $search_rag == 'Red' ? 'selected' : '' }}>Red</option>
@@ -52,7 +52,7 @@
                                     </div>
                                     
     
-                                    <div class="search-wrap d-inline-block" style="width:140px;">
+                                    <div class="search-wrap d-inline-block" style="width:150px;">
                                         <select name="category" id="search_category" class="form-select">
                                             <option value="">Filter by Category </option>
                                             <option value="Line" {{ $search_category == 'Line' ? 'selected' : '' }}>Line</option>

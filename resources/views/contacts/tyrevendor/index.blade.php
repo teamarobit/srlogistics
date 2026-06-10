@@ -16,7 +16,7 @@
                     <div class="row align-items-center">
                         <div class="col-12 d-flex align-items-center p-0">
                             
-                            <h6 class="d-inline-block m-1">Tyre Vendor</h6>
+                            <h5 class="d-inline-block m-1">Tyre Vendor</h5>
                             
                             @if (Route::has('contact.tyrevendor.create')) 
                             <a href="{{ route('contact.tyrevendor.create') }}" class="btn btn-theme mb-0" style="padding: 8px 21px !important;"><i class="uil uil-plus me-1"></i>Tyre Vendor</a>

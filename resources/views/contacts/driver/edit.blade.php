@@ -201,7 +201,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Name <span class="text-danger">*</span></label>
+                                                <label>Name<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="contact_name" value="{{ $contact->contact_name ?? '' }}" class="form-control" />
@@ -217,7 +217,7 @@
                                         
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Do You Want to Change Vehicle? <span class="text-danger">*</span></label>
+                                                    <label>Do You Want to Change Vehicle?<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <div class="form-check me-2 change-vehicle">
@@ -229,7 +229,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Current Allocated Vehicle <span class="text-danger">*</span></label>
+                                                    <label>Current Allocated Vehicle<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     
@@ -260,7 +260,7 @@
                                             
                                             <div class="row form-group reason_wrap" style="{{ !empty(optional($currentVehicle)->vehicle_change_reason) ? '' : 'display:none;' }}">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Vehicle Change Reason <span class="text-danger">*</span></label>
+                                                    <label>Vehicle Change Reason<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <textarea class="form-control" name="vehicle_change_reason" rows="3" placeholder="">{{ optional($currentVehicle)->vehicle_change_reason }}
@@ -274,7 +274,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Driver Code <span class="text-danger">*</span></label>
+                                                <label>Driver Code<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control" />
@@ -284,7 +284,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Driver Category <span class="text-danger">*</span></label>
+                                                <label>Driver Category<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select name="driver_category" class="form-select">
@@ -299,7 +299,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Phone <span class="text-danger">*</span></label>
+                                                <label>Phone<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="hidden" name="phone_code" value="{{ $contact->ph_prefix ?? '' }}" class="phone_code"> 
@@ -345,7 +345,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Blood Group <span class="text-danger">*</span></label>
+                                                <label>Blood Group<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">  
                                                 <select name="blood_group" class="form-select select2">
@@ -362,7 +362,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Religion <span class="text-danger">*</span></label>
+                                                <label>Religion<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select class="form-select select2" name="religion_id">
@@ -382,7 +382,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Date of Joining <span class="text-danger">*</span></label>
+                                                <label>Date of Joining<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" class="form-control app-date-display" data-target="doj" data-max-today="1" value="{{ $contact->doj ? \Carbon\Carbon::parse($contact->doj)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
@@ -407,7 +407,7 @@
                                                 <label>Status</label>
                                             </div>
 
-                                            <div class="col-12 col-md-7 d-flex">
+                                            <div class="col-12 col-md-7 d-flex flex-wrap">
 
                                                 <div class="form-check">
                                                     <input class="form-check-input driver-status" type="radio" name="status" id="active" value="Active" {{ $contact->status == 'Active' ? 'checked' : '' }} />
@@ -492,7 +492,7 @@
                                                     
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
-                                                          <label>Exit Reason <span class="text-danger">*</span></label>
+                                                          <label>Exit Reason<span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
                                                          <textarea class="form-control" name="voluntary_exit_reason" rows="3" placeholder=""></textarea>
@@ -503,9 +503,9 @@
                                                     
                                                     <div class="row">
                                                         <div class="col-12 col-md-6">
-                                                            <label>Vehicle Photos <span class="text-danger">*</span></label>
+                                                            <label>Vehicle Photos<span class="text-danger">*</span></label>
                                                         </div>
-                                                        <div class="col-12 col-md-6 text-end">
+                                                        <div class="col-12 col-md-6">
                                                             <div class="collapse show" id="collapseImage">
                                                                 <div class="upload__box">
                                                                   <div class="upload__btn-box">
@@ -534,7 +534,7 @@
                                         <div class="status-content statusblacklist" style="display: {{ $contact->blacklist_reason != '' ? 'block' : 'none' }};">
                                             <div class="row form-group">
                                               <div class="col-12 col-md-5">
-                                                  <label>Blacklist Reason <span class="text-danger">*</span></label>
+                                                  <label>Blacklist Reason<span class="text-danger">*</span></label>
                                               </div>
                                               <div class="col-12 col-md-7">
                                                   <textarea class="form-control" name="blacklist_reason" rows="3" placeholder="">{{ $contact->blacklist_reason ?? '' }}</textarea>
@@ -577,7 +577,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Hisab Category <span class="text-danger">*</span></label>
+                                                <label>Hisab Category<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select name="hisab_category" class="form-select">
@@ -591,7 +591,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Opening Balance Date <span class="text-danger">*</span></label>
+                                                <label>Opening Balance Date<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" class="form-control app-date-display" data-target="opening_balance_date" value="{{ optional($contact->driverinfo)->opening_balance_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->opening_balance_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
@@ -602,7 +602,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5"> 
-                                                <label>Opening Balance Type <span class="text-danger">*</span></label>
+                                                <label>Opening Balance Type<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <select name="opening_balance_type" class="form-select ">
@@ -623,7 +623,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Opening Balance <span class="text-danger">*</span></label>
+                                                <label>Opening Balance<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="opening_balance" value="{{ optional($contact->driverinfo)->opening_balance ?? '' }}" class="form-control">
@@ -633,7 +633,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Guarantor Name <span class="text-danger">*</span></label>
+                                                <label>Guarantor Name<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="text" name="guarantor_name" value="{{ optional($contact->driverinfo)->guarantor_name ?? '' }}" class="form-control">
@@ -643,7 +643,7 @@
                                         
                                         <div class="row form-group">
                                             <div class="col-12 col-md-5">
-                                                <label>Guarantor Number <span class="text-danger">*</span></label>
+                                                <label>Guarantor Number<span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <input type="hidden" name="guarantor_phone_code" value="{{ optional($contact->driverinfo)->guarantor_phone_code ?? '' }}" class="phone_code"> 
@@ -696,7 +696,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Name <span class="text-danger">*</span></label>
+                                                    <label>Name<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="contact_person_name[{{ $index }}]" value="{{ $relcontact->name ?? '' }}" class="form-control" >
@@ -716,7 +716,7 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                      <label>Phone <span class="text-danger">*</span></label>
+                                                      <label>Phone<span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <div class="row">
@@ -804,7 +804,7 @@
                                 <div class="collapse show" id="collapse03">
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>Address <span class="text-danger">*</span></label>
+                                            <label>Address<span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <textarea name="permanent_address" id="permanentAddr" class="form-control" rows="3" placeholder="">{{ $permanentAddress->address ?? '' }}</textarea>
@@ -814,7 +814,7 @@
 
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>State <span class="text-danger">*</span></label>
+                                            <label>State<span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <select class="form-select select2 dependent-select" name="permanent_addr_state_id" id="permanentAddrState" data-target="permanentAddrCity">
@@ -852,7 +852,7 @@
 
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>Postal Code  <span class="text-danger">*</span></label>
+                                            <label>Postal Code <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <input type="text" name="permanent_addr_postal_code" id="permanentAddrPostalCode" value="{{ $permanentAddress->zipcode ?? '' }}" class="form-control" />
@@ -890,7 +890,7 @@
                                 <div class="collapse show" id="collapse03">
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>Address <span class="text-danger">*</span></label>
+                                            <label>Address<span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <textarea name="present_address" id="presentAddr" class="form-control" rows="3" placeholder="">{{ $presentAddress->address ?? '' }}</textarea>
@@ -902,7 +902,7 @@
 
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>State <span class="text-danger">*</span></label>
+                                            <label>State<span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <select class="form-select select2 dependent-select" name="present_addr_state_id" id="presentAddrState" data-target="presentAddrCity">
@@ -940,7 +940,7 @@
 
                                     <div class="row form-group">
                                         <div class="col-12 col-md-5">
-                                            <label>Postal Code  <span class="text-danger">*</span></label>
+                                            <label>Postal Code <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
                                             <input type="text" name="present_addr_postal_code" id="presentAddrPostalCode" value="{{ $presentAddress->zipcode ?? '' }}" class="form-control" />
@@ -986,10 +986,10 @@
                                                 
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Is Primary ? <span class="text-danger">*</span></label>
+                                                        <label>Is Primary ?<span class="text-danger">*</span></label>
                                                     </div>
             
-                                                    <div class="col-12 col-md-7 d-flex">
+                                                    <div class="col-12 col-md-7 d-flex flex-wrap">
             
                                                         <div class="form-check">
                                                             <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
@@ -1012,7 +1012,7 @@
             
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Bank Name <span class="text-danger">*</span></label>
+                                                        <label>Bank Name<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <select name="bank_id[{{ $index }}]" class="form-select select2">
@@ -1039,7 +1039,7 @@
             
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>Account Number <span class="text-danger">*</span></label>
+                                                        <label>Account Number<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="account_number[{{ $index }}]" value="{{ $contactBank->account_number ?? '' }}" class="form-control" />
@@ -1049,7 +1049,7 @@
                                                 
                                                 <div class="row form-group">
                                                     <div class="col-12 col-md-5">
-                                                        <label>IFSC Code <span class="text-danger">*</span></label>
+                                                        <label>IFSC Code<span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="ifsc_code[{{ $index }}]"  value="{{ $contactBank->ifsc_code ?? '' }}" class="form-control" />
@@ -1083,7 +1083,7 @@
                               
                         </div>
 
-                        <div class="col-12 col-md-8 mt-4">
+                        <div class="col-12 col-md-8">
                             <div class="right-side-wrap">
 
                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
@@ -1137,7 +1137,7 @@
                                                         <div class="row">
                                                             
                                                             <div class="col-12 col-md-3 d-flex align-items-center">
-                                                                <label>Total Work Experience <span class="text-danger">*</span></label>    
+                                                                <label>Total Work Experience<span class="text-danger">*</span></label>    
                                                             </div>
                                                             <div class="col-12 col-md-3 d-flex align-items-center">
                                                                 <input type="number" class="form-control" value="{{ $totalYears ?? 0 }}" disabled>
@@ -1322,12 +1322,12 @@
                                             <h5 class="mt-3">Driving License Details</h5>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Driving License Number <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Driving License Number<span class="text-danger">*</span></label>
                                                     <input type="text" name="driving_licence_no" value="{{ optional($contact->driverinfo)->driving_licence_no }}" class="form-control">
                                                     <small class="error text-danger" id="add_driving_licence_no_error"></small>
                                                 </div>
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">License Issue Date <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">License Issue Date<span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control app-date-display" data-target="licence_issue_date" value="{{ optional($contact->driverinfo)->licence_issue_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->licence_issue_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
                                                     <input type="hidden" name="licence_issue_date" id="licence_issue_date" value="{{ optional($contact->driverinfo)->licence_issue_date ?? '' }}">
                                                     <small class="error text-danger" id="add_licence_issue_date_error"></small>
@@ -1335,20 +1335,20 @@
                                             </div>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">License Expiry Date <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">License Expiry Date<span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control app-date-display" data-target="licence_expiry_date" value="{{ optional($contact->driverinfo)->licence_expiry_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->licence_expiry_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
                                                     <input type="hidden" name="licence_expiry_date" id="licence_expiry_date" value="{{ optional($contact->driverinfo)->licence_expiry_date ?? '' }}">
                                                     <small class="error text-danger" id="add_licence_expiry_date_error"></small>
                                                 </div>
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Original License Location <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Original License Location<span class="text-danger">*</span></label>
                                                     <input type="text" name="original_licence_location" value="{{ optional($contact->driverinfo)->original_licence_location }}" class="form-control">
                                                     <small class="error text-danger" id="add_original_licence_location_error"></small>
                                                 </div>
                                             </div>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Driving License Proof <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Driving License Proof<span class="text-danger">*</span></label>
                                                     <input type="file" name="driving_license_proof_file" class="form-control" >
                                                     @if(optional($contact->driverinfo)->driving_license_proof_file)
                                                         <div class="mt-1">
@@ -1364,7 +1364,7 @@
                                             <h5 class="mt-5">ID & Proof Details</h5>
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-6">
-                                                    <label class="mb-1">Aadhaar Number <span class="text-danger">*</span></label>
+                                                    <label class="mb-1">Aadhaar Number<span class="text-danger">*</span></label>
                                                     <input type="text" name="aadhaar_no" value="{{ optional($contact->driverinfo)->aadhaar_no }}" class="form-control">
                                                     <small class="error text-danger" id="add_aadhaar_no_error"></small>
                                                 </div>
@@ -1586,20 +1586,20 @@
                                             <div class="row form-group">
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label class="mb-2">Reason for Exit <span class="text-danger">*</span></label>
+                                                    <label class="mb-2">Reason for Exit<span class="text-danger">*</span></label>
                                                     <textarea name="exit_reason" id="exit_reason" class="form-control" rows="3" placeholder=""></textarea>
                                                     <small class="error text-danger" id="edit_exit_reason_error"></small>
                                                 </div>
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
+                                                    <label class="mb-2">Exit Date<span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control app-date-display" data-target="exit_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
                                                     <input type="hidden" name="exit_date" id="exit_date" value="">
                                                     <small class="error text-danger" id="edit_exit_date_error"></small>
                                                 </div>
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label class="mb-2">Feedback <span class="text-danger">*</span></label>
+                                                    <label class="mb-2">Feedback<span class="text-danger">*</span></label>
                                                     <textarea name="exit_feedback" id="exit_feedback" class="form-control" rows="3" placeholder=""></textarea>
                                                     <small class="error text-danger" id="edit_exit_feedback_error"></small>
                                                 </div>
@@ -1698,13 +1698,13 @@
                         <div class="row form-group">
                                                                     
                             <div class="col-12 col-md-6">
-                                <label>Previous Company Name <span class="text-danger">*</span></label>
+                                <label>Previous Company Name<span class="text-danger">*</span></label>
                                 <input type="text" name="previous_company_name" class="form-control">
                                 <small class="error text-danger" id="add_previous_company_name_error"></small>
                             </div>
                         
                             <div class="col-12 col-md-6">
-                                <label>Designation <span class="text-danger">*</span></label>
+                                <label>Designation<span class="text-danger">*</span></label>
                                 <input type="text" name="previous_designation" class="form-control">
                                 <small class="error text-danger" id="add_previous_designation_error"></small>
                             </div>
@@ -1714,13 +1714,13 @@
                         <div class="row form-group">
                             
                             <div class="col-12 col-md-6">
-                                <label>Employment Duration <span class="text-danger">*</span></label>
+                                <label>Employment Duration<span class="text-danger">*</span></label>
                                 <input type="text" name="previous_employment_duration" class="form-control daterange"  readonly/>
                                 <small class="error text-danger" id="add_previous_employment_duration_error"></small>
                             </div>
                             
                             <div class="col-12 col-md-6">
-                                <label>Exit Reason <span class="text-danger">*</span></label>
+                                <label>Exit Reason<span class="text-danger">*</span></label>
                                 <input type="text" name="previous_exit_reason" class="form-control" >
                                 <small class="error text-danger" id="add_previous_exit_reason_error"></small>
                             </div>
@@ -1729,13 +1729,13 @@
                         
                         <div class="row form-group">
                             <div class="col-12 col-md-6">
-                                <label>Salary (₹) <span class="text-danger">*</span></label>
+                                <label>Salary (₹)<span class="text-danger">*</span></label>
                                 <input type="text" name="previous_salary" class="form-control">
                                 <small class="error text-danger" id="add_previous_salary_error"></small>
                             </div>
                             
                             <div class="col-12 col-md-6">
-                                <label>Experience Category <span class="text-danger">*</span></label>
+                                <label>Experience Category<span class="text-danger">*</span></label>
                                     
                                 <div class="item_check d-flex">
                                     
@@ -1759,7 +1759,7 @@
                             
                             
                             <div class="col-12 col-md-6">
-                                <label>Any Police / Legal Case <span class="text-danger">*</span></label>
+                                <label>Any Police / Legal Case<span class="text-danger">*</span></label>
                                 
                                 <div class="item_check d-flex">
                                     
@@ -1795,7 +1795,7 @@
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
-                                        <label>City <span class="text-danger">*</span></label>
+                                        <label>City<span class="text-danger">*</span></label>
                                         <select name="previous_city_id" class="form-select select2" name="district">
                                             <option value="">Select City</option>
                                             @foreach($cities as $city)
@@ -1806,7 +1806,7 @@
                                     </div>
                                     
                                     <div class="col-12 col-md-6">
-                                        <label>Police Station <span class="text-danger">*</span></label>
+                                        <label>Police Station<span class="text-danger">*</span></label>
                                         <input type="text" name="previous_police_station" class="form-control" />
                                         <small class="error text-danger" id="add_previous_police_station_error"></small>
                                     </div>
@@ -1817,7 +1817,7 @@
                         
                         <div class="row form-group">
                             <div class="col-12 col-md-12">
-                                <label>Notes <span class="text-danger">*</span></label>
+                                <label>Notes<span class="text-danger">*</span></label>
                                 <textarea class="form-control" name="previous_notes" rows="3" placeholder=""></textarea>
                                 <small class="error text-danger" id="add_previous_notes_error"></small>
                             </div>
@@ -1843,27 +1843,27 @@
                 <form>
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6">
-                            <label>Basic Pay <span class="text-danger">*</span></label>
+                            <label>Basic Pay<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                         <div class="col-12 col-md-6">
-                            <label>Bhatta/Day <span class="text-danger">*</span></label>
+                            <label>Bhatta/Day<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                     </div>
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6 form-group mb-2">
-                            <label>Bhatta/Hour <span class="text-danger">*</span></label>
+                            <label>Bhatta/Hour<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                         <div class="col-12 col-md-6 form-group mb-2">
-                            <label>Effective Date <span class="text-danger">*</span></label>
+                            <label>Effective Date<span class="text-danger">*</span></label>
                             <input type="date" class="form-control" />
                         </div>
                     </div>
                     <div class="row form-group mb-2">
                         <div class="col-12 form-group mb-2">
-                            <label>Overtime Bhatta/Hour <span class="text-danger">*</span></label>
+                            <label>Overtime Bhatta/Hour<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" />
                         </div>
                     </div>
@@ -1893,7 +1893,7 @@
                     <input type="hidden" id="attachment_id" name="attachment_id">
 
                     <div class="mb-3">
-                        <label class="form-label">Upload File <span class="text-danger">*</span></label>
+                        <label class="form-label">Upload File<span class="text-danger">*</span></label>
                         <input type="file" name="attachment_file" class="form-control">
                         <small class="error text-danger atyperr" id="edit_attachment_file_error"></small>
                     </div>
@@ -1928,7 +1928,7 @@
                     
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-12">
-                            <label>Asset Type <span class="text-danger">*</span></label>
+                            <label>Asset Type<span class="text-danger">*</span></label>
                             
                             <div class="d-flex">
                                 <div class="form-check me-3">
@@ -1953,14 +1953,14 @@
                     
                     <div class="row form-group mb-2">
                         <div class="col-12 col-md-6">
-                            <label>Asset Id <span class="text-danger">*</span></label>
+                            <label>Asset Id<span class="text-danger">*</span></label>
                             <select name="asset_id" id="asset_id" class="form-select select2">
                                 <option value="">Select Asset</option>
                             </select>
                             <small class="error text-danger" id="add_asset_id_error"></small>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label>Asset Name <span class="text-danger">*</span></label>
+                            <label>Asset Name<span class="text-danger">*</span></label>
                             <input type="text" name="asset_name" id="asset_name" class="form-control bg-light" readonly />
                             <small class="error text-danger" id="add_asset_name_error"></small>
                         </div>

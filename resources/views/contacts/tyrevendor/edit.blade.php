@@ -20,7 +20,7 @@
         
         <input type="hidden" name="contactid" id="edit_contactid_input" value="{{ $contact->id }}">
 
-        <div class="itemtop-secwrap">
+        <div class="itemtop-secwrap mt-4">
             <div class="container-fluid">
                 <h5 class="d-inline-block">Edit Tyre Vendor</h5>
 
@@ -208,7 +208,7 @@
                                         <div id="contactPersonContainer">
                                             
                                             @foreach($contact->relcontacts as $index => $relcontact)
-                                            <div class="contact-person border p-3 mb-3 position-relative">
+                                            <div class="contact-person mb-3 position-relative">
                                                 
                                                 @if( $index > 0)
                                                   <a href="javascript:void(0)" class="text-end text-secondary d-block mb-0 close-sec"><i class="uil uil-times-circle"></i></a>
@@ -306,7 +306,7 @@
 
 
 
-                            <div class="form-bg">
+                            <div class="form-bg pt-4">
                                 <div class="row">
                                     <div class="col-12 col-md-9">
                                         <h6>Company & Tax Details</h6>                                            
@@ -545,7 +545,7 @@
                                         <div id="bankDetailsContainer">
                                             
                                             @foreach($contact->bankDetails as $index => $contactBank)
-                                            <div class="bank-data border p-3 mb-3 position-relative">
+                                            <div class="bank-data mb-3 position-relative">
                                                 
                                                 @if( $index > 0)
                                                   <a href="javascript:void(0)" class="text-end text-secondary d-block mb-0 close-bank"><i class="uil uil-times-circle"></i></a>
@@ -793,7 +793,7 @@
                                         <table class="table table-hover invoice-table mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th>Sl No.</th>
+                                                    <th style="min-width: 80px;">Sl No.</th>
                                                     <th>Condition</th>
                                                     <th>Brand Name</th>
                                                     <th>Model</th>
@@ -843,10 +843,9 @@
                                                     </tr>
                                                 @endforelse
                                             </tbody>
-                                        </table>
-                                        
-                                        {{ $tyres->appends(request()->query())->links('pagination::bootstrap-5') }}
+                                        </table>                                       
                                     </div>
+                                    {{ $tyres->appends(request()->query())->links('pagination::bootstrap-5') }}
                                 </div>
 
                                 <div class="tab-pane fade" id="activity" role="tabpanel">

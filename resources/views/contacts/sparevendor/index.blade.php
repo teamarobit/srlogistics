@@ -14,17 +14,13 @@
                 <div class="container-fluid page-head">
                     <div class="row align-items-center">
                         <div class="col-12 d-flex align-items-center flex-wrap gap-2">
-                            <h6 class="mb-0">Spare Part Vendor</h6>
+                            <h5 class="mb-0">Spare Part Vendor</h5>
 
                             @if(Route::has('contact.sparevendor.create'))
                             <a href="{{ route('contact.sparevendor.create') }}" class="btn btn-theme btn-sm">
                                 <i class="uil uil-plus me-1"></i>Spare Part Vendor
                             </a>
-                            @endif
-
-                            <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" style="display:none;">
-                                <i class="uil uil-trash-alt me-1"></i>Delete
-                            </button>
+                            @endif                            
 
                             <form action="{{ route('contact.sparevendor.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap ms-1" id="filterForm">
                                 <input type="text" name="name" value="{{ $search_name ?? '' }}"
@@ -35,7 +31,10 @@
                                     <option value="{{ $city->id }}" {{ ($search_city ?? '') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
                                     @endforeach
                                 </select>
-                                <a href="{{ route('contact.sparevendor.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+                                <a href="{{ route('contact.sparevendor.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
+                                <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" style="display:none;">
+                                    <i class="uil uil-trash-alt me-1"></i>Delete
+                                </button>
                             </form>
                         </div>
                     </div>
