@@ -1193,6 +1193,9 @@ $(document).ready(function(){
         let container = $('#midpointContainer');
         container.empty();
 
+        // Issue 3: clear route-dependent point selects until a route is chosen
+        resetRoutePointSelects();
+
         if (midpointCount > 0) {
 
             for (let i = 1; i <= midpointCount; i++) {
@@ -1239,6 +1242,8 @@ $(document).ready(function(){
 
                     } else {
                         $('#addContractPricingBtn').prop('disabled', false);
+                        // Issue 3: populate Source/Destination point selects for the selected route
+                        populateRoutePointSelects(res.points);
                     }
                 },
                 error: function () {
@@ -1297,6 +1302,31 @@ $(document).ready(function(){
         `;
     }
 
+
+    // ===============================
+    // Issue 3 - Route point selects (Source / Destination)
+    // ===============================
+    function fillPointSelect($sel, rows) {
+        if (!$sel.length) { return; }
+        if ($sel.hasClass('select2-hidden-accessible')) { $sel.select2('destroy'); }
+        var opts = '<option value="">Choose...</option>';
+        (rows || []).forEach(function (r) {
+            opts += '<option value="' + r.id + '">' + r.location_name + '</option>';
+        });
+        $sel.html(opts);
+        $sel.select2({ width: '100%', dropdownParent: $('#contract-pricing') });
+    }
+
+    function resetRoutePointSelects() {
+        fillPointSelect($('#contract_source_city_id'), []);
+        fillPointSelect($('#contract_destination_city_id'), []);
+    }
+
+    function populateRoutePointSelects(points) {
+        points = points || {};
+        fillPointSelect($('#contract_source_city_id'), points.source);
+        fillPointSelect($('#contract_destination_city_id'), points.destination);
+    }
 
 
     // ===============================

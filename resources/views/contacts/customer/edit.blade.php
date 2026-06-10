@@ -858,7 +858,7 @@
                                                     <option value="Both">Loading & Unloading Points</option>
                                                 </select>
                                             </div>
-                                            <button class="btn btn-primary reset-btn ms-2"><i class="uil uil-history me-1"></i>Reset</button>
+                                            <button type="button" class="btn btn-primary reset-btn ms-2"><i class="uil uil-history me-1"></i>Reset</button>
                                         </div>
                                     </div>
                                     
@@ -1158,7 +1158,7 @@
                                         
                                         
                                         <div class="cmnt-wrap mt-4">
-                                            @forelse($contact->activities as $activity)
+                                            @forelse($contact->activities->filter(fn($a) => trim((string)($a->notes ?? '')) !== '' && strtoupper(trim((string)($a->notes ?? ''))) !== 'NA') as $activity)
                                         
                                                 <div class="d-flex {{ ($activity->is_blacklisted === 'Yes') ? 'blacklist_color' : '' }}">
                                                     <span class="avatar {{ ($activity->is_blacklisted === 'Yes') ? 'bg-circlesec btn-danger' : 'bg-avatar-primary' }} me-3">
@@ -1496,7 +1496,7 @@
                         </div>
                         
                         <div class="col-12 col-md-6 form-group">
-                            <label>Route <span class="text-danger">*</span></label>
+                            <label>Routes <span class="text-danger">*</span></label>
                             <select name="customercontract_route_id" id="customercontract_route_id" class="form-select select2">
                                 <option value="">Choose...</option>
                             </select>
@@ -2164,7 +2164,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

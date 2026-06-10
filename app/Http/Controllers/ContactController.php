@@ -1748,7 +1748,7 @@ class ContactController extends Controller
                 $contact->save();
                 
                 
-                if ($request->filled('blacklist_reason')) {
+                if ($request->get('status') === 'Blacklisted' && $request->filled('blacklist_reason')) {
                     $activity = new Contactactivity();
                     $activity->contact_id = $contact->id;
                     $activity->notes = $request->blacklist_reason; 
@@ -2977,6 +2977,45 @@ class ContactController extends Controller
 
 
     /**
+     * Returns the customer's configured Source / Destination location options for the
+     * given contract-route, so the Rate Chart form can populate those selects when a
+     * route is selected (Issue 3 — route did not populate source/destination).
+     */
+    private function routePointsOptions($contactId, $contractRouteId): array
+    {
+        $points = ['source' => [], 'destination' => []];
+
+        $contractRoute = Contractroute::with('route')->find($contractRouteId);
+
+        if (! $contractRoute || ! $contractRoute->route) {
+            return $points;
+        }
+
+        $route = $contractRoute->route;
+
+        if ($route->source_city_id) {
+            $points['source'] = Customerlocation::where('contact_id', $contactId)
+                ->where('route_type', 'Source')
+                ->whereIn('location_type', ['Loading', 'Both'])
+                ->where('source_city_id', $route->source_city_id)
+                ->orderBy('location_name')
+                ->get(['id', 'location_name']);
+        }
+
+        if ($route->destination_city_id) {
+            $points['destination'] = Customerlocation::where('contact_id', $contactId)
+                ->where('route_type', 'Destination')
+                ->whereIn('location_type', ['Unloading', 'Both'])
+                ->where('destination_city_id', $route->destination_city_id)
+                ->orderBy('location_name')
+                ->get(['id', 'location_name']);
+        }
+
+        return $points;
+    }
+
+
+    /**
      * Client-side pre-check for the Rate Chart tab: reports whether the customer has a
      * configured Location for every point of the chosen contract-route.
      * GET /contacts/customer/contract-route/{id}/points-setup?contact_id=...
@@ -2998,6 +3037,7 @@ class ContactController extends Controller
             'success'  => true,
             'complete' => count($missing) === 0,
             'missing'  => $missing,
+            'points'   => $this->routePointsOptions($contactId, $id),
         ], 200);
     }
 
