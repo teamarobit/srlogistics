@@ -875,7 +875,7 @@ class ContactController extends Controller
         };
         
         $validator = Validator::make($request->all(), [
-            'gst_number'          => 'required|max:100',
+            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',
@@ -924,6 +924,7 @@ class ContactController extends Controller
                 'distinct'             => 'Duplicate value.',
                 'email'                => 'This email is invalid.',
                 
+                'gst_number.regex'     => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
                 'halting_charges_per_day.required_if' => 'Please enter halting charges per day when halting charge is checked.',
             
                 'phone.digits' => 'This field must contain 10 digits.',
@@ -1531,7 +1532,7 @@ class ContactController extends Controller
         }
     
         $validator = Validator::make($request->all(), [
-            'gst_number'          => 'required|max:100',
+            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',
@@ -1601,6 +1602,7 @@ class ContactController extends Controller
                 'distinct'             => 'Duplicate value.',
                 'email'                => 'This email is invalid.',
                 
+                'gst_number.regex'     => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
                 'halting_charges_per_day.required_if' => 'Please enter halting charges per day when halting charge is checked.',
                 
                 // Custom field-specific messages:
@@ -6861,6 +6863,7 @@ class ContactController extends Controller
         $search_name     = $request->name;
         $search_rag      = $request->rag;
         $search_category = $request->category;
+        $search_vehicle  = $request->vehicle;
         
         
         
@@ -6880,6 +6883,14 @@ class ContactController extends Controller
         if ($request->filled('category')) {
             $contacts->whereHas('driverinfo', function ($q) use ($request) {
                 $q->where('category', $request->category);
+            });
+        }
+        
+        // Filter by Vehicle (driver's current allocation) — vehicle numbers come
+        // from the vehicle-management section (vehicles table) only.
+        if ($request->filled('vehicle')) {
+            $contacts->whereHas('currentVehicleAllocation', function ($q) use ($request) {
+                $q->where('vehicle_id', $request->vehicle);
             });
         }
         
@@ -6909,7 +6920,9 @@ class ContactController extends Controller
         //dd($contacts);
         
         
-        return view('contacts.driver.index', compact('contacts','cities','cotype','search_name','search_category','search_rag')); 
+        $vehicles = Vehicle::where('status', 'Active')->orderBy('vehicle_no')->get();
+
+        return view('contacts.driver.index', compact('contacts','cities','cotype','vehicles','search_name','search_category','search_rag','search_vehicle')); 
        
     }
     

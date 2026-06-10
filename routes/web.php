@@ -409,6 +409,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/tyre-media/{id}', [App\Http\Controllers\MediaController::class, 'serveTyre'])
         ->name('tyre.media.serve');
 
+    // Auth-gated customer-contract file server (Kankana Issue 7 fix, 2026-06-10)
+    Route::get('/customer-contract-media/{id}', [App\Http\Controllers\MediaController::class, 'serveCustomerContract'])
+        ->name('customer.contract.media.serve');
+
     // Tyre Management
     Route::prefix('tyremanage')->name('tyremanage.')->group(function () {
         Route::get('/vehicle/{vehicle}/tyre/tagging', [App\Http\Controllers\TyreManagementController::class, 'vehicleTyreTagging'])->name('vehicle.tyre.tagging');

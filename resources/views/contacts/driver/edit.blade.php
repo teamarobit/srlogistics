@@ -52,7 +52,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-11 pe-0">
                                             <div class="input-group">
-                                              <input type="text" class="form-control" id="" placeholder="MH-14-2011-0062821">
+                                              <input type="text" class="form-control" id="d_licence_no_lookup" value="{{ optional($contact->driverinfo)->driving_licence_no }}" placeholder="MH-14-2011-0062821">
                                               <small class="error text-danger" id="edit_d_licence_no_error"></small>
                                               <button class="btn btn-primary" type="button" id="fetchData"><i class="uil uil-search me-1"></i>Fetch Info</button>
                                             </div>
@@ -2062,7 +2062,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

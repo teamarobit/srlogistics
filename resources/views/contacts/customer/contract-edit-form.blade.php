@@ -115,15 +115,19 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input name="upload_file" class="form-control bg-light text-black" type="file" id="formFile">
+                                    @if(optional($contract->detail)->contract_file)
+                                        <div class="mt-2 d-flex align-items-center flex-wrap gap-2">
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="uil uil-file-alt me-1"></i>{{ $contract->detail->contract_file }}
+                                            </span>
+                                            <a href="{{ route('customer.contract.media.serve', $contract->detail->id) }}"
+                                               target="_blank" class="small">
+                                               View Existing File
+                                            </a>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">Leave empty to keep the current file.</small>
+                                    @endif
                                 </div>
-                                @if(optional($contract->detail)->contract_file)
-                                    <p class="mt-2">
-                                        <a href="{{ asset('medias/customer-contract/'.$contract->detail->contract_file) }}"
-                                           target="_blank">
-                                           View Existing File
-                                        </a>
-                                    </p>
-                                @endif
                             </div>
                           
                           
@@ -261,6 +265,6 @@
 
 @section('js')
 
-<script src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.1') }}"></script>
+<script src="{{ asset('customjs/contact/' . $cotype->slug . '/contract-form.js?v=1.2') }}"></script>
 
 @endsection

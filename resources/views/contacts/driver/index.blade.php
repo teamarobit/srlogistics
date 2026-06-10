@@ -34,11 +34,11 @@
                                     </div>
                                     
                                     <div class="search-wrap d-inline-block" style="width: 130px;">
-                                        <select class="form-select" id="" name="">
+                                        <select class="form-select" id="search_vehicle" name="vehicle">
                                             <option value="">Filter By Vehicle</option>
-                                            <option value="Red">WB-12-VH09-9890</option>
-                                            <option value="Yellow">WB-13-VH08-9090</option>
-                                            <option value="Green">WB-15-VH10-8990</option> 
+                                            @foreach($vehicles as $vehicle)
+                                                <option value="{{ $vehicle->id }}" {{ (string)($search_vehicle ?? '') === (string)$vehicle->id ? 'selected' : '' }}>{{ $vehicle->vehicle_no }}</option>
+                                            @endforeach
                                          </select>
                                     </div>
                                     
@@ -256,6 +256,6 @@ var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 var DELETE_CONTACT  = "{{route('contact.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.3') }}"></script>
 
 @endsection
