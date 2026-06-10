@@ -207,6 +207,14 @@ $(function () {
     $('#wsTypeFilter, #wsStatusFilter').on('change', applyWsFilters);
     $('#wsSearch').on('keyup', applyWsFilters);
 
+    /* ── Refresh button: reload fresh data from server ──────────────────── */
+    $('#wsRefreshBtn').on('click', function () {
+        var $btn = $(this);
+        $btn.prop('disabled', true)
+            .html('<span class="spinner-border spinner-border-sm me-1" role="status"></span>Refreshing…');
+        location.reload();
+    });
+
     /* ── SD-3: Add form submission ───────────────────────────────────────── */
     $('#addWsForm').on('submit', function (e) {
         e.preventDefault();

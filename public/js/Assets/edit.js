@@ -243,18 +243,13 @@ $(document).ready(function() {
             
                         // If radio or checkbox group
                         if ($input.attr('type') === 'radio' || $input.attr('type') === 'checkbox') {
-            
-                            // Add invalid styling if needed
-                            $input.addClass('is-invalid');
-            
+
                             // Put the message into your existing small.error span
                             $(`#edit_${field}_error`).text(messages[0]);
-            
+
                         } else {
                             // Normal inputs
-            
-                            $input.addClass('is-invalid');
-            
+
                             // Try to find existing small.error span
                             let $small = $(`#edit_${field}_error`);
             

@@ -58,8 +58,11 @@
                             <button class="btn btn-theme btn-sm" data-bs-toggle="modal" data-bs-target="#addWsModal">
                                 <i class="uil uil-plus me-1"></i>Workshop
                             </button>
-                            <button class="btn btn-primary reset-btn">
+                            {{-- <button class="btn btn-primary reset-btn">
                                 Reset
+                            </button> --}}
+                            <button class="btn btn-outline-secondary btn-sm" id="wsRefreshBtn" title="Refresh">
+                                <i class="uil uil-refresh me-1"></i>Reset
                             </button>
                         </div>
                     </div>
@@ -443,5 +446,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.3') }}"></script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.4') }}"></script>
 @endsection

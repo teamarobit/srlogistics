@@ -7087,7 +7087,7 @@ class ContactController extends Controller
             'status'              => 'nullable|in:Active,Inactive,Blacklisted',
             'blacklist_reason'    => 'required_if:status,Blacklisted',
             'status_type'         => 'nullable|required_if:status,Inactive|in:On Leave,Voluntary Exit',
-            'expected_return_date'=> 'nullable|date|date_format:Y-m-d|required_if:status_type,On Leave|required_if:status,Inactive',
+            'expected_return_date'=> 'nullable|date|date_format:Y-m-d|required_if:status_type,On Leave',
             'set_reminder'        => [
                                     'nullable',
                                     'in:Yes,No',
@@ -7596,7 +7596,7 @@ class ContactController extends Controller
                         $filename = 'vehicle_photo_' . time() . '_' . Str::random(6) . '.' . $extension;
                     
                         // Move file
-                        $file->move($uploadPath, $filename);
+                        $photo->move($uploadPath, $filename);
                 
                         // Save 
                         $vehiclephoto  = new Drivervehiclephoto;
@@ -7770,7 +7770,7 @@ class ContactController extends Controller
             
                     // Only add if end >= start
                     if ($end >= $start) {
-                        $diffMonths = $start->diffInMonths($end);
+                        $diffMonths = (int) ceil($start->diffInMonths($end));
                         $totalMonths += $diffMonths;
                     }
                 }
@@ -7934,7 +7934,7 @@ class ContactController extends Controller
             'status'              => 'nullable|in:Active,Inactive,Blacklisted',
             'blacklist_reason'    => 'required_if:status,Blacklisted',
             'status_type'         => 'nullable|required_if:status,Inactive|in:On Leave,Voluntary Exit',
-            'expected_return_date'=> 'nullable|date|date_format:Y-m-d|required_if:status_type,On Leave|required_if:status,Inactive',
+            'expected_return_date'=> 'nullable|date|date_format:Y-m-d|required_if:status_type,On Leave',
             'set_reminder'        => [
                                     'nullable',
                                     'in:Yes,No',
@@ -8353,9 +8353,9 @@ class ContactController extends Controller
                         $filename = 'vehicle_photo_' . time() . '_' . Str::random(6) . '.' . $extension;
                     
                         // Move file
-                        $file->move($uploadPath, $filename);
-                
-                        // Save 
+                        $photo->move($uploadPath, $filename);
+
+                        // Save
                         $vehiclephoto  = new Drivervehiclephoto;
                         $vehiclephoto->contact_id = $contact->id;
                         $vehiclephoto->file_name  = $filename;
