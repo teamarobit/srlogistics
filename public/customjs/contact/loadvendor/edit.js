@@ -862,9 +862,21 @@ $(document).ready(function(){
 });
 
 
-
-
-
-
-
-
+/* ===== Location share — copy Google Maps link to clipboard (Asana: "Location share needs to be done") ===== */
+$(document).on('click', '.share-location', function () {
+    var url = ($(this).data('mapurl') || '').toString().trim();
+    if (!url) {
+        Toast.fire({ icon: 'error', title: 'No map link available for this location.' });
+        return;
+    }
+    var done = function () { Toast.fire({ icon: 'success', title: 'Location link copied to clipboard!' }); };
+    var fail = function () { Toast.fire({ icon: 'error', title: 'Could not copy the link.' }); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done).catch(fail);
+    } else {
+        var $tmp = $('<textarea>').css({ position: 'fixed', left: '-9999px', top: '0' }).val(url).appendTo('body');
+        $tmp[0].select();
+        try { document.execCommand('copy'); done(); } catch (e) { fail(); }
+        $tmp.remove();
+    }
+});

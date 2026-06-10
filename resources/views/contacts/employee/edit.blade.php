@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Contacts/Employee/edit.css') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/Employee/edit.css?v=1.3') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 
@@ -40,8 +40,9 @@
 
                             <div class="col-12 col-md-8 text-end">
                                 @php
-                                    $canGenerate = !empty($contact->contact_name) 
-                                                   && $contact->workExperiences->isNotEmpty();
+                                    $canGenerate = !empty($contact->contact_name)
+                                                   && $contact->workExperiences->isNotEmpty()
+                                                   && $contact->salaries->isNotEmpty();
                                                    
                                     $joiningSeen = $contact->joining_letter_seen_status == 'Yes';
                                 @endphp
@@ -1180,8 +1181,8 @@
                                                             <div class="col-12 col-md-3 d-flex align-items-center">
                                                                 <div class="row">
                                                                     <div class="col-12 d-flex justify-content-end">
-                                                                        <button type="button" data-id="{{ $contact->id }}" class="btn btn-theme mb-0 ms-2 add-emp-experience" 
-                                                                        data-bs-toggle="modal" data-bs-target="#workExperienceModal" style="color: #261f35; font-size: 13px;">
+                                                                        <button type="button" data-id="{{ $contact->id }}" class="btn btn-theme mb-0 ms-2 add-emp-experience {{ $contact->employeeExitDetail ? 'disabled' : '' }}"
+                                                                        data-bs-toggle="{{ $contact->employeeExitDetail ? '' : 'modal' }}" data-bs-target="{{ $contact->employeeExitDetail ? '' : '#workExperienceModal' }}" {{ $contact->employeeExitDetail ? 'disabled' : '' }} style="color: #261f35; font-size: 13px;">
                                                                             <i class="uil uil-plus me-1"></i> Experience</button>
                                                                     </div>
                                                                 </div>
@@ -1200,6 +1201,7 @@
                                                             <th>Legal / Police Case </th>
                                                             <th>Police Station</th>
                                                             <th>Exit Reason</th>
+                                                            <th>Notes</th>
                                                         </tr>
                                                     </thead>
                                            
@@ -1211,9 +1213,9 @@
                                                                 <td>{{ $experience->designation }}</td>
                                                                 <td>
                                                                     @if($experience->employment_start_date && $experience->employment_end_date)
-                                                                        {{ \Carbon\Carbon::parse($experience->employment_start_date)->format('d/m/Y') }}
+                                                                        {{ \Carbon\Carbon::parse($experience->employment_start_date)->format('d-m-Y') }}
                                                                         -
-                                                                        {{ \Carbon\Carbon::parse($experience->employment_end_date)->format('d/m/Y') }}
+                                                                        {{ \Carbon\Carbon::parse($experience->employment_end_date)->format('d-m-Y') }}
                                                                     @else
                                                                         {{ $experience->previous_employment_duration }}
                                                                     @endif
@@ -1226,10 +1228,11 @@
                                                                 </td>
                                                                 <td>{{ $experience->police_station }}</td>
                                                                 <td>{{ $experience->exit_reason }}</td>
+                                                                <td>{{ $experience->notes ?? '-' }}</td>
                                                             </tr>
                                                         @empty
                                                             <tr>
-                                                                <td colspan="6" class="text-center">No previous employment found!</td>
+                                                                <td colspan="7" class="text-center">No previous employment found!</td>
                                                             </tr>
                                                         @endforelse
                                                   
@@ -1392,10 +1395,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
-                                                    @if($contact->employeeAssets->count() > 0)
-                                                    
-                                                        @foreach($contact->employeeAssets as $empAsset)
+
+                                                    @php $assignedAssets = $contact->employeeAssets->where('status', 'Assigned'); @endphp
+                                                    @forelse($assignedAssets as $empAsset)
                                                         <tr>
                                                             <td>{{ $empAsset->asset->asset_no ?? '-' }}</td>
                                                             <td>{{ $empAsset->asset->type ?? '-' }}</td>
@@ -1406,24 +1408,18 @@
                                                             <td>{{ $empAsset->createdby->name ?? '-' }}</td>
                                                             <td>{{ $empAsset->comment ?? '-' }}</td>
                                                             <td>
-                                                                @if($empAsset->status === 'Assigned')
-                                                                    <a class="btn btn-secondary revoke-btn"
-                                                                       data-id="{{ $empAsset->id }}" data-asset="{{ $empAsset->asset->name ?? '' }}"
-                                                                       href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#revoke">
-                                                                        Revoke
-                                                                    </a>
-                                                                @else
-                                                                    <span class="badge bg-success">Revoked</span>
-                                                                @endif
+                                                                <a class="btn btn-secondary revoke-btn"
+                                                                   data-id="{{ $empAsset->id }}" data-asset="{{ $empAsset->asset->name ?? '' }}"
+                                                                   href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#revoke">
+                                                                    Revoke
+                                                                </a>
                                                             </td>
                                                         </tr>
-                                                        @endforeach
-                                                    
-                                                    @else
+                                                    @empty
                                                         <tr>
                                                             <td colspan="9" class="text-center">No assets assigned!</td>
                                                         </tr>
-                                                    @endif
+                                                    @endforelse
 
 
 
@@ -1761,7 +1757,7 @@
                                                    class="btn btn-theme {{ $contact->employeeExitDetail ? 'disabled' : '' }}"
                                                    data-bs-toggle="{{ $contact->employeeExitDetail ? '' : 'modal' }}"
                                                    data-bs-target="{{ $contact->employeeExitDetail ? '' : '#reviseSalary' }}">
-                                                    <i class="uil uil-plus me-1"></i> Revise Salary
+                                                    <i class="uil uil-plus me-1"></i> {{ $contact->salaries->count() ? 'Revise Salary' : 'Setup Salary' }}
                                                 </a>
                                             </div>
                                         </div>
@@ -1819,20 +1815,23 @@
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Reason for Exit <span class="text-danger">*</span></label>
-                                                    <textarea name="exit_reason" id="exit_reason" class="form-control" rows="3" placeholder=""></textarea>
+                                                    <textarea name="exit_reason" id="exit_reason" class="form-control" rows="3" placeholder="" {{ $contact->employeeExitDetail ? 'readonly' : '' }}>{{ $contact->employeeExitDetail->exit_reason ?? '' }}</textarea>
                                                     <small class="error text-danger" id="edit_exit_reason_error"></small>
                                                 </div>
-                                                
+
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control app-date-display" data-target="exit_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
-                                                    <input type="hidden" name="exit_date" id="exit_date" value="">
+                                                    <input type="text" class="form-control app-date-display" data-target="exit_date"
+                                                           data-min-date="{{ $contact->doj ? \Carbon\Carbon::parse($contact->doj)->format('Y-m-d') : '' }}"
+                                                           value="{{ $contact->employeeExitDetail?->exit_date ? \Carbon\Carbon::parse($contact->employeeExitDetail->exit_date)->format('d/m/Y') : '' }}"
+                                                           placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="exit_date" id="exit_date" value="{{ $contact->employeeExitDetail?->exit_date ? \Carbon\Carbon::parse($contact->employeeExitDetail->exit_date)->format('Y-m-d') : '' }}">
                                                     <small class="error text-danger" id="edit_exit_date_error"></small>
                                                 </div>
-                                                
+
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Feedback <span class="text-danger">*</span></label>
-                                                    <textarea name="exit_feedback" id="exit_feedback" class="form-control" rows="3" placeholder=""></textarea>
+                                                    <textarea name="exit_feedback" id="exit_feedback" class="form-control" rows="3" placeholder="" {{ $contact->employeeExitDetail ? 'readonly' : '' }}>{{ $contact->employeeExitDetail->feedback ?? '' }}</textarea>
                                                     <small class="error text-danger" id="edit_exit_feedback_error"></small>
                                                 </div>
                                                 
@@ -2023,7 +2022,15 @@
                             <input type="text" id="asset_make" class="form-control bg-light" readonly />
                         </div>
                     </div>
-                    
+
+                    <div class="row form-group mb-2">
+                        <div class="col-12 col-md-12">
+                            <label>Comments</label>
+                            <textarea name="comment" id="asset_comment" class="form-control" rows="3" placeholder="Write your comments here"></textarea>
+                            <small class="error text-danger" id="add_comment_error"></small>
+                        </div>
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -2050,8 +2057,8 @@
                     
                     <div class="form-group mb-2">
                         <label>Revoke From<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control app-date-display" data-target="revoke_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
-                        <input type="hidden" name="revoke_date" id="revoke_date" value="">
+                        <input type="text" class="form-control app-date-display" data-target="revoke_date" data-max-today="1" value="{{ \Carbon\Carbon::now()->format('d/m/Y') }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                        <input type="hidden" name="revoke_date" id="revoke_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                         <small class="error text-danger" id="add_revoke_date_error"></small>
                     </div>
                     
@@ -2103,7 +2110,7 @@
                             
                             <div class="col-12 col-md-6">
                                 <label>Employment Duration <span class="text-danger">*</span></label>
-                                <input type="text" name="previous_employment_duration" class="form-control daterange"  readonly/>
+                                <input type="text" name="previous_employment_duration" class="form-control daterange-emp"  readonly/>
                                 <small class="error text-danger" id="add_previous_employment_duration_error"></small>
                             </div>
                             
@@ -2151,7 +2158,7 @@
                                     <div class="col-12 col-md-12 my-2">
                                         <div class="note-wrap">
                                             <div class="form-group">
-                                                <label>About Case</label>
+                                                <label>About Case <span class="text-danger">*</span></label>
                                                 <textarea name="previous_legal_case_comment" class="form-control" rows="4" placeholder="Write your message here"></textarea>
                                                 <small class="error text-danger" id="add_previous_legal_case_comment_error"></small>
                                             </div>
@@ -2181,7 +2188,7 @@
                         
                         <div class="row form-group">
                             <div class="col-12 col-md-12">
-                                <label>Notes <span class="text-danger">*</span></label>
+                                <label>Notes</label>
                                 <textarea class="form-control" name="previous_notes" rows="3" placeholder=""></textarea>
                                 <small class="error text-danger" id="add_previous_notes_error"></small>
                             </div>
@@ -2316,7 +2323,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
@@ -2324,8 +2331,3 @@
 
 
 @endsection
-
-
-
-
-

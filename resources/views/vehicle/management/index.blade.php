@@ -88,9 +88,12 @@
                                         <td>-</td>
                                         <td>{{ $val->size->name ?? '-' }}<br/><span class="text-secondary">{{ $val->type->name ?? '-' }}</span></td>
                                         <td>{{ $val->group->name ?? '-' }}</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
+                                        <td>
+                                            {{ $val->driverAllocation?->contact?->contact_name ?? 'Unassigned' }}
+                                            <span class="text-secondary d-block">{{ $val->driverAllocation?->contact ? '+' . ($val->driverAllocation->contact->ph_prefix ?? '91') . ' ' . ($val->driverAllocation->contact->phone ?? '') : '—' }}</span>
+                                        </td>
+                                        <td>On Trip</td>
+                                        <td>{{ $val->ownership_type ?? '-' }}</td>
                                         <td>
                                             <span class="badge bg-{{ $val->status == 'Active' ? 'success' : 'danger' }}">
                                                 {{ $val->status }}

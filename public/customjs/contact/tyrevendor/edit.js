@@ -642,10 +642,10 @@ $(document).ready(function(){
                                       value.join('').replace(index, index.split('.').splice(0,2).join('_'))
                                     );
                               }else if(index.split('.').length === 2) {
-                                    $('#edit_' + index.split('.').join('_') + '_error').text(value);
+                                    $('#edit_' + index.split('.').join('_') + '_error').text(Array.isArray(value) ? value[0] : value);
                               }
                           } else {
-                                 $('#edit_'+index+'_error').text(value);
+                                 $('#edit_'+index+'_error').text(Array.isArray(value) ? value[0] : value);
                           }
                     });
                     

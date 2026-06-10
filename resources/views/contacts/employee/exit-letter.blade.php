@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Exit & Clearance Form - SR Logistics</title>
+    <link rel="stylesheet" href="{{ asset('css/Contacts/Employee/exit-letter.css?v=1.0') }}">
 </head>
 <body>
-    
+
     <div class="print-btn">
-        <button onclick="printPage()" class="btn btn-success">Print</button>
+        <button type="button" id="printExitLetterBtn" class="btn btn-success">Print</button>
     </div>
 
     <div class="container">
@@ -143,12 +144,6 @@
         
     </div>
 
+    <script src="{{ asset('js/Contacts/Employee/exit-letter.js?v=1.0') }}"></script>
 </body>
 </html>
-
-
-
-
-
-
-

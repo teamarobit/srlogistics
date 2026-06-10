@@ -21,7 +21,8 @@ const dropzones = [];
 const MAX_ATTACHMENTS = 4;
 let attachmentIndex = 0;
 
-function initDropzone(id) {
+function initDropzone(id, opts) {
+    opts = opts || {};
     const el = document.getElementById(`dropzone${id}`);
     if (!el) return;
 
@@ -33,7 +34,7 @@ function initDropzone(id) {
         return;
     }
 
-    const dz = new Dropzone(el, {
+    const dzConfig = Object.assign({
         //url: window.UPLOAD_URL,
         url: '/upload/images',
         paramName: "file",
@@ -43,15 +44,19 @@ function initDropzone(id) {
         addRemoveLinks: true,
         autoProcessQueue: false,
         headers: { "X-CSRF-TOKEN": csrfToken }
-    });
+    }, opts);
+    const dz = new Dropzone(el, dzConfig);
     
     // Event: file exceeds max
     dz.on("maxfilesexceeded", function(file) {
-        dz.removeFile(file); // Remove the extra file
+        dz.removeAllFiles(); // Remove existing, keep the new one (replace)
+        dz.addFile(file);
         Toast.fire({
-                      icon: 'error',
-                      title: "Maximum 2 attachments allowed!"
-                    });
+            icon: 'error',
+            title: dz.options.maxFiles === 1
+                ? "Only 1 profile photo allowed!"
+                : "Maximum " + dz.options.maxFiles + " attachments allowed!"
+        });
     });
 
     dropzones.push({ id, dz });
@@ -228,7 +233,7 @@ $(document).on('click', '.remove-attachment-btn', function () {
 $(document).ready(function(){
     
     console.log("Initializing dropzone...");
-    initDropzone(0);
+    initDropzone(0, { maxFiles: 1 });
     
     
     
@@ -894,6 +899,19 @@ $(document).ready(function(){
         //     return false;
         // }
 
+        // Issue 21: Profile photo is mandatory if no existing photo
+        if (typeof HAS_EXISTING_PHOTO !== 'undefined' && !HAS_EXISTING_PHOTO) {
+            var photoInput = $('input[name="contact_image"]')[0];
+            if (!photoInput || photoInput.files.length === 0) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Please upload a profile photo.'
+                });
+                $button.html('Save').attr('disabled', false);
+                return false;
+            }
+        }
+
         
         $('.error').html('');
         $button.html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled', true);
@@ -954,10 +972,10 @@ $(document).ready(function(){
                                       value.join('').replace(index, index.split('.').splice(0,2).join('_'))
                                     );
                               }else if(index.split('.').length === 2) {
-                                    $('#edit_' + index.split('.').join('_') + '_error').text(value);
+                                    $('#edit_' + index.split('.').join('_') + '_error').text(Array.isArray(value) ? value[0] : value);
                               }
                           } else {
-                                 $('#edit_'+index+'_error').text(value);
+                                 $('#edit_'+index+'_error').text(Array.isArray(value) ? value[0] : value);
                           }
                     });
                     

@@ -6,15 +6,16 @@
         <label>Is Primary ? <span class="text-danger">*</span></label>
     </div>
     <div class="col-12 col-md-7 d-flex">
+        <input type="hidden" name="is_primary[{{ $rowindex }}]" value="No">
         <div class="form-check">
-            <input class="form-check-input loadvendor-status" type="radio" name="is_primary[]" id="is_primary_yes_{{ $rowindex }}" value="Yes" />
+            <input class="form-check-input loadvendor-status" type="radio" name="is_primary[{{ $rowindex }}]" id="is_primary_yes_{{ $rowindex }}" value="Yes" />
             <label class="form-check-label" for="is_primary_yes_{{ $rowindex }}">
                 Yes
             </label>
         </div>
 
         <div class="form-check mx-2">
-            <input class="form-check-input loadvendor-status" type="radio" name="is_primary[]" id="is_primary_no_{{ $rowindex }}" value="No" />
+            <input class="form-check-input loadvendor-status" type="radio" name="is_primary[{{ $rowindex }}]" id="is_primary_no_{{ $rowindex }}" value="No" checked />
             <label class="form-check-label" for="is_primary_no_{{ $rowindex }}">
                 No
             </label>

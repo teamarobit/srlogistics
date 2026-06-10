@@ -837,17 +837,17 @@
                                                     </div>
             
                                                     <div class="col-12 col-md-7 d-flex">
-            
+                                                        <input type="hidden" name="is_primary[0]" value="No">
                                                         <div class="form-check">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[]" id="is_primary_yes" value="Yes" />
-                                                            <label class="form-check-label" for="is_primary_yes">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[0]" id="is_primary_yes_0" value="Yes" />
+                                                            <label class="form-check-label" for="is_primary_yes_0">
                                                                 Yes
                                                             </label>
                                                         </div>
             
                                                         <div class="form-check mx-2">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[]" id="is_primary_no" value="No" />
-                                                            <label class="form-check-label" for="is_primary_no">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[0]" id="is_primary_no_0" value="No" checked />
+                                                            <label class="form-check-label" for="is_primary_no_0">
                                                                 No
                                                             </label>
                                                         </div>
@@ -1582,7 +1582,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.2') }}"></script>
 
 <!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 

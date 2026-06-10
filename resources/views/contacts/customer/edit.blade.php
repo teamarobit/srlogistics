@@ -306,7 +306,7 @@
                                                 
                                                 @if($cities && $cities->count())
                                                     @foreach($cities as $city)
-                                                        <option value="{{$city->id}}" @selected($city->id === $contact->city_id)>{{$city->name}}</option>
+                                                        <option value="{{$city->id}}" @selected($city->id == $contact->city_id)>{{$city->name}}</option>
                                                     @endforeach
                                                 @endif
                                               </select>
@@ -558,7 +558,7 @@
                                                     @foreach($cities as $city)
                                                         <option 
                                                             value="{{ $city->id }}" 
-                                                            @selected(optional($contact->cobilling)->city_id === $city->id)
+                                                            @selected(optional($contact->cobilling)->city_id == $city->id)
                                                         >
                                                             {{ $city->name }}
                                                         </option>
@@ -2164,7 +2164,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

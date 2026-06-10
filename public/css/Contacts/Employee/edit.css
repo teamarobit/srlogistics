@@ -425,6 +425,13 @@ text-align: left; }
 .e-activitywrapper .cmnt-wrap small { font-size: 12px; }
 .e-activitywrapper .cmnt-wrap p { font-size: 12px; }
 
+.e-activitywrapper .bg-circlesec {    width: 30px;    height: 30px;    border-radius: 100%;    display: inline-flex;
+    align-items: center;    justify-content: center;    color: #fff;    font-size: 10px;
+    font-weight: 600;    padding: 0 !important; }
+.blacklist_color .c_red {    color: #ea0027 !important; }
+.e-activitywrapper .cmnt-wrap .d-flex { margin-bottom: 12px; }
+.w-90 { width: 90%; }
+
 
 /*--e-activitywrapper--*/
 

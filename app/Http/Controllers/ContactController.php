@@ -5461,11 +5461,20 @@ class ContactController extends Controller
     
     public function storeEmployeeExitDetails(Request $request)
     {
+        $doj = Contact::where('id', $request->contact_id)->value('doj');
+
+        $exitDateRules = ['required', 'date', 'before_or_equal:today'];
+        if ($doj) {
+            $exitDateRules[] = 'after_or_equal:' . \Carbon\Carbon::parse($doj)->format('Y-m-d');
+        }
+
         $validator = Validator::make($request->all(), [
             'contact_id'  => 'required|exists:contacts,id',
             'exit_reason' => 'required|string',
-            'exit_date'   => 'required|date|before_or_equal:today',
+            'exit_date'   => $exitDateRules,
             'exit_feedback' => 'required|string',
+        ], [
+            'exit_date.after_or_equal' => 'Exit date cannot be before the joining date.',
         ]);
     
         if ($validator->fails()) {
@@ -6982,7 +6991,7 @@ class ContactController extends Controller
         $validator = Validator::make($request->all(), [
             //'licence_no'          => 'nullable',
             'contact_name'        => 'required|max:100',
-            'contact_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'contact_image'       => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'contact_code'        => 'required|max:100',
             'driver_category'     => 'required|in:Local,Line',
             
@@ -7007,7 +7016,12 @@ class ContactController extends Controller
             'blood_group'         => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'religion_id'         => 'nullable|exists:religions,id',
 
-            'driving_licence_no'  => 'required|string|max:255',
+            'driving_licence_no'  => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('driverinfos', 'driving_licence_no')->whereNull('deleted_at'),
+            ],
             'licence_issue_date'  => 'required|date_format:Y-m-d',
             'licence_expiry_date' => 'required|date_format:Y-m-d',
             'original_licence_location' => 'required|string|max:255',
@@ -7779,6 +7793,7 @@ class ContactController extends Controller
         // }
         
         $contact = Contact::where('cotype_id', self::CONTACT_TYPE_DRIVER)->find($id);
+        $driverinfo = $contact ? $contact->driverinfo : null;
     
         if (!$contact) {
             return response()->json([
@@ -7846,7 +7861,14 @@ class ContactController extends Controller
             'blood_group'         => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'religion_id'         => 'nullable|exists:religions,id',
 
-            'driving_licence_no'  => 'required|string|max:255',
+            'driving_licence_no'  => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('driverinfos', 'driving_licence_no')
+                    ->ignore($driverinfo?->id)
+                    ->whereNull('deleted_at'),
+            ],
             'licence_issue_date'  => 'required|date_format:Y-m-d',
             'licence_expiry_date' => 'required|date_format:Y-m-d',
             'original_licence_location' => 'required|string|max:255',
@@ -8899,7 +8921,10 @@ class ContactController extends Controller
         
         $banks = Bank::orderBy('name')->get();
         
-        return view('contacts.vehiclevendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks')); 
+        $lastVendor = Contact::where('cotype_id', self::CONTACT_TYPE_VEHICLE_VENDOR)->orderBy('id', 'desc')->first();
+        $vendorCode = 'VV-' . ($lastVendor ? $lastVendor->id + 1 : 1);
+
+        return view('contacts.vehiclevendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks', 'vendorCode')); 
     }
     
     
@@ -9016,7 +9041,7 @@ class ContactController extends Controller
             'contact_person_email'             => 'nullable|array|min:1',
             'contact_person_email.*'           => 'nullable|email:rfc,dns|distinct',
             'contact_person_comment'           => 'nullable|array|min:1',
-            'contact_person_comment.*'         => 'nullable|string|distinct|min:1',
+            'contact_person_comment.*'         => 'nullable|string|max:255',
             
             
             // Attachment validation
@@ -9564,7 +9589,7 @@ class ContactController extends Controller
             'contact_person_email'             => 'nullable|array|min:1',
             'contact_person_email.*'           => 'nullable|email:rfc,dns|distinct',
             'contact_person_comment'           => 'nullable|array|min:1',
-            'contact_person_comment.*'         => 'nullable|string|distinct|min:1',
+            'contact_person_comment.*'         => 'nullable|string|max:255',
             
             // Attachment validation
             'attachtypes' => 'nullable|array',
@@ -10056,7 +10081,10 @@ class ContactController extends Controller
         
         $banks = Bank::orderBy('name')->get();
         
-        return view('contacts.tyrevendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks')); 
+        $lastVendor = \App\Models\Contact::where('cotype_id', self::CONTACT_TYPE_TYRE_VENDOR)->orderBy('id', 'desc')->first();
+        $tyreCode = 'TV-' . ($lastVendor ? $lastVendor->id + 1 : 1);
+
+        return view('contacts.tyrevendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks', 'tyreCode')); 
     }
     
     
@@ -10251,7 +10279,7 @@ class ContactController extends Controller
             $attachTypes = $request->attachtypes ?? [];
             
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
-            if (in_array((float)$tds, [0, 1])) {
+            if ($tds !== null && $tds !== '' && in_array((float)$tds, [0, 1])) {
         
                 if (!in_array(7, $attachTypes)) {
         

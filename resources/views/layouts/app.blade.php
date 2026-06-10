@@ -121,17 +121,18 @@
             $(this).daterangepicker({
                 opens: 'right',
                 autoUpdateInput: false, // input empty until user selects
+                maxDate: moment(),      // Issue 2: prevent future dates
                 locale: {
-                    format: 'YYYY-MM-DD', // Y-m-d style
+                    format: 'DD-MM-YYYY', // Issue 3: dd-mm-yyyy format
                     cancelLabel: 'Clear'
                 }
             });
-    
+
             // When user applies selection
             $(this).on('apply.daterangepicker', function(ev, picker) {
                 $(this).val(
-                    picker.startDate.format('YYYY-MM-DD') + ' - ' +
-                    picker.endDate.format('YYYY-MM-DD')
+                    picker.startDate.format('DD-MM-YYYY') + ' - ' +
+                    picker.endDate.format('DD-MM-YYYY')
                 );
             });
     

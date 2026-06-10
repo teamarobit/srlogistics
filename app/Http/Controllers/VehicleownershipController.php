@@ -117,7 +117,7 @@ class VehicleownershipController extends Controller
             }); 
             
             $success = true;
-            $respmessage = 'Vehicle status saved successfully.';
+            $respmessage = 'Ownership Type is added successfully';
     
         } catch (\Exception $exp) {
             

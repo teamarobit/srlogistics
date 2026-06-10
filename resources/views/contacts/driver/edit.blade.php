@@ -1587,20 +1587,20 @@
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Reason for Exit <span class="text-danger">*</span></label>
-                                                    <textarea name="exit_reason" id="exit_reason" class="form-control" rows="3" placeholder=""></textarea>
+                                                    <textarea name="exit_reason" id="exit_reason" class="form-control" rows="3" placeholder="" {{ $contact->employeeExitDetail ? 'readonly' : '' }}>{{ $contact->employeeExitDetail?->exit_reason ?? '' }}</textarea>
                                                     <small class="error text-danger" id="edit_exit_reason_error"></small>
                                                 </div>
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Exit Date <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control app-date-display" data-target="exit_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
-                                                    <input type="hidden" name="exit_date" id="exit_date" value="">
+                                                    <input type="text" class="form-control app-date-display" data-target="exit_date" value="{{ $contact->employeeExitDetail?->exit_date ? \Carbon\Carbon::parse($contact->employeeExitDetail->exit_date)->format('d/m/Y') : '' }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                                    <input type="hidden" name="exit_date" id="exit_date" value="{{ $contact->employeeExitDetail?->exit_date ?? '' }}">
                                                     <small class="error text-danger" id="edit_exit_date_error"></small>
                                                 </div>
                                                 
                                                 <div class="col-12 col-md-6 mb-3">
                                                     <label class="mb-2">Feedback <span class="text-danger">*</span></label>
-                                                    <textarea name="exit_feedback" id="exit_feedback" class="form-control" rows="3" placeholder=""></textarea>
+                                                    <textarea name="exit_feedback" id="exit_feedback" class="form-control" rows="3" placeholder="" {{ $contact->employeeExitDetail ? 'readonly' : '' }}>{{ $contact->employeeExitDetail?->feedback ?? '' }}</textarea>
                                                     <small class="error text-danger" id="edit_exit_feedback_error"></small>
                                                 </div>
                                                 
@@ -2059,7 +2059,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
+<script>
+    var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
+</script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.3') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

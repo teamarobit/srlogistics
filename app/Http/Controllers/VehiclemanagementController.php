@@ -48,7 +48,8 @@ class VehiclemanagementController extends Controller
                             'ownership',
                             'group',
                             'type',
-                            'size'
+                            'size',
+                            'driverAllocation.contact'
                         ]);
     
         // Filter by vehicle number

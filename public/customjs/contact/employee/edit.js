@@ -1340,7 +1340,13 @@ $(document).ready(function(){
         width: '100%'
     });
 
-    $(document).on('click', '.add-emp-experience', function () {
+    $(document).on('click', '.add-emp-experience', function (e) {
+        // Issue 15: block once the employee has exited
+        if ($(this).is(':disabled') || $(this).hasClass('disabled')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
         var contactId = $(this).data('id');
         $('#experience_contact_id').val(contactId);
     });
@@ -1685,12 +1691,15 @@ $(document).ready(function () {
         var $display = $(this);
         var $hidden  = $('#' + $display.data('target'));
         var maxDate  = $display.data('max-today') ? moment() : undefined;
+        var minRaw   = $display.data('min-date');
+        var minDate  = (minRaw !== undefined && minRaw !== '') ? moment(minRaw, 'YYYY-MM-DD') : undefined;
 
         $display.daterangepicker({
             singleDatePicker : true,
             showDropdowns    : true,
             autoUpdateInput  : false,
             maxDate          : maxDate,
+            minDate          : minDate,
             locale           : { format: 'DD/MM/YYYY' }
         }, function (start) {
             $display.val(start.format('DD/MM/YYYY'));
@@ -1699,10 +1708,28 @@ $(document).ready(function () {
     });
 });
 
+// Issue 6: employee experience date-range — DD/MM/YYYY (employee only, no future dates)
+$(document).ready(function () {
+    $('.daterange-emp').each(function () {
+        $(this).daterangepicker({
+            opens           : 'right',
+            autoUpdateInput : false, // input empty until user selects
+            maxDate         : moment(), // no future dates
+            locale          : {
+                format      : 'DD/MM/YYYY',
+                cancelLabel : 'Clear'
+            }
+        });
 
+        $(this).on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(
+                picker.startDate.format('DD/MM/YYYY') + ' - ' +
+                picker.endDate.format('DD/MM/YYYY')
+            );
+        });
 
-
-
-
-
-
+        $(this).on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+    });
+});

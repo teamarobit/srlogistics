@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Handover & Guarantor Agreement - {{ $contact->organisation?->name ?? '' }}</title>
-    <link rel="stylesheet" href="{{ asset('css/Contacts/Driver/joining-letter.css') }}">
-    <style>
-        .print-btn { margin-bottom: 16px; }
-        @media print { .print-btn { display: none; } }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/Contacts/Driver/joining-letter.css?v=1.1') }}">
 </head>
 <body>
     
     <div class="print-btn">
-        <button onclick="printPage()" class="btn btn-success">Print</button>
+        <button type="button" id="printJoiningLetterBtn" class="btn btn-success">Print</button>
     </div>
 
     <div class="container">
@@ -32,7 +28,7 @@
             <div class="field"><span class="label">Aadhaar No.:</span> <span class="underline">{{ optional($contact->driverinfo)->aadhaar_no ?? '' }}</span></div> 
             <div class="field"><span class="label">Driver Code / Area:</span> <span class="underline">{{ $contact->contact_code ?? '' }}</span></div> 
             <div class="field"><span class="label">DL No.:</span> <span class="underline">{{ optional($contact->driverinfo)->driving_licence_no ?? '' }}</span></div> 
-            <div class="field"><span class="label">DL Validity:</span> <span class="underline">{{ optional($contact->driverinfo)->licence_expiry_date ?? '' }}</span></div> 
+            <div class="field"><span class="label">DL Validity:</span> <span class="underline">{{ optional($contact->driverinfo)->licence_expiry_date ? \Carbon\Carbon::parse(optional($contact->driverinfo)->licence_expiry_date)->format('d/m/Y') : '' }}</span></div> 
         </div>
         @php
             $presentAddress = $contact->coaddresses->where('type','Present')->first();
@@ -156,10 +152,5 @@
 
 </body>
 
-<script>
-    function printPage() {
-        window.print();
-    }
-</script>
-
+    <script src="{{ asset('js/Contacts/Driver/joining-letter.js?v=1.0') }}"></script>
 </html>

@@ -504,10 +504,10 @@ $(document).ready(function(){
                                       value.join('').replace(index, index.split('.').splice(0,2).join('_'))
                                     );
                               }else if(index.split('.').length === 2) {
-                                    $('#add_' + index.split('.').join('_') + '_error').text(value);
+                                    $('#add_' + index.split('.').join('_') + '_error').text(Array.isArray(value) ? value[0] : value);
                               }
                           } else {
-                                 $('#add_'+index+'_error').text(value);
+                                 $('#add_'+index+'_error').text(Array.isArray(value) ? value[0] : value);
                           }
                     });
                     

@@ -23,7 +23,7 @@
                         @endif
                     </div>
                     <div class="d-flex align-items-center me-3">
-                        <a href="javascript:void(0)" class="btn btn-success me-3 share-location" data-locationid="{{ $location->id }}"><i class="uil uil-whatsapp me-2"></i>Share</a>
+                        <a href="javascript:void(0)" class="btn btn-success me-3 share-location" data-locationid="{{ $location->id }}" data-mapurl="{{ $location->map_location }}"><i class="uil uil-copy me-2"></i>Share</a>
                         <a href="javascript:void(0)" class="text-danger delete-location" data-locationid="{{ $location->id }}"><i class="uil uil-trash-alt me-2"></i></a>
                     </div>
                     </h6>
