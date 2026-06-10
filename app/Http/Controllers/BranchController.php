@@ -118,7 +118,7 @@ class BranchController extends Controller
                 //$branch->type = $request->branch_type;
                 $branch->type = json_encode($request->branch_type);
                 
-                $branch->start_date = $request->start_date ?? null;
+                $branch->start_date = $request->filled('start_date') ? $request->start_date : null;
                 $branch->code = $request->branch_code;
                 $branch->head_name = $request->branch_head_name;
                 $branch->ph_prefix = $request->phone_code;
@@ -132,8 +132,8 @@ class BranchController extends Controller
                 $branch->branch_owner_name = $request->branch_owner_name ?? null;
                 $branch->branch_owner_phone_code = $request->branch_owner_phone_code ?? null;
                 $branch->branch_owner_phone = $request->branch_owner_phone ?? null;
-                $branch->rent_amount = $request->rent_amount ?? 0.00;
-                $branch->rent_due_count = $request->rent_due_count ?? null;
+                $branch->rent_amount = $request->filled('rent_amount') ? $request->rent_amount : 0.00;
+                $branch->rent_due_count = $request->filled('rent_due_count') ? $request->rent_due_count : null;
                 $branch->electricity_service_provider = $request->electricity_service_provider ?? null;
                 $branch->electricity_consumer_number = $request->electricity_consumer_number ?? null;
                 $branch->notes = $request->notes ?? null;
@@ -184,13 +184,12 @@ class BranchController extends Controller
                 'message' => $exp->getMessage(),
                 'trace' => $exp->getTraceAsString()
             ]);
-    
-            DB::rollBack();
+
             $success = false;
             $respmessage = $exp->getMessage();
         }
         
-        return response()->json(['success' => $success, 'data' => $branch, 'message' => $respmessage]);
+        return response()->json(['success' => $success, 'data' => $branch, 'message' => $respmessage], $success ? 200 : 500);
     }
     
     
@@ -269,7 +268,7 @@ class BranchController extends Controller
                 
                 $branch->location = $request->branch_location;
                 $branch->type = json_encode($request->branch_type);
-                $branch->start_date = $request->start_date ?? null;
+                $branch->start_date = $request->filled('start_date') ? $request->start_date : null;
                 $branch->code = $request->branch_code;
                 $branch->head_name = $request->branch_head_name;
                 $branch->ph_prefix = $request->phone_code;
@@ -283,8 +282,8 @@ class BranchController extends Controller
                 $branch->branch_owner_name = $request->branch_owner_name ?? null;
                 $branch->branch_owner_phone_code = $request->branch_owner_phone_code ?? null;
                 $branch->branch_owner_phone = $request->branch_owner_phone ?? null;
-                $branch->rent_amount = $request->rent_amount ?? 0.00;
-                $branch->rent_due_count = $request->rent_due_count ?? null;
+                $branch->rent_amount = $request->filled('rent_amount') ? $request->rent_amount : 0.00;
+                $branch->rent_due_count = $request->filled('rent_due_count') ? $request->rent_due_count : null;
                 $branch->electricity_service_provider = $request->electricity_service_provider ?? null;
                 $branch->electricity_consumer_number = $request->electricity_consumer_number ?? null;
                 $branch->notes = $request->notes ?? null;
@@ -356,18 +355,17 @@ class BranchController extends Controller
             $respmessage = 'Branch updated successfully.';
             
         } catch (\Exception $exp){
-                                    
-            DB::rollBack();
+
             $success = false;
             $respmessage = $exp->getMessage();
-            
+
         }
-        
-        return response()->json(['success' => $success, 'data' => $branch, 'message' => $respmessage]);
+
+        return response()->json(['success' => $success, 'data' => $branch, 'message' => $respmessage], $success ? 200 : 500);
     }
-    
-    
-    
+
+
+
     public function destroy(Request $request)
     {
         $id = $request->get('id'); 

@@ -30,9 +30,9 @@ class WarehouseRequest extends FormRequest
             'state_id'          => 'required|exists:states,id',
             'city_name'         => 'required|string|max:100',
             'location_name'     => 'nullable|string|max:150',
-            'pincode'           => 'nullable|string|max:10',
+            'pincode'           => 'nullable|digits:6',
             'manager_contact_id'=> 'nullable|exists:contacts,id',
-            'contact_number'    => 'nullable|string|max:20',   // intl-tel-input stores E.164 e.g. +919876543210
+            'contact_number'    => 'nullable|regex:/^\\+91\\d{10}$/',   // intl-tel-input E.164: +91 + 10-digit national number
             'storage_type'      => 'nullable|in:Rack,Floor,Open Yard',
             'status'            => 'required|in:Active,Inactive',
             'notes'             => 'nullable|string|max:500',
@@ -45,6 +45,8 @@ class WarehouseRequest extends FormRequest
             'required'          => 'This field is required.',
             'in'                => 'Invalid selection.',
             'max'               => 'Too long — max :max characters.',
+            'digits'            => 'Pin code must be exactly :digits digits.',
+            'contact_number.regex' => 'Enter a valid 10-digit phone number.',
             'digits_between'    => 'Contact number must be between :min and :max digits.',
             'unique'            => 'A warehouse with this name already exists.',
             'exists'            => 'Invalid selection.',

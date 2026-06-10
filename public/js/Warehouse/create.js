@@ -1,6 +1,6 @@
 /**
  * Warehouse Master — Create Page JS
- * SR Logistics | public/js/Warehouse/create.js v1.3
+ * SR Logistics | public/js/Warehouse/create.js v1.6
  *
  * v1.3 (2026-05-25): BUG-004 — layout already loads intl-tel-input v17.0.3
  *                    (js + utils). Removed utilsScript to avoid third version.
@@ -94,6 +94,8 @@ $(function () {
         var url = CITIES_URL.replace('__STATE_ID__', stateId);
         $.getJSON(url, function (cities) {
             $('#wh_city_name').prop('disabled', false).empty();
+            // Issue 3: blank placeholder option first so Select2 auto-selects nothing
+            $('#wh_city_name').append(new Option('', '', false, false));
             $.each(cities, function (i, c) {
                 $('#wh_city_name').append(new Option(c.name, c.name, false, false));
             });
@@ -144,6 +146,14 @@ $(function () {
     $form.on('submit', function (e) {
         e.preventDefault();
         clearValidationErrors();
+
+        // Issue 5: separateDialCode → input holds national digits only.
+        // When a number is entered it must be exactly 10 digits.
+        var contactDigits = ($('#wh_contact_number').val() || '').replace(/\D/g, '');
+        if (contactDigits.length > 0 && contactDigits.length !== 10) {
+            showValidationErrors({ contact_number: ['Enter a valid 10-digit phone number.'] });
+            return;
+        }
 
         // SD-13: set full E.164 number (+919876543210) before serialize.
         // BUG-004 followup: global layout loads two iti versions; getNumber()

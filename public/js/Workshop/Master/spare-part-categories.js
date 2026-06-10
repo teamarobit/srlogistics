@@ -2,6 +2,10 @@
  * Workshop ▸ Master ▸ Spare Part Categories
  * SD-1 (no inline JS), SD-3 (jQuery + $.ajax), SD-4 (red text only, no border),
  * SD-7 (SweetAlert Toast.fire), SD-9 status handling on client side.
+ *
+ * Edit / Toggle / Remove use delegated handlers that read data-* from the row,
+ * matching the Spare Parts Master page. (Replaces the previous inline-onclick
+ * approach where @json() emitted literal quotes that broke the onclick attribute.)
  * ──────────────────────────────────────────────────────────────────────────── */
 $(function () {
     'use strict';
@@ -74,15 +78,16 @@ $(function () {
         });
     });
 
-    /* ── Open EDIT modal ──────────────────────────────────────────────────── */
-    window.openEditModal = function (id, name, code, description) {
+    /* ── Open EDIT modal (delegated — reads data-* from row) ───────────────── */
+    $(document).on('click', '.sp-edit', function () {
         clearErrors('edit');
-        $('#edit_id').val(id);
-        $('#edit_name').val(name);
-        $('#edit_code').val(code);
-        $('#edit_description').val(description);
+        const $row = $(this).closest('tr');
+        $('#edit_id').val($row.data('id'));
+        $('#edit_name').val($row.data('name'));
+        $('#edit_code').val($row.data('code') || '');
+        $('#edit_description').val($row.data('description') || '');
         bootstrap.Modal.getOrCreateInstance(document.getElementById('editCategoryModal')).show();
-    };
+    });
 
     /* ── EDIT ─────────────────────────────────────────────────────────────── */
     $('#editCategoryForm').on('submit', function (e) {
@@ -122,9 +127,13 @@ $(function () {
         });
     });
 
-    /* ── Toggle status (SweetAlert confirm) ───────────────────────────────── */
-    window.toggleStatus = function (id, currentStatus) {
-        const action = currentStatus === 'Active' ? 'deactivate' : 'activate';
+    /* ── Toggle status (delegated, SweetAlert confirm) ────────────────────── */
+    $(document).on('click', '.sp-toggle', function () {
+        const $row = $(this).closest('tr');
+        const id            = $row.data('id');
+        const currentStatus = $row.data('status');
+        const action        = currentStatus === 'Active' ? 'deactivate' : 'activate';
+
         Swal.fire({
             icon:  'warning',
             title: 'Are you sure?',
@@ -156,15 +165,18 @@ $(function () {
                 }
             });
         });
-    };
+    });
 
-    /* ── Delete (SweetAlert confirm + server-side blockers guard) ─────────
+    /* ── Delete (delegated, SweetAlert confirm + server-side blockers guard) ───
      * Mirrors the Warehouse delete UX: if the category has dependent rows
      * the client shows a warning preview, but the controller is the source
      * of truth — a 422 from the server is surfaced as a Swal "blocked" alert.
      * ─────────────────────────────────────────────────────────────────── */
-    window.deleteCategory = function (id, name, partsCount) {
-        partsCount = parseInt(partsCount, 10) || 0;
+    $(document).on('click', '.sp-remove', function () {
+        const $row = $(this).closest('tr');
+        const id         = $row.data('id');
+        const name       = $row.data('name');
+        const partsCount = parseInt($row.data('parts-count'), 10) || 0;
 
         // ── Client-side preview: if dependent rows exist, refuse up-front ──
         if (partsCount > 0) {
@@ -199,10 +211,10 @@ $(function () {
                 success: function (res) {
                     if (res.success) {
                         Toast.fire({ icon: 'success', title: res.message });
-                        const $row = $('#cat-row-' + id);
-                        if ($row.length) {
-                            $row.css({ transition: 'opacity .35s', opacity: 0 });
-                            setTimeout(function () { $row.remove(); }, 350);
+                        const $r = $('#cat-row-' + id);
+                        if ($r.length) {
+                            $r.css({ transition: 'opacity .35s', opacity: 0 });
+                            setTimeout(function () { $r.remove(); }, 350);
                         }
                     } else {
                         Toast.fire({ icon: 'error', title: res.message || 'Could not delete category.' });
@@ -228,7 +240,7 @@ $(function () {
                 }
             });
         });
-    };
+    });
 
     /* ── Filter form: Enter on search + strip empty params on submit ──────── */
     $('input[name="search"]').on('keypress', function (e) {

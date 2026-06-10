@@ -117,7 +117,7 @@
                             <div class="row">
                                 <input type="hidden" name="phone_code" class="phone_code"> 
                                 <div class="col-12 col-md-12">
-                                    <input type="text" name="phone" value="{{ $branch->phone ?? '' }}" class="form-control telinput"/>
+                                    <input type="text" name="phone" value="{{ $branch->phone ?? '' }}" class="form-control telinput numberonly" maxlength="10"/>
                                     <small class="error text-danger error_msg" id="edit_phone_error"></small>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <input type="hidden" name="branch_owner_phone_code" class="phone_code"> 
-                                        <input type="text" name="branch_owner_phone" value="{{ $branch->branch_owner_phone ?? '' }}" class="form-control telinput">
+                                        <input type="text" name="branch_owner_phone" value="{{ $branch->branch_owner_phone ?? '' }}" class="form-control telinput numberonly" maxlength="10">
                                         <small class="error text-danger error_msg" id="edit_branch_owner_phone_error"></small>
                                     </div>
                                 </div>
@@ -414,7 +414,6 @@ var BRANCHES = "{{ route('branch.index') }}";
 <script type="text/javascript" src="{{asset('customjs/branch/edit.js')}}?v=0.2"></script>
 
 @endsection
-
 
 
 

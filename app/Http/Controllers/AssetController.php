@@ -57,6 +57,16 @@ class AssetController extends Controller
                                 ->when($search_asset_status, function ($q) use ($search_asset_status) {
                                     $q->where('status', $search_asset_status);
                                 })
+                                ->when($search_status, function ($q) use ($search_status) {
+                                    $assignedCondition = function ($sub) {
+                                        $sub->where('status', 'Assigned')->whereNull('revoke_date');
+                                    };
+                                    if ($search_status === 'Assigned') {
+                                        $q->whereHas('employeeAssets', $assignedCondition);
+                                    } elseif ($search_status === 'Unassigned') {
+                                        $q->whereDoesntHave('employeeAssets', $assignedCondition);
+                                    }
+                                })
                                 ->latest()
                                 ->paginate(10)
                                 ->withQueryString();

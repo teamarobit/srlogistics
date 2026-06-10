@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Workshop/Master/spare-part-categories.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/Workshop/Master/spare-part-categories.css?v=1.2') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -45,9 +45,8 @@
             <button type="submit" class="btn btn-sm btn-primary" style="font-size:12px;height:34px;padding:0 14px;">
                 <i class="uil uil-search me-1"></i>Search
             </button>
-            <a href="{{ route('ws.master.spare-part-categories') }}"
-               class="btn btn-sm" style="font-size:12px;height:34px;padding:0 12px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;">
-                <i class="uil uil-sync me-1"></i>Reset
+            <a href="{{ route('ws.master.spare-part-categories') }}" class="btn btn-primary reset-btn">
+                <i class="uil uil-history me-1"></i>Reset
             </a>
         </div>
         </form>
@@ -79,7 +78,13 @@
                         </thead>
                         <tbody>
                             @foreach($categories as $index => $cat)
-                            <tr id="cat-row-{{ $cat->id }}">
+                            <tr id="cat-row-{{ $cat->id }}"
+                                data-id="{{ $cat->id }}"
+                                data-name="{{ $cat->name }}"
+                                data-code="{{ $cat->code ?? '' }}"
+                                data-description="{{ $cat->description ?? '' }}"
+                                data-status="{{ $cat->status }}"
+                                data-parts-count="{{ $cat->spare_parts_count ?? 0 }}">
                                 <td style="color:#94a3b8;font-size:11px;">{{ $categories->firstItem() + $index }}</td>
                                 <td><span class="sp-cat-name">{{ $cat->name }}</span></td>
                                 <td>
@@ -103,24 +108,15 @@
                                 </td>
                                 <td>
                                     <div class="sp-actions">
-                                        <button type="button" class="sp-action-btn" title="Edit"
-                                            onclick="openEditModal(
-                                                {{ $cat->id }},
-                                                @json($cat->name),
-                                                @json($cat->code ?? ''),
-                                                @json($cat->description ?? '')
-                                            )">
+                                        <button type="button" class="sp-action-btn sp-edit" title="Edit">
                                             <i class="uil uil-pen"></i>
                                         </button>
                                         <button type="button"
-                                            class="sp-action-btn {{ $cat->status === 'Inactive' ? 'activate' : '' }}"
-                                            title="{{ $cat->status === 'Active' ? 'Deactivate' : 'Activate' }}"
-                                            onclick="toggleStatus({{ $cat->id }}, '{{ $cat->status }}')">
+                                            class="sp-action-btn sp-toggle {{ $cat->status === 'Inactive' ? 'activate' : '' }}"
+                                            title="{{ $cat->status === 'Active' ? 'Deactivate' : 'Activate' }}">
                                             <i class="uil {{ $cat->status === 'Active' ? 'uil-toggle-off' : 'uil-toggle-on' }}"></i>
                                         </button>
-                                        <button type="button" class="sp-action-btn danger" title="Remove"
-                                            data-parts-count="{{ $cat->spare_parts_count ?? 0 }}"
-                                            onclick="deleteCategory({{ $cat->id }}, @json($cat->name), {{ $cat->spare_parts_count ?? 0 }})">
+                                        <button type="button" class="sp-action-btn danger sp-remove" title="Remove">
                                             <i class="uil uil-trash-alt"></i>
                                         </button>
                                     </div>
@@ -252,5 +248,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Workshop/Master/spare-part-categories.js?v=1.1') }}"></script>
+<script src="{{ asset('js/Workshop/Master/spare-part-categories.js?v=1.2') }}"></script>
 @endsection

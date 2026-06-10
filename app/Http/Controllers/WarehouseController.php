@@ -42,7 +42,11 @@ class WarehouseController extends Controller
             ->orderBy('contact_name')
             ->get(['id', 'contact_name']);
 
-        return view('warehouse.create', compact('states', 'managers'));
+        // Show the next auto-generated code on the Add form (read-only preview).
+        // Authoritative code is still generated in store() at save time.
+        $nextCode = Warehouse::nextCode();
+
+        return view('warehouse.create', compact('states', 'managers', 'nextCode'));
     }
 
     /**

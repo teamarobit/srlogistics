@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class WorkshopController extends Controller
 {
@@ -413,7 +414,10 @@ class WorkshopController extends Controller
 
         $validated = $request->validate([
             'part_no'          => 'required|string|max:50|unique:wsspareparts,part_no',
-            'name'             => 'required|string|max:255',
+            'name'             => [
+                'required', 'string', 'max:255',
+                Rule::unique('wsspareparts', 'name')->whereNull('deleted_at'),
+            ],
             'wssparepartscategory_id' => 'required|exists:wssparepartscategories,id',
             'compatible_makes' => 'nullable|string|max:500',
             'unit'             => 'required|string|max:30',
@@ -454,7 +458,10 @@ class WorkshopController extends Controller
 
         $validated = $request->validate([
             'part_no'          => "required|string|max:50|unique:wsspareparts,part_no,{$id}",
-            'name'             => 'required|string|max:255',
+            'name'             => [
+                'required', 'string', 'max:255',
+                Rule::unique('wsspareparts', 'name')->ignore($id)->whereNull('deleted_at'),
+            ],
             'wssparepartscategory_id' => 'required|exists:wssparepartscategories,id',
             'compatible_makes' => 'nullable|string|max:500',
             'unit'             => 'required|string|max:30',

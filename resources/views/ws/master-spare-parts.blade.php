@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Workshop/Master/spare-parts.css?v=1.1') }}" rel="stylesheet">
+<link href="{{ asset('css/Workshop/Master/spare-parts.css?v=1.2') }}" rel="stylesheet">
 <meta name="sp-base-url" content="{{ route('ws.master.spare-parts') }}">
 @endsection
 
@@ -52,9 +52,8 @@
             <button type="submit" class="btn btn-sm btn-primary" style="font-size:12px;height:34px;padding:0 14px;">
                 <i class="uil uil-search me-1"></i>Search
             </button>
-            <a href="{{ route('ws.master.spare-parts') }}"
-               class="btn btn-sm" style="font-size:12px;height:34px;padding:0 12px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;">
-                <i class="uil uil-sync me-1"></i>Reset
+            <a href="{{ route('ws.master.spare-parts') }}" class="btn btn-primary reset-btn">
+                <i class="uil uil-history me-1"></i>Reset
             </a>
         </div>
         </form>

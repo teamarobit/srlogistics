@@ -27,7 +27,10 @@
                                 <span class="sep">›</span>
                                 Add Warehouse
                             </div>
-                            <h5 class="mb-0">Add Warehouse</h5>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="mb-0">Add Warehouse</h5>
+                                <span class="wh-code">{{ $nextCode }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +133,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Pincode</label>
                                     <input type="text" class="form-control numberonly" name="pincode" id="wh_pincode"
-                                           value="{{ old('pincode') }}" maxlength="10" placeholder="e.g. 500001">
+                                           value="{{ old('pincode') }}" maxlength="6" placeholder="e.g. 500001">
                                 </div>
                             </div>
                         </div>
@@ -214,5 +217,5 @@
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whCreateForm. --}}
 {{-- SD-13: intl-tel-input is already loaded globally in layouts/app.blade.php (BUG-004). --}}
-<script src="{{ asset('js/Warehouse/create.js?v=1.5') }}"></script>
+<script src="{{ asset('js/Warehouse/create.js?v=1.6') }}"></script>
 @endsection
