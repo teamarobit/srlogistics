@@ -111,12 +111,14 @@ class AssetController extends Controller
             'model'         => 'required_if:asset_type,Motor Vehicle,Electronics|max:100',
             
             'vehicle_age' => 'required_if:asset_type,Motor Vehicle|nullable|integer|min:1',
+            'vehicle_age_months' => 'nullable|integer|min:0|max:11',
             'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100', 
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
             
             'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
+            'electronic_age_months' => 'nullable|integer|min:0|max:11',
             
             
             'issue_date'  => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
@@ -173,13 +175,16 @@ class AssetController extends Controller
                 $asset->rc_date = $request->get('rc_date');
                 
                 $asset->age = null;
+                $asset->age_months = null;
                 $asset->warranty_start_date = null;
                 $asset->warranty_end_date = null;
                 if ($request->asset_type === 'Motor Vehicle') {
                     $asset->age = $request->vehicle_age;
+                    $asset->age_months = $request->vehicle_age_months;
                 }
                 if ($request->asset_type === 'Electronics') {
                     $asset->age = $request->electronic_age;
+                    $asset->age_months = $request->electronic_age_months;
                     $asset->warranty_start_date = $request->warranty_start_date;
                     $asset->warranty_end_date = $request->warranty_end_date;
                 }
@@ -312,12 +317,14 @@ class AssetController extends Controller
             'model'         => 'required_if:asset_type,Motor Vehicle,Electronics|max:100',
     
             'vehicle_age' => 'required_if:asset_type,Motor Vehicle|nullable|integer|min:1',
+            'vehicle_age_months' => 'nullable|integer|min:0|max:11',
             'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100', 
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
     
             'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
+            'electronic_age_months' => 'nullable|integer|min:0|max:11',
     
             'issue_date'  => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
             'assigned_on' => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
@@ -372,15 +379,18 @@ class AssetController extends Controller
     
                 // Reset conditional fields
                 $asset->age = null;
+                $asset->age_months = null;
                 $asset->warranty_start_date = null;
                 $asset->warranty_end_date = null;
     
                 if ($request->asset_type === 'Motor Vehicle') {
                     $asset->age = $request->vehicle_age;
+                    $asset->age_months = $request->vehicle_age_months;
                 }
     
                 if ($request->asset_type === 'Electronics') {
                     $asset->age = $request->electronic_age;
+                    $asset->age_months = $request->electronic_age_months;
                     $asset->warranty_start_date = $request->warranty_start_date;
                     $asset->warranty_end_date = $request->warranty_end_date;
                 }

@@ -13,6 +13,15 @@ body { background-color: #fff; }
 /* BUG-009 — search submit button */
 #searchBtn { vertical-align: bottom; }
 
+/* Issue 17 — toolbar keeps heading, Add, search/filter and Reset on one line */
+.dl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+.dl-toolbar #searchform .search-wrap:first-child { margin-left: 0 !important; }
+
 /* BUG-004 — sidebar active highlight (scoped) */
 .accordion-body p.active { box-shadow: inset 3px 0 0 #032671; }
 .accordion-body p.active a { color: #032671 !important; }

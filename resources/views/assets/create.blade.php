@@ -132,7 +132,8 @@
                                     <label>RC Date <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input name="rc_date" class="form-control bg-light text-uppercase common_date" type="date" placeholder="DD/MM/YY">
+                                    {{-- Issue 18 — RC Date is a registration date; allow past/today, block only future --}}
+                                    <input name="rc_date" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
                                     <small class="error text-danger" id="add_rc_date_error"></small>
                                 </div>
                               </div>
@@ -141,9 +142,18 @@
                                 <div class="col-12 col-md-3">
                                     <label>Vehicle Age <span class="text-danger">*</span></label>
                                 </div>
+                                {{-- Issue 20 — whole Years + whole Months instead of an ambiguous decimal --}}
                                 <div class="col-12 col-md-6">
-                                    <input type="text" name="vehicle_age" class="form-control">
-                                    <small class="error text-danger" id="add_vehicle_age_error"></small>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" min="1" step="1" name="vehicle_age" class="form-control" placeholder="Years">
+                                            <small class="error text-danger" id="add_vehicle_age_error"></small>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" min="0" max="11" step="1" name="vehicle_age_months" class="form-control" placeholder="Months">
+                                            <small class="error text-danger" id="add_vehicle_age_months_error"></small>
+                                        </div>
+                                    </div>
                                 </div>
                               </div>
                               
@@ -171,9 +181,18 @@
                                     <div class="col-12 col-md-3">
                                         <label>Age <span class="text-danger">*</span></label>
                                     </div>
+                                    {{-- Issue 20 — whole Years + whole Months instead of an ambiguous decimal --}}
                                     <div class="col-12 col-md-6">
-                                        <input type="text" name="electronic_age" class="form-control">
-                                        <small class="error text-danger" id="add_electronic_age_error"></small>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <input type="number" min="1" step="1" name="electronic_age" class="form-control" placeholder="Years">
+                                                <small class="error text-danger" id="add_electronic_age_error"></small>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" min="0" max="11" step="1" name="electronic_age_months" class="form-control" placeholder="Months">
+                                                <small class="error text-danger" id="add_electronic_age_months_error"></small>
+                                            </div>
+                                        </div>
                                     </div>
                                   </div>
                               </div>
@@ -291,7 +310,7 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/create.js?v=1.1')}}"></script>
 
 @endsection
 

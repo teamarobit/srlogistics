@@ -80,27 +80,29 @@
                           </div>
                           
                               
-                        <div class="form-group row pb-">
+                        <div class="form-group row pb-1">
                           <div class="col-12 col-md-3">
                               <label>Status <span class="text-danger">*</span></label>
                           </div>
 
-                          <div class="col-12 col-md-6 d-flex">
-                              <div class="form-check d-flex me-2">
-                                  <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active">
-                                  <label class="form-check-label" for="exampleRadios1">
-                                      Active
-                                  </label>
-                              </div>
+                          <div class="col-12 col-md-6">
+                              <div class="d-flex">
+                                  <div class="form-check d-flex me-2">
+                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active">
+                                      <label class="form-check-label" for="exampleRadios1">
+                                          Active
+                                      </label>
+                                  </div>
 
-                              <div class="form-check d-flex">
-                                  <input class="form-check-input" type="radio" name="status" id="exampleRadios2" value="Inactive">
-                                  <label class="form-check-label" for="exampleRadios2">
-                                      Inactive
-                                  </label>
-                              </div>     
+                                  <div class="form-check d-flex">
+                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios2" value="Inactive">
+                                      <label class="form-check-label" for="exampleRadios2">
+                                          Inactive
+                                      </label>
+                                  </div>
+                              </div>
+                              <small class="error text-danger" id="add_status_error"></small>
                           </div>
-                          <small class="error text-danger" id="add_status_error"></small>
                         </div>
                           
 
@@ -135,7 +137,7 @@ var JOBRANKS = "{{ route('jobrank.index') }}";
 var DESIGNATION_URL = "{{ route('designation.getDepartmentWiseDesignations', '__ID__') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/jobrank/create.js?v=1.1')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/jobrank/create.js?v=1.2')}}"></script>
 
 @endsection
 

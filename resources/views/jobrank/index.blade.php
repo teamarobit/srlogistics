@@ -30,7 +30,7 @@
                                     
                                     <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
                                         <select class="form-select select2 department-dd"  name="department" id="search_department_id">
-                                        <option>Filter by Department</option>    
+                                        <option value="">Filter by Department</option>
                                         @forelse ($departments as $department)
                                             <option value="{{ $department->id }}"
                                                 {{ request('department') == $department->id ? 'selected' : '' }}>
@@ -44,7 +44,7 @@
                                     
                                     <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
                                         <select class="form-select select2 designation-dd"  name="designation" id="search_designation_id">
-                                        <option>Filter by Designation</option>    
+                                        <option value="">Filter by Designation</option>
                                         @forelse ($designations as $designation)
                                             <option value="{{ $designation->id }}"
                                                 {{ request('designation') == $designation->id ? 'selected' : '' }}>
@@ -159,7 +159,7 @@ var DELETE_JOBRANK  = "{{route('jobrank.delete')}}";
 var DESIGNATION_URL = "{{ route('designation.getDepartmentWiseDesignations', '__ID__') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/jobrank/index.js?v=0.03')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/jobrank/index.js?v=0.04')}}"></script>
 
 @if(session('error'))
 <script>

@@ -64,9 +64,9 @@
 
                           <div class="col-12 col-md-6">
                               <div class="d-flex flex-wrap">
-                                  {{-- BUG-005 — default Active selected --}}
+                                  {{-- Issue 16 — no default selection; match GPS Provider add --}}
                                   <div class="form-check d-flex me-2">
-                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active" {{ old('status', 'Active') === 'Active' ? 'checked' : '' }}>
+                                      <input class="form-check-input" type="radio" name="status" id="exampleRadios1" value="Active" {{ old('status') === 'Active' ? 'checked' : '' }}>
                                       <label class="form-check-label" for="exampleRadios1">
                                           Active
                                       </label>

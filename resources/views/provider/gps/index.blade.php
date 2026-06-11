@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/gps-index.css?v=2.0') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/gps-index.css?v=2.1') }}">
 
 
 @endsection
@@ -118,12 +118,12 @@
                                     {{ $value->createdBy?->name }}
                                     <span class="text-secondary d-block">{{ $value->createdBy?->email }}</span>
                                 </td>
-                                <td>{{ $value->created_at ? $value->created_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>{{ $value->created_at ? $value->created_at->timezone('Asia/Kolkata')->format('d-M-Y h:i A') : '—' }}</td>
                                 <td>
                                     {{ $value->updatedBy?->name ?? '—' }}
                                     <span class="text-secondary d-block">{{ $value->updatedBy?->email ?? '' }}</span>
                                 </td>
-                                <td>{{ $value->updated_at ? $value->updated_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>{{ $value->updated_at ? $value->updated_at->timezone('Asia/Kolkata')->format('d-M-Y h:i A') : '—' }}</td>
                                 <td class="text-end">
                                     <div class="dropdown dot-dd">
                                       <span class="dropdown-toggle" id="moreTable_{{ $value->id }}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -208,5 +208,5 @@
 <div id="page-config"
      data-listing="{{ route('gpsprovider.index') }}"
      data-delete-url="{{ route('gpsprovider.delete') }}"></div>
-<script type="text/javascript" src="{{ asset('customjs/provider/gps/index.js?v=2.0') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/provider/gps/index.js?v=2.1') }}"></script>
 @endsection

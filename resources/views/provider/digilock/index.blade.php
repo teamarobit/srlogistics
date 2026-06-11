@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.3') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.5') }}">
 
 
 @endsection
@@ -29,9 +29,11 @@
                                 Digital Lock Provider
                             </div>
 
+                            {{-- Issue 17 — single flex toolbar keeps Reset inline with search/filter controls --}}
+                            <div class="dl-toolbar">
                             <h5 class="d-inline-block mb-0">Digital Lock Provider</h5>
                             {{-- BUG-006 — CTA label distinct from heading --}}
-                            <a href="{{ route('digilockprovider.create') }}" class="btn btn-theme mb-0 ms-2"><i class="uil uil-plus me-1"></i>Add Digital Lock Provider</a>
+                            <a href="{{ route('digilockprovider.create') }}" class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Add Digital Lock Provider</a>
 
                             <form action="{{ route('digilockprovider.index') }}" id="searchform" class="d-inline-block">
                                 <div class="search-wrap d-inline-block ms-2" style="width: 230px;">
@@ -51,6 +53,7 @@
                             </form>
 
                             <a href="{{ route('digilockprovider.index') }}" class="btn btn-primary reset-btn"><i class="uil uil-history me-1"></i>Reset</a>
+                            </div>{{-- /.dl-toolbar --}}
                         </div>
                     </div>
                 </div>
@@ -129,12 +132,12 @@
                                     {{$value->createdBy?->name}}
                                     <span class="text-secondary d-block">{{$value->createdBy?->email}}</span>
                                 </td>
-                                <td>{{ $value->created_at ? $value->created_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>{{ $value->created_at ? $value->created_at->timezone('Asia/Kolkata')->format('d-M-Y h:i A') : '—' }}</td>
                                 <td>
                                     {{ $value->updatedBy?->name ?? '—' }}
                                     <span class="text-secondary d-block">{{ $value->updatedBy?->email ?? '' }}</span>
                                 </td>
-                                <td>{{ $value->updated_at ? $value->updated_at->format('d-M-Y h:i A') : '—' }}</td>
+                                <td>{{ $value->updated_at ? $value->updated_at->timezone('Asia/Kolkata')->format('d-M-Y h:i A') : '—' }}</td>
                                 <td class="text-end">
                                     <div class="dropdown dot-dd">
                                       <span class="dropdown-toggle" id="moreTable" data-bs-toggle="dropdown" aria-expanded="false">
@@ -150,8 +153,8 @@
                                                data-status="{{ $value->status }}"
                                                data-createdby="{{ $value->createdBy?->name }}"
                                                data-createdemail="{{ $value->createdBy?->email }}"
-                                               data-created="{{ $value->created_at ? $value->created_at->format('d-M-Y H:i') : '' }}"
-                                               data-updated="{{ $value->updated_at ? $value->updated_at->format('d-M-Y H:i') : '' }}">
+                                               data-created="{{ $value->created_at ? $value->created_at->timezone('Asia/Kolkata')->format('d-M-Y H:i') : '' }}"
+                                               data-updated="{{ $value->updated_at ? $value->updated_at->timezone('Asia/Kolkata')->format('d-M-Y H:i') : '' }}">
                                                 <i class="uil uil-eye me-2"></i>View
                                             </a>
                                         </li>

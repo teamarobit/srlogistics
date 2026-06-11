@@ -179,16 +179,36 @@ $(document).ready(function() {
         $('form#editForm').submit();
     });
     
+    // Issue 19 — keep in sync with documents.* max:10240 (KB) in AssetController
+    var MAX_UPLOAD_MB = 10;
+    function oversizedFiles(form) {
+        var bad = [];
+        $(form).find('input[type="file"]').each(function () {
+            Array.prototype.forEach.call(this.files || [], function (f) {
+                if (f.size > MAX_UPLOAD_MB * 1024 * 1024) bad.push(f.name);
+            });
+        });
+        return bad;
+    }
+
     $('form#editForm').on('submit', function(e){
-        
+
         e.preventDefault();
 
         var form = $(this);
-    
+
+        // Issue 19 — block oversized files client-side with a clear message
+        var tooBig = oversizedFiles(this);
+        if (tooBig.length) {
+            $('#edit_documents_error').text('Each file must be ' + MAX_UPLOAD_MB + ' MB or less. Too large: ' + tooBig.join(', '));
+            Toast.fire({ icon: 'error', title: 'File too large (max ' + MAX_UPLOAD_MB + ' MB).' });
+            return false;
+        }
+
         var assetId = form.find('[name="assetid"]').val();
-    
+
         console.log('Sending assetid:', assetId);
-    
+
         var formData = new FormData(this);
         formData.set('assetid', assetId);
         
