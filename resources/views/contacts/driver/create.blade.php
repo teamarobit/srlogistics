@@ -608,7 +608,7 @@
                                                             <input type="hidden" name="contact_person_whatsapp_code[]" class="phone_code">
                                                             <div class="col-12 col-md-12">
                                                                 <input type="text" class="form-control telinput " name="contact_person_whatsapp[]" />
-                                                                <div class="error text-danger cpph" id="add_contact_person_whatsapp_0_error"></div>
+                                                                <div class="error text-danger cpwa" id="add_contact_person_whatsapp_0_error"></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1582,7 +1582,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.3') }}"></script>
 
 <!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 

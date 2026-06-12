@@ -738,7 +738,7 @@
                                                         <input type="hidden" name="contact_person_whatsapp_code[{{ $index }}]" value="{{ $relcontact->whatsapp_prefix ?? '' }}" class="phone_code">
                                                         <div class="col-12 col-md-12">
                                                             <input type="text" class="form-control telinput " name="contact_person_whatsapp[{{ $index }}]" value="{{ $relcontact->whatsapp ?? '' }}"/>
-                                                            <div class="error text-danger cpph" id="edit_contact_person_whatsapp_{{ $index }}_error"></div>
+                                                            <div class="error text-danger cpwa" id="edit_contact_person_whatsapp_{{ $index }}_error"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2062,7 +2062,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.5') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
