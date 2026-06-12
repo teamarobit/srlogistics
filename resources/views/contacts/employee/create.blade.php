@@ -79,9 +79,10 @@
                                                       </div>
                                                       <div class="upload__img-wrap"></div>
                                                     </div>
+                                                    <small class="error text-danger d-block mt-1" id="add_contact_image_error"></small>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
                                                     <label>Phone <span class="text-danger">*</span></label>

@@ -152,17 +152,17 @@
                                                       </div>
                                                       <div class="upload__img-wrap">
                                                         @if(!empty($contact->contact_image))
-                                                            <div class="upload__img-box">
-                                                                <img 
-                                                                    src="{{ asset('media/contact/'.$contact->contact_image) }}" 
-                                                                    class="img-thumbnail"
-                                                                    style="max-width:150px; max-height:150px;"
-                                                                    alt="Contact Photo"
-                                                                >
+                                                            <div class="upload__img-box existing-photo-box">
+                                                                <div style="background-image: url('{{ asset('media/contact/'.$contact->contact_image) }}')"
+                                                                     data-existing="1" class="img-bg">
+                                                                    <div class="upload__img-close"></div>
+                                                                </div>
                                                             </div>
                                                         @endif
                                                       </div>
                                                     </div>
+                                                    <input type="hidden" name="remove_contact_image" id="remove_contact_image" value="0">
+                                                    <small class="error text-danger d-block mt-1" id="edit_contact_image_error"></small>
                                                 </div>
                                             </div>
                                             
@@ -229,9 +229,9 @@
                                                             </label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="gender" id="exampleRadios3" value="Others" {{ (isset($contact) && $contact->gender === 'Others') ? 'checked' : '' }} />
+                                                            <input class="form-check-input" type="radio" name="gender" id="exampleRadios3" value="Other" {{ (isset($contact) && $contact->gender === 'Other') ? 'checked' : '' }} />
                                                             <label class="form-check-label" for="exampleRadios3">
-                                                                Others
+                                                                Other
                                                             </label>
                                                         </div>
                                                     </div>
@@ -2321,7 +2321,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.6') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

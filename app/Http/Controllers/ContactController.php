@@ -4876,10 +4876,20 @@ class ContactController extends Controller
                 
                     // Move file
                     $file->move($uploadPath, $filename);
+                } elseif ($request->input('remove_contact_image') == '1') {
+                    // User removed the existing photo (via its cross) and uploaded no
+                    // replacement: delete the file from disk, then clear the column.
+                    if (!empty($contact->contact_image)) {
+                        $oldPath = public_path('media' . DIRECTORY_SEPARATOR . 'contact' . DIRECTORY_SEPARATOR . $contact->contact_image);
+                        if (File::exists($oldPath)) {
+                            File::delete($oldPath);
+                        }
+                    }
+                    $filename = null;
                 }
-                
-                
-                
+
+
+
                 $contact->contact_name    = $request->contact_name;
                 $contact->ph_prefix       = $request->phone_code ?? $phoneCode;
                 $contact->phone           = $request->phone;

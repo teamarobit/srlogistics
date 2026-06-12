@@ -135,6 +135,19 @@ document.addEventListener("DOMContentLoaded", function () {
     yesRadio.addEventListener("change", function () {
         if (this.checked) {
             caseBox.style.display = "block";
+            // Re-init the City Select2: it was first initialised while the
+            // case box was hidden, so it rendered at width:0. Rebuild it now
+            // that the container is visible.
+            var $city = $('#workExperienceModal select[name="previous_city_id"]');
+            if ($city.length) {
+                if ($city.hasClass('select2-hidden-accessible')) {
+                    $city.select2('destroy');
+                }
+                $city.select2({
+                    dropdownParent: $('#workExperienceModal'),
+                    width: '100%'
+                });
+            }
         }
     });
 
@@ -155,12 +168,31 @@ document.addEventListener("DOMContentLoaded", function () {
     /* =========================
      Provident Fund Toggle
      ========================= */
-    // document.querySelectorAll('input[name="providentFund"]').forEach((radio) => {
-    //     radio.addEventListener("change", function () {
-    //         const pfField = document.getElementById("pf_number_field");
-    //         pfField.style.display = (this.value === "yes") ? "flex" : "none";
-    //     });
-    // });
+    document.querySelectorAll('input[name="providentFund"]').forEach((radio) => {
+        radio.addEventListener("change", function () {
+            const pfField = document.getElementById("pf_number_field");
+            if (pfField) {
+                pfField.style.display = (this.value === "yes") ? "flex" : "none";
+            }
+        });
+    });
+
+    // Reveal the PF number field on load if PF is already registered (edit form)
+    (function () {
+        const pfChecked = document.querySelector('input[name="providentFund"]:checked');
+        const pfField = document.getElementById("pf_number_field");
+        if (pfField && pfChecked && pfChecked.value === "yes") {
+            pfField.style.display = "flex";
+        }
+    })();
+
+    // Remove profile photo: clicking the existing preview's cross only marks the
+    // saved photo for removal. The shared .upload__img-close handler removes the
+    // preview box; here we just set the flag so the server clears (and deletes
+    // from disk) the stored image when the edit form is submitted.
+    $(document).on('click', '.existing-photo-box .upload__img-close', function () {
+        $('#remove_contact_image').val('1');
+    });
 
     
 });
