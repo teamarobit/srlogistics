@@ -114,7 +114,7 @@
                                                     <div class="upload__box">
                                                       <div class="upload__btn-box">
                                                         <label class="upload__btn">
-                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Images</p>
+                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Images <span class="text-danger">*</span></p>
                                                           <input type="file" name="contact_image" data-max_length="20" class="upload__inputfile">
                                                           <small class="error text-danger" id="add_contact_image_error"></small>
                                                         </label>
