@@ -649,7 +649,7 @@
                                                     <option value="Both">Loading & Unloading Points</option>
                                                 </select>
                                             </div>
-                                            <button class="btn btn-primary reset-btn ms-2"><i class="uil uil-history me-1"></i>Reset</button>
+                                            <button type="button" class="btn btn-primary reset-btn ms-2"><i class="uil uil-history me-1"></i>Reset</button>
                                         </div>
                                     </div>
                                     
@@ -676,28 +676,29 @@
                                         </div>
 
                                         <div class="cmnt-wrap mt-4">
-                                            @forelse($contact->activities as $activity)
-                                        
-                                                <div class="d-flex {{ ($activity->is_blacklisted === 'Yes') ? 'blacklist_color' : '' }}">
-                                                    <span class="avatar {{ ($activity->is_blacklisted === 'Yes') ? 'bg-circlesec btn-danger' : 'bg-avatar-primary' }} me-3">
+                                            {{-- Show only user-added activity notes (skip empty / "NA" placeholders); activities are plain notes, so no blacklist/red colouring. --}}
+                                            @forelse($contact->activities->filter(fn($a) => trim((string)($a->notes ?? '')) !== '' && strtoupper(trim((string)($a->notes ?? ''))) !== 'NA') as $activity)
+
+                                                <div class="d-flex">
+                                                    <span class="avatar bg-avatar-primary me-3">
                                                         {{ strtoupper(substr(optional($activity->createdBy)->name, 0, 1)) }}
                                                     </span>
-                                        
+
                                                     <div class="w-90">
-                                                        <h6 class="mb-0 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                        <h6 class="mb-0">
                                                             {{ optional($activity->createdBy)->name ?? 'User' }}
                                                         </h6>
-                                        
-                                                        <small class="d-block text-secondary {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                        <small class="d-block text-secondary">
                                                             {{ $activity->created_at->format('d M | h:i A') }}
                                                         </small>
-                                        
-                                                        <p class="text-secondary mb-2 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                        <p class="text-secondary mb-2">
                                                             {{ $activity->notes }}
                                                         </p>
                                                     </div>
                                                 </div>
-                                        
+
                                             @empty
                                                 <p class="text-muted">No activities found.</p>
                                             @endforelse

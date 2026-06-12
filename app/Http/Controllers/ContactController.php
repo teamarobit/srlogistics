@@ -5086,8 +5086,28 @@ class ContactController extends Controller
                         }
                     } 
                 }
-                
-                
+
+
+                // === Contactbank (single hasOne) — upsert when provided, soft-delete when cleared ===
+                // updateEmployee previously never touched the bank, so clearing the bank section
+                // and saving left the old row intact (delete not persisting). Handle it here,
+                // inside this same transaction.
+                $existingBank = Contactbank::where('contact_id', $contact->id)->first();
+                if (!empty($request->get('bank_id'))) {
+                    $contact_bank = $existingBank ?: new Contactbank;
+                    $contact_bank->contact_id       = $contact->id;
+                    $contact_bank->bank_id          = $request->bank_id;
+                    $contact_bank->account_number   = $request->account_number;
+                    $contact_bank->beneficiary_name = $request->beneficiary_name;
+                    $contact_bank->ifsc_code        = $request->ifsc_code;
+                    $contact_bank->upi_id           = $request->upi_id;
+                    $contact_bank->save();
+                } elseif ($existingBank) {
+                    // Bank section cleared on the form → soft-delete the existing row.
+                    $existingBank->delete();
+                }
+
+
                 // Log activity
                 $this->storeUseractivity(3, 4, Auth::user()->id, $contact->id, 'Employee Updated [ID: ' . $contact->id . '].');
                 
