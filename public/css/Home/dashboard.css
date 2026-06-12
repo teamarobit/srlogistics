@@ -1,11 +1,14 @@
 /* =====================================================================
    SR Logistics — Home Dashboard (static design)
    Page-specific styles. Prefix: dash-
-   Theme: navy #032671 · teal #1BCFB4 · accent #00B7FF
+   Theme: navy-monochrome. Primary navy #032671 + steel/slate/grey scale.
+   Color is reserved for MEANING ONLY:
+     success #10863f · danger #ea0027 · warning #F5A623 · trend up/down.
+   Decorative accents (icons, donut, shortcuts, fills) use the navy family.
    ===================================================================== */
 
 .dash-wrap {
-    padding: 24px 0 48px;
+    padding: 24px 12px 48px;
 }
 
 /* ---- Section heading ------------------------------------------------ */
@@ -62,12 +65,13 @@
     color: #fff;
     flex-shrink: 0;
 }
+/* Decorative KPI icons — navy family, subtly graded so cards stay distinct */
 .dash-ic-navy   { background: linear-gradient(135deg, #032671, #0a3da0); }
-.dash-ic-teal   { background: linear-gradient(135deg, #1BCFB4, #15a98f); }
-.dash-ic-blue   { background: linear-gradient(135deg, #00B7FF, #0089c4); }
-.dash-ic-amber  { background: linear-gradient(135deg, #F5A623, #e08600); }
-.dash-ic-red    { background: linear-gradient(135deg, #FF5C75, #e23b56); }
-.dash-ic-green  { background: linear-gradient(135deg, #59E0A3, #28b378); }
+.dash-ic-teal   { background: linear-gradient(135deg, #093a86, #1450a8); }
+.dash-ic-blue   { background: linear-gradient(135deg, #0a3da0, #1f5bb0); }
+.dash-ic-amber  { background: linear-gradient(135deg, #20356e, #34508f); }
+.dash-ic-red    { background: linear-gradient(135deg, #102a63, #24468f); }
+.dash-ic-green  { background: linear-gradient(135deg, #16407f, #2055a0); }
 
 .dash-kpi-trend {
     font-size: 10.5px;
@@ -76,6 +80,7 @@
     border-radius: 20px;
     line-height: 1.4;
 }
+/* Trend is semantic — keep green/red */
 .dash-trend-up   { color: #1a8f6b; background: #e4f8ef; }
 .dash-trend-down { color: #c5384c; background: #fde7eb; }
 .dash-trend-flat { color: #6b6680; background: #f0eef5; }
@@ -173,16 +178,17 @@
     gap: 28px;
     flex-wrap: wrap;
 }
+/* Navy monochrome donut — navy → steel → slate → light steel → grey */
 .dash-donut {
     width: 168px;
     height: 168px;
     border-radius: 50%;
     background: conic-gradient(
         #032671 0 45%,
-        #1BCFB4 45% 70%,
-        #F5A623 70% 84%,
-        #FF5C75 84% 93%,
-        #C8CEDA 93% 100%
+        #1f5bb0 45% 70%,
+        #5f74a8 70% 84%,
+        #9aa6c6 84% 93%,
+        #d4d9e6 93% 100%
     );
     display: flex;
     align-items: center;
@@ -235,11 +241,12 @@
     border-radius: 3px;
     display: inline-block;
 }
+/* Legend dots match the navy-monochrome donut scale */
 .dash-dot-navy  { background: #032671; }
-.dash-dot-teal  { background: #1BCFB4; }
-.dash-dot-amber { background: #F5A623; }
-.dash-dot-red   { background: #FF5C75; }
-.dash-dot-grey  { background: #C8CEDA; }
+.dash-dot-teal  { background: #1f5bb0; }
+.dash-dot-amber { background: #5f74a8; }
+.dash-dot-red   { background: #9aa6c6; }
+.dash-dot-grey  { background: #d4d9e6; }
 .dash-legend-val {
     font-size: 14px;
     font-weight: 700;
@@ -282,13 +289,14 @@
     border-radius: 20px;
     line-height: 1.2;
 }
-.dash-badge-running   { color: #0d8a5f; background: #e4f8ef; }
-.dash-badge-loading   { color: #0089c4; background: #e2f5ff; }
-.dash-badge-scheduled { color: #6b48c8; background: #efe9fb; }
-.dash-badge-delayed   { color: #c5384c; background: #fde7eb; }
-.dash-badge-ok        { color: #0d8a5f; background: #e4f8ef; }
-.dash-badge-warn      { color: #b8730a; background: #fcf1dd; }
-.dash-badge-expired   { color: #c5384c; background: #fde7eb; }
+/* Semantic statuses keep meaning; informational ones use the navy family */
+.dash-badge-running   { color: #0d8a5f; background: #e4f8ef; }  /* success  */
+.dash-badge-loading   { color: #0a3da0; background: #e6edfb; }  /* info — navy */
+.dash-badge-scheduled { color: #51618f; background: #eef1f7; }  /* neutral — slate */
+.dash-badge-delayed   { color: #c5384c; background: #fde7eb; }  /* danger   */
+.dash-badge-ok        { color: #0d8a5f; background: #e4f8ef; }  /* success  */
+.dash-badge-warn      { color: #b8730a; background: #fcf1dd; }  /* warning  */
+.dash-badge-expired   { color: #c5384c; background: #fde7eb; }  /* danger   */
 
 /* ---- Module shortcuts (right rail) ---------------------------------- */
 .dash-shortcut {
@@ -306,14 +314,15 @@
     font-weight: 600;
     transition: filter .15s ease;
 }
-.dash-shortcut:hover { filter: brightness(1.07); color: #fff; }
+.dash-shortcut:hover { filter: brightness(1.08); color: #fff; }
 .dash-shortcut i { font-size: 18px; }
-.dash-sc-1 { background: #014A6E; }
-.dash-sc-2 { background: #00B7FF; }
-.dash-sc-3 { background: #1BCFB4; }
-.dash-sc-4 { background: #6b48c8; }
-.dash-sc-5 { background: #F5A623; }
-.dash-sc-6 { background: #032671; }
+/* Navy-family graded scale — cohesive rail, subtle depth */
+.dash-sc-1 { background: #021c54; }
+.dash-sc-2 { background: #032671; }
+.dash-sc-3 { background: #0a3da0; }
+.dash-sc-4 { background: #143a7a; }
+.dash-sc-5 { background: #1f4f9c; }
+.dash-sc-6 { background: #2a5aa8; }
 
 /* ---- Health bars ---------------------------------------------------- */
 .dash-health-item { margin-bottom: 16px; }
@@ -336,10 +345,11 @@
     height: 100%;
     border-radius: 8px;
 }
-.dash-fill-teal  { background: #1BCFB4; }
-.dash-fill-blue  { background: #00B7FF; }
+/* Normal levels = navy/steel; amber=caution, red=critical kept semantic */
+.dash-fill-teal  { background: #0a3da0; }
+.dash-fill-blue  { background: #2a5aa8; }
 .dash-fill-amber { background: #F5A623; }
-.dash-fill-red   { background: #FF5C75; }
+.dash-fill-red   { background: #d64559; }
 
 /* ---- Activity feed -------------------------------------------------- */
 .dash-feed { position: relative; padding-left: 6px; }
@@ -360,9 +370,10 @@
     background: #fff;
     border: 3px solid #032671;
 }
-.dash-feed-item.dash-feed-teal::before  { border-color: #1BCFB4; }
+/* Default navy; steel for routine, amber=caution, red=alert kept semantic */
+.dash-feed-item.dash-feed-teal::before  { border-color: #1f5bb0; }
 .dash-feed-item.dash-feed-amber::before { border-color: #F5A623; }
-.dash-feed-item.dash-feed-red::before   { border-color: #FF5C75; }
+.dash-feed-item.dash-feed-red::before   { border-color: #d64559; }
 .dash-feed-text {
     font-size: 13px;
     color: #3c3650;
