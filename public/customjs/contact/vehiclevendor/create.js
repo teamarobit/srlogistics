@@ -505,16 +505,15 @@ $(document).ready(function(){
                     
                     
                     $.each(response.data, function(index, value){
+                          var msg = Array.isArray(value) ? value[0] : value;
                           if (index.includes('.')) {
                               if(index.split('.').length === 3){
-                                    $('#add_' + index.split('.').splice(0,2).join('_') + '_error').text(
-                                      value.join('').replace(index, index.split('.').splice(0,2).join('_'))
-                                    );
+                                    $('#add_' + index.split('.').splice(0,2).join('_') + '_error').text(msg);
                               }else if(index.split('.').length === 2) {
-                                    $('#add_' + index.split('.').join('_') + '_error').text(value);
+                                    $('#add_' + index.split('.').join('_') + '_error').text(msg);
                               }
                           } else {
-                                 $('#add_'+index+'_error').text(value);
+                                 $('#add_'+index+'_error').text(msg);
                           }
                     });
                     

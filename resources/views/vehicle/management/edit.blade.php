@@ -302,7 +302,7 @@
 
     var FETCH_VEHICLE_INFO = "{{ route('vehiclemanagement.fetchInfo') }}";
 </script>
-<script type="text/javascript" src="{{asset('customjs/vehicle/management/edit.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/management/edit.js?v=1.1')}}"></script>
 
 @endsection
 

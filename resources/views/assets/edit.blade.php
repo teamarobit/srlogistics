@@ -4,10 +4,6 @@
 
 <link rel="stylesheet" href="{{ asset('css/Assets/create.css?v=1.1') }}">
 
-/*body { background-color: #fff; }*/
-/*.table thead tr th { padding: 8px 10px; }*/
-/*.table tbody td { padding: 8px 10px; }*/
-
 @endsection
 
 @section('content')
@@ -99,7 +95,18 @@
                                     <small class="error text-danger" id="edit_asset_id_error"></small>
                                 </div>
                               </div>
-                              
+
+                              {{-- Issue 23 — dedicated Purchase Date (all asset types); allow past/today, block future --}}
+                              <div class="form-group row pb-1">
+                                <div class="col-12 col-md-3">
+                                    <label>Purchase Date</label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input name="purchase_date" value="{{ $data->purchase_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                    <small class="error text-danger" id="edit_purchase_date_error"></small>
+                                </div>
+                              </div>
+
                               <div class="form-group row pb-1 MotorVehicleNumber">
                                 <div class="col-12 col-md-3"> 
                                     <label>Vehicle Number <span class="text-danger">*</span></label>

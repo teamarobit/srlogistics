@@ -112,9 +112,10 @@ class AssetController extends Controller
             
             'vehicle_age' => 'required_if:asset_type,Motor Vehicle|nullable|integer|min:1',
             'vehicle_age_months' => 'nullable|integer|min:0|max:11',
-            'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100', 
+            'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100',
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
-            
+            'purchase_date' => 'nullable|date|date_format:Y-m-d',
+
             'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
@@ -173,7 +174,8 @@ class AssetController extends Controller
                 $asset->make = $request->get('make');
                 $asset->model = $request->get('model');
                 $asset->rc_date = $request->get('rc_date');
-                
+                $asset->purchase_date = $request->get('purchase_date') ?? null;
+
                 $asset->age = null;
                 $asset->age_months = null;
                 $asset->warranty_start_date = null;
@@ -318,9 +320,10 @@ class AssetController extends Controller
     
             'vehicle_age' => 'required_if:asset_type,Motor Vehicle|nullable|integer|min:1',
             'vehicle_age_months' => 'nullable|integer|min:0|max:11',
-            'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100', 
+            'vehicle_no'  => 'required_if:asset_type,Motor Vehicle|nullable|max:100',
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
-    
+            'purchase_date' => 'nullable|date|date_format:Y-m-d',
+
             'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
@@ -376,7 +379,8 @@ class AssetController extends Controller
                 $asset->model = $request->model;
                 $asset->vehicle_no = $request->vehicle_no;
                 $asset->rc_date = $request->rc_date;
-    
+                $asset->purchase_date = $request->get('purchase_date') ?? null;
+
                 // Reset conditional fields
                 $asset->age = null;
                 $asset->age_months = null;

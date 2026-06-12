@@ -251,7 +251,7 @@ var EDIT_VEHILEGROUP = "{{ route('vehiclegroup.edit', ':id') }}";
 var DELETE_VEHILEGROUP = "{{ route('vehiclegroup.delete') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/group/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/group/index.js?v=1.1')}}"></script>
 
 @endsection
 

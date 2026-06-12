@@ -188,7 +188,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/type/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/type/index.js?v=1.1')}}"></script>
 
 @endsection
 

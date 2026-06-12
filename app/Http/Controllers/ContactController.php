@@ -9175,12 +9175,13 @@ class ContactController extends Controller
             
             $tds = $request->tds_percentage;
             $attachTypes = $request->attachtypes ?? [];
-            
+
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
-            if (in_array((float)$tds, [0, 1])) {
-        
+            // Skip when TDS is blank — a missing value must not be cast to 0 (Issues 32/33 & 34).
+            if ($tds !== null && $tds !== '' && in_array((float)$tds, [0, 1])) {
+
                 if (!in_array(7, $attachTypes)) {
-        
+
                     $validator->errors()->add(
                         'attachtypes',
                         'TDS Declaration document is mandatory when TDS % is 0 or 1.'
@@ -11270,8 +11271,11 @@ class ContactController extends Controller
         $pan_statuses = Panstatus::where('organisation_id', $organisation_id)->orderBy('name')->get();
         
         $banks = Bank::orderBy('name')->get();
-        
-        return view('contacts.batteryvendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks')); 
+
+        $lastVendor = \App\Models\Contact::where('cotype_id', self::CONTACT_TYPE_BATTERY_VENDOR)->orderBy('id', 'desc')->first();
+        $batteryCode = 'BV-' . ($lastVendor ? $lastVendor->id + 1 : 1);
+
+        return view('contacts.batteryvendor.create',compact('customerabouttype','countries','states','cotype','cotypes','gsttreats','coattachtypes','vehicle_ownership_type','pan_statuses', 'banks', 'batteryCode'));
     }
     
     public function storeBatteryVendor(Request $request){ 
@@ -11464,12 +11468,13 @@ class ContactController extends Controller
             
             $tds = $request->tds_percentage;
             $attachTypes = $request->attachtypes ?? [];
-            
+
             // CONDITION: If TDS % is 0 or 1 → TDS Declaration (ID = 8) mandatory
-            if (in_array((float)$tds, [0, 1])) {
-        
+            // Skip when TDS is blank — a missing value must not be cast to 0 (Issues 32/33 & 34).
+            if ($tds !== null && $tds !== '' && in_array((float)$tds, [0, 1])) {
+
                 if (!in_array(7, $attachTypes)) {
-        
+
                     $validator->errors()->add(
                         'attachtypes',
                         'TDS Declaration document is mandatory when TDS % is 0 or 1.'

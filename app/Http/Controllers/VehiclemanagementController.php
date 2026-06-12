@@ -231,10 +231,10 @@ class VehiclemanagementController extends Controller
     {
         // Step 1: Validate main fields and dynamic rows
         $validator = Validator::make($request->all(), [
-            'vc_no'         => 'required|unique:vehicles,vehicle_no',
+            'vc_no'         => 'required|regex:/^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/|unique:vehicles,vehicle_no',
             'ownership_type' => 'required|in:Own,Rental',
             //'ownership'     => 'required|exists:vehicleownerships,id',
-            'vehicle_group' => 'required|exists:vehiclegroups,id', 
+            'vehicle_group' => 'required|exists:vehiclegroups,id',
             'vehicle_type'  => 'required|exists:vehicletypes,id',
             'vehicle_size'  => 'required|exists:vehicletypesizes,id',
             'category'      => 'required|in:Local,Line',
@@ -248,6 +248,7 @@ class VehiclemanagementController extends Controller
             'min'      => 'Value must be at least :min.',
             'max'      => 'Maximum allowed value is :max.',
             'in'       => 'Invalid selection.',
+            'vc_no.regex' => 'Enter a valid vehicle number, e.g. TS09QA1234 (no spaces or dashes).',
         ]);
     
     
@@ -355,10 +356,10 @@ class VehiclemanagementController extends Controller
         }
         
         $validator = Validator::make($request->all(), [
-                        'vc_no' => 'required|unique:vehicles,vehicle_no,' . $request->id,
+                        'vc_no' => 'required|regex:/^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/|unique:vehicles,vehicle_no,' . $request->id,
                         'ownership_type' => 'required|in:Own,Rental',
                         //'ownership'     => 'required|exists:vehicleownerships,id',
-                        'vehicle_group' => 'required|exists:vehiclegroups,id', 
+                        'vehicle_group' => 'required|exists:vehiclegroups,id',
                         'vehicle_type'  => 'required|exists:vehicletypes,id',
                         'vehicle_size'  => 'required|exists:vehicletypesizes,id',
                         'category'      => 'required|in:Local,Line',
@@ -372,6 +373,7 @@ class VehiclemanagementController extends Controller
                         'min'      => 'Value must be at least :min.',
                         'max'      => 'Maximum allowed value is :max.',
                         'in'       => 'Invalid selection.',
+                        'vc_no.regex' => 'Enter a valid vehicle number, e.g. TS09QA1234 (no spaces or dashes).',
                     ]);
     
         

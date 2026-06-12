@@ -20,7 +20,13 @@ $(document).ready(function(){
         clearTimeout(window._searchTimer);
         window._searchTimer = setTimeout(function(){ $('#searchform').submit(); }, 400);
     });
-    
+
+
+    // Status filter (select2) — submit the form on change so ?status= reaches the URL
+    $('#search_status').on('change', function () {
+        $('#searchform').submit();
+    });
+
     
     $(document.body).on('click', '.deleteBtn', function () {
         var rowid = $(this).data('id');

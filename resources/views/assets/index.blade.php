@@ -75,7 +75,8 @@
                                     <td>{{ $data->asset_no ?? '-' }}</td>
                                     <td>
                                         @php
-                                            $purchaseDate = $data->issue_date ?: $data->warranty_start_date;
+                                            // Issue 23 — prefer the dedicated purchase_date; fall back to legacy rows
+                                            $purchaseDate = $data->purchase_date ?: ($data->issue_date ?: $data->warranty_start_date);
                                         @endphp
                                         {{ $purchaseDate
                                             ? \Carbon\Carbon::parse($purchaseDate)->format('d-m-Y')

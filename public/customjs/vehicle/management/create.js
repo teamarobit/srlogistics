@@ -3,7 +3,7 @@ $(document).ready(function() {
 
     const Toast = Swal.mixin({
         toast: true,
-        position: 'top-end',
+        position: 'top',
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
@@ -94,11 +94,21 @@ $(document).ready(function() {
         $('form#addForm').submit();
     });
 
+    // Indian vehicle-number format: 2 letters + 2 digits + 1-2 letters + 4 digits (e.g. TS09QA1234)
+    var VC_NO_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+
     $('form#addForm').on('submit', function () {
         var formData = new FormData(this);
 
         // clear previous errors
         $('small.error').text('');
+
+        // Vehicle Number format check (block submit + inline error)
+        var vcNo = ($('#vc_no').val() || '').trim();
+        if (!VC_NO_REGEX.test(vcNo)) {
+            $('#add_vc_no_error').text('Enter a valid vehicle number, e.g. TS09QA1234 (no spaces or dashes).');
+            return false;
+        }
 
         $('#addBtn')
             .html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>')

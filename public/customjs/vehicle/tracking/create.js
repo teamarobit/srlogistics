@@ -22,8 +22,11 @@ $(document).ready(function() {
     
     
     //==========================================================================
-    
-    
+
+    // Listing URL for post-save redirect (read from #addForm data attribute)
+    var LISTING = $('#addForm').data('listing-url') || '';
+
+
     $(document).on('click', '#addBtn', function () {
         $('form#addForm').submit();
     });
@@ -34,7 +37,7 @@ $(document).ready(function() {
         // Clear previous errors
     
         $('#addBtn')
-            .html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>')
+            .html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div> Saving&hellip;')
             .attr('disabled', true);
     
         $.ajax({
@@ -50,7 +53,9 @@ $(document).ready(function() {
                     icon: 'success',
                     title: response.message || 'Saved successfully!'
                 });
-                $('#addBtn').html('Save').attr('disabled', false);
+                // Keep the button disabled on success — the page redirects.
+                // Re-enabling here allowed a second click before navigation,
+                // which created duplicate records (Issue 31).
                 window.location.href = LISTING;
             },
             

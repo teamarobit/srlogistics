@@ -147,7 +147,7 @@
                                                 <label>Battery Vendor Code <span class="text-danger">*</span></label>
                                             </div>
                                             <div class="col-12 col-md-7">
-                                                <input type="text" name="contact_code" class="form-control"/>
+                                                <input type="text" name="contact_code" value="{{ $batteryCode }}" readonly class="form-control bg-light"/>
                                                 <small class="error text-danger" id="add_contact_code_error"></small>
                                             </div>
                                         </div>
@@ -709,7 +709,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.1') }}"></script>
 
 @endsection
 

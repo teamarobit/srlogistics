@@ -32,7 +32,7 @@
                 <div class="addroute-bd">
                     <div class="container-fluid">
                         
-                        <form action="{{route('vehicletracking.save')}}" method="POST" id="addForm">
+                        <form action="{{route('vehicletracking.save')}}" method="POST" id="addForm" data-listing-url="{{ route('vehicletracking.index') }}">
                           @csrf
                         
                           <div class="form-group row">
@@ -117,7 +117,7 @@
 
 @section('js')
 
-<script type="text/javascript" src="{{asset('customjs/vehicle/tracking/create.js')}}"></script>
+<script type="text/javascript" src="{{asset('customjs/vehicle/tracking/create.js?v=1.2')}}"></script>
 
 @endsection
 
