@@ -529,7 +529,7 @@ $(document).ready(function(){
                     // re-init intl-tel-input ONLY for new section
                     initTelInputs($newSection);
             
-                    assignContactPersonErrorIds();
+                    assignContactPersonErrorIds('edit');
                 }
     
             }
@@ -552,6 +552,7 @@ $(document).ready(function(){
             cpdgerr:   'contact_person_designation',
             cpphcd:    'contact_person_ph_code',
             cpph:      'contact_person_phone',
+            cpwa:      'contact_person_whatsapp',
             cpeml:     'contact_person_email',
             cpcmt:     'contact_person_comment'
         };

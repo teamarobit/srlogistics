@@ -4176,6 +4176,17 @@ class ContactController extends Controller
         
         
         
+            // Skill Set is mandatory for Service Center (Technical). Enforced here because the
+            // inline 'nullable' rule short-circuits the closure when the field is empty/absent.
+            $validator->after(function ($v) use ($request) {
+                if ($request->workType === 'Service Center' && $request->service_type === 'Technical') {
+                    $skillIds = array_filter((array) $request->input('servicecenter_technical_skillset_ids', []));
+                    if (empty($skillIds)) {
+                        $v->errors()->add('servicecenter_technical_skillset_ids', 'Skill Set is required for Service Center (Technical).');
+                    }
+                }
+            });
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
         
         if($validator->fails() || $errorcount > 0){
@@ -4841,6 +4852,17 @@ class ContactController extends Controller
             }
         }
         
+            // Skill Set is mandatory for Service Center (Technical). Enforced here because the
+            // inline 'nullable' rule short-circuits the closure when the field is empty/absent.
+            $validator->after(function ($v) use ($request) {
+                if ($request->workType === 'Service Center' && $request->service_type === 'Technical') {
+                    $skillIds = array_filter((array) $request->input('servicecenter_technical_skillset_ids', []));
+                    if (empty($skillIds)) {
+                        $v->errors()->add('servicecenter_technical_skillset_ids', 'Skill Set is required for Service Center (Technical).');
+                    }
+                }
+            });
+
         $errormessages = array_merge($validator->getMessageBag()->toArray(), $errors);
         
         if($validator->fails() || $errorcount > 0){
@@ -5307,8 +5329,8 @@ class ContactController extends Controller
                 }
             
                 try {
-                    $start = Carbon::parse(trim($dates[0]))->format('Y-m-d');
-                    $end   = Carbon::parse(trim($dates[1]))->format('Y-m-d');
+                    $start = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->format('Y-m-d');
+                    $end   = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->format('Y-m-d');
                 } catch (\Exception $e) {
                     $fail('The employment duration contains invalid dates.');
                     return;
@@ -5340,7 +5362,7 @@ class ContactController extends Controller
             'previous_city_id'                => 'required_if:previous_legal_case,Yes|nullable|exists:cities,id',
             'previous_police_station'         => 'required_if:previous_legal_case,Yes|nullable|string|max:255',
 
-            'previous_notes'                  => 'required',
+            'previous_notes'                  => 'nullable|string',
         ], [
             'required' => 'This field is required.',
             'max'      => 'Maximum 100 characters allowed.',
@@ -5379,8 +5401,8 @@ class ContactController extends Controller
                     $dates = explode(' - ', $request->previous_employment_duration);
                 
                     if (count($dates) === 2) {
-                        $startDate = Carbon::parse(trim($dates[0]))->format('Y-m-d');
-                        $endDate   = Carbon::parse(trim($dates[1]))->format('Y-m-d');
+                        $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->format('Y-m-d');
+                        $endDate   = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->format('Y-m-d');
                     }
                 }
                 
