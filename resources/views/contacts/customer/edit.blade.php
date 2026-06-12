@@ -1477,12 +1477,14 @@
                                 <option value="">Choose...</option>
                                 @forelse($activeContracts as $contract)
                                     @php
-                                        $status = 'Inactive';
-                            
                                         if ($contract->contract_type_id == 6) {
                                             $status = 'Life Time';
-                                        } elseif ($contract->start_date <= $today && $contract->end_date >= $today) {
+                                        } elseif (empty($contract->end_date)) {
                                             $status = 'Active';
+                                        } elseif (\Carbon\Carbon::parse($contract->start_date)->startOfDay() <= $today && \Carbon\Carbon::parse($contract->end_date)->endOfDay() >= $today) {
+                                            $status = 'Active';
+                                        } else {
+                                            $status = 'Inactive';
                                         }
                                     @endphp
                                     <option value="{{ $contract->id }}" data-status="{{ $status }}">

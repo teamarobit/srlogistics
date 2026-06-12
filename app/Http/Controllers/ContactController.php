@@ -2568,10 +2568,10 @@ class ContactController extends Controller
                         'midpoint_type.*' => 'nullable|in:Loading,Unloading',
                     
                         'loading_midpoint' => 'nullable|array',
-                        'loading_midpoint.*' => 'nullable|exists:cities,id',
+                        'loading_midpoint.*' => 'nullable|exists:customerlocations,id',
                     
                         'unloading_midpoint' => 'nullable|array',
-                        'unloading_midpoint.*' => 'nullable|exists:cities,id',
+                        'unloading_midpoint.*' => 'nullable|exists:customerlocations,id',
                 
                         'vehicle_type_id' => 'required|array|min:1',
                         'vehicle_type_id.*' => 'required|exists:vehicletypes,id',
@@ -12904,7 +12904,10 @@ class ContactController extends Controller
         $contacts = Contact::query()->where('cotype_id', $cotypeId);
 
         if ($request->filled('name')) {
-            $contacts->where('contact_name', 'like', '%' . $request->name . '%');
+            $contacts->where(function ($q) use ($request) {
+                $q->where('company_name', 'like', '%' . $request->name . '%')
+                  ->orWhere('contact_name', 'like', '%' . $request->name . '%');
+            });
         }
         if ($request->filled('state')) {
             $contacts->where('state_id', $request->state);

@@ -159,7 +159,7 @@
                                     $contractStatus = 'Life Time';
                                 } elseif (empty($contract->end_date)) {
                                     $contractStatus = 'Active';
-                                } elseif ($contract->start_date <= $today && $contract->end_date >= $today) {
+                                } elseif (\Carbon\Carbon::parse($contract->start_date)->startOfDay() <= $today && \Carbon\Carbon::parse($contract->end_date)->endOfDay() >= $today) {
                                     $contractStatus = 'Active';
                                 } else {
                                     $contractStatus = 'Inactive';
