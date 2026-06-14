@@ -830,4 +830,22 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/lr/print', 'print')->name('trip.lr.print');
     });
 
+
+    /******************************** Contacts V2 — Customer (redesign) *********************/
+    // New, isolated module. Does NOT touch existing contacts routes/controller/views.
+    Route::prefix('contacts/v2')->name('contact.v2.')->group(function () {
+        Route::get('/customers/dashboard',             [App\Http\Controllers\V2\CustomerController::class, 'dashboard'])->name('customer.dashboard');
+        Route::get('/customers',                       [App\Http\Controllers\V2\CustomerController::class, 'index'])->name('customer.index');
+        Route::get('/customers/create',                [App\Http\Controllers\V2\CustomerController::class, 'create'])->name('customer.create');
+        Route::get('/customers/{id}',                  [App\Http\Controllers\V2\CustomerController::class, 'show'])->name('customer.show');
+        Route::get('/customers/{id}/edit',             [App\Http\Controllers\V2\CustomerController::class, 'edit'])->name('customer.edit');
+        Route::get('/customers/{id}/contracts',        [App\Http\Controllers\V2\CustomerController::class, 'contracts'])->name('customer.contracts');
+        Route::get('/customers/{id}/contracts/create', [App\Http\Controllers\V2\CustomerController::class, 'contractForm'])->name('customer.contract.create');
+        Route::get('/customers/{id}/locations',        [App\Http\Controllers\V2\CustomerController::class, 'locations'])->name('customer.locations');
+        Route::get('/customers/{id}/rate-chart',       [App\Http\Controllers\V2\CustomerController::class, 'rateChart'])->name('customer.ratechart');
+        Route::get('/customers/{id}/vehicles',         [App\Http\Controllers\V2\CustomerController::class, 'vehicles'])->name('customer.vehicles');
+        Route::get('/customers/{id}/documents',        [App\Http\Controllers\V2\CustomerController::class, 'documents'])->name('customer.documents');
+        Route::get('/customers/{id}/activity',         [App\Http\Controllers\V2\CustomerController::class, 'activity'])->name('customer.activity');
+    });
+
 }); // end auth middleware group

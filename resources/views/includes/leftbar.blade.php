@@ -37,6 +37,20 @@
         </div>
         
         
+        {{-- ===== Contact V2 (redesigned modules) ===== --}}
+        @if(Route::has('contact.v2.customer.dashboard'))
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingContactV2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContactV2" aria-expanded="false" aria-controls="collapseContactV2"><i class="uil uil-user-plus me-2"></i> Contact V2</button>
+            </h2>
+            <div id="collapseContactV2" class="accordion-collapse collapse" aria-labelledby="headingContactV2">
+                <div class="accordion-body">
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.customer.dashboard') }}" style="color: #261f35; font-size: 13px;">Customers <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                </div>
+            </div>
+        </div>
+        @endif
+
         @if(Route::has('contact.customer.contract.list'))
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingThree" >
