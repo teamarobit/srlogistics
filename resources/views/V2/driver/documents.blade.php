@@ -13,11 +13,20 @@
                     <table class="cv2-table">
                         <thead><tr><th>Document</th><th>Type</th><th>Size</th><th>Uploaded</th><th style="text-align:right;">Actions</th></tr></thead>
                         <tbody>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-image" style="color:var(--cv2-navy);"></i> dl-front.jpg</span></td><td>Driving Licence</td><td>241 KB</td><td>{{ $d['doj'] }}</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-image" style="color:var(--cv2-navy);"></i> aadhaar.jpg</span></td><td>Aadhaar Card</td><td>198 KB</td><td>{{ $d['doj'] }}</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-pdf" style="color:var(--cv2-bad);"></i> signed-form.pdf</span></td><td>Signed Driver Form</td><td>512 KB</td><td>{{ $d['doj'] }}</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-pdf" style="color:var(--cv2-bad);"></i> police-verification.pdf</span></td><td>Police Verification</td><td>720 KB</td><td>05 Feb 26</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-image" style="color:var(--cv2-navy);"></i> photo.jpg</span></td><td>Photo</td><td>96 KB</td><td>05 Feb 26</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
+                            @forelse($coattachments as $doc)
+                            <tr>
+                                <td><span class="cv2-t-name"><i class="bi bi-file-earmark"></i> {{ $doc->original_name }}</span></td>
+                                <td>{{ optional($doc->coattachtype)->name ?? '—' }}</td>
+                                <td>{{ $doc->file_size ? number_format((float) $doc->file_size, 2) . ' MB' : '—' }}</td>
+                                <td>{{ $doc->created_at ? $doc->created_at->format('d M y') : '—' }}</td>
+                                <td class="cv2-actions">
+                                    <a href="{{ asset('media/contact/' . $doc->name) }}" target="_blank" class="cv2-ic-btn"><i class="bi bi-download"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-doc" data-id="{{ $doc->id }}" data-url="{{ route('contact.v2.driver.attachment.delete') }}"><i class="bi bi-trash3"></i></a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="5" class="text-center cv2-empty" style="padding:24px;">No documents uploaded yet.</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -26,13 +35,19 @@
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Add Document</h3></div>
                 <div class="cv2-card-b">
-                    <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Document Type</label><select class="cv2-select" style="width:100%;"><option value="">Select type…</option><option>Police Verification</option><option>Photo</option><option>Address Proof</option><option>Other</option></select></div>
-                    <div class="cv2-dropzone"><i class="bi bi-cloud-arrow-up"></i>Drop files here or click to upload</div>
-                    <span class="cv2-hint" style="display:block;margin-top:8px;">JPG, PNG or PDF · max 2 MB · up to 2 files per type</span>
+                    <form id="cv2DocForm" action="{{ route('contact.v2.driver.attachment.save') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="contact_id" value="{{ $d['id'] }}">
+                        <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Document Type <span class="req">*</span></label>
+                            <select class="cv2-select" name="coattachtype_id" style="width:100%;"><option value="">Select type…</option>@foreach($coattachtypes as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach</select></div>
+                        <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Files <span class="req">*</span></label><input type="file" name="files[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="cv2-file"></div>
+                        <span class="cv2-hint" style="display:block;margin-bottom:10px;">JPG, PNG or PDF · max 2 MB · up to 2 files per type</span>
+                        <button type="submit" class="cv2-btn cv2-btn-primary" style="width:100%;justify-content:center;"><i class="bi bi-cloud-arrow-up"></i>Upload Document</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/driver.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.0') }}"></script>@endsection

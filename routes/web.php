@@ -897,6 +897,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/drivers/{id}/exit-letter',        [App\Http\Controllers\V2\DriverController::class, 'exitLetter'])->name('driver.exit.letter');
         Route::get('/drivers/{id}/activity',           [App\Http\Controllers\V2\DriverController::class, 'activity'])->name('driver.activity');
 
+        /**** Driver — Gate 2 POST wiring (live backend) ****/
+        Route::post('/drivers/save',                       [App\Http\Controllers\V2\DriverController::class, 'store'])->name('driver.save');
+        Route::post('/drivers/{id}/update',                [App\Http\Controllers\V2\DriverController::class, 'update'])->name('driver.update');
+        Route::post('/drivers/emergency-contact-wrapper',  [App\Http\Controllers\V2\DriverController::class, 'emergencyContactWrapper'])->name('driver.emergencycontactwrapper');
+        Route::post('/drivers/bank-wrapper',               [App\Http\Controllers\V2\DriverController::class, 'bankWrapper'])->name('driver.bankwrapper');
+        Route::post('/drivers/work-experience/save',       [App\Http\Controllers\V2\DriverController::class, 'storeWorkExperience'])->name('driver.workexp.save');
+        Route::post('/drivers/asset/save',                 [App\Http\Controllers\V2\DriverController::class, 'storeAsset'])->name('driver.asset.save');
+        Route::post('/drivers/asset/revoke',               [App\Http\Controllers\V2\DriverController::class, 'revokeAsset'])->name('driver.asset.revoke');
+        Route::post('/drivers/exit/save',                  [App\Http\Controllers\V2\DriverController::class, 'storeExit'])->name('driver.exit.save');
+        Route::post('/drivers/letter/seen-status',         [App\Http\Controllers\V2\DriverController::class, 'updateLetterSeenStatus'])->name('driver.letter.seen');
+        Route::post('/drivers/attachment/save',            [App\Http\Controllers\V2\DriverController::class, 'storeAttachment'])->name('driver.attachment.save');
+        Route::post('/drivers/attachment/delete',          [App\Http\Controllers\V2\DriverController::class, 'deleteAttachment'])->name('driver.attachment.delete');
+        Route::post('/drivers/activity-notes/save',        [App\Http\Controllers\V2\DriverController::class, 'storeActivityNote'])->name('driver.activitynotes.save');
+        Route::post('/drivers/delete',                     [App\Http\Controllers\V2\DriverController::class, 'destroy'])->name('driver.delete');
+
         /******************************** Contacts V2 — Battery Vendor (redesign) *********************/
         // cotype_id = 7. New, isolated module. Does NOT touch existing contacts routes/controller/views.
         Route::get('/battery-vendors/dashboard',      [App\Http\Controllers\V2\BatteryVendorController::class, 'dashboard'])->name('batteryvendor.dashboard');
@@ -949,11 +964,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/load-vendors/{id}/locations',    [App\Http\Controllers\V2\LoadVendorController::class, 'locations'])->name('loadvendor.locations');
         Route::get('/load-vendors/{id}/documents',    [App\Http\Controllers\V2\LoadVendorController::class, 'documents'])->name('loadvendor.documents');
         Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
-
-        /**** Load Vendor — Gate 2 POST/GET wiring (live backend) ****/
-        // ⚠️ TRUNCATION REPAIR (2026-06-15): Load Vendor Gate-2 POST routes (and any
-        // V2 module groups originally after this point) were lost to a pre-existing
-        // concurrent web.php truncation. NOT reconstructed here (out of Employee-task
-        // scope). See docs/HumanAttention/2026-06-15-employee-v2-routes-truncation-repair.md
     });
-});
+
+}); // end auth middleware group

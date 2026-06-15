@@ -11,19 +11,21 @@
                 <div class="cv2-card-h"><h3>Activity Log</h3></div>
                 <div class="cv2-card-b">
                     <ul class="cv2-mini">
-                        <li><span class="cv2-mini-ic"><i class="bi bi-cash-coin"></i></span><div class="cv2-mini-body"><b>Bhatta ₹2,400 credited (TRIP-4471-118)</b><span>Superadmin · 12 Jun 26, 6:10 PM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-truck"></i></span><div class="cv2-mini-body"><b>Vehicle {{ $d['vehicle'] }} allocated</b><span>Operations · 02 Jan 22, 10:15 AM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-box-seam"></i></span><div class="cv2-mini-body"><b>Asset issued: Fuel Card</b><span>Superadmin · 12 Jan 22, 11:00 AM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-box-arrow-in-right"></i></span><div class="cv2-mini-body"><b>Joining letter generated</b><span>Superadmin · {{ $d['doj'] }}</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-person-plus"></i></span><div class="cv2-mini-body"><b>Driver record created</b><span>Superadmin · {{ $d['doj'] }}</span></div></li>
+                        @forelse($activities as $act)
+                        <li><span class="cv2-mini-ic"><i class="bi bi-dot"></i></span><div class="cv2-mini-body"><b>{{ $act->notes }}</b><span>{{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->format('d M y, g:i A') : '' }}</span></div></li>
+                        @empty
+                        <li><div class="cv2-mini-body"><span>No activity recorded yet.</span></div></li>
+                        @endforelse
                     </ul>
                 </div>
             </div>
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Add Note</h3></div>
                 <div class="cv2-card-b">
-                    <form action="javascript:void(0)">
-                        <div class="cv2-field"><label class="cv2-label">Note</label><textarea rows="4" placeholder="Add an activity note…"></textarea></div>
+                    <form id="cv2ActivityForm" action="{{ route('contact.v2.driver.activitynotes.save') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="contact_id" value="{{ $d['id'] }}">
+                        <div class="cv2-field"><label class="cv2-label">Note <span class="req">*</span></label><textarea name="notes" rows="4" placeholder="Add an activity note…"></textarea></div>
                         <button type="submit" class="cv2-btn cv2-btn-primary cv2-mt" style="width:100%;justify-content:center;"><i class="bi bi-plus-lg"></i>Save Note</button>
                     </form>
                 </div>
@@ -32,4 +34,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/driver.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.0') }}"></script>@endsection

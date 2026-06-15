@@ -64,7 +64,7 @@
                                 <td class="cv2-actions">
                                     <a href="{{ route('contact.v2.driver.show', $d['id']) }}" class="cv2-ic-btn" title="View"><i class="bi bi-eye"></i></a>
                                     <a href="{{ route('contact.v2.driver.edit', $d['id']) }}" class="cv2-ic-btn" title="Edit"><i class="bi bi-pencil"></i></a>
-                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del" title="Delete"><i class="bi bi-trash3"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-driver" data-id="{{ $d['id'] }}" data-url="{{ route('contact.v2.driver.delete') }}" title="Delete"><i class="bi bi-trash3"></i></a>
                                 </td>
                             </tr>
                             @endforeach
@@ -89,4 +89,4 @@
 </div>
 @endsection
 
-@section('js')<script src="{{ asset('js/V2/driver.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.0') }}"></script>@endsection

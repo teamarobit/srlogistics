@@ -22,7 +22,11 @@
                 </div>
             </div>
 
-            <form id="cv2DriverForm" action="javascript:void(0)" data-create="1">
+            <form id="cv2DriverForm" action="{{ route('contact.v2.driver.save') }}" method="POST" enctype="multipart/form-data" data-create="1">
+            @csrf
+            <input type="hidden" name="phone_code" value="+91">
+            <input type="hidden" name="whatsapp_code" value="+91">
+            <input type="hidden" name="guarantor_phone_code" value="+91">
             <div class="cv2-grid cv2-grid-2-1">
                 <div style="display:flex;flex-direction:column;gap:16px;">
 
@@ -33,29 +37,34 @@
                             <div class="cv2-form-grid">
                                 <div class="cv2-field">
                                     <label class="cv2-label">Driver Code <span class="req">*</span></label>
-                                    <input type="text" name="contact_code" value="DR-133" maxlength="100">
-                                    <span class="cv2-help">Auto-generated preview: DR-133</span>
+                                    <input type="text" name="contact_code" value="{{ old('contact_code', $driverCode) }}" maxlength="100">
+                                    <span class="cv2-help">Auto-generated preview: {{ $driverCode }}</span>
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Driver Name <span class="req">*</span></label>
-                                    <input type="text" name="contact_name" placeholder="Enter driver name" maxlength="100">
+                                    <input type="text" name="contact_name" value="{{ old('contact_name') }}" placeholder="Enter driver name" maxlength="100">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Driver Category <span class="req">*</span></label>
-                                    <select class="cv2-select" name="driver_category" style="width:100%;"><option value="">Choose…</option><option>Local</option><option>Line</option></select>
+                                    <select class="cv2-select" name="driver_category" style="width:100%;"><option value="">Choose…</option><option value="Local">Local</option><option value="Line">Line</option></select>
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Allocate Vehicle <span class="req">*</span></label>
-                                    <select class="cv2-select" name="vehicle_id" style="width:100%;"><option value="">Choose vehicle…</option><option>AS01GC4471</option><option>AS01HC2210</option><option>AS02GC8890</option></select>
+                                    <select class="cv2-select" name="vehicle_id" style="width:100%;">
+                                        <option value="">Choose vehicle…</option>
+                                        @foreach($vehicles as $v)
+                                            <option value="{{ $v->id }}">{{ $v->vehicle_no }}</option>
+                                        @endforeach
+                                    </select>
                                     <span class="cv2-hint">Only vehicles not already allocated to a driver are listed.</span>
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Date of Birth</label>
-                                    <input type="date" name="dob">
+                                    <input type="date" name="dob" value="{{ old('dob') }}">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Date of Joining <span class="req">*</span></label>
-                                    <input type="date" name="doj">
+                                    <input type="date" name="doj" value="{{ old('doj') }}">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Blood Group</label>
@@ -63,11 +72,17 @@
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Religion</label>
-                                    <select class="cv2-select" name="religion_id" style="width:100%;"><option value="">Choose…</option><option>Hindu</option><option>Muslim</option><option>Christian</option><option>Other</option></select>
+                                    <select class="cv2-select" name="religion_id" style="width:100%;">
+                                        <option value="">Choose…</option>
+                                        @foreach($religions as $r)
+                                            <option value="{{ $r->id }}">{{ $r->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="cv2-field is-full">
                                     <label class="cv2-label">Driver Photo</label>
-                                    <div class="cv2-dropzone"><i class="bi bi-person-square"></i>Drop a profile photo or click to upload (JPG/PNG/WEBP · max 2 MB)</div>
+                                    <input type="file" name="contact_image" accept=".jpg,.jpeg,.png,.webp" class="cv2-file">
+                                    <span class="cv2-hint">JPG/PNG/WEBP · max 2 MB</span>
                                 </div>
                             </div>
                         </div>
@@ -93,10 +108,10 @@
                                 <div class="cv2-field"><label class="cv2-label">Original Licence Location <span class="req">*</span></label><input type="text" name="original_licence_location" placeholder="RTO / office held at"></div>
                                 <div class="cv2-field"><label class="cv2-label">Licence Issue Date <span class="req">*</span></label><input type="date" name="licence_issue_date"></div>
                                 <div class="cv2-field"><label class="cv2-label">Licence Expiry Date <span class="req">*</span></label><input type="date" name="licence_expiry_date"></div>
-                                <div class="cv2-field"><label class="cv2-label">Driving Licence Proof <span class="req">*</span></label><div class="cv2-dropzone" style="padding:18px;"><i class="bi bi-cloud-arrow-up"></i>Upload licence (PDF/JPG/PNG)</div></div>
+                                <div class="cv2-field"><label class="cv2-label">Driving Licence Proof <span class="req">*</span></label><input type="file" name="driving_license_proof_file" accept=".jpg,.jpeg,.png,.pdf" class="cv2-file"></div>
                                 <div class="cv2-field"><label class="cv2-label">Aadhaar No <span class="req">*</span></label><input type="text" name="aadhaar_no" placeholder="4821 7740 9921"></div>
-                                <div class="cv2-field"><label class="cv2-label">Aadhaar Card Proof <span class="req">*</span></label><div class="cv2-dropzone" style="padding:18px;"><i class="bi bi-cloud-arrow-up"></i>Upload Aadhaar (PDF/JPG/PNG)</div></div>
-                                <div class="cv2-field"><label class="cv2-label">Signed Driver Form <span class="req">*</span></label><div class="cv2-dropzone" style="padding:18px;"><i class="bi bi-cloud-arrow-up"></i>Upload signed form (PDF/JPG/PNG)</div></div>
+                                <div class="cv2-field"><label class="cv2-label">Aadhaar Card Proof <span class="req">*</span></label><input type="file" name="aadhaar_card_proof_file" accept=".jpg,.jpeg,.png,.pdf" class="cv2-file"></div>
+                                <div class="cv2-field"><label class="cv2-label">Signed Driver Form <span class="req">*</span></label><input type="file" name="signed_driver_form_file" accept=".jpg,.jpeg,.png,.pdf" class="cv2-file"></div>
                             </div>
                         </div>
                     </div>
@@ -107,8 +122,15 @@
                         <div class="cv2-card-b">
                             <div class="cv2-form-grid">
                                 <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><textarea name="permanent_address" rows="2" placeholder="House, street, area" maxlength="255"></textarea></div>
-                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label><select class="cv2-select" name="permanent_addr_state_id" style="width:100%;"><option value="">Choose state…</option><option>Assam</option><option>West Bengal</option></select></div>
-                                <div class="cv2-field"><label class="cv2-label">City</label><select class="cv2-select" name="permanent_addr_city_id" style="width:100%;"><option value="">Choose city…</option><option>Guwahati</option><option>Dibrugarh</option></select></div>
+                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label>
+                                    <select class="cv2-select cv2-state" name="permanent_addr_state_id" data-city-target="#permCity" style="width:100%;">
+                                        <option value="">Choose state…</option>
+                                        @foreach($states as $s)
+                                            <option value="{{ $s->id }}" data-cities='@json($s->cities->map(fn($c)=>["id"=>$c->id,"name"=>$c->name]))'>{{ $s->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="cv2-field"><label class="cv2-label">City</label><select class="cv2-select" id="permCity" name="permanent_addr_city_id" style="width:100%;"><option value="">Choose city…</option></select></div>
                                 <div class="cv2-field"><label class="cv2-label">Postal Code <span class="req">*</span></label><input type="text" name="permanent_addr_postal_code" placeholder="781001" maxlength="6"></div>
                             </div>
                         </div>
@@ -121,8 +143,15 @@
                         <div class="cv2-card-b" id="cv2PresentWrap">
                             <div class="cv2-form-grid">
                                 <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><textarea name="present_address" rows="2" placeholder="House, street, area" maxlength="255"></textarea></div>
-                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label><select class="cv2-select" name="present_addr_state_id" style="width:100%;"><option value="">Choose state…</option><option>Assam</option><option>West Bengal</option></select></div>
-                                <div class="cv2-field"><label class="cv2-label">City</label><select class="cv2-select" name="present_addr_city_id" style="width:100%;"><option value="">Choose city…</option><option>Guwahati</option><option>Dibrugarh</option></select></div>
+                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label>
+                                    <select class="cv2-select cv2-state" name="present_addr_state_id" data-city-target="#presCity" style="width:100%;">
+                                        <option value="">Choose state…</option>
+                                        @foreach($states as $s)
+                                            <option value="{{ $s->id }}" data-cities='@json($s->cities->map(fn($c)=>["id"=>$c->id,"name"=>$c->name]))'>{{ $s->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="cv2-field"><label class="cv2-label">City</label><select class="cv2-select" id="presCity" name="present_addr_city_id" style="width:100%;"><option value="">Choose city…</option></select></div>
                                 <div class="cv2-field"><label class="cv2-label">Postal Code <span class="req">*</span></label><input type="text" name="present_addr_postal_code" placeholder="781001" maxlength="6"></div>
                             </div>
                         </div>
@@ -134,12 +163,20 @@
                             <a href="javascript:void(0)" class="cv2-link" id="cv2AddBank"><i class="bi bi-plus-lg"></i> Add bank</a></div>
                         <div class="cv2-card-b" id="cv2BankWrap">
                             <div class="cv2-bank-row">
+                                <input type="hidden" name="contact_bank_id[]" value="">
                                 <div class="cv2-bank-head">
-                                    <label class="cv2-primary-pick"><input type="radio" name="is_primary_pick" checked> Set as primary account</label>
+                                    <label class="cv2-primary-pick"><input type="radio" name="primary_bank" value="0" checked> Set as primary account</label>
                                     <span class="cv2-primary-tag">Primary</span>
                                 </div>
                                 <div class="cv2-form-grid is-3">
-                                    <div class="cv2-field"><label class="cv2-label">Bank <span class="req">*</span></label><select class="cv2-select" name="bank_id[]" style="width:100%;"><option value="">Choose bank</option><option>SBI</option><option>HDFC</option><option>ICICI</option><option>Axis</option></select></div>
+                                    <div class="cv2-field"><label class="cv2-label">Bank <span class="req">*</span></label>
+                                        <select class="cv2-select cv2-plain" name="bank_id[]" style="width:100%;">
+                                            <option value="">Choose bank</option>
+                                            @foreach($banks as $b)
+                                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="cv2-field"><label class="cv2-label">Beneficiary Name</label><input type="text" name="beneficiary_name[]"></div>
                                     <div class="cv2-field"><label class="cv2-label">Account Number <span class="req">*</span></label><input type="text" name="account_number[]"></div>
                                     <div class="cv2-field"><label class="cv2-label">IFSC Code <span class="req">*</span></label><input type="text" name="ifsc_code[]"></div>
@@ -190,12 +227,12 @@
                         <div class="cv2-card-b" id="cv2PersonWrap">
                             <div class="cv2-repeat-row">
                                 <div class="cv2-form-grid is-3">
-                                    <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" placeholder="Person name"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Relation <span class="req">*</span></label><input type="text" placeholder="e.g. Brother"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Blood Group</label><input type="text" placeholder="O+"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" data-intl-phone="1" placeholder="98640 11223"></div>
-                                    <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" data-intl-phone="1" placeholder="98640 11223"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Address</label><input type="text" placeholder="Optional"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[]" placeholder="Person name"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Relation <span class="req">*</span></label><input type="text" name="contact_person_relation[]" placeholder="e.g. Brother"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Blood Group</label><input type="text" name="contact_person_blood_group[]" placeholder="O+"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[]" data-intl-phone="1" placeholder="98640 11223"></div>
+                                    <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="contact_person_whatsapp[]" data-intl-phone="1" placeholder="98640 11223"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Address</label><input type="text" name="contact_person_address[]" placeholder="Optional"></div>
                                 </div>
                             </div>
                         </div>
@@ -239,7 +276,7 @@
                                     </div>
                                 </div>
                                 <div class="cv2-field cv2-mt cv2-cond" data-st="Voluntary Exit" style="display:none;"><label class="cv2-label">Voluntary Exit Reason <span class="req">*</span></label><textarea name="voluntary_exit_reason" rows="2"></textarea></div>
-                                <div class="cv2-field cv2-mt cv2-cond" data-st="Voluntary Exit" style="display:none;"><label class="cv2-label">Vehicle Photos <span class="req">*</span></label><div class="cv2-dropzone" style="padding:16px;"><i class="bi bi-images"></i>Upload vehicle handover photos</div></div>
+                                <div class="cv2-field cv2-mt cv2-cond" data-st="Voluntary Exit" style="display:none;"><label class="cv2-label">Vehicle Photos <span class="req">*</span></label><input type="file" name="vehicle_photos[]" accept=".jpg,.jpeg,.png" multiple class="cv2-file"></div>
                             </div>
 
                             {{-- blacklist conditional --}}
@@ -273,4 +310,4 @@
 </div>
 @endsection
 
-@section('js')<script src="{{ asset('js/V2/driver.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.0') }}"></script>@endsection

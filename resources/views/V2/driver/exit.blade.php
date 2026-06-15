@@ -8,35 +8,33 @@
         @include('V2.driver.partials.workspace-head')
 
         <div class="cv2-grid cv2-grid-2-1 cv2-mt">
-            @if(!empty($isExited))
-            {{-- Already exited: read-only summary + relieving letter --}}
+            @if(!empty($isExited) && $exitDetail)
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Exit Details</h3><span class="cv2-badge is-black"><span class="cv2-badge-dot"></span>Exited</span></div>
                 <div class="cv2-card-b is-flush">
                     <table class="cv2-table"><tbody>
-                        <tr><td class="cv2-t-name">Exit Date</td><td>{{ $d['exit_date'] }}</td></tr>
-                        <tr><td class="cv2-t-name">Exit Reason</td><td>Voluntary resignation — relocating to home town.</td></tr>
-                        <tr><td class="cv2-t-name">Feedback</td><td>Reliable driver, clean record. Cleared all dues. Vehicle handed over in good condition.</td></tr>
-                        <tr><td class="cv2-t-name">Dues Settled</td><td>Yes · ₹0 outstanding</td></tr>
+                        <tr><td class="cv2-t-name">Exit Date</td><td>{{ $exitDetail->exit_date ? \Carbon\Carbon::parse($exitDetail->exit_date)->format('d M Y') : '—' }}</td></tr>
+                        <tr><td class="cv2-t-name">Exit Reason</td><td>{{ $exitDetail->exit_reason }}</td></tr>
+                        <tr><td class="cv2-t-name">Feedback</td><td>{{ $exitDetail->feedback }}</td></tr>
                     </tbody></table>
                 </div>
             </div>
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Relieving Letter</h3></div>
                 <div class="cv2-card-b">
-                    <div class="cv2-mini" style="margin-bottom:14px;">
-                        <li><span class="cv2-mini-ic"><i class="bi bi-check2-circle"></i></span><div class="cv2-mini-body"><b>Exit details recorded</b><span>Required for letter</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-eye"></i></span><div class="cv2-mini-body"><b>Seen status</b><span>Not yet viewed</span></div></li>
-                    </div>
-                    <a href="{{ route('contact.v2.driver.exit.letter', $d['id']) }}" target="_blank" class="cv2-btn cv2-btn-primary" style="width:100%;justify-content:center;"><i class="bi bi-file-earmark-text"></i>Generate / View Relieving Letter</a>
+                    <a href="{{ route('contact.v2.driver.exit.letter', $d['id']) }}" target="_blank"
+                       class="cv2-btn cv2-btn-primary cv2-letter-link" style="width:100%;justify-content:center;"
+                       data-seen-url="{{ route('contact.v2.driver.letter.seen') }}" data-contact-id="{{ $d['id'] }}" data-letter-type="exit-letter">
+                       <i class="bi bi-file-earmark-text"></i>Generate / View Relieving Letter</a>
                 </div>
             </div>
             @else
-            {{-- Not exited: record exit details form --}}
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Record Driver Exit</h3></div>
                 <div class="cv2-card-b">
-                    <form id="cv2ExitForm" action="javascript:void(0)">
+                    <form id="cv2ExitForm" action="{{ route('contact.v2.driver.exit.save') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="contact_id" value="{{ $d['id'] }}">
                         <div class="cv2-form-grid">
                             <div class="cv2-field"><label class="cv2-label">Exit Date <span class="req">*</span></label><input type="date" name="exit_date"></div>
                             <div class="cv2-field"><label class="cv2-label">Exit Reason <span class="req">*</span></label><input type="text" name="exit_reason" placeholder="Reason for exit"></div>
@@ -58,4 +56,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/driver.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.0') }}"></script>@endsection
