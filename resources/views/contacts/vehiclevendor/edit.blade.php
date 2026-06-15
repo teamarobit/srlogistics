@@ -777,7 +777,10 @@
                                                 <small class="error text-danger atyperr" id="edit_coattachtype_0_error"></small>
                                             </div>
                                         </div>
-                                        
+
+                                        {{-- TDS Declaration rule message (shown when TDS % is 0 or 1 and the document is missing) --}}
+                                        <small class="error text-danger d-block mt-1" id="edit_attachtypes_error"></small>
+
                                         <hr>
                                         
                                         <!--dropzone-->
