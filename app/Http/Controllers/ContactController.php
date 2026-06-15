@@ -9847,7 +9847,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
@@ -11027,7 +11027,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
@@ -12172,7 +12172,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
