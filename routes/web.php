@@ -936,6 +936,20 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/load-vendors/{id}/documents',    [App\Http\Controllers\V2\LoadVendorController::class, 'documents'])->name('loadvendor.documents');
         Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
 
+        /**** Load Vendor — Gate 2 POST/GET wiring (live backend) ****/
+        Route::post('/load-vendors/save',                       [App\Http\Controllers\V2\LoadVendorController::class, 'store'])->name('loadvendor.save');
+        Route::post('/load-vendors/{id}/update',                [App\Http\Controllers\V2\LoadVendorController::class, 'update'])->name('loadvendor.update');
+        Route::post('/load-vendors/contact-person-wrapper',     [App\Http\Controllers\V2\LoadVendorController::class, 'contactPersonWrapper'])->name('loadvendor.contactpersonwrapper');
+        Route::post('/load-vendors/contact-person/save',        [App\Http\Controllers\V2\LoadVendorController::class, 'storeContactPerson'])->name('loadvendor.contactperson.save');
+        Route::post('/load-vendors/contact-person/delete',      [App\Http\Controllers\V2\LoadVendorController::class, 'deleteContactPerson'])->name('loadvendor.contactperson.delete');
+        Route::get('/load-vendors/{id}/locations/list',         [App\Http\Controllers\V2\LoadVendorController::class, 'filterLocations'])->name('loadvendor.filter.locations');
+        Route::post('/load-vendors/location/save',              [App\Http\Controllers\V2\LoadVendorController::class, 'storeLocation'])->name('loadvendor.location.save');
+        Route::post('/load-vendors/location/delete',            [App\Http\Controllers\V2\LoadVendorController::class, 'deleteLocation'])->name('loadvendor.location.delete');
+        Route::post('/load-vendors/location/midpoints',         [App\Http\Controllers\V2\LoadVendorController::class, 'getLocationMidpoints'])->name('loadvendor.get.location.midpoints');
+        Route::post('/load-vendors/attachment/save',            [App\Http\Controllers\V2\LoadVendorController::class, 'storeAttachment'])->name('loadvendor.attachment.save');
+        Route::post('/load-vendors/attachment/delete',          [App\Http\Controllers\V2\LoadVendorController::class, 'deleteAttachment'])->name('loadvendor.attachment.delete');
+        Route::post('/load-vendors/activity-notes/save',        [App\Http\Controllers\V2\LoadVendorController::class, 'storeActivityNote'])->name('loadvendor.activitynotes.save');
+
         /******************************** Contacts V2 — Spare Vendor (redesign) *********************/
         Route::get('/spare-vendors/dashboard',        [App\Http\Controllers\V2\SpareVendorController::class, 'dashboard'])->name('sparevendor.dashboard');
         Route::get('/spare-vendors',                  [App\Http\Controllers\V2\SpareVendorController::class, 'index'])->name('sparevendor.index');

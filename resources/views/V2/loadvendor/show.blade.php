@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -43,9 +43,11 @@
                         <table class="cv2-table">
                             <thead><tr><th>Name</th><th>Designation</th><th>Phone</th></tr></thead>
                             <tbody>
-                                <tr><td><span class="cv2-t-name">{{ $v['name'] }}</span></td><td>Owner / Broker</td><td class="cv2-t-mono">{{ $v['phone'] }}</td></tr>
-                                <tr><td><span class="cv2-t-name">Pranab Kalita</span></td><td>Operations Manager</td><td class="cv2-t-mono">+91 90853 44120</td></tr>
-                                <tr><td><span class="cv2-t-name">Jyoti Bora</span></td><td>Accounts</td><td class="cv2-t-mono">+91 99540 77310</td></tr>
+                                @forelse($persons as $p)
+                                <tr><td><span class="cv2-t-name">{{ $p->name ?? '—' }}</span></td><td>{{ $p->position ?? '—' }}</td><td class="cv2-t-mono">{{ $p->phone ? '+'.ltrim($p->ph_prefix,'+').' '.$p->phone : '—' }}</td></tr>
+                                @empty
+                                <tr><td colspan="3" class="text-center cv2-empty">No contact persons yet.</td></tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -54,9 +56,11 @@
                     <div class="cv2-card-h"><h3>Recent Activity</h3><a class="cv2-link" href="{{ route('contact.v2.loadvendor.activity', $v['id']) }}">View all →</a></div>
                     <div class="cv2-card-b">
                         <ul class="cv2-mini">
-                            <li><span class="cv2-mini-ic"><i class="bi bi-geo-alt"></i></span><div class="cv2-mini-body"><b>New loading point added</b><span>by Superadmin · 2 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-people"></i></span><div class="cv2-mini-body"><b>Contact person “Pranab Kalita” added</b><span>by Operations · 5 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-paperclip"></i></span><div class="cv2-mini-body"><b>Agreement document uploaded</b><span>by Superadmin · 1 week ago</span></div></li>
+                            @forelse($recentActivities as $act)
+                            <li><span class="cv2-mini-ic"><i class="bi {{ $act->is_blacklisted === 'Yes' ? 'bi-exclamation-octagon' : 'bi-chat-left-text' }}"></i></span><div class="cv2-mini-body"><b>{{ $act->notes }}</b><span>by {{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->diffForHumans() : '' }}</span></div></li>
+                            @empty
+                            <li><div class="cv2-mini-body"><span class="cv2-empty">No activity yet.</span></div></li>
+                            @endforelse
                         </ul>
                     </div>
                 </div>

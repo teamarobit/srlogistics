@@ -1,29 +1,21 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">@endsection
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
     <div class="cv2-wrap"><div class="cv2-container">
         <div class="cv2-phead"><div class="cv2-crumb"><a href="{{ route('contact.v2.loadvendor.index') }}">Load Vendors</a> · {{ $v['company'] }} · Location</div></div>
         @include('V2.loadvendor.partials.workspace-head')
-        <div class="cv2-card cv2-mt">
+        <div class="cv2-card cv2-mt"
+             data-list-url="{{ route('contact.v2.loadvendor.filter.locations', $v['id']) }}"
+             id="cv2LocationsCard">
             <div class="cv2-filters" style="border-bottom:1px solid var(--cv2-line);">
                 <h3 style="font-size:15px;font-weight:700;margin:0;flex:1;">Loading &amp; Unloading Points</h3>
-                <select class="cv2-select"><option>All Types</option><option>Loading</option><option>Unloading</option><option>Both</option></select>
+                <select class="cv2-select" id="cv2LocFilter"><option value="">All Types</option><option value="Loading">Loading</option><option value="Unloading">Unloading</option><option value="Both">Both</option></select>
                 <button class="cv2-btn cv2-btn-primary cv2-btn-sm" data-bs-toggle="modal" data-bs-target="#cv2LocationModal"><i class="bi bi-plus-lg"></i>Add Location</button>
             </div>
-            <div class="cv2-card-b is-flush">
-                <table class="cv2-table">
-                    <thead><tr><th>Company / Point</th><th>Type</th><th>Role</th><th>Route</th><th>City</th><th>Charges Paid By</th><th>Charge</th><th style="text-align:right;">Actions</th></tr></thead>
-                    <tbody>
-                        <tr><td><span class="cv2-t-name">Guwahati Yard</span><div class="cv2-t-sub">Christian Basti</div></td><td><span class="cv2-pill">Loading</span></td><td>Consignor</td><td>Source</td><td>Guwahati</td><td>Load Vendor</td><td class="cv2-t-mono">₹1,100</td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn" data-bs-toggle="modal" data-bs-target="#cv2LocationModal"><i class="bi bi-pencil"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                        <tr><td><span class="cv2-t-name">Dibrugarh Hub</span><div class="cv2-t-sub">NH-37 Bypass</div></td><td><span class="cv2-pill">Unloading</span></td><td>Consignee</td><td>Destination</td><td>Dibrugarh</td><td>SRL</td><td class="cv2-t-mono">₹950</td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn" data-bs-toggle="modal" data-bs-target="#cv2LocationModal"><i class="bi bi-pencil"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                        <tr><td><span class="cv2-t-name">Jorhat Transit</span><div class="cv2-t-sub">Midpoint depot</div></td><td><span class="cv2-pill">Both</span></td><td>Consignor</td><td>Midpoint</td><td>Jorhat</td><td>Mixed</td><td class="cv2-t-mono">₹650</td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn" data-bs-toggle="modal" data-bs-target="#cv2LocationModal"><i class="bi bi-pencil"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                    </tbody>
-                </table>
+            <div class="cv2-card-b is-flush" id="cv2LocationsList">
+                <div class="text-center cv2-empty" style="padding:24px;">Loading…</div>
             </div>
         </div>
     </div></div>
@@ -35,7 +27,11 @@
     <div class="modal-content">
       <div class="modal-header"><h5 class="modal-title">Add Location</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
-        <form id="cv2LocationForm" action="javascript:void(0)">
+        <form id="cv2LocationForm" action="{{ route('contact.v2.loadvendor.location.save') }}" method="POST" data-list-url="{{ route('contact.v2.loadvendor.filter.locations', $v['id']) }}">
+          @csrf
+          <input type="hidden" name="contact_id" value="{{ $v['id'] }}">
+          <input type="hidden" name="onsite_contact_person_phone_code" class="cv2-onsite-phcode">
+          <input type="hidden" name="onsite_contact_person_whatsapp_code" class="cv2-onsite-wacode">
           <div class="cv2-form-grid">
             <div class="cv2-field"><label class="cv2-label">Company Name <span class="req">*</span></label><input type="text" name="company_name"></div>
             <div class="cv2-field"><label class="cv2-label">Location Name <span class="req">*</span></label><input type="text" name="location_name"></div>
@@ -52,9 +48,24 @@
                 <span class="cv2-radio"><input type="radio" name="route_type" id="rt_mid" value="midpoint"><label for="rt_mid">Midpoint</label></span>
               </div>
             </div>
-            <div class="cv2-field cv2-cond" data-rt="source"><label class="cv2-label">Source City <span class="req">*</span></label><select class="cv2-select cv2-modal-select" name="source_city_id" style="width:100%;"><option value="">Choose source city</option><option>Guwahati</option><option>Dibrugarh</option></select></div>
-            <div class="cv2-field cv2-cond" data-rt="destination"><label class="cv2-label">Destination City <span class="req">*</span></label><select class="cv2-select cv2-modal-select" name="destination_city_id" style="width:100%;"><option value="">Choose destination city</option><option>Silchar</option><option>Tinsukia</option></select></div>
-            <div class="cv2-field cv2-cond" data-rt="midpoint"><label class="cv2-label">Midpoint City <span class="req">*</span></label><select class="cv2-select cv2-modal-select" name="midpoint_city_id" style="width:100%;"><option value="">Choose midpoint</option><option>Jorhat</option><option>Nagaon</option></select></div>
+            <div class="cv2-field cv2-cond" data-rt="source"><label class="cv2-label">Source City <span class="req">*</span></label>
+              <select class="cv2-select cv2-modal-select" name="source_city_id" style="width:100%;">
+                <option value="">Choose source city</option>
+                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+              </select>
+            </div>
+            <div class="cv2-field cv2-cond" data-rt="destination"><label class="cv2-label">Destination City <span class="req">*</span></label>
+              <select class="cv2-select cv2-modal-select" name="destination_city_id" style="width:100%;">
+                <option value="">Choose destination city</option>
+                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+              </select>
+            </div>
+            <div class="cv2-field cv2-cond" data-rt="midpoint"><label class="cv2-label">Midpoint City <span class="req">*</span></label>
+              <select class="cv2-select cv2-modal-select" name="midpoint_city_id" style="width:100%;">
+                <option value="">Choose midpoint</option>
+                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+              </select>
+            </div>
             <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><input type="text" name="address"></div>
             <div class="cv2-field"><label class="cv2-label">Postal Code <span class="req">*</span></label><input type="text" name="post_code" maxlength="6"></div>
             <div class="cv2-field"><label class="cv2-label">Location Type <span class="req">*</span></label>
@@ -102,4 +113,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/loadvendor.js?v=1.1') }}"></script>@endsection

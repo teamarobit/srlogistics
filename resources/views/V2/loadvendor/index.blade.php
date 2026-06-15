@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -14,7 +14,7 @@
                 <div>
                     <div class="cv2-crumb"><a href="{{ route('contact.v2.loadvendor.dashboard') }}">Load Vendor Dashboard</a> · All Load Vendors</div>
                     <h1>Load Vendors</h1>
-                    <div class="cv2-sub">87 load vendors · 79 active</div>
+                    <div class="cv2-sub">{{ $vendors->total() }} load vendors</div>
                 </div>
                 <div class="cv2-phead-actions">
                     <a href="{{ route('contact.v2.loadvendor.dashboard') }}" class="cv2-btn cv2-btn-ghost"><i class="bi bi-speedometer2"></i>Dashboard</a>
@@ -23,14 +23,35 @@
             </div>
 
             <div class="cv2-card">
-                <div class="cv2-filters">
-                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" placeholder="Search by name, company or contact no…"></div>
-                    <select class="cv2-select"><option>All Cities</option><option>Guwahati</option><option>Dibrugarh</option><option>Silchar</option><option>Tinsukia</option><option>Nagaon</option></select>
-                    <select class="cv2-select"><option>All Sizes</option><option>Large</option><option>Medium</option><option>Small</option></select>
-                    <select class="cv2-select"><option>All RAG</option><option>Green</option><option>Yellow</option><option>Red</option></select>
-                    <select class="cv2-select"><option>All Locations</option><option>Guwahati Yard</option><option>Dibrugarh Hub</option><option>Silchar Depot</option></select>
-                    <button class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</button>
-                </div>
+                <form method="GET" action="{{ route('contact.v2.loadvendor.index') }}" id="cv2FilterForm" class="cv2-filters">
+                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" name="name" value="{{ $search_name }}" placeholder="Search by contact name…"></div>
+                    <select class="cv2-select" name="city">
+                        <option value="">All Cities</option>
+                        @foreach($cities as $city)
+                            <option value="{{ $city->id }}" {{ (string) $search_city === (string) $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select" name="size">
+                        <option value="">All Sizes</option>
+                        @foreach(['Large','Medium','Small'] as $sz)
+                            <option value="{{ $sz }}" {{ $search_size === $sz ? 'selected' : '' }}>{{ $sz }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select" name="rag">
+                        <option value="">All RAG</option>
+                        @foreach(['Green','Yellow','Red'] as $rg)
+                            <option value="{{ $rg }}" {{ $search_rag === $rg ? 'selected' : '' }}>{{ $rg }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select" name="location">
+                        <option value="">All Locations</option>
+                        @foreach($locationNames as $locId => $locName)
+                            <option value="{{ $locId }}" {{ (string) $search_location === (string) $locId ? 'selected' : '' }}>{{ $locName }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="cv2-btn cv2-btn-primary"><i class="bi bi-funnel"></i>Filter</button>
+                    <a href="{{ route('contact.v2.loadvendor.index') }}" class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</a>
+                </form>
 
                 <div class="cv2-card-b is-flush">
                     <table class="cv2-table">
@@ -43,7 +64,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($vendors as $v)
+                            @forelse($vendors as $v)
                             <tr>
                                 <td><input type="checkbox"></td>
                                 <td class="cv2-t-mono">{{ $v['contactno'] }}</td>
@@ -69,23 +90,19 @@
                                 <td class="cv2-actions">
                                     <a href="{{ route('contact.v2.loadvendor.show', $v['id']) }}" class="cv2-ic-btn" title="View"><i class="bi bi-eye"></i></a>
                                     <a href="{{ route('contact.v2.loadvendor.edit', $v['id']) }}" class="cv2-ic-btn" title="Edit"><i class="bi bi-pencil"></i></a>
-                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del" title="Delete"><i class="bi bi-trash3"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-vendor" data-id="{{ $v['id'] }}" title="Delete"><i class="bi bi-trash3"></i></a>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr><td colspan="11" class="text-center cv2-empty">No load vendors found.</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="cv2-pager">
-                    <span>Showing 1–5 of 87</span>
-                    <div class="cv2-pages">
-                        <a href="javascript:void(0)"><i class="bi bi-chevron-left"></i></a>
-                        <a href="javascript:void(0)" class="is-active">1</a>
-                        <a href="javascript:void(0)">2</a>
-                        <a href="javascript:void(0)">3</a>
-                        <a href="javascript:void(0)"><i class="bi bi-chevron-right"></i></a>
-                    </div>
+                    <span>Showing {{ $vendors->firstItem() ?? 0 }}–{{ $vendors->lastItem() ?? 0 }} of {{ $vendors->total() }}</span>
+                    {{ $vendors->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
             </div>
 
@@ -95,5 +112,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>
+<script src="{{ asset('js/V2/loadvendor.js?v=1.1') }}"></script>
 @endsection
