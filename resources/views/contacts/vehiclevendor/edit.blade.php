@@ -124,7 +124,7 @@
                                             <label>Vehicle Vendor Code <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control"/>
+                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control bg-light" readonly/>
                                             <small class="error text-danger" id="edit_contact_code_error"></small>
                                         </div>
                                     </div>
