@@ -549,7 +549,7 @@ $(document).ready(function(){
         
             // Check NEW selections (dropdown)
             $('select[name="coattachtypes[]"]').each(function () {
-                if ($(this).val() == 8) {
+                if ($(this).val() == 7) {
                     hasTdsDeclaration = true;
                 }
             });

@@ -283,7 +283,7 @@ $(document).ready(function(){
         if (tdsPercentage === 0) {
             let hasTdsDeclaration = false;
             $('select[name="coattachtypes[]"]').each(function () {
-                if ($(this).val() == 8) { hasTdsDeclaration = true; }
+                if ($(this).val() == 7) { hasTdsDeclaration = true; }
             });
             if (!hasTdsDeclaration) {
                 let existing = $('#existing_attachtypes').val();
