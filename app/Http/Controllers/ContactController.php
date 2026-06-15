@@ -7703,16 +7703,22 @@ class ContactController extends Controller
                     $contact_bank->save();
                 }*/
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -7720,10 +7726,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -9460,16 +9466,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -9477,10 +9489,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -10644,16 +10656,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -10661,10 +10679,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -11782,16 +11800,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -11799,10 +11823,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
