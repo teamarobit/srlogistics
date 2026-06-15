@@ -846,6 +846,97 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/customers/{id}/vehicles',         [App\Http\Controllers\V2\CustomerController::class, 'vehicles'])->name('customer.vehicles');
         Route::get('/customers/{id}/documents',        [App\Http\Controllers\V2\CustomerController::class, 'documents'])->name('customer.documents');
         Route::get('/customers/{id}/activity',         [App\Http\Controllers\V2\CustomerController::class, 'activity'])->name('customer.activity');
+
+        /******************************** Contacts V2 — Driver (redesign) *********************/
+        // cotype_id = 4. E1 letters · E2 exit-lock · E3 banks · E5 addresses.
+        // New, isolated module. Does NOT touch existing contacts routes/controller/views.
+        Route::get('/drivers/dashboard',               [App\Http\Controllers\V2\DriverController::class, 'dashboard'])->name('driver.dashboard');
+        Route::get('/drivers',                         [App\Http\Controllers\V2\DriverController::class, 'index'])->name('driver.index');
+        Route::get('/drivers/create',                  [App\Http\Controllers\V2\DriverController::class, 'create'])->name('driver.create');
+        Route::get('/drivers/{id}',                    [App\Http\Controllers\V2\DriverController::class, 'show'])->name('driver.show');
+        Route::get('/drivers/{id}/edit',               [App\Http\Controllers\V2\DriverController::class, 'edit'])->name('driver.edit');
+        Route::get('/drivers/{id}/joining',            [App\Http\Controllers\V2\DriverController::class, 'joining'])->name('driver.joining');
+        Route::get('/drivers/{id}/joining-letter',     [App\Http\Controllers\V2\DriverController::class, 'joiningLetter'])->name('driver.joining.letter');
+        Route::get('/drivers/{id}/documents',          [App\Http\Controllers\V2\DriverController::class, 'documents'])->name('driver.documents');
+        Route::get('/drivers/{id}/assets',             [App\Http\Controllers\V2\DriverController::class, 'assets'])->name('driver.assets');
+        Route::get('/drivers/{id}/bhatta',             [App\Http\Controllers\V2\DriverController::class, 'bhatta'])->name('driver.bhatta');
+        Route::get('/drivers/{id}/exit',               [App\Http\Controllers\V2\DriverController::class, 'exit'])->name('driver.exit');
+        Route::get('/drivers/{id}/exit-letter',        [App\Http\Controllers\V2\DriverController::class, 'exitLetter'])->name('driver.exit.letter');
+        Route::get('/drivers/{id}/activity',           [App\Http\Controllers\V2\DriverController::class, 'activity'])->name('driver.activity');
+
+        /******************************** Contacts V2 — Battery Vendor (redesign) *********************/
+        // cotype_id = 7. New, isolated module. Does NOT touch existing contacts routes/controller/views.
+        Route::get('/battery-vendors/dashboard',      [App\Http\Controllers\V2\BatteryVendorController::class, 'dashboard'])->name('batteryvendor.dashboard');
+        Route::get('/battery-vendors',                [App\Http\Controllers\V2\BatteryVendorController::class, 'index'])->name('batteryvendor.index');
+        Route::get('/battery-vendors/create',         [App\Http\Controllers\V2\BatteryVendorController::class, 'create'])->name('batteryvendor.create');
+        Route::get('/battery-vendors/{id}',           [App\Http\Controllers\V2\BatteryVendorController::class, 'show'])->name('batteryvendor.show');
+        Route::get('/battery-vendors/{id}/edit',      [App\Http\Controllers\V2\BatteryVendorController::class, 'edit'])->name('batteryvendor.edit');
+        Route::get('/battery-vendors/{id}/documents', [App\Http\Controllers\V2\BatteryVendorController::class, 'documents'])->name('batteryvendor.documents');
+        Route::get('/battery-vendors/{id}/battery',   [App\Http\Controllers\V2\BatteryVendorController::class, 'battery'])->name('batteryvendor.battery');
+        Route::get('/battery-vendors/{id}/activity',  [App\Http\Controllers\V2\BatteryVendorController::class, 'activity'])->name('batteryvendor.activity');
+
+        /******************************** Contacts V2 — Employee (redesign) *********************/
+        // cotype_id = office staff. New, isolated module. Does NOT touch existing contacts routes/controller/views.
+        Route::get('/employees/dashboard',            [App\Http\Controllers\V2\EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+        Route::get('/employees',                      [App\Http\Controllers\V2\EmployeeController::class, 'index'])->name('employee.index');
+        Route::get('/employees/create',               [App\Http\Controllers\V2\EmployeeController::class, 'create'])->name('employee.create');
+        Route::get('/employees/{id}',                 [App\Http\Controllers\V2\EmployeeController::class, 'show'])->name('employee.show');
+        Route::get('/employees/{id}/edit',            [App\Http\Controllers\V2\EmployeeController::class, 'edit'])->name('employee.edit');
+        Route::get('/employees/{id}/joining',         [App\Http\Controllers\V2\EmployeeController::class, 'joining'])->name('employee.joining');
+        Route::get('/employees/{id}/joining-letter',  [App\Http\Controllers\V2\EmployeeController::class, 'joiningLetter'])->name('employee.joining.letter');
+        Route::get('/employees/{id}/documents',       [App\Http\Controllers\V2\EmployeeController::class, 'documents'])->name('employee.documents');
+        Route::get('/employees/{id}/assets',          [App\Http\Controllers\V2\EmployeeController::class, 'assets'])->name('employee.assets');
+        Route::get('/employees/{id}/leave',           [App\Http\Controllers\V2\EmployeeController::class, 'leave'])->name('employee.leave');
+        Route::get('/employees/{id}/salary',          [App\Http\Controllers\V2\EmployeeController::class, 'salary'])->name('employee.salary');
+        Route::get('/employees/{id}/exit',            [App\Http\Controllers\V2\EmployeeController::class, 'exit'])->name('employee.exit');
+        Route::get('/employees/{id}/exit-letter',     [App\Http\Controllers\V2\EmployeeController::class, 'exitLetter'])->name('employee.exit.letter');
+        Route::get('/employees/{id}/activity',        [App\Http\Controllers\V2\EmployeeController::class, 'activity'])->name('employee.activity');
+
+        /******************************** Contacts V2 — Load Vendor (redesign) *********************/
+        Route::get('/load-vendors/dashboard',         [App\Http\Controllers\V2\LoadVendorController::class, 'dashboard'])->name('loadvendor.dashboard');
+        Route::get('/load-vendors',                   [App\Http\Controllers\V2\LoadVendorController::class, 'index'])->name('loadvendor.index');
+        Route::get('/load-vendors/create',            [App\Http\Controllers\V2\LoadVendorController::class, 'create'])->name('loadvendor.create');
+        Route::get('/load-vendors/{id}',              [App\Http\Controllers\V2\LoadVendorController::class, 'show'])->name('loadvendor.show');
+        Route::get('/load-vendors/{id}/edit',         [App\Http\Controllers\V2\LoadVendorController::class, 'edit'])->name('loadvendor.edit');
+        Route::get('/load-vendors/{id}/customers',    [App\Http\Controllers\V2\LoadVendorController::class, 'customers'])->name('loadvendor.customers');
+        Route::get('/load-vendors/{id}/locations',    [App\Http\Controllers\V2\LoadVendorController::class, 'locations'])->name('loadvendor.locations');
+        Route::get('/load-vendors/{id}/documents',    [App\Http\Controllers\V2\LoadVendorController::class, 'documents'])->name('loadvendor.documents');
+        Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
+
+        /******************************** Contacts V2 — Spare Vendor (redesign) *********************/
+        Route::get('/spare-vendors/dashboard',        [App\Http\Controllers\V2\SpareVendorController::class, 'dashboard'])->name('sparevendor.dashboard');
+        Route::get('/spare-vendors',                  [App\Http\Controllers\V2\SpareVendorController::class, 'index'])->name('sparevendor.index');
+        Route::get('/spare-vendors/create',           [App\Http\Controllers\V2\SpareVendorController::class, 'create'])->name('sparevendor.create');
+        Route::get('/spare-vendors/{id}',             [App\Http\Controllers\V2\SpareVendorController::class, 'show'])->name('sparevendor.show');
+        Route::get('/spare-vendors/{id}/edit',        [App\Http\Controllers\V2\SpareVendorController::class, 'edit'])->name('sparevendor.edit');
+        Route::get('/spare-vendors/{id}/spareparts',  [App\Http\Controllers\V2\SpareVendorController::class, 'spareparts'])->name('sparevendor.spareparts');
+        Route::get('/spare-vendors/{id}/documents',   [App\Http\Controllers\V2\SpareVendorController::class, 'documents'])->name('sparevendor.documents');
+        Route::get('/spare-vendors/{id}/activity',    [App\Http\Controllers\V2\SpareVendorController::class, 'activity'])->name('sparevendor.activity');
+
+        /******************************** Contacts V2 — Tyre Vendor (redesign) *********************/
+        Route::get('/tyre-vendors/dashboard',         [App\Http\Controllers\V2\TyreVendorController::class, 'dashboard'])->name('tyrevendor.dashboard');
+        Route::get('/tyre-vendors',                   [App\Http\Controllers\V2\TyreVendorController::class, 'index'])->name('tyrevendor.index');
+        Route::get('/tyre-vendors/create',            [App\Http\Controllers\V2\TyreVendorController::class, 'create'])->name('tyrevendor.create');
+        Route::get('/tyre-vendors/{id}',              [App\Http\Controllers\V2\TyreVendorController::class, 'show'])->name('tyrevendor.show');
+        Route::get('/tyre-vendors/{id}/edit',         [App\Http\Controllers\V2\TyreVendorController::class, 'edit'])->name('tyrevendor.edit');
+        Route::get('/tyre-vendors/{id}/tyre',         [App\Http\Controllers\V2\TyreVendorController::class, 'tyre'])->name('tyrevendor.tyre');
+        Route::get('/tyre-vendors/{id}/documents',    [App\Http\Controllers\V2\TyreVendorController::class, 'documents'])->name('tyrevendor.documents');
+        Route::get('/tyre-vendors/{id}/activity',     [App\Http\Controllers\V2\TyreVendorController::class, 'activity'])->name('tyrevendor.activity');
+
+        /******************************** Contacts V2 — Vehicle Vendor (redesign) *********************/
+        Route::get('/vehicle-vendors/dashboard',      [App\Http\Controllers\V2\VehicleVendorController::class, 'dashboard'])->name('vehiclevendor.dashboard');
+        Route::get('/vehicle-vendors',                [App\Http\Controllers\V2\VehicleVendorController::class, 'index'])->name('vehiclevendor.index');
+        Route::get('/vehicle-vendors/create',         [App\Http\Controllers\V2\VehicleVendorController::class, 'create'])->name('vehiclevendor.create');
+        Route::get('/vehicle-vendors/{id}',           [App\Http\Controllers\V2\VehicleVendorController::class, 'show'])->name('vehiclevendor.show');
+        Route::get('/vehicle-vendors/{id}/edit',      [App\Http\Controllers\V2\VehicleVendorController::class, 'edit'])->name('vehiclevendor.edit');
+        Route::get('/vehicle-vendors/{id}/documents', [App\Http\Controllers\V2\VehicleVendorController::class, 'documents'])->name('vehiclevendor.documents');
+        Route::get('/vehicle-vendors/{id}/vehicle',   [App\Http\Controllers\V2\VehicleVendorController::class, 'vehicle'])->name('vehiclevendor.vehicle');
+        Route::get('/vehicle-vendors/{id}/route',     [App\Http\Controllers\V2\VehicleVendorController::class, 'route'])->name('vehiclevendor.route');
+        Route::get('/vehicle-vendors/{id}/activity',  [App\Http\Controllers\V2\VehicleVendorController::class, 'activity'])->name('vehiclevendor.activity');
+
+        /******************************** Contacts V2 — Insurance Provider (redesign) *********************/
+        Route::get('/insurance-providers/dashboard',  [App\Http\Controllers\V2\InsuranceProviderController::class, 'dashboard'])->name('insuranceprovider.dashboard');
+        Route::get('/insurance-providers',            [App\Http\Controllers\V2\InsuranceProviderController::class, 'index'])->name('insuranceprovider.index');
     });
 
-}); // end auth middleware group
+});

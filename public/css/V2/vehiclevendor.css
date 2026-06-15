@@ -1,0 +1,34 @@
+/* =====================================================================
+   SR Logistics — Vehicle Vendor Module V2 (redesign)
+   Reuses the Customer V2 component kit (same cv2- palette/components).
+   Adds vendor-specific bits: bank-details repeater (E3, primary radio),
+   TDS warning banner (E6).  Prefix: cv2-
+   ===================================================================== */
+@import url('customer.css?v=1.3');
+
+/* ---- bank-details repeater (E3) ---------------------------------- */
+/* Reuses .cv2-repeat-row from customer.css; these tune the primary radio. */
+.cv2-bank-row{ position:relative; }
+.cv2-bank-row .cv2-primary-flag{ display:inline-flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:700; color:var(--cv2-navy); background:#eef2fb;
+  border:1px solid var(--cv2-line); border-radius:9px; padding:7px 12px; cursor:pointer; }
+.cv2-bank-row .cv2-primary-flag input{ width:auto; margin:0; accent-color:var(--cv2-navy); }
+.cv2-bank-row.is-primary{ border-color:var(--cv2-navy); box-shadow:0 0 0 2px rgba(3,38,113,.06); }
+.cv2-bank-row.is-primary .cv2-primary-flag{ background:var(--cv2-navy); color:#fff; border-color:var(--cv2-navy); }
+.cv2-bank-badge{ font-size:10.5px; font-weight:700; color:var(--cv2-ok); background:var(--cv2-ok-bg);
+  border-radius:20px; padding:2px 9px; }
+
+/* ---- TDS declaration banner (E6) --------------------------------- */
+.cv2-note{ display:flex; align-items:flex-start; gap:12px; padding:13px 16px;
+  border-radius:12px; font-size:12.5px; line-height:1.5; }
+.cv2-note i{ font-size:18px; flex-shrink:0; margin-top:1px; }
+.cv2-note.is-warn{ background:var(--cv2-warn-bg); color:#7a5106; border:1px solid #f1dca8; }
+.cv2-note.is-warn i{ color:var(--cv2-warn); }
+.cv2-note b{ color:#5e3f04; }
+
+/* ---- RAG status dot ---------------------------------------------- */
+.cv2-rag{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; }
+.cv2-rag::before{ content:''; width:9px; height:9px; border-radius:50%; display:inline-block; }
+.cv2-rag.is-green::before{ background:var(--cv2-ok); }
+.cv2-rag.is-yellow::before{ background:#e0a020; }
+.cv2-rag.is-red::before{ background:var(--cv2-bad); }

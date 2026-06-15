@@ -249,3 +249,12 @@
   justify-content:center; font-size:15px; cursor:pointer; }
 .cv2-veh-row .cv2-remove:hover{ background:var(--cv2-bad); color:#fff; }
 .cv2-select2-fix + .select2-container{ width:100% !important; }
+
+/* ── cv2-note — inline notice/callout (added for Battery Vendor V2; generic, reusable) ── */
+.cv2-note{ display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:10px;
+  background:var(--cv2-soft); border:1px solid var(--cv2-line); color:var(--cv2-ink); font-size:13px; line-height:1.45; }
+.cv2-note i{ font-size:16px; line-height:1.4; color:var(--cv2-slate); flex:none; }
+.cv2-note.is-warn{ background:var(--cv2-warn-bg); border-color:#e6d39a; color:#6f4a06; }
+.cv2-note.is-warn i{ color:var(--cv2-warn); }
+.cv2-note.is-bad{ background:var(--cv2-bad-bg); border-color:#f5c2cd; color:#8a0b1e; }
+.cv2-note.is-bad i{ color:var(--cv2-bad); }

@@ -1,0 +1,38 @@
+/* =====================================================================
+   SR Logistics — Employee Module V2 (redesign) · cotype_id=3
+   Reuses the Customer V2 component kit (cv2- prefix), then adds a few
+   Employee-only pieces: exit-lock amber banner + address-toggle helper.
+   ===================================================================== */
+@import url('customer.css?v=1.3');
+
+/* ---- E2 read-only-after-exit banner ------------------------------- */
+.cv2-exit-banner{
+  display:flex; align-items:center; gap:12px; margin:16px 0 0;
+  background:var(--cv2-warn-bg); border:1px solid #ecd9a8;
+  border-left:4px solid var(--cv2-warn); border-radius:12px;
+  padding:13px 16px; color:#7a5305; font-size:13.5px; font-weight:600;
+}
+.cv2-exit-banner i{ font-size:18px; color:var(--cv2-warn); }
+.cv2-exit-banner small{ display:block; font-weight:500; color:#8a6a23; font-size:12.5px; margin-top:1px; }
+
+/* locked Add button when exited */
+.cv2-btn[disabled], .cv2-btn.is-locked{
+  background:#e9edf4 !important; color:var(--cv2-mute) !important;
+  cursor:not-allowed; pointer-events:none; box-shadow:none;
+}
+
+/* ---- E5 "same as permanent" address toggle ------------------------ */
+.cv2-addr-toggle{
+  display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600;
+  color:var(--cv2-navy); background:var(--cv2-soft); border:1px solid var(--cv2-line);
+  border-radius:10px; padding:9px 13px; cursor:pointer;
+}
+.cv2-addr-toggle input{ width:auto; }
+
+/* blood-group / meta chip in the profile banner */
+.cv2-chip-bg{ background:#fde8ec; color:var(--cv2-bad); font-weight:700;
+  border-radius:6px; padding:1px 7px; font-size:11.5px; }
+
+/* leave tracker mini bars */
+.cv2-leave-bar{ height:7px; border-radius:6px; background:#e9edf4; overflow:hidden; }
+.cv2-leave-bar > span{ display:block; height:100%; background:var(--cv2-navy); }

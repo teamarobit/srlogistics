@@ -1,0 +1,35 @@
+/* =====================================================================
+   SR Logistics — Driver Module V2 (redesign)
+   Reuses the full Customer V2 component kit, then adds driver-specific
+   pieces (exit-lock banner, bank repeater row). Prefix: cv2-
+   ===================================================================== */
+@import url("customer.css?v=1.3");
+
+/* ---- E2: read-only-after-exit banner ----------------------------- */
+.cv2-exit-banner{ display:flex; align-items:center; gap:12px; margin-top:16px;
+  padding:13px 18px; border:1px solid #f0d9a6; border-left:4px solid var(--cv2-warn);
+  border-radius:12px; background:var(--cv2-warn-bg); color:#7a5208; font-size:13px; }
+.cv2-exit-banner i{ font-size:19px; color:var(--cv2-warn); }
+.cv2-exit-banner b{ color:#6a4607; }
+
+/* ---- E3: bank-details repeater row -------------------------------- */
+.cv2-bank-row{ border:1px solid var(--cv2-line); border-radius:12px; padding:16px;
+  margin-bottom:12px; background:var(--cv2-soft); position:relative; }
+.cv2-bank-row .cv2-remove{ position:absolute; top:12px; right:12px; border:none;
+  background:#fdebef; color:var(--cv2-bad); width:26px; height:26px; border-radius:8px; cursor:pointer; }
+.cv2-bank-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cv2-bank-head .cv2-primary-pick{ display:inline-flex; align-items:center; gap:7px;
+  font-size:12.5px; font-weight:600; color:var(--cv2-navy); cursor:pointer; }
+.cv2-bank-head .cv2-primary-pick input{ width:auto; }
+.cv2-primary-tag{ font-size:11px; font-weight:700; color:#10863f; background:var(--cv2-ok-bg);
+  padding:2px 9px; border-radius:20px; }
+
+/* ---- RAG status dot ---------------------------------------------- */
+.cv2-rag{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; }
+.cv2-rag .dot{ width:9px; height:9px; border-radius:50%; }
+.cv2-rag.is-red .dot{ background:#ea0027; } .cv2-rag.is-red{ color:#ea0027; }
+.cv2-rag.is-yellow .dot{ background:#d98a00; } .cv2-rag.is-yellow{ color:#b8770a; }
+.cv2-rag.is-green .dot{ background:#10863f; } .cv2-rag.is-green{ color:#10863f; }
+
+/* disabled add buttons while exited */
+.cv2-btn.is-locked{ opacity:.5; pointer-events:none; }

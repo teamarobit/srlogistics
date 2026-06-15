@@ -46,6 +46,30 @@
             <div id="collapseContactV2" class="accordion-collapse collapse" aria-labelledby="headingContactV2">
                 <div class="accordion-body">
                     <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.customer.dashboard') }}" style="color: #261f35; font-size: 13px;">Customers <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @if(Route::has('contact.v2.loadvendor.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.loadvendor.dashboard') }}" style="color: #261f35; font-size: 13px;">Load Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.batteryvendor.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.batteryvendor.dashboard') }}" style="color: #261f35; font-size: 13px;">Battery Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.employee.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.employee.dashboard') }}" style="color: #261f35; font-size: 13px;">Employees <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.driver.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.driver.dashboard') }}" style="color: #261f35; font-size: 13px;">Drivers <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.vehiclevendor.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.vehiclevendor.dashboard') }}" style="color: #261f35; font-size: 13px;">Vehicle Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.tyrevendor.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.tyrevendor.dashboard') }}" style="color: #261f35; font-size: 13px;">Tyre Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.sparevendor.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.sparevendor.dashboard') }}" style="color: #261f35; font-size: 13px;">Spare Part Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
+                    @if(Route::has('contact.v2.insuranceprovider.dashboard'))
+                    <p style="background-color: #cfe2ff;"><a href="{{ route('contact.v2.insuranceprovider.dashboard') }}" style="color: #261f35; font-size: 13px;">Insurance Vendors <span style="color:#0a58ca; font-weight:bold;">V2</span></a></p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -409,12 +433,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
-
-
-
-
-
-
-
 

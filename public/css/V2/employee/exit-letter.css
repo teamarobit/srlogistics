@@ -1,0 +1,6 @@
+/* =====================================================================
+   SR Logistics — Employee V2 · Exit / Relieving Letter (standalone print)
+   Does NOT extend layouts.app — links this CSS in its own <head>.
+   ===================================================================== */
+@import url('joining-letter.css');
+/* exit letter keeps the same navy identity; no overrides needed currently */

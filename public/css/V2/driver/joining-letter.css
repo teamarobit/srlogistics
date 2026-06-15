@@ -1,0 +1,29 @@
+/* SR Logistics — Driver Joining Letter (standalone print view, E1).
+   Does NOT inherit layouts.app — links this file in its own <head>. */
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Inter','Segoe UI',sans-serif; color:#1c2434; background:#eef1f6; padding:30px 16px; }
+.dl-sheet{ max-width:820px; margin:0 auto; background:#fff; border:1px solid #e6e9f0;
+  border-radius:10px; padding:54px 60px; box-shadow:0 4px 22px rgba(28,36,52,.08); }
+.dl-head{ display:flex; justify-content:space-between; align-items:flex-start;
+  border-bottom:3px solid #032671; padding-bottom:18px; margin-bottom:26px; }
+.dl-brand{ font-size:23px; font-weight:800; color:#032671; letter-spacing:-.3px; }
+.dl-brand span{ display:block; font-size:11px; font-weight:600; color:#64748b; letter-spacing:2px; margin-top:3px; }
+.dl-meta{ text-align:right; font-size:12px; color:#64748b; line-height:1.7; }
+.dl-title{ text-align:center; font-size:17px; font-weight:800; text-transform:uppercase;
+  letter-spacing:1px; color:#032671; margin:6px 0 26px; }
+.dl-body{ font-size:14px; line-height:2; }
+.dl-body p{ margin-bottom:16px; }
+.dl-tbl{ width:100%; border-collapse:collapse; margin:18px 0 24px; font-size:13px; }
+.dl-tbl td{ padding:9px 12px; border:1px solid #e6e9f0; }
+.dl-tbl td:first-child{ width:38%; font-weight:700; background:#f7f9fc; color:#1c2434; }
+.dl-sign{ display:flex; justify-content:space-between; margin-top:54px; font-size:13px; }
+.dl-sign div{ width:42%; }
+.dl-sign .line{ border-top:1px solid #1c2434; margin-bottom:6px; padding-top:46px; }
+.dl-foot{ margin-top:40px; border-top:1px solid #e6e9f0; padding-top:14px;
+  font-size:11px; color:#8a93a6; text-align:center; }
+.cv2-print{ position:fixed; top:22px; right:26px; background:#032671; color:#fff; border:none;
+  border-radius:9px; padding:10px 18px; font-size:13px; font-weight:600; cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px; }
+.cv2-print:hover{ background:#06318e; }
+@media print{ body{ background:#fff; padding:0; } .dl-sheet{ box-shadow:none; border:none; border-radius:0; }
+  .cv2-print{ display:none !important; } }

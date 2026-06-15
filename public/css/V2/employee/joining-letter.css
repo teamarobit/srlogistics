@@ -1,0 +1,33 @@
+/* =====================================================================
+   SR Logistics — Employee V2 · Joining Letter (standalone print page)
+   This page does NOT extend layouts.app — it links this CSS in its own <head>.
+   ===================================================================== */
+:root{ --jl-navy:#032671; --jl-ink:#1c2434; --jl-slate:#5b6678; --jl-line:#e6e9f0; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Inter','Segoe UI',sans-serif; color:var(--jl-ink);
+  background:#eef1f7; padding:32px 16px; line-height:1.6; }
+.jl-sheet{ max-width:820px; margin:0 auto; background:#fff; padding:54px 60px;
+  box-shadow:0 6px 28px rgba(28,36,52,.10); border-top:6px solid var(--jl-navy); }
+.jl-head{ display:flex; justify-content:space-between; align-items:flex-start;
+  border-bottom:2px solid var(--jl-line); padding-bottom:18px; margin-bottom:26px; }
+.jl-brand{ font-size:23px; font-weight:800; color:var(--jl-navy); letter-spacing:-.3px; }
+.jl-brand small{ display:block; font-size:12px; font-weight:600; color:var(--jl-slate);
+  letter-spacing:.5px; margin-top:3px; text-transform:uppercase; }
+.jl-meta{ text-align:right; font-size:12.5px; color:var(--jl-slate); }
+.jl-title{ text-align:center; font-size:17px; font-weight:800; text-transform:uppercase;
+  letter-spacing:1px; color:var(--jl-navy); margin:8px 0 26px; }
+.jl-row{ margin-bottom:14px; font-size:14px; }
+.jl-row b{ color:var(--jl-navy); }
+.jl-table{ width:100%; border-collapse:collapse; margin:18px 0; font-size:13.5px; }
+.jl-table th,.jl-table td{ border:1px solid var(--jl-line); padding:9px 12px; text-align:left; }
+.jl-table th{ background:#f4f6fb; color:var(--jl-navy); font-weight:700; }
+.jl-sign{ display:flex; justify-content:space-between; margin-top:54px; font-size:13.5px; }
+.jl-sign .line{ border-top:1.5px solid var(--jl-ink); padding-top:6px; width:200px; text-align:center; color:var(--jl-slate); }
+.jl-foot{ margin-top:40px; border-top:1px solid var(--jl-line); padding-top:14px;
+  font-size:11.5px; color:var(--jl-slate); text-align:center; }
+.print-btn{ position:fixed; top:18px; right:22px; background:var(--jl-navy); color:#fff;
+  border:none; border-radius:9px; padding:10px 18px; font-size:13.5px; font-weight:600;
+  cursor:pointer; box-shadow:0 3px 12px rgba(3,38,113,.3); }
+.print-btn:hover{ background:#06318e; }
+@media print{ body{ background:#fff; padding:0; } .jl-sheet{ box-shadow:none; max-width:none; }
+  .print-btn{ display:none !important; } }
