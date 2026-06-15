@@ -569,8 +569,8 @@ $(document).ready(function(){
         
             // Final validation
             if (!hasTdsDeclaration) {
-                $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
-                isValid = false;
+                // $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
+                // isValid = false;
             }
         }
         

@@ -290,8 +290,8 @@ $(document).ready(function(){
                 }
             }
             if (!hasTdsDeclaration) {
-                $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
-                return false;
+                // $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
+                // return false;
             }
         }
 
