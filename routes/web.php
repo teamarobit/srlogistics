@@ -964,6 +964,30 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/load-vendors/{id}/locations',    [App\Http\Controllers\V2\LoadVendorController::class, 'locations'])->name('loadvendor.locations');
         Route::get('/load-vendors/{id}/documents',    [App\Http\Controllers\V2\LoadVendorController::class, 'documents'])->name('loadvendor.documents');
         Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
+
+        /******************************** Contacts V2 — Tyre Vendor (redesign) *********************/
+        // cotype_id = 6. New, isolated module. Does NOT touch existing contacts routes/controller/views.
+        Route::get('/tyre-vendors/dashboard',         [App\Http\Controllers\V2\TyreVendorController::class, 'dashboard'])->name('tyrevendor.dashboard');
+        Route::get('/tyre-vendors',                   [App\Http\Controllers\V2\TyreVendorController::class, 'index'])->name('tyrevendor.index');
+        Route::get('/tyre-vendors/create',            [App\Http\Controllers\V2\TyreVendorController::class, 'create'])->name('tyrevendor.create');
+        Route::get('/tyre-vendors/{id}',              [App\Http\Controllers\V2\TyreVendorController::class, 'show'])->name('tyrevendor.show');
+        Route::get('/tyre-vendors/{id}/edit',         [App\Http\Controllers\V2\TyreVendorController::class, 'edit'])->name('tyrevendor.edit');
+        Route::get('/tyre-vendors/{id}/documents',    [App\Http\Controllers\V2\TyreVendorController::class, 'documents'])->name('tyrevendor.documents');
+        Route::get('/tyre-vendors/{id}/tyre',         [App\Http\Controllers\V2\TyreVendorController::class, 'tyre'])->name('tyrevendor.tyre');
+        Route::get('/tyre-vendors/{id}/activity',     [App\Http\Controllers\V2\TyreVendorController::class, 'activity'])->name('tyrevendor.activity');
+
+        /**** Tyre Vendor — Gate 2 POST wiring (live backend; cotype_id = 6, NO schema change) ****/
+        Route::post('/tyre-vendors/save',                  [App\Http\Controllers\V2\TyreVendorController::class, 'store'])->name('tyrevendor.save');
+        Route::post('/tyre-vendors/{id}/update',           [App\Http\Controllers\V2\TyreVendorController::class, 'update'])->name('tyrevendor.update');
+        Route::post('/tyre-vendors/contact-person-wrapper',[App\Http\Controllers\V2\TyreVendorController::class, 'contactPersonWrapper'])->name('tyrevendor.contactpersonwrapper');
+        Route::post('/tyre-vendors/bank-wrapper',          [App\Http\Controllers\V2\TyreVendorController::class, 'bankWrapper'])->name('tyrevendor.bankwrapper');
+        Route::post('/tyre-vendors/attachment/save',       [App\Http\Controllers\V2\TyreVendorController::class, 'storeAttachment'])->name('tyrevendor.attachment.save');
+        Route::post('/tyre-vendors/attachment/delete',     [App\Http\Controllers\V2\TyreVendorController::class, 'deleteAttachment'])->name('tyrevendor.attachment.delete');
+        Route::post('/tyre-vendors/tyre/save',             [App\Http\Controllers\V2\TyreVendorController::class, 'storeTyre'])->name('tyrevendor.tyre.save');
+        Route::post('/tyre-vendors/tyre/{tyreId}/update',  [App\Http\Controllers\V2\TyreVendorController::class, 'updateTyre'])->name('tyrevendor.tyre.update');
+        Route::post('/tyre-vendors/tyre/delete',           [App\Http\Controllers\V2\TyreVendorController::class, 'deleteTyre'])->name('tyrevendor.tyre.delete');
+        Route::post('/tyre-vendors/activity-notes/save',   [App\Http\Controllers\V2\TyreVendorController::class, 'storeActivityNote'])->name('tyrevendor.activitynotes.save');
+        Route::post('/tyre-vendors/delete',                [App\Http\Controllers\V2\TyreVendorController::class, 'destroy'])->name('tyrevendor.delete');
     });
 
 }); // end auth middleware group
