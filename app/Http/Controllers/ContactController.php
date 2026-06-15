@@ -571,8 +571,36 @@ class ContactController extends Controller
         /*if(File::exists(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR.$contactattachment->name))){
             File::delete(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR.$contactattachment->name));
         }*/
+        /*
+        |--------------------------------------------------------------------------
+        | TDS Declaration guard (coattachtype_id = 7)
+        |--------------------------------------------------------------------------
+        | A TDS Declaration document is mandatory while the contact's TDS % is
+        | 0 or 1. Block its deletion unless another TDS Declaration remains.
+        */
+        if ((int) $contactattachment->coattachtype_id === 7) {
+
+            $tds = optional($contactattachment->contact)->tds_percentage;
+
+            if ($tds !== null && $tds !== '' && in_array((float) $tds, [0, 1])) {
+
+                $remainingTdsDocs = Coattachment::where('contact_id', $contactattachment->contact_id)
+                    ->where('coattachtype_id', 7)
+                    ->where('id', '!=', $contactattachment->id)
+                    ->count();
+
+                if ($remainingTdsDocs === 0) {
+                    return response()->json([
+                        'success' => false,
+                        'data'    => [],
+                        'message' => 'TDS Declaration document cannot be deleted while TDS % is 0 or 1 for this contact.'
+                    ], 422);
+                }
+            }
+        }
+
         $contactattachment->delete();
-        
+
         return response()->json(['success' => true, 'data' => [], 'message' => 'Attachment deleted successfully.']);
     }
     // For Dropzone ----------------------------------------------------------------------------------------------------------
