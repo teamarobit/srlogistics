@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -51,8 +51,26 @@
                         <table class="cv2-table">
                             <thead><tr><th>Contract No</th><th>Type</th><th>Validity</th><th>Status</th></tr></thead>
                             <tbody>
-                                <tr><td class="cv2-t-mono">CTR-2026-014</td><td>Monthly</td><td>01 Apr 26 – 31 Mar 27</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td></tr>
-                                <tr><td class="cv2-t-mono">CTR-2025-188</td><td>Lifetime</td><td>No expiry</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td></tr>
+                                @forelse($recentContracts as $contract)
+                                    @php
+                                        $today  = \Carbon\Carbon::today();
+                                        $status = 'Inactive';
+                                        if ($contract->contract_type_id == 6) { $status = 'Life Time'; }
+                                        elseif ($contract->start_date && $contract->end_date && $contract->start_date <= $today && $contract->end_date >= $today) { $status = 'Active'; }
+                                        $statusClass = ['Active'=>'is-active','Life Time'=>'is-active','Inactive'=>'is-inactive'][$status] ?? 'is-inactive';
+                                    @endphp
+                                    <tr>
+                                        <td class="cv2-t-mono">{{ $contract->contract_no }}</td>
+                                        <td>{{ optional($contract->contracttype)->name ?? '—' }}</td>
+                                        <td>
+                                            @if($contract->contract_type_id == 6) No expiry
+                                            @else {{ $contract->start_date ? \Carbon\Carbon::parse($contract->start_date)->format('d M y') : '—' }} – {{ $contract->end_date ? \Carbon\Carbon::parse($contract->end_date)->format('d M y') : '—' }} @endif
+                                        </td>
+                                        <td><span class="cv2-badge {{ $statusClass }}"><span class="cv2-badge-dot"></span>{{ $status }}</span></td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="4" class="text-center cv2-empty">No contracts yet.</td></tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -61,9 +79,17 @@
                     <div class="cv2-card-h"><h3>Recent Activity</h3><a class="cv2-link" href="{{ route('contact.v2.customer.activity', $c['id']) }}">View all →</a></div>
                     <div class="cv2-card-b">
                         <ul class="cv2-mini">
-                            <li><span class="cv2-mini-ic"><i class="bi bi-pencil"></i></span><div class="cv2-mini-body"><b>Rate chart updated</b><span>by Superadmin · 2 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-truck"></i></span><div class="cv2-mini-body"><b>Vehicle AS01GC4471 allocated</b><span>by Superadmin · 5 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-geo-alt"></i></span><div class="cv2-mini-body"><b>New unloading point added</b><span>by Operations · 1 week ago</span></div></li>
+                            @forelse($recentActivities as $act)
+                                <li>
+                                    <span class="cv2-mini-ic"><i class="bi {{ $act->is_blacklisted === 'Yes' ? 'bi-exclamation-octagon' : 'bi-chat-left-text' }}"></i></span>
+                                    <div class="cv2-mini-body">
+                                        <b>{{ \Illuminate\Support\Str::limit($act->notes, 60) }}</b>
+                                        <span>by {{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->diffForHumans() : '' }}</span>
+                                    </div>
+                                </li>
+                            @empty
+                                <li><div class="cv2-mini-body"><span class="cv2-empty">No recent activity.</span></div></li>
+                            @endforelse
                         </ul>
                     </div>
                 </div>

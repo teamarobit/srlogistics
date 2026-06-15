@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">@endsection
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
@@ -13,10 +13,37 @@
                 <table class="cv2-table">
                     <thead><tr><th>Contract No</th><th>Type</th><th>Routes</th><th>Advance</th><th>Payment Within</th><th>Validity</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
                     <tbody>
-                        <tr><td class="cv2-t-mono">CTR-2026-014</td><td><span class="cv2-pill">Monthly</span></td><td>3 routes</td><td class="cv2-t-mono">₹50,000</td><td>30 days</td><td>01 Apr 26 – 31 Mar 27</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-pencil"></i></a><a href="{{ route('contact.v2.customer.ratechart', $c['id']) }}" class="cv2-ic-btn" title="Rate chart"><i class="bi bi-cash-stack"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger"><i class="bi bi-trash3"></i></a></td></tr>
-                        <tr><td class="cv2-t-mono">CTR-2025-188</td><td><span class="cv2-pill">Lifetime</span></td><td>1 route</td><td class="cv2-t-mono">₹0</td><td>15 days</td><td>No expiry</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-pencil"></i></a><a href="{{ route('contact.v2.customer.ratechart', $c['id']) }}" class="cv2-ic-btn" title="Rate chart"><i class="bi bi-cash-stack"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger"><i class="bi bi-trash3"></i></a></td></tr>
+                        @forelse($contracts as $contract)
+                            @php
+                                $today  = \Carbon\Carbon::today();
+                                $status = 'Inactive';
+                                if ($contract->contract_type_id == 6) { $status = 'Life Time'; }
+                                elseif ($contract->start_date && $contract->end_date && $contract->start_date <= $today && $contract->end_date >= $today) { $status = 'Active'; }
+                                $statusClass = ['Active'=>'is-active','Life Time'=>'is-active','Inactive'=>'is-inactive'][$status] ?? 'is-inactive';
+                            @endphp
+                            <tr>
+                                <td class="cv2-t-mono">{{ $contract->contract_no ?? '—' }}</td>
+                                <td><span class="cv2-pill">{{ optional($contract->contracttype)->name ?? '—' }}</span></td>
+                                <td>{{ $contract->routes->count() }} route{{ $contract->routes->count() == 1 ? '' : 's' }}</td>
+                                <td class="cv2-t-mono">₹{{ number_format($contract->advance_payment ?? 0, 0) }}</td>
+                                <td>{{ $contract->payment_within_day ?? 0 }} days</td>
+                                <td>
+                                    @if($contract->contract_type_id == 6)
+                                        No expiry
+                                    @else
+                                        {{ $contract->start_date ? \Carbon\Carbon::parse($contract->start_date)->format('d M y') : '—' }} – {{ $contract->end_date ? \Carbon\Carbon::parse($contract->end_date)->format('d M y') : '—' }}
+                                    @endif
+                                </td>
+                                <td><span class="cv2-badge {{ $statusClass }}"><span class="cv2-badge-dot"></span>{{ $status }}</span></td>
+                                <td class="cv2-actions">
+                                    <a href="javascript:void(0)" class="cv2-ic-btn cv2-edit-contract" data-id="{{ $contract->id }}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a href="{{ route('contact.v2.customer.ratechart', $c['id']) }}" class="cv2-ic-btn" title="Rate chart"><i class="bi bi-cash-stack"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-contract" data-id="{{ $contract->id }}" title="Delete"><i class="bi bi-trash3"></i></a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="8" class="text-center cv2-empty">No contracts added yet.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -24,3 +51,4 @@
     </div></div>
 </div>
 @endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection

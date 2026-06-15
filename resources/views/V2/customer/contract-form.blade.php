@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">@endsection
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
@@ -16,28 +16,41 @@
             </div>
         </div>
 
-        <form id="cv2ContractForm" action="javascript:void(0)">
+        <form id="cv2ContractForm" action="{{ route('contact.v2.customer.contract.save') }}" method="POST" enctype="multipart/form-data" data-contracts-url="{{ route('contact.v2.customer.contracts', $c['id']) }}">
+        @csrf
+        <input type="hidden" name="contact_id" value="{{ $c['id'] }}">
         <div class="cv2-card">
             <div class="cv2-card-b">
                 <div class="cv2-form-grid is-3">
                     <div class="cv2-field"><label class="cv2-label">Customer</label><input type="text" value="{{ $c['name'] }}" disabled></div>
-                    <div class="cv2-field"><label class="cv2-label">Contract No <span class="req">*</span></label><input type="text" placeholder="CTR-2026-015"></div>
+                    <div class="cv2-field"><label class="cv2-label">Contract No <span class="req">*</span></label><input type="text" name="contract_no" value="{{ old('contract_no') }}" placeholder="CTR-2026-015"></div>
                     <div class="cv2-field"><label class="cv2-label">Status</label><input type="text" value="Active" disabled></div>
-                    <div class="cv2-field"><label class="cv2-label">Contract Type <span class="req">*</span></label><select class="cv2-select" id="cv2ContractType" style="width:100%;"><option value="">Choose…</option><option value="1">Monthly</option><option value="6">Lifetime</option><option>Trip-wise</option></select></div>
-                    <div class="cv2-field"><label class="cv2-label">Advance Payment <span class="req">*</span></label><input type="number" placeholder="0.00"></div>
-                    <div class="cv2-field"><label class="cv2-label">Payment Within (days) <span class="req">*</span></label><input type="number" placeholder="30"></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="date"></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="date"></div>
-                    <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Allowed KM <span class="req">*</span></label><input type="number" placeholder="e.g. 8000"></div>
-                    <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Price <span class="req">*</span></label><input type="number" placeholder="₹"></div>
+                    <div class="cv2-field"><label class="cv2-label">Contract Type <span class="req">*</span></label>
+                        <select class="cv2-select" id="cv2ContractType" name="contract_type_id" style="width:100%;">
+                            <option value="">Choose…</option>
+                            @foreach($contracttypes as $ct)
+                                <option value="{{ $ct->id }}" {{ old('contract_type_id') == $ct->id ? 'selected' : '' }}>{{ $ct->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="cv2-field"><label class="cv2-label">Advance Payment <span class="req">*</span></label><input type="number" step="0.01" name="advance_payment" value="{{ old('advance_payment') }}" placeholder="0.00"></div>
+                    <div class="cv2-field"><label class="cv2-label">Payment Within (days) <span class="req">*</span></label><input type="number" name="payment_within_day" value="{{ old('payment_within_day') }}" placeholder="30"></div>
+                    <div class="cv2-field" data-when="dated"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
+                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="date" name="end_date" value="{{ old('end_date') }}"></div>
+                    <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Allowed KM <span class="req">*</span></label><input type="number" name="total_allowed_kilometer" value="{{ old('total_allowed_kilometer') }}" placeholder="e.g. 8000"></div>
+                    <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Price <span class="req">*</span></label><input type="number" step="0.01" name="monthly_total_price" value="{{ old('monthly_total_price') }}" placeholder="₹"></div>
                     <div class="cv2-field is-full"><label class="cv2-label">Routes <span class="req">*</span></label>
-                        <select class="cv2-select" multiple style="width:100%;"><option>Guwahati → Dibrugarh</option><option>Guwahati → Silchar</option><option>Guwahati → Tinsukia</option></select>
+                        <select class="cv2-select" name="route_id[]" multiple style="width:100%;">
+                            @foreach($routes as $route)
+                                <option value="{{ $route->id }}">{{ $route->name ?? ('Route #'.$route->id) }}</option>
+                            @endforeach
+                        </select>
                         <span class="cv2-hint">Select one or more routes covered by this contract.</span>
                     </div>
-                    <div class="cv2-field"><label class="cv2-label">Set Reminder</label><select class="cv2-select" id="cv2Reminder" style="width:100%;"><option>No</option><option>Yes</option></select></div>
-                    <div class="cv2-field" id="cv2ReminderDays" style="display:none;"><label class="cv2-label">Days before expiry <span class="req">*</span></label><input type="number" placeholder="15"></div>
-                    <div class="cv2-field"><label class="cv2-label">Contract File</label><input type="file"></div>
-                    <div class="cv2-field is-full"><label class="cv2-label">Remark</label><textarea rows="4" placeholder="Notes about this contract…"></textarea></div>
+                    <div class="cv2-field"><label class="cv2-label">Set Reminder</label><select class="cv2-select" id="cv2Reminder" name="set_reminder" style="width:100%;"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                    <div class="cv2-field" id="cv2ReminderDays" style="display:none;"><label class="cv2-label">Days before expiry <span class="req">*</span></label><input type="number" name="reminder_days_before_expiry" value="{{ old('reminder_days_before_expiry') }}" placeholder="15"></div>
+                    <div class="cv2-field"><label class="cv2-label">Contract File</label><input type="file" name="upload_file" accept=".jpg,.jpeg,.png,.pdf"></div>
+                    <div class="cv2-field is-full"><label class="cv2-label">Remark</label><textarea name="remarks" rows="4" placeholder="Notes about this contract…">{{ old('remarks') }}</textarea></div>
                 </div>
             </div>
         </div>
@@ -45,4 +58,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection

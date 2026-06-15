@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">@endsection
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
@@ -11,16 +11,8 @@
                 <h3 style="font-size:15px;font-weight:700;margin:0;flex:1;">Allocated Vehicles</h3>
                 <button class="cv2-btn cv2-btn-primary cv2-btn-sm" data-bs-toggle="modal" data-bs-target="#cv2VehicleModal"><i class="bi bi-plus-lg"></i>Allocate Vehicle</button>
             </div>
-            <div class="cv2-card-b is-flush">
-                <table class="cv2-table">
-                    <thead><tr><th>Vehicle</th><th>Period</th><th>Allowed KM</th><th>Fixed Amount</th><th>Extra / KM</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
-                    <tbody>
-                        <tr><td><span class="cv2-t-name">AS01GC4471</span><div class="cv2-t-sub">Tata LPT 1613 · 10T</div></td><td>01 Apr 26 – 31 Mar 27</td><td class="cv2-t-mono">8,000</td><td class="cv2-t-mono">₹85,000</td><td class="cv2-t-mono">₹22</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn" data-bs-toggle="modal" data-bs-target="#cv2VehicleModal"><i class="bi bi-pencil"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                        <tr><td><span class="cv2-t-name">AS01HF9982</span><div class="cv2-t-sub">Ashok Leyland · 20T</div></td><td>01 Jan 26 – 31 Dec 26</td><td class="cv2-t-mono">10,000</td><td class="cv2-t-mono">₹1,10,000</td><td class="cv2-t-mono">₹26</td><td><span class="cv2-badge is-active"><span class="cv2-badge-dot"></span>Active</span></td>
-                            <td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn" data-bs-toggle="modal" data-bs-target="#cv2VehicleModal"><i class="bi bi-pencil"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                    </tbody>
-                </table>
+            <div class="cv2-card-b is-flush" id="cv2VehiclesList" data-list-url="{{ route('contact.v2.customer.vehicles.list', $c['id']) }}">
+                <div class="text-center cv2-empty" style="padding:24px;">Loading…</div>
             </div>
         </div>
     </div></div>
@@ -32,9 +24,18 @@
     <div class="modal-content">
       <div class="modal-header"><h5 class="modal-title">Allocate Vehicle</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
-        <form id="cv2VehicleForm" action="javascript:void(0)">
+        <form id="cv2VehicleForm" action="{{ route('contact.v2.customer.vehicle.save') }}" method="POST" data-list-url="{{ route('contact.v2.customer.vehicles.list', $c['id']) }}">
+          @csrf
+          <input type="hidden" name="contact_id" value="{{ $c['id'] }}">
           <div class="cv2-form-grid">
-            <div class="cv2-field is-full"><label class="cv2-label">Vehicle Number <span class="req">*</span></label><select class="cv2-select cv2-modal-select" name="vehicle_id" style="width:100%;"><option value="">Choose vehicle</option><option>AS01GC4471 — Tata LPT 1613</option><option>AS01HF9982 — Ashok Leyland</option></select></div>
+            <div class="cv2-field is-full"><label class="cv2-label">Vehicle Number <span class="req">*</span></label>
+              <select class="cv2-select cv2-modal-select" name="vehicle_id" style="width:100%;">
+                <option value="">Choose vehicle</option>
+                @foreach($vehicles as $vehicle)
+                    <option value="{{ $vehicle->id }}">{{ $vehicle->vehicle_no }}</option>
+                @endforeach
+              </select>
+            </div>
             <div class="cv2-field"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="date" name="v_start_date"></div>
             <div class="cv2-field"><label class="cv2-label">End Date <span class="req">*</span></label><input type="date" name="v_end_date"></div>
             <div class="cv2-field is-full"><label class="cv2-label">KM Allowed <span class="req">*</span></label><input type="text" name="v_allowed_km"></div>
@@ -51,4 +52,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection

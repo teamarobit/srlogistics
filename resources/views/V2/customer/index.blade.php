@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -14,7 +14,7 @@
                 <div>
                     <div class="cv2-crumb"><a href="{{ route('contact.v2.customer.dashboard') }}">Customer Dashboard</a> · All Customers</div>
                     <h1>Customers</h1>
-                    <div class="cv2-sub">124 customers · 112 active</div>
+                    <div class="cv2-sub">{{ $customers->total() }} customers</div>
                 </div>
                 <div class="cv2-phead-actions">
                     <a href="{{ route('contact.v2.customer.dashboard') }}" class="cv2-btn cv2-btn-ghost"><i class="bi bi-speedometer2"></i>Dashboard</a>
@@ -23,14 +23,23 @@
             </div>
 
             <div class="cv2-card">
-                <div class="cv2-filters">
-                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" placeholder="Search by name, contact no or GST…"></div>
-                    <select class="cv2-select"><option>All Cities</option><option>Guwahati</option><option>Dibrugarh</option><option>Silchar</option></select>
-                    <select class="cv2-select"><option>All Sizes</option><option>Large</option><option>Medium</option><option>Small</option></select>
-                    <select class="cv2-select"><option>All Status</option><option>Active</option><option>Inactive</option><option>Blacklisted</option></select>
-                    <select class="cv2-select"><option>All Types</option><option>FMCG</option><option>Cement</option><option>Steel</option><option>Retail</option></select>
-                    <button class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</button>
-                </div>
+                <form method="GET" action="{{ route('contact.v2.customer.index') }}" id="cv2FilterForm" class="cv2-filters">
+                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" name="name" value="{{ $search_name }}" placeholder="Search by customer name…"></div>
+                    <select class="cv2-select" name="city">
+                        <option value="">All Cities</option>
+                        @foreach($cities as $city)
+                            <option value="{{ $city->id }}" {{ (string) $search_city === (string) $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select" name="size">
+                        <option value="">All Sizes</option>
+                        @foreach(['Large','Medium','Small'] as $sz)
+                            <option value="{{ $sz }}" {{ $search_size === $sz ? 'selected' : '' }}>{{ $sz }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="cv2-btn cv2-btn-primary"><i class="bi bi-funnel"></i>Filter</button>
+                    <a href="{{ route('contact.v2.customer.index') }}" class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</a>
+                </form>
 
                 <div class="cv2-card-b is-flush">
                     <table class="cv2-table">
@@ -43,7 +52,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($customers as $c)
+                            @forelse($customers as $c)
                             <tr>
                                 <td><input type="checkbox"></td>
                                 <td class="cv2-t-mono">{{ $c['contactno'] }}</td>
@@ -66,27 +75,27 @@
                                 <td class="cv2-actions">
                                     <a href="{{ route('contact.v2.customer.show', $c['id']) }}" class="cv2-ic-btn" title="View"><i class="bi bi-eye"></i></a>
                                     <a href="{{ route('contact.v2.customer.edit', $c['id']) }}" class="cv2-ic-btn" title="Edit"><i class="bi bi-pencil"></i></a>
-                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger" title="Delete"><i class="bi bi-trash3"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-customer" data-id="{{ $c['id'] }}" title="Delete"><i class="bi bi-trash3"></i></a>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr><td colspan="11" class="text-center cv2-empty">No customers found.</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="cv2-pager">
-                    <span>Showing 1–5 of 124</span>
-                    <div class="cv2-pages">
-                        <a href="javascript:void(0)"><i class="bi bi-chevron-left"></i></a>
-                        <a href="javascript:void(0)" class="is-active">1</a>
-                        <a href="javascript:void(0)">2</a>
-                        <a href="javascript:void(0)">3</a>
-                        <a href="javascript:void(0)"><i class="bi bi-chevron-right"></i></a>
-                    </div>
+                    <span>Showing {{ $customers->firstItem() ?? 0 }}–{{ $customers->lastItem() ?? 0 }} of {{ $customers->total() }}</span>
+                    {{ $customers->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
             </div>
 
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
 @endsection

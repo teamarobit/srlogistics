@@ -847,6 +847,39 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/customers/{id}/documents',        [App\Http\Controllers\V2\CustomerController::class, 'documents'])->name('customer.documents');
         Route::get('/customers/{id}/activity',         [App\Http\Controllers\V2\CustomerController::class, 'activity'])->name('customer.activity');
 
+        /* ---- Contacts V2 — Customer backend wiring (AJAX/POST + lookup GET) ----
+           Distinct names from the GET screen routes above (no collisions).
+           cotype_id = 1. Reuses existing `contacts` tables — NO schema change. */
+        Route::post('/customers/save',                          [App\Http\Controllers\V2\CustomerController::class, 'store'])->name('customer.save');
+        Route::post('/customers/{id}/update',                   [App\Http\Controllers\V2\CustomerController::class, 'update'])->name('customer.update');
+        Route::post('/customers/contact-person-wrapper',        [App\Http\Controllers\V2\CustomerController::class, 'contactPersonWrapper'])->name('customer.contactpersonwrapper');
+
+        Route::get('/customers/{id}/locations/list',            [App\Http\Controllers\V2\CustomerController::class, 'filterLocations'])->name('customer.filter.locations');
+        Route::post('/customers/location/save',                 [App\Http\Controllers\V2\CustomerController::class, 'storeLocation'])->name('customer.location.save');
+        Route::post('/customers/location/delete',               [App\Http\Controllers\V2\CustomerController::class, 'deleteLocation'])->name('customer.location.delete');
+        Route::post('/customers/location/midpoints',            [App\Http\Controllers\V2\CustomerController::class, 'getLocationMidpoints'])->name('customer.get.location.midpoints');
+
+        Route::post('/customers/contract/save',                 [App\Http\Controllers\V2\CustomerController::class, 'storeContract'])->name('customer.contract.save');
+        Route::get('/customers/contract/{id}/edit',             [App\Http\Controllers\V2\CustomerController::class, 'editContract'])->name('customer.contract.edit');
+        Route::post('/customers/contract/{id}/update',          [App\Http\Controllers\V2\CustomerController::class, 'updateContract'])->name('customer.contract.update');
+        Route::post('/customers/contract/delete',               [App\Http\Controllers\V2\CustomerController::class, 'deleteContract'])->name('customer.contract.delete');
+        Route::get('/customers/contract/{id}/routes',           [App\Http\Controllers\V2\CustomerController::class, 'getContractRoutes'])->name('customer.contract.routes');
+
+        Route::post('/customers/contract/pricing/save',         [App\Http\Controllers\V2\CustomerController::class, 'storePricing'])->name('customer.contract.pricing.save');
+        Route::post('/customers/contract/pricing/delete',       [App\Http\Controllers\V2\CustomerController::class, 'deletePricing'])->name('customer.contract.pricing.delete');
+        Route::get('/customers/contract-pricing/{id}/labour-charges', [App\Http\Controllers\V2\CustomerController::class, 'getLabourCharges'])->name('customer.contract.pricing.labour.charges');
+        Route::get('/customers/contract-pricing/{id}/vehicles', [App\Http\Controllers\V2\CustomerController::class, 'getVehicleFreight'])->name('customer.contract.pricing.vehicles');
+        Route::get('/customers/contract-pricing/{id}/history',  [App\Http\Controllers\V2\CustomerController::class, 'getPricingHistory'])->name('customer.contract.pricing.history');
+        Route::get('/customers/contract/{id}/points-setup',     [App\Http\Controllers\V2\CustomerController::class, 'checkRoutePointsSetup'])->name('customer.contract.route.points.setup');
+
+        Route::get('/customers/{id}/vehicles/list',             [App\Http\Controllers\V2\CustomerController::class, 'filterVehicles'])->name('customer.vehicles.list');
+        Route::post('/customers/vehicle/save',                  [App\Http\Controllers\V2\CustomerController::class, 'storeVehicle'])->name('customer.vehicle.save');
+
+        Route::post('/customers/attachment/save',               [App\Http\Controllers\V2\CustomerController::class, 'storeAttachment'])->name('customer.attachment.save');
+        Route::post('/customers/attachment/update',             [App\Http\Controllers\V2\CustomerController::class, 'updateAttachment'])->name('customer.attachment.update');
+        Route::post('/customers/attachment/delete',             [App\Http\Controllers\V2\CustomerController::class, 'deleteAttachment'])->name('customer.attachment.delete');
+        Route::post('/customers/activity-notes/save',           [App\Http\Controllers\V2\CustomerController::class, 'storeActivityNote'])->name('customer.activitynotes.save');
+
         /******************************** Contacts V2 — Driver (redesign) *********************/
         // cotype_id = 4. E1 letters · E2 exit-lock · E3 banks · E5 addresses.
         // New, isolated module. Does NOT touch existing contacts routes/controller/views.
