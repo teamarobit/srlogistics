@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/employee.css?v=1.0') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/employee.css?v=2.0') }}" rel="stylesheet">@endsection
+@php $latestSalary = $salaries->first(); $isTechnical = ($contact->service_type ?? '') === 'Technical'; @endphp
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
@@ -9,10 +10,10 @@
 
         {{-- Current structure --}}
         <div class="cv2-kpis cv2-mt" style="grid-template-columns:repeat(4,1fr);">
-            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-cash"></i></span></div><div class="cv2-kpi-val">₹38,000</div><div class="cv2-kpi-lbl">Basic Pay</div></div>
-            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-wrench-adjustable"></i></span></div><div class="cv2-kpi-val">₹250</div><div class="cv2-kpi-lbl">Per Service (Technical)</div></div>
-            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-calendar-check"></i></span></div><div class="cv2-kpi-val">01 Apr 26</div><div class="cv2-kpi-lbl">Effective From</div></div>
-            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-arrow-repeat"></i></span></div><div class="cv2-kpi-val">2</div><div class="cv2-kpi-lbl">Revisions</div></div>
+            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-cash"></i></span></div><div class="cv2-kpi-val">{{ $latestSalary ? '₹'.number_format((float)$latestSalary->basic_pay) : '—' }}</div><div class="cv2-kpi-lbl">Basic Pay</div></div>
+            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-wrench-adjustable"></i></span></div><div class="cv2-kpi-val">{{ ($latestSalary && $latestSalary->salary_per_work) ? '₹'.number_format((float)$latestSalary->salary_per_work) : '—' }}</div><div class="cv2-kpi-lbl">Per Service (Technical)</div></div>
+            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-calendar-check"></i></span></div><div class="cv2-kpi-val">{{ ($latestSalary && $latestSalary->effective_from) ? \Carbon\Carbon::parse($latestSalary->effective_from)->format('d M y') : '—' }}</div><div class="cv2-kpi-lbl">Effective From</div></div>
+            <div class="cv2-kpi"><div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-arrow-repeat"></i></span></div><div class="cv2-kpi-val">{{ $salaries->count() }}</div><div class="cv2-kpi-lbl">Revisions</div></div>
         </div>
 
         <div class="cv2-card cv2-mt">
@@ -26,10 +27,17 @@
             </div>
             <div class="cv2-card-b is-flush">
                 <table class="cv2-table">
-                    <thead><tr><th>Effective From</th><th>Basic Pay</th><th>Per Service</th><th>Recorded By</th></tr></thead>
+                    <thead><tr><th>Effective From</th><th>Basic Pay</th><th>Per Service</th></tr></thead>
                     <tbody>
-                        <tr><td>01 Apr 26</td><td class="cv2-t-mono">₹38,000</td><td class="cv2-t-mono">₹250</td><td>Superadmin</td></tr>
-                        <tr><td>01 Apr 25</td><td class="cv2-t-mono">₹32,000</td><td class="cv2-t-mono">₹200</td><td>Superadmin</td></tr>
+                        @forelse($salaries as $sal)
+                        <tr>
+                            <td>{{ $sal->effective_from ? \Carbon\Carbon::parse($sal->effective_from)->format('d M y') : '' }}</td>
+                            <td class="cv2-t-mono">₹{{ number_format((float)$sal->basic_pay) }}</td>
+                            <td class="cv2-t-mono">{{ $sal->salary_per_work ? '₹'.number_format((float)$sal->salary_per_work) : '—' }}</td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" class="text-center cv2-empty" style="padding:24px;">No salary records yet.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -43,11 +51,15 @@
     <div class="modal-content">
       <div class="modal-header"><h5 class="modal-title">Add Salary</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
-        <form id="cv2SalaryForm" action="javascript:void(0)">
+        <form id="cv2SalaryForm" action="{{ route('contact.v2.employee.salary.save') }}">
+          <input type="hidden" name="contact_id" value="{{ $contact->id }}">
+          <input type="hidden" name="service_type" value="{{ $contact->service_type }}">
           <div class="cv2-form-grid">
             <div class="cv2-field is-full"><label class="cv2-label">Basic Pay <span class="req">*</span></label><input type="number" name="basic_pay" placeholder="₹"></div>
-            <div class="cv2-field is-full"><label class="cv2-label">Salary Per Service <span class="cv2-pill" style="font-weight:600;">Technical only</span></label><input type="number" name="salary_per_work" placeholder="₹"></div>
-            <div class="cv2-field is-full"><label class="cv2-label">Effective From <span class="req">*</span></label><input type="date" name="effective_from"></div>
+            @if($isTechnical)
+            <div class="cv2-field is-full"><label class="cv2-label">Salary Per Service <span class="req">*</span> <span class="cv2-pill" style="font-weight:600;">Technical</span></label><input type="number" name="salary_per_work" placeholder="₹"></div>
+            @endif
+            <div class="cv2-field is-full"><label class="cv2-label">Effective From <span class="req">*</span></label><input type="date" name="effective_from" max="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"></div>
           </div>
         </form>
       </div>
@@ -59,4 +71,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/employee.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/employee.js?v=2.0') }}"></script>@endsection

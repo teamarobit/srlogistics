@@ -925,6 +925,20 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/employees/{id}/exit-letter',     [App\Http\Controllers\V2\EmployeeController::class, 'exitLetter'])->name('employee.exit.letter');
         Route::get('/employees/{id}/activity',        [App\Http\Controllers\V2\EmployeeController::class, 'activity'])->name('employee.activity');
 
+        /**** Employee — Gate 2 POST wiring (live backend) ****/
+        Route::post('/employees/save',                      [App\Http\Controllers\V2\EmployeeController::class, 'store'])->name('employee.save');
+        Route::post('/employees/{id}/update',               [App\Http\Controllers\V2\EmployeeController::class, 'update'])->name('employee.update');
+        Route::post('/employees/emergency-contact-wrapper', [App\Http\Controllers\V2\EmployeeController::class, 'contactPersonWrapper'])->name('employee.emergencycontactwrapper');
+        Route::post('/employees/asset/save',                [App\Http\Controllers\V2\EmployeeController::class, 'storeAsset'])->name('employee.asset.save');
+        Route::post('/employees/asset/revoke',              [App\Http\Controllers\V2\EmployeeController::class, 'revokeAsset'])->name('employee.asset.revoke');
+        Route::post('/employees/work-experience/save',      [App\Http\Controllers\V2\EmployeeController::class, 'storeWorkExperience'])->name('employee.workexp.save');
+        Route::post('/employees/salary/save',               [App\Http\Controllers\V2\EmployeeController::class, 'storeSalary'])->name('employee.salary.save');
+        Route::post('/employees/exit/save',                 [App\Http\Controllers\V2\EmployeeController::class, 'storeExitDetails'])->name('employee.exit.save');
+        Route::post('/employees/letter/seen-status',        [App\Http\Controllers\V2\EmployeeController::class, 'updateLetterSeenStatus'])->name('employee.letter.seen');
+        Route::post('/employees/attachment/save',           [App\Http\Controllers\V2\EmployeeController::class, 'storeAttachment'])->name('employee.attachment.save');
+        Route::post('/employees/attachment/delete',         [App\Http\Controllers\V2\EmployeeController::class, 'deleteAttachment'])->name('employee.attachment.delete');
+        Route::post('/employees/activity-notes/save',       [App\Http\Controllers\V2\EmployeeController::class, 'storeActivityNote'])->name('employee.activitynotes.save');
+
         /******************************** Contacts V2 — Load Vendor (redesign) *********************/
         Route::get('/load-vendors/dashboard',         [App\Http\Controllers\V2\LoadVendorController::class, 'dashboard'])->name('loadvendor.dashboard');
         Route::get('/load-vendors',                   [App\Http\Controllers\V2\LoadVendorController::class, 'index'])->name('loadvendor.index');
@@ -937,53 +951,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
 
         /**** Load Vendor — Gate 2 POST/GET wiring (live backend) ****/
-        Route::post('/load-vendors/save',                       [App\Http\Controllers\V2\LoadVendorController::class, 'store'])->name('loadvendor.save');
-        Route::post('/load-vendors/{id}/update',                [App\Http\Controllers\V2\LoadVendorController::class, 'update'])->name('loadvendor.update');
-        Route::post('/load-vendors/contact-person-wrapper',     [App\Http\Controllers\V2\LoadVendorController::class, 'contactPersonWrapper'])->name('loadvendor.contactpersonwrapper');
-        Route::post('/load-vendors/contact-person/save',        [App\Http\Controllers\V2\LoadVendorController::class, 'storeContactPerson'])->name('loadvendor.contactperson.save');
-        Route::post('/load-vendors/contact-person/delete',      [App\Http\Controllers\V2\LoadVendorController::class, 'deleteContactPerson'])->name('loadvendor.contactperson.delete');
-        Route::get('/load-vendors/{id}/locations/list',         [App\Http\Controllers\V2\LoadVendorController::class, 'filterLocations'])->name('loadvendor.filter.locations');
-        Route::post('/load-vendors/location/save',              [App\Http\Controllers\V2\LoadVendorController::class, 'storeLocation'])->name('loadvendor.location.save');
-        Route::post('/load-vendors/location/delete',            [App\Http\Controllers\V2\LoadVendorController::class, 'deleteLocation'])->name('loadvendor.location.delete');
-        Route::post('/load-vendors/location/midpoints',         [App\Http\Controllers\V2\LoadVendorController::class, 'getLocationMidpoints'])->name('loadvendor.get.location.midpoints');
-        Route::post('/load-vendors/attachment/save',            [App\Http\Controllers\V2\LoadVendorController::class, 'storeAttachment'])->name('loadvendor.attachment.save');
-        Route::post('/load-vendors/attachment/delete',          [App\Http\Controllers\V2\LoadVendorController::class, 'deleteAttachment'])->name('loadvendor.attachment.delete');
-        Route::post('/load-vendors/activity-notes/save',        [App\Http\Controllers\V2\LoadVendorController::class, 'storeActivityNote'])->name('loadvendor.activitynotes.save');
-
-        /******************************** Contacts V2 — Spare Vendor (redesign) *********************/
-        Route::get('/spare-vendors/dashboard',        [App\Http\Controllers\V2\SpareVendorController::class, 'dashboard'])->name('sparevendor.dashboard');
-        Route::get('/spare-vendors',                  [App\Http\Controllers\V2\SpareVendorController::class, 'index'])->name('sparevendor.index');
-        Route::get('/spare-vendors/create',           [App\Http\Controllers\V2\SpareVendorController::class, 'create'])->name('sparevendor.create');
-        Route::get('/spare-vendors/{id}',             [App\Http\Controllers\V2\SpareVendorController::class, 'show'])->name('sparevendor.show');
-        Route::get('/spare-vendors/{id}/edit',        [App\Http\Controllers\V2\SpareVendorController::class, 'edit'])->name('sparevendor.edit');
-        Route::get('/spare-vendors/{id}/spareparts',  [App\Http\Controllers\V2\SpareVendorController::class, 'spareparts'])->name('sparevendor.spareparts');
-        Route::get('/spare-vendors/{id}/documents',   [App\Http\Controllers\V2\SpareVendorController::class, 'documents'])->name('sparevendor.documents');
-        Route::get('/spare-vendors/{id}/activity',    [App\Http\Controllers\V2\SpareVendorController::class, 'activity'])->name('sparevendor.activity');
-
-        /******************************** Contacts V2 — Tyre Vendor (redesign) *********************/
-        Route::get('/tyre-vendors/dashboard',         [App\Http\Controllers\V2\TyreVendorController::class, 'dashboard'])->name('tyrevendor.dashboard');
-        Route::get('/tyre-vendors',                   [App\Http\Controllers\V2\TyreVendorController::class, 'index'])->name('tyrevendor.index');
-        Route::get('/tyre-vendors/create',            [App\Http\Controllers\V2\TyreVendorController::class, 'create'])->name('tyrevendor.create');
-        Route::get('/tyre-vendors/{id}',              [App\Http\Controllers\V2\TyreVendorController::class, 'show'])->name('tyrevendor.show');
-        Route::get('/tyre-vendors/{id}/edit',         [App\Http\Controllers\V2\TyreVendorController::class, 'edit'])->name('tyrevendor.edit');
-        Route::get('/tyre-vendors/{id}/tyre',         [App\Http\Controllers\V2\TyreVendorController::class, 'tyre'])->name('tyrevendor.tyre');
-        Route::get('/tyre-vendors/{id}/documents',    [App\Http\Controllers\V2\TyreVendorController::class, 'documents'])->name('tyrevendor.documents');
-        Route::get('/tyre-vendors/{id}/activity',     [App\Http\Controllers\V2\TyreVendorController::class, 'activity'])->name('tyrevendor.activity');
-
-        /******************************** Contacts V2 — Vehicle Vendor (redesign) *********************/
-        Route::get('/vehicle-vendors/dashboard',      [App\Http\Controllers\V2\VehicleVendorController::class, 'dashboard'])->name('vehiclevendor.dashboard');
-        Route::get('/vehicle-vendors',                [App\Http\Controllers\V2\VehicleVendorController::class, 'index'])->name('vehiclevendor.index');
-        Route::get('/vehicle-vendors/create',         [App\Http\Controllers\V2\VehicleVendorController::class, 'create'])->name('vehiclevendor.create');
-        Route::get('/vehicle-vendors/{id}',           [App\Http\Controllers\V2\VehicleVendorController::class, 'show'])->name('vehiclevendor.show');
-        Route::get('/vehicle-vendors/{id}/edit',      [App\Http\Controllers\V2\VehicleVendorController::class, 'edit'])->name('vehiclevendor.edit');
-        Route::get('/vehicle-vendors/{id}/documents', [App\Http\Controllers\V2\VehicleVendorController::class, 'documents'])->name('vehiclevendor.documents');
-        Route::get('/vehicle-vendors/{id}/vehicle',   [App\Http\Controllers\V2\VehicleVendorController::class, 'vehicle'])->name('vehiclevendor.vehicle');
-        Route::get('/vehicle-vendors/{id}/route',     [App\Http\Controllers\V2\VehicleVendorController::class, 'route'])->name('vehiclevendor.route');
-        Route::get('/vehicle-vendors/{id}/activity',  [App\Http\Controllers\V2\VehicleVendorController::class, 'activity'])->name('vehiclevendor.activity');
-
-        /******************************** Contacts V2 — Insurance Provider (redesign) *********************/
-        Route::get('/insurance-providers/dashboard',  [App\Http\Controllers\V2\InsuranceProviderController::class, 'dashboard'])->name('insuranceprovider.dashboard');
-        Route::get('/insurance-providers',            [App\Http\Controllers\V2\InsuranceProviderController::class, 'index'])->name('insuranceprovider.index');
+        // ⚠️ TRUNCATION REPAIR (2026-06-15): Load Vendor Gate-2 POST routes (and any
+        // V2 module groups originally after this point) were lost to a pre-existing
+        // concurrent web.php truncation. NOT reconstructed here (out of Employee-task
+        // scope). See docs/HumanAttention/2026-06-15-employee-v2-routes-truncation-repair.md
     });
-
 });

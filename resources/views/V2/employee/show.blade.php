@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/employee.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/employee.css?v=2.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -57,12 +57,12 @@
                     </div>
                 </div>
                 <div class="cv2-card">
-                    <div class="cv2-card-h"><h3>Recent Activity</h3><a class="cv2-link" href="{{ route('contact.v2.employee.activity', $e['id']) }}">View all →</a></div>
+                    <div class="cv2-card-h"><h3>Activity</h3><a class="cv2-link" href="{{ route('contact.v2.employee.activity', $e['id']) }}">View all →</a></div>
                     <div class="cv2-card-b">
                         <ul class="cv2-mini">
-                            <li><span class="cv2-mini-ic"><i class="bi bi-cash-stack"></i></span><div class="cv2-mini-body"><b>Salary revised to ₹38,000</b><span>by Superadmin · 2 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-pc-display"></i></span><div class="cv2-mini-body"><b>Laptop DELL-4471 issued</b><span>by HR · 6 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-calendar2-week"></i></span><div class="cv2-mini-body"><b>2 days casual leave approved</b><span>by Operations · 2 weeks ago</span></div></li>
+                            <li><span class="cv2-mini-ic"><i class="bi bi-clock-history"></i></span><div class="cv2-mini-body"><b>{{ $counts['activity'] }} activity entries</b><span>Open the Activity page to view the full log</span></div></li>
+                            <li><span class="cv2-mini-ic"><i class="bi bi-cash-stack"></i></span><div class="cv2-mini-body"><b>{{ $counts['salary'] }} salary revisions</b><span>Managed on the Salary page</span></div></li>
+                            <li><span class="cv2-mini-ic"><i class="bi bi-pc-display"></i></span><div class="cv2-mini-body"><b>{{ $counts['assets'] }} assets issued</b><span>Managed on the Assets page</span></div></li>
                         </ul>
                     </div>
                 </div>

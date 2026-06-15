@@ -50,7 +50,7 @@
 @if($isExited)
 <div class="cv2-exit-banner">
     <i class="bi bi-lock-fill"></i>
-    <div>This employee has exited on 18 Apr 2026 — editing is locked.
+    <div>This employee has exited{{ !empty($e['exit_date']) ? ' on '.\Carbon\Carbon::parse($e['exit_date'])->format('d M Y') : '' }} — editing is locked.
         <small>Add actions on Assets, Salary, Work Experience &amp; Joining are disabled. The exit letter is available on the Exit page.</small>
     </div>
 </div>

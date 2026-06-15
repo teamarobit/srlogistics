@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('css')<link href="{{ asset('css/V2/employee.css?v=1.0') }}" rel="stylesheet">@endsection
+@section('css')<link href="{{ asset('css/V2/employee.css?v=2.0') }}" rel="stylesheet">@endsection
 @section('content')
 <div class="layout-wrapper">
     @include('includes.header')
@@ -13,10 +13,21 @@
                     <table class="cv2-table">
                         <thead><tr><th>Document</th><th>Type</th><th>Size</th><th>Uploaded</th><th style="text-align:right;">Actions</th></tr></thead>
                         <tbody>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-image" style="color:var(--cv2-navy);"></i> aadhaar.jpg</span></td><td>Aadhaar</td><td>220 KB</td><td>14 Feb 23</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-image" style="color:var(--cv2-navy);"></i> pan-card.jpg</span></td><td>PAN</td><td>180 KB</td><td>14 Feb 23</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-pdf" style="color:var(--cv2-bad);"></i> resume.pdf</span></td><td>Resume</td><td>640 KB</td><td>10 Feb 23</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
-                            <tr><td><span class="cv2-t-name"><i class="bi bi-file-earmark-pdf" style="color:var(--cv2-bad);"></i> appointment-letter.pdf</span></td><td>Appointment</td><td>410 KB</td><td>14 Feb 23</td><td class="cv2-actions"><a href="javascript:void(0)" class="cv2-ic-btn"><i class="bi bi-download"></i></a><a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del"><i class="bi bi-trash3"></i></a></td></tr>
+                            @forelse($coattachments as $doc)
+                            @php $isPdf = \Illuminate\Support\Str::endsWith(strtolower($doc->original_name ?? $doc->name ?? ''), '.pdf'); @endphp
+                            <tr>
+                                <td><span class="cv2-t-name"><i class="bi {{ $isPdf?'bi-file-earmark-pdf':'bi-file-earmark-image' }}" style="color:{{ $isPdf?'var(--cv2-bad)':'var(--cv2-navy)' }};"></i> {{ $doc->original_name ?? $doc->name }}</span></td>
+                                <td>{{ $doc->coattachtype?->name ?? '—' }}</td>
+                                <td>{{ $doc->file_size ? round($doc->file_size/1024).' KB' : '—' }}</td>
+                                <td>{{ $doc->created_at ? \Carbon\Carbon::parse($doc->created_at)->format('d M y') : '' }}</td>
+                                <td class="cv2-actions">
+                                    <a href="{{ asset('medias/'.$doc->name) }}" target="_blank" class="cv2-ic-btn" title="Download"><i class="bi bi-download"></i></a>
+                                    <a href="javascript:void(0)" class="cv2-ic-btn is-danger cv2-del-doc" data-id="{{ $doc->id }}" title="Delete"><i class="bi bi-trash3"></i></a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="5" class="text-center cv2-empty" style="padding:24px;">No documents uploaded yet.</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -24,13 +35,19 @@
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Add Document</h3></div>
                 <div class="cv2-card-b">
-                    <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Document Type</label><select class="cv2-select" style="width:100%;"><option value="">Select type…</option><option>Aadhaar</option><option>PAN</option><option>Resume</option><option>Appointment</option></select></div>
-                    <div class="cv2-dropzone"><i class="bi bi-cloud-arrow-up"></i>Drop files here or click to upload</div>
-                    <span class="cv2-hint" style="display:block;margin-top:8px;">JPG, PNG or PDF · max 2 MB · up to 2 files per type</span>
+                    <form id="cv2DocForm" action="{{ route('contact.v2.employee.attachment.save') }}" enctype="multipart/form-data" data-list-url="{{ route('contact.v2.employee.documents', $contact->id) }}" data-delete-url="{{ route('contact.v2.employee.attachment.delete') }}">
+                        <input type="hidden" name="contact_id" value="{{ $contact->id }}">
+                        <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Document Type <span class="req">*</span></label>
+                            <select class="cv2-select" name="coattachtype_id" style="width:100%;"><option value="">Select type…</option>@foreach($coattachtypes as $ct)<option value="{{ $ct->id }}">{{ $ct->name }}</option>@endforeach</select>
+                        </div>
+                        <div class="cv2-field" style="margin-bottom:12px;"><label class="cv2-label">Files <span class="req">*</span></label><input type="file" name="files[]" accept=".jpg,.jpeg,.png,.pdf" multiple></div>
+                        <span class="cv2-hint" style="display:block;margin-bottom:12px;">JPG, PNG or PDF · max 2 MB · up to 2 files per type</span>
+                        <button type="submit" class="cv2-btn cv2-btn-primary" style="width:100%;justify-content:center;"><i class="bi bi-cloud-arrow-up"></i>Upload Document</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/employee.js?v=1.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/employee.js?v=2.0') }}"></script>@endsection
