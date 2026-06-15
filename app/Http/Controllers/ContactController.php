@@ -9280,6 +9280,37 @@ class ContactController extends Controller
                 }
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | At least one document (Document Type + attachment file) is mandatory
+        |--------------------------------------------------------------------------
+        */
+        $validator->after(function ($validator) use ($request) {
+            $attachtypes = $request->attachtypes ?? [];
+            $files = $request->file('files') ?? [];
+
+            $hasCompleteDoc = false;
+            foreach ($attachtypes as $key => $attachtype) {
+                if ($attachtype && isset($files[$key]) && !empty($files[$key])) {
+                    $hasCompleteDoc = true;
+                    break;
+                }
+            }
+
+            if (!$hasCompleteDoc) {
+                $firstType    = $attachtypes[0] ?? null;
+                $firstHasFile = isset($files[0]) && !empty($files[0]);
+
+                if (!$firstType) {
+                    $validator->errors()->add('coattachtype.0', 'Document type is required.');
+                }
+                if (!$firstHasFile) {
+                    $validator->errors()->add('coattachments.0', 'Attachment file is required.');
+                }
+            }
+        });
+
         
         
         
@@ -10437,6 +10468,37 @@ class ContactController extends Controller
                 }
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | At least one document (Document Type + attachment file) is mandatory
+        |--------------------------------------------------------------------------
+        */
+        $validator->after(function ($validator) use ($request) {
+            $attachtypes = $request->attachtypes ?? [];
+            $files = $request->file('files') ?? [];
+
+            $hasCompleteDoc = false;
+            foreach ($attachtypes as $key => $attachtype) {
+                if ($attachtype && isset($files[$key]) && !empty($files[$key])) {
+                    $hasCompleteDoc = true;
+                    break;
+                }
+            }
+
+            if (!$hasCompleteDoc) {
+                $firstType    = $attachtypes[0] ?? null;
+                $firstHasFile = isset($files[0]) && !empty($files[0]);
+
+                if (!$firstType) {
+                    $validator->errors()->add('coattachtype.0', 'Document type is required.');
+                }
+                if (!$firstHasFile) {
+                    $validator->errors()->add('coattachments.0', 'Attachment file is required.');
+                }
+            }
+        });
+
         
         
         
