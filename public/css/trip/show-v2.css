@@ -2507,6 +2507,12 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 .td2-doc-row-2 { grid-template-columns: repeat(2, 1fr); }
 .td2-doc-row-3 { grid-template-columns: repeat(3, 1fr); }
 
+/* E-Way section — compact spacing */
+.td2-eway-section .td2-doc-card { margin-bottom: 8px; }
+.td2-eway-section .td2-doc-card-body { padding: 10px 14px; }
+.td2-eway-section .td2-doc-row { gap: 6px 12px; margin-bottom: 6px; }
+.td2-eway-section .td2-doc-row:last-child { margin-bottom: 0; }
+
 .td2-doc-label {
     font-size: 10px;
     color: #9ca3af;
