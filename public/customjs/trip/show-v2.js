@@ -7,6 +7,11 @@
  * v4.7 | 2026-06-15 — SOS / Resume events injected into the Status Timeline
  * v4.8 | 2026-06-16 — SOS incident location: auto GPS capture + editable Leaflet map
  * v4.9 | 2026-06-16 — SOS submit Toast now success (was error)
+ * v5.0 | 2026-06-16 — Resume modal: vehicle picker mirrors Vehicle Allocation tab
+ *                     (suggested cards + OR + Add/Allocate); card pick → inline Assign
+ * v5.1 | 2026-06-16 — Resume modal: change-vehicle/driver notes; change-driver shows the
+ *                     driver's currently-assigned vehicle card; condition notes (not on
+ *                     another ongoing trip)
  */
 
 /* =============================================================
@@ -970,6 +975,89 @@ function clearResumeErrors() {
     $('#resumeTripForm .td2-resume-err').text('');
 }
 
+/* Reset the vehicle-allocation picker (suggested cards + Add/Allocate) to a clean state */
+function resumeVehReset() {
+    $('input[name="td2ResumeVehSelect"]').prop('checked', false);
+    $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('');
+    $('#td2ResumeOwnVeh').prop('checked', true);
+    $('.td2-resume-if-own').show();
+    $('.td2-resume-if-ext').hide();
+    $('#td2ResumeAssignedVehicle').val('');
+    $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
+    $('#td2ResumeAssignPick').html('');
+    $('#td2ResumeAssignBtn').prop('disabled', false)
+        .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
+}
+
+/* Reset the driver picker (selected driver's assigned-vehicle card) to a clean state */
+function resumeDriverReset() {
+    $('#td2ResumeDriverVehWrap').addClass('d-none');
+    $('.td2-resume-driver-veh-card').addClass('d-none');
+}
+
+/* A driver was picked → reveal that driver's currently-assigned vehicle card
+   (mirrors the Vehicle Allocation tab's selected-vehicle summary). */
+$(document).on('change', '#td2ResumeDriverSelect', function () {
+    var key = $(this).find('option:selected').attr('data-driver-key') || '';
+    $('.td2-resume-driver-veh-card').addClass('d-none');
+    if (key) {
+        $('.td2-resume-driver-veh-card[data-driver-key="' + key + '"]').removeClass('d-none');
+        $('#td2ResumeDriverVehWrap').removeClass('d-none');
+        $('#resumeTripForm .td2-resume-err[data-for="driver"]').text('');
+    } else {
+        $('#td2ResumeDriverVehWrap').addClass('d-none');
+    }
+});
+
+/* Own / External toggle — scoped to the Resume modal */
+$(document).on('change', '.td2-resume-own-veh', function () {
+    $('.td2-resume-if-own').show();
+    $('.td2-resume-if-ext').hide();
+});
+$(document).on('change', '.td2-resume-ext-veh', function () {
+    $('.td2-resume-if-own').hide();
+    $('.td2-resume-if-ext').show();
+});
+
+/* A vehicle was picked (suggested card OR own/external select) → reveal Assign button.
+   No nested modal opens — the user just confirms with the inline Assign button. */
+$(document).on('change', '.td2-resume-veh-pick', function () {
+    var reg;
+    if ($(this).is('input[type="radio"]')) {
+        reg = $(this).val();
+        $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect').val('');
+    } else {
+        reg = $(this).val();
+        $('input[name="td2ResumeVehSelect"]').prop('checked', false);
+        if (this.id === 'td2ResumeOwnVehSelect') { $('#td2ResumeExtVehicleSelect').val(''); }
+        else { $('#td2ResumeOwnVehSelect').val(''); }
+    }
+
+    /* A new pick invalidates any previous assignment */
+    $('#td2ResumeAssignedVehicle').val('');
+    $('#td2ResumeAssignBtn').prop('disabled', false)
+        .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
+
+    if (reg) {
+        $('#td2ResumeAssignPick').html('Selected: <strong>' + reg + '</strong>');
+        $('#td2ResumeAssignWrap').removeClass('d-none').attr('data-reg', reg);
+        $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('');
+    } else {
+        $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
+    }
+});
+
+/* Assign the picked vehicle to the resume (prototype — client side only) */
+$(document).on('click', '#td2ResumeAssignBtn', function () {
+    var reg = $('#td2ResumeAssignWrap').attr('data-reg') || '';
+    if (!reg) { return; }
+    $('#td2ResumeAssignedVehicle').val(reg);
+    $(this).prop('disabled', true)
+        .html('<i class="uil uil-check-circle me-1"></i> Assigned · ' + reg);
+    $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('');
+    Toast.fire({ icon: 'success', title: 'Vehicle assigned.' });
+});
+
 /* Prep modal each time it opens */
 $(document).on('shown.bs.modal', '#resumeTripModal', function () {
     var n = new Date();
@@ -982,6 +1070,8 @@ $(document).on('shown.bs.modal', '#resumeTripModal', function () {
     $('#td2ResumeReason').val('');
     $('#td2ResumeNote').val('');
     clearResumeErrors();
+    resumeVehReset();
+    resumeDriverReset();
     syncResumeActionFields();
 
     /* Select2 inside the modal needs dropdownParent (frontend skill PART 7) */
@@ -1001,7 +1091,7 @@ $(document).on('click', '.td2-resume-confirm-btn', function () {
 
     var action = $('#resumeTripForm input[name="resume_action"]:checked').val();
     var reason = $.trim($('#td2ResumeReason').val());
-    var vehicle = $('#td2ResumeVehicleSelect').val();
+    var vehicle = $('#td2ResumeAssignedVehicle').val();
     var driver  = $('#td2ResumeDriverSelect').val();
     var ok = true;
 
@@ -1010,7 +1100,7 @@ $(document).on('click', '.td2-resume-confirm-btn', function () {
         ok = false;
     }
     if ((action === 'change_vehicle' || action === 'change_both') && !vehicle) {
-        $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('Please select the new vehicle.');
+        $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('Please select a vehicle and click Assign.');
         ok = false;
     }
     if ((action === 'change_driver' || action === 'change_both') && !driver) {

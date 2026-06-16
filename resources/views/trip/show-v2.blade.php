@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=9.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=9.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1515,7 +1515,7 @@
 
 {{-- Resume Trip (shown only while the trip is Paused) --}}
 <div class="modal fade" id="resumeTripModal" tabindex="-1" aria-labelledby="resumeTripLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header" style="background:#ecfdf5;border-bottom:2px solid #bbf7d0;">
                 <h5 class="modal-title" id="resumeTripLabel" style="color:#166534;">
@@ -1562,28 +1562,211 @@
                             </div>
                         </div>
 
-                        {{-- Conditional: new vehicle (change_vehicle / change_both) --}}
+                        {{-- Conditional: new vehicle (change_vehicle / change_both) —
+                             mirrors the Vehicle Allocation tab: suggested cards + OR + Add/Allocate.
+                             Selecting a card or a vehicle reveals the Assign button (no nested modal). --}}
                         <div class="col-12 d-none" id="td2ResumeVehicleWrap">
-                            <label class="form-label">New Vehicle</label>
-                            <select class="form-select select2-modal" id="td2ResumeVehicleSelect" name="new_vehicle">
-                                <option value="">Select vehicle…</option>
-                                <option>WB-12-AB-1237 · Tata 3118</option>
-                                <option>WB-19-CD-4521 · Ashok Leyland 2820</option>
-                                <option>OD-02-EF-7788 · Eicher Pro 6028</option>
-                            </select>
+                            <div class="td2-resume-card">
+                            <label class="form-label d-block td2-resume-card-title">Allocate Vehicle</label>
+                            <p class="td2-resume-cond-note">
+                                <i class="uil uil-filter"></i>
+                                Only vehicles not currently assigned to another ongoing trip are listed.
+                            </p>
+
+                            {{-- Part A: Suggested Vehicles --}}
+                            <div class="td2-section">
+                                <div class="accordion td2-veh-accordion" id="td2ResumeSuggestedVeh">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header mb-2">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2ResumeVehCollapse">
+                                                <i class="uil uil-bolt-alt td2-veh-acc-icon"></i>
+                                                <span class="td2-veh-acc-title">Select from Suggested Vehicles</span>
+                                                <span class="td2-veh-acc-count">3</span>
+                                                <span class="td2-veh-acc-pill">Recommended</span>
+                                            </button>
+                                        </h2>
+                                        <div id="td2ResumeVehCollapse" class="accordion-collapse collapse show">
+                                            <div class="accordion-body p-0">
+                                                @php
+                                                    $resumeSuggested = [
+                                                        ['WB-12-AB-1237','green','Ashok Ray','+91 8879402641','green','10 Mo','empty','Empty ✓','Yes','Kolkata','5th','10 Years 5 Months'],
+                                                        ['WB-34-CD-5678','red','Ranjit Das','+91 9432101234','yellow','4 Mo','onway','Not Empty ✗','On the Way (2 days)','Mumbai','3rd','7 Years 2 Months'],
+                                                        ['WB-56-EF-9012','yellow','Manoj Kumar','+91 7654321098','green','14 Mo','empty','Empty ✓','Yes','Durgapur','8th','4 Years 9 Months'],
+                                                    ];
+                                                @endphp
+                                                @foreach ($resumeSuggested as $i => $rv)
+                                                <div class="td2-veh-card-wrap">
+                                                    <input type="radio" name="td2ResumeVehSelect" id="td2ResumeVeh{{ $i }}" class="td2-veh-radio td2-resume-veh-pick" value="{{ $rv[0] }}">
+                                                    <label for="td2ResumeVeh{{ $i }}" class="td2-veh-card td2-veh-card-{{ $rv[1] }}">
+                                                        <div class="td2-vc-header">
+                                                            <div class="td2-vc-num">{{ $rv[0] }}</div>
+                                                        </div>
+                                                        <div class="td2-vc-grid">
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Driver Name</span><span class="td2-vc-val">{{ $rv[2] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Driver Number</span><span class="td2-vc-val">{{ $rv[3] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">About Driver</span><span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-{{ $rv[4] }}"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">{{ $rv[5] }}</span></span></span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Status</span><span class="td2-vc-val"><span class="td2-veh-status-{{ $rv[6] }}">{{ $rv[7] }}</span></span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Availability</span><span class="td2-vc-val">{{ $rv[8] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Live Location</span><span class="td2-vc-val">{{ $rv[9] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Vehicle Rank</span><span class="td2-vc-val">{{ $rv[10] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Associated Since</span><span class="td2-vc-val">{{ $rv[11] }}</span></div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Note: effect of changing the vehicle (change_vehicle / change_both) --}}
+                            <div class="td2-resume-note td2-resume-note-amber">
+                                <i class="uil uil-info-circle"></i>
+                                <span>Selecting the vehicle will unassign the vehicle's driver and assign the current driver to selected vehicle.</span>
+                            </div>
+
+                            {{-- OR Divider --}}
+                            <div class="td2-or-divider"><span>OR</span></div>
+
+                            {{-- Part C: Add / Allocate Vehicle --}}
+                            <div class="td2-section td2-alloc-section">
+                                <div class="td2-alloc-head">
+                                    <span class="td2-alloc-head-icon"><i class="uil uil-truck"></i></span>
+                                    <div class="td2-alloc-head-text">
+                                        <p class="td2-alloc-head-title">Add / Allocate Vehicle</p>
+                                        <p class="td2-alloc-head-sub">Pick a vehicle from your own fleet or assign an external vendor vehicle to this trip.</p>
+                                    </div>
+                                </div>
+
+                                <div class="td2-alloc-source mb-3">
+                                    <span class="td2-alloc-source-label">Select any of these below</span>
+                                    <div class="td2-veh-type-toggle">
+                                        <input type="radio" name="td2ResumeVehType" id="td2ResumeOwnVeh" value="Own" class="td2-vtype-radio td2-resume-own-veh" checked>
+                                        <label for="td2ResumeOwnVeh" class="td2-vtype-label">Own Vehicle</label>
+                                        <input type="radio" name="td2ResumeVehType" id="td2ResumeExtVeh" value="External" class="td2-vtype-radio td2-resume-ext-veh">
+                                        <label for="td2ResumeExtVeh" class="td2-vtype-label">External / Vendor</label>
+                                    </div>
+                                </div>
+
+                                {{-- If Own Vehicle --}}
+                                <div class="td2-resume-if-own td2-alloc-body">
+                                    <div class="mb-1">
+                                        <label class="form-label">Select Vehicle</label>
+                                        <select class="form-select td2-resume-veh-pick" id="td2ResumeOwnVehSelect">
+                                            <option value="">Select vehicle...</option>
+                                            <option>WB-12-AB-1237</option>
+                                            <option>WB-34-CD-5678</option>
+                                            <option>WB-56-EF-9012</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- If External Vehicle --}}
+                                <div class="td2-resume-if-ext td2-alloc-body" style="display:none;">
+                                    <div class="mb-2">
+                                        <label class="form-label">Vendor</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select class="form-select" id="td2ResumeExtVendorSelect">
+                                                <option value="">Select vendor...</option>
+                                                <option>ABC Logistics</option>
+                                                <option>XYZ Transport</option>
+                                                <option>MNC Logistics</option>
+                                            </select>
+                                            <a href="{{ route('contact.vehiclevendor.create') }}" target="_blank" rel="noopener" class="text-nowrap small">+ Add Vendor</a>
+                                        </div>
+                                    </div>
+                                    <div class="mb-1">
+                                        <label class="form-label">Vehicle</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select class="form-select td2-resume-veh-pick" id="td2ResumeExtVehicleSelect">
+                                                <option value="">Select vehicle...</option>
+                                                <option>WB-99-ZZ-0001</option>
+                                                <option>DL-01-XX-5050</option>
+                                            </select>
+                                            <a href="{{ route('vehiclemanagement.create') }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm text-nowrap">+ Add Vehicle</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Assign button — appears once a vehicle is picked (no nested modal opens) --}}
+                            <div class="td2-resume-assign-wrap d-none" id="td2ResumeAssignWrap">
+                                <div class="td2-resume-assign-pick" id="td2ResumeAssignPick"></div>
+                                <button type="button" class="btn btn-success td2-resume-assign-btn" id="td2ResumeAssignBtn">
+                                    <i class="uil uil-check me-1"></i> Assign Vehicle
+                                </button>
+                            </div>
+
+                            <input type="hidden" id="td2ResumeAssignedVehicle" name="new_vehicle">
                             <span class="text-danger small d-block mt-1 td2-resume-err" data-for="vehicle"></span>
+                            </div>{{-- /.td2-resume-card --}}
                         </div>
 
-                        {{-- Conditional: new driver (change_driver / change_both) --}}
+                        {{-- Conditional: new driver (change_driver / change_both) —
+                             on selecting a driver, the driver's currently-assigned vehicle is shown
+                             (mirrors the Vehicle Allocation tab's selected-vehicle summary card). --}}
                         <div class="col-12 d-none" id="td2ResumeDriverWrap">
-                            <label class="form-label">New Driver</label>
+                            <div class="td2-resume-card">
+                            <label class="form-label d-block td2-resume-card-title">Allocate Driver</label>
+                            <p class="td2-resume-cond-note">
+                                <i class="uil uil-filter"></i>
+                                Only drivers not currently assigned to another ongoing trip are listed.
+                            </p>
+
+                            @php
+                                $resumeDrivers = [
+                                    ['key' => 'd1', 'name' => 'Ashok Ray',    'phone' => '+91 88794 02641',
+                                     'veh' => 'WB-12-AB-1237', 'rag' => 'green',  'bhv' => 'green',  'bhvExp' => '10 Mo',
+                                     'status' => 'empty', 'statusLabel' => 'Empty ✓', 'avail' => 'Yes',
+                                     'loc' => 'Kolkata',  'rank' => '5th', 'since' => '10 Years 5 Months'],
+                                    ['key' => 'd2', 'name' => 'Ramesh Sahu',  'phone' => '+91 90381 11220',
+                                     'veh' => 'WB-45-KL-2210', 'rag' => 'yellow', 'bhv' => 'yellow', 'bhvExp' => '6 Mo',
+                                     'status' => 'onway', 'statusLabel' => 'On the Way (1 day)', 'avail' => 'On the Way (1 day)',
+                                     'loc' => 'Ranchi',   'rank' => '3rd', 'since' => '6 Years 2 Months'],
+                                    ['key' => 'd3', 'name' => 'Iqbal Khan',   'phone' => '+91 99320 44518',
+                                     'veh' => 'WB-67-MN-8899', 'rag' => 'green',  'bhv' => 'green',  'bhvExp' => '14 Mo',
+                                     'status' => 'empty', 'statusLabel' => 'Empty ✓', 'avail' => 'Yes',
+                                     'loc' => 'Asansol',  'rank' => '7th', 'since' => '4 Years 1 Month'],
+                                ];
+                            @endphp
+
                             <select class="form-select select2-modal" id="td2ResumeDriverSelect" name="new_driver">
                                 <option value="">Select driver…</option>
-                                <option>Ashok Ray · +91 88794 02641</option>
-                                <option>Ramesh Sahu · +91 90381 11220</option>
-                                <option>Iqbal Khan · +91 99320 44518</option>
+                                @foreach ($resumeDrivers as $rd)
+                                <option value="{{ $rd['name'] }} · {{ $rd['phone'] }}" data-driver-key="{{ $rd['key'] }}">{{ $rd['name'] }} · {{ $rd['phone'] }}</option>
+                                @endforeach
                             </select>
                             <span class="text-danger small d-block mt-1 td2-resume-err" data-for="driver"></span>
+
+                            {{-- Note: effect of changing the driver (change_driver / change_both) --}}
+                            <div class="td2-resume-note td2-resume-note-amber mt-2">
+                                <i class="uil uil-info-circle"></i>
+                                <span>Selecting driver will unassign the driver from the assigned vehicle and assign to the current (trip) vehicle.</span>
+                            </div>
+
+                            {{-- Selected driver's currently-assigned vehicle (one card per driver, shown on select) --}}
+                            <div class="td2-resume-driver-veh d-none" id="td2ResumeDriverVehWrap">
+                                <p class="td2-resume-driver-veh-title">Driver's currently assigned vehicle</p>
+                                @foreach ($resumeDrivers as $rd)
+                                <div class="td2-veh-card td2-veh-card-{{ $rd['rag'] }} td2-resume-driver-veh-card d-none" data-driver-key="{{ $rd['key'] }}">
+                                    <div class="td2-vc-header">
+                                        <div class="td2-vc-num">{{ $rd['veh'] }}</div>
+                                    </div>
+                                    <div class="td2-vc-grid">
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Driver Name</span><span class="td2-vc-val">{{ $rd['name'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Driver Number</span><span class="td2-vc-val">{{ $rd['phone'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">About Driver</span><span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-{{ $rd['bhv'] }}"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">{{ $rd['bhvExp'] }}</span></span></span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Status</span><span class="td2-vc-val"><span class="td2-veh-status-{{ $rd['status'] }}">{{ $rd['statusLabel'] }}</span></span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Availability</span><span class="td2-vc-val">{{ $rd['avail'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Live Location</span><span class="td2-vc-val">{{ $rd['loc'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Vehicle Rank</span><span class="td2-vc-val">{{ $rd['rank'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Associated Since</span><span class="td2-vc-val">{{ $rd['since'] }}</span></div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            </div>{{-- /.td2-resume-card --}}
                         </div>
 
                         {{-- Reason (required) --}}
@@ -2112,6 +2295,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.9') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.1') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

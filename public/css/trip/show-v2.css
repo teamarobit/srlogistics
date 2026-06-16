@@ -5075,3 +5075,80 @@ body.td2-trip-paused #td2UpdateStatusLink {
 @media (max-width: 575px) {
     .td2-resume-action-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Resume modal — inline Assign affordance (no nested modal) ── */
+.td2-resume-assign-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+}
+.td2-resume-assign-pick {
+    font-size: 13px;
+    color: #166534;
+}
+.td2-resume-assign-pick strong { font-weight: 700; }
+.td2-resume-assign-btn { white-space: nowrap; }
+
+@media (max-width: 575px) {
+    .td2-resume-assign-wrap { flex-direction: column; align-items: stretch; }
+}
+
+/* ── Resume modal — re-allocation notes + driver's assigned vehicle (v9.2) ── */
+.td2-resume-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.td2-resume-note i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.td2-resume-note-amber {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+}
+.td2-resume-note-amber i { color: #d97706; }
+
+.td2-resume-cond-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 10px;
+    font-size: 12px;
+    font-style: italic;
+    color: #6b7280;
+}
+.td2-resume-cond-note i { font-size: 14px; color: #9ca3af; }
+
+.td2-resume-driver-veh { margin-top: 14px; }
+.td2-resume-driver-veh-title {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #64748b;
+}
+
+/* ── Resume modal — group each re-allocation block in a card (v9.3) ── */
+.td2-resume-card {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.td2-resume-card-title {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 6px;
+}
