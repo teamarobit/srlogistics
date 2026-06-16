@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('css')
+{{-- Leaflet (interactive map for SOS location capture) --}}
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.8') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1463,27 +1466,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Status</label>
+                            {{-- Route-stage progression only. Disruptions (Halt, Breakdown,
+                                 Accident, etc.) have moved to the SOS panel — report them there. --}}
                             <select class="form-select" id="td2StatusSelect" name="vehicle_stage">
                                 <option value="">Select status…</option>
                                 <option>Kolkata — Loading Point</option>
                                 <option>Kolaghat — Load &amp; Unload Point</option>
                                 <option>Patna — Loading Point</option>
                                 <option>Mumbai — Unloading Point (Destination)</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        {{-- Shown only when Status = Other (toggle handled in show-v2.js) --}}
-                        <div class="col-12 d-none" id="td2StatusOtherWrap">
-                            <label class="form-label">Other Status</label>
-                            <select class="form-select" id="td2StatusOther" name="vehicle_stage_other">
-                                <option value="">Select reason…</option>
-                                <option>Halt</option>
-                                <option>Breakdown</option>
-                                <option>Accident</option>
-                                <option>Detained (RTO / Police Check)</option>
-                                <option>Under Repair / Maintenance</option>
-                                <option>Diversion / Re-route</option>
-                                <option>Weather / Road Block Delay</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -1504,6 +1494,106 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary td2-status-save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Resume Trip (shown only while the trip is Paused) --}}
+<div class="modal fade" id="resumeTripModal" tabindex="-1" aria-labelledby="resumeTripLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#ecfdf5;border-bottom:2px solid #bbf7d0;">
+                <h5 class="modal-title" id="resumeTripLabel" style="color:#166534;">
+                    <i class="uil uil-play-circle"></i> Resume Trip
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="td2-resume-intro">
+                    This trip is paused. Choose how to resume — continue as-is, or re-allocate the
+                    vehicle / driver before the trip continues.
+                </p>
+                <form id="resumeTripForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Resume Date</label>
+                            <input type="date" class="form-control" id="td2ResumeDate" name="resume_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Resume Time</label>
+                            <input type="time" class="form-control" id="td2ResumeTime" name="resume_time">
+                        </div>
+
+                        {{-- Further action --}}
+                        <div class="col-12">
+                            <label class="form-label d-block">Further action</label>
+                            <div class="td2-resume-action-grid" id="td2ResumeActionGrid">
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="resume_only" checked>
+                                    <span><i class="uil uil-play"></i> Resume only</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_vehicle">
+                                    <span><i class="uil uil-truck"></i> Resume + change vehicle</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_driver">
+                                    <span><i class="uil uil-user"></i> Resume + change driver</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_both">
+                                    <span><i class="uil uil-exchange"></i> Resume + change both</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Conditional: new vehicle (change_vehicle / change_both) --}}
+                        <div class="col-12 d-none" id="td2ResumeVehicleWrap">
+                            <label class="form-label">New Vehicle</label>
+                            <select class="form-select select2-modal" id="td2ResumeVehicleSelect" name="new_vehicle">
+                                <option value="">Select vehicle…</option>
+                                <option>WB-12-AB-1237 · Tata 3118</option>
+                                <option>WB-19-CD-4521 · Ashok Leyland 2820</option>
+                                <option>OD-02-EF-7788 · Eicher Pro 6028</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="vehicle"></span>
+                        </div>
+
+                        {{-- Conditional: new driver (change_driver / change_both) --}}
+                        <div class="col-12 d-none" id="td2ResumeDriverWrap">
+                            <label class="form-label">New Driver</label>
+                            <select class="form-select select2-modal" id="td2ResumeDriverSelect" name="new_driver">
+                                <option value="">Select driver…</option>
+                                <option>Ashok Ray · +91 88794 02641</option>
+                                <option>Ramesh Sahu · +91 90381 11220</option>
+                                <option>Iqbal Khan · +91 99320 44518</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="driver"></span>
+                        </div>
+
+                        {{-- Reason (required) --}}
+                        <div class="col-12">
+                            <label class="form-label">Reason <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="td2ResumeReason" name="resume_reason"
+                                      rows="2" placeholder="Why is the trip being resumed / re-allocated?"></textarea>
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="reason"></span>
+                        </div>
+
+                        {{-- Note (optional) --}}
+                        <div class="col-12">
+                            <label class="form-label">Note <span class="text-muted small">(optional)</span></label>
+                            <input type="text" class="form-control" id="td2ResumeNote" name="resume_note"
+                                   placeholder="Optional note">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success td2-resume-confirm-btn" id="td2ResumeConfirmBtn">
+                    <i class="uil uil-play-circle me-1"></i> Resume Trip
+                </button>
             </div>
         </div>
     </div>
@@ -1782,6 +1872,11 @@
             <i class="uil uil-exclamation-triangle" style="font-size:20px;color:#dc2626;"></i>
             <h6 class="td2-overlay-title" style="color:#991b1b;">Report SOS Incident</h6>
         </div>
+        {{-- Resume Trip — only visible while the trip is Paused (body.td2-trip-paused) --}}
+        <button class="btn btn-sm td2-sos-resume-btn" type="button" id="td2SosResumeBtn"
+                data-bs-toggle="modal" data-bs-target="#resumeTripModal">
+            <i class="uil uil-play-circle"></i> Resume Trip
+        </button>
         <button class="btn btn-sm" type="button" id="td2SosHistoryBtn"
                 style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-size:11px;font-weight:600;">
             <i class="uil uil-history"></i> View History
@@ -1814,21 +1909,94 @@
             </div>
         </div>
 
+        {{-- ═══════════════════════════════════════════════════════════
+             INCIDENT LOCATION — auto-captured GPS + editable map.
+             Leaflet map (#td2SosMap) initialised in show-v2.js. The
+             marker is locked by default; "Edit" makes it draggable and
+             lets the operator tap the map to correct the pin. Captured
+             lat/lng/address ride along in the SOS submit event. --}}
+        <div class="td2-sos-loc" id="td2SosLoc">
+
+            <div class="td2-sos-loc-head">
+                <span class="td2-sos-loc-title">
+                    <i class="uil uil-location-point"></i> Incident Location
+                </span>
+                <span class="td2-sos-loc-status" id="td2SosLocStatus">
+                    <span class="td2-sos-loc-dot"></span>
+                    <span class="td2-sos-loc-status-txt">Locating…</span>
+                </span>
+            </div>
+
+            <div class="td2-sos-map-shell">
+                <div class="td2-sos-map" id="td2SosMap"></div>
+
+                {{-- Edit-mode hint ribbon (shown only while editing) --}}
+                <div class="td2-sos-map-hint d-none" id="td2SosMapHint">
+                    <i class="uil uil-info-circle"></i>
+                    Drag the pin or tap the map to adjust the location
+                </div>
+
+                {{-- Map action buttons (overlay, top-right) --}}
+                <div class="td2-sos-map-tools">
+                    <button type="button" class="td2-sos-map-btn" id="td2SosEditLocBtn"
+                            title="Edit location">
+                        <i class="uil uil-edit"></i> <span class="td2-sos-map-btn-lbl">Edit</span>
+                    </button>
+                    <button type="button" class="td2-sos-map-btn td2-sos-map-btn-gps" id="td2SosGpsBtn"
+                            title="Use my current location">
+                        <i class="uil uil-crosshair"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Resolved address + coordinates --}}
+            <div class="td2-sos-loc-meta">
+                <i class="uil uil-map-marker td2-sos-loc-meta-ico"></i>
+                <div class="td2-sos-loc-meta-text">
+                    <span class="td2-sos-loc-addr" id="td2SosLocAddr">Fetching address…</span>
+                    <span class="td2-sos-loc-coords" id="td2SosLocCoords">—</span>
+                </div>
+            </div>
+
+            {{-- Hidden inputs — captured values for the SOS submission --}}
+            <input type="hidden" id="td2SosLat" value="">
+            <input type="hidden" id="td2SosLng" value="">
+            <input type="hidden" id="td2SosAddress" value="">
+        </div>
+
         <p class="td2-sos-instr">Select all that apply — multiple incidents can be reported together</p>
 
-        {{-- Incident type multi-select (hashtag format per PDF §5) --}}
+        {{-- Incident type multi-select (hashtag format per PDF §5).
+             Merged list: disruptions previously under Update Status → "Other"
+             now live here as incidents (Halt, Detained, Diversion, Weather, etc.). --}}
         <div class="td2-sos-grid" id="td2SosCheckboxes">
-            <label class="td2-sos-chip">
-                <input type="checkbox" value="Maintenance">
-                <span><i class="uil uil-wrench"></i> #Maintenance</span>
-            </label>
             <label class="td2-sos-chip">
                 <input type="checkbox" value="Breakdown">
                 <span><i class="uil uil-car-sideview"></i> #Breakdown</span>
             </label>
             <label class="td2-sos-chip">
-                <input type="checkbox" value="Driver Run">
-                <span><i class="uil uil-user-times"></i> #DriverRun</span>
+                <input type="checkbox" value="Accident">
+                <span><i class="uil uil-ambulance"></i> #Accident</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Halt">
+                <span><i class="uil uil-clock"></i> #Halt</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Detained">
+                <span><i class="uil uil-exclamation-octagon"></i> #Detained</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Maintenance">
+                <span><i class="uil uil-wrench"></i> #Maintenance</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Diversion">
+                <span><i class="uil uil-directions"></i> #Diversion</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Weather">
+                <span><i class="uil uil-cloud"></i> #Weather</span>
             </label>
             <label class="td2-sos-chip">
                 <input type="checkbox" value="Diesel Theft">
@@ -1839,13 +2007,25 @@
                 <span><i class="uil uil-package"></i> #GoodsTheft</span>
             </label>
             <label class="td2-sos-chip">
-                <input type="checkbox" value="Accident">
-                <span><i class="uil uil-ambulance"></i> #Accident</span>
+                <input type="checkbox" value="Driver Run">
+                <span><i class="uil uil-user-times"></i> #DriverRun</span>
             </label>
             {{-- Add a custom incident if not listed; custom incidents share a common icon --}}
             <button type="button" class="td2-sos-chip-add" id="td2SosAddIncidentBtn">
                 <i class="uil uil-plus-circle"></i> Add Incident
             </button>
+        </div>
+
+        {{-- Pause this trip? — operator decides per submission (default ON).
+             ON  → trip moves to Paused, Resume Trip affordance appears.
+             OFF → incident is logged only; trip keeps running. --}}
+        <div class="td2-sos-pause-row">
+            <div class="form-check form-switch td2-sos-pause-switch">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="td2SosPauseToggle" checked>
+                <label class="form-check-label" for="td2SosPauseToggle">Pause this trip</label>
+            </div>
+            <span class="td2-sos-pause-hint">Stops the trip until you resume it</span>
         </div>
 
         {{-- Note free text --}}
@@ -1915,6 +2095,9 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.5') }}"></script>
-<script src="{{ asset('js/Trip/tab-loader.js?v=1.1') }}"></script>
+{{-- Leaflet (interactive map for SOS location capture) --}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=4.8') }}"></script>
+<script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

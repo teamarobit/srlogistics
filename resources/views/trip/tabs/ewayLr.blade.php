@@ -1,10 +1,6 @@
 {{-- Trip show-v2 — ewayLr tab content (extracted partial) --}}
                                 <div class="td2-pane-header">
                                     <h5 class="td2-pane-title">Eway + LR</h5>
-                                    <button class="btn btn-primary btn-sm" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#addEwayTable">
-                                        + Add Eway
-                                    </button>
                                 </div>
                                 <div class="td2-pane-body">
 

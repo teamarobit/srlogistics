@@ -66,7 +66,7 @@
                     </div>
                     <div class="lr-trip-chip">
                         <span class="lr-trip-chip-label">Vehicle Size</span>
-                        <span class="lr-trip-chip-value">32-FT SXL</span>
+                        <span class="lr-trip-chip-value">12 Tyre - 32 (ft) * 8 (ft) * 7 (ft)</span>
                     </div>
                 </div>
 
@@ -320,5 +320,5 @@
 
 @section('js')
 {{-- SD-1: All JS in external file. Path: public/js/lr/create.js --}}
-<script src="{{ asset('js/lr/create.js?v=2.1') }}"></script>
+<script src="{{ asset('js/lr/create.js?v=2.2') }}"></script>
 @endsection

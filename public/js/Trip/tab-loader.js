@@ -55,6 +55,9 @@
             success: function (html) {
                 $pane.html(html);
                 initPaneWidgets($pane);
+                /* Notify show-v2.js that a pane mounted (additive — lets it
+                   render dynamic content like the Status Timeline entries). */
+                $(document).trigger('td2:tab-loaded', [key, $pane]);
             },
             error: function () {
                 loaded[key] = false;               /* allow a retry */

@@ -45,10 +45,19 @@
                                         <span class="td2-vstatus-cur-dot"></span>
                                         <span class="td2-vstatus-cur-label">Current Status</span>
                                         <span class="td2-vstatus-cur-badge">Unloading at Mumbai</span>
+                                        {{-- Paused badge — visible only while the trip is paused (body.td2-trip-paused) --}}
+                                        <span class="td2-vstatus-paused-badge"><i class="uil uil-pause-circle"></i> Paused</span>
                                         <span class="td2-vstatus-cur-meta"><i class="uil uil-clock"></i> Updated 22/12/2025 · 09:00 AM</span>
-                                        <a class="td2-vstage-change"
+                                        {{-- Resume Trip — visible only while paused; opens the Resume modal --}}
+                                        <button type="button" class="td2-vstatus-resume-btn"
+                                                data-bs-toggle="modal" data-bs-target="#resumeTripModal">
+                                            <i class="uil uil-play-circle"></i> Resume Trip
+                                        </button>
+                                        <a class="td2-vstage-change" id="td2UpdateStatusLink"
                                            data-bs-toggle="modal"
                                            data-bs-target="#changeStatus">Update Status</a>
+                                        {{-- Lock note — shown only while paused (Update Status is disabled) --}}
+                                        <span class="td2-vstatus-lock-note"><i class="uil uil-lock"></i> Locked while paused</span>
                                     </div>
                                 </div>
 
@@ -124,7 +133,7 @@
                                     <div class="td2-docs-header">
                                         <p class="td2-docs-title"><i class="uil uil-history td2-docs-ico"></i> Status Timeline</p>
                                     </div>
-                                    <div class="td2-tl">
+                                    <div class="td2-tl" id="td2StatusTimeline">
 
                                         {{-- Loading at Source --}}
                                         <div class="td2-tl-item td2-tl-done">
