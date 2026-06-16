@@ -239,7 +239,7 @@
                                         <span class="th-sub">EWAY Bill Date</span>
                                     </th>
                                     <th style="width:120px;">Valid Till</th>
-                                    <th class="text-end" style="width:118px;">Freight Amt (₹)</th>
+                                    <th class="text-end" style="width:118px;">Freight Amount (₹)</th>
                                     <th style="width:42px;"></th>
                                 </tr>
                             </thead>
