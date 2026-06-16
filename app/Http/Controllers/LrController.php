@@ -10,7 +10,8 @@ class LrController extends Controller
         return view('lr.create');
     }
 
-    public function print(){
-        return view('lr.print');
+    public function print(Request $request){
+        $trip = $request->query('trip');
+        return view('lr.print', compact('trip'));
     }
 }

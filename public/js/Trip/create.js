@@ -74,7 +74,7 @@ $(document).ready(function () {
                     var opts = '<option value="">Choose..</option>';
                     $.each(res.sizes, function (i, s) {
                         var dims = (s.length && s.height && s.width)
-                            ? ' (' + s.length + ' × ' + s.height + ' × ' + s.width + ')'
+                            ? ' - ' + s.length + ' (ft) * ' + s.height + ' (ft) * ' + s.width + ' (ft)'
                             : '';
                         opts += '<option value="' + s.id + '">' + s.name + dims + '</option>';
                     });

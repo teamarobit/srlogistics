@@ -22,7 +22,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
@@ -73,7 +73,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
@@ -132,7 +132,7 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details & Print</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details & Print</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
@@ -143,7 +143,7 @@
                                                     </div>
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Vehicle Size</div>
-                                                        <div class="td2-doc-val">14 FT</div>
+                                                        <div class="td2-doc-val">12 Tyre - 14 (ft) * 9 (ft) * 12 (ft)</div>
                                                     </div>
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">LR Number</div>
