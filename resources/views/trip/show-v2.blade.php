@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=9.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=9.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1155,20 +1155,138 @@
     </div>
 </div>
 
-{{-- Add Eway Table — Sprint 3 --}}
+{{-- Unassigned E-Ways — pick existing unassigned e-ways and attach them to this trip --}}
 <div class="modal fade" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{-- ═══ SPRINT 3 ═══ --}}
-                <div class="td2-sprint-note">
-                    <i class="uil uil-clock-three"></i> Add Eway Table — Sprint 3
+
+                {{-- Toolbar: status filter + Add Eway --}}
+                <div class="td2-eway-toolbar">
+                    <div class="td2-eway-filter">
+                        <label class="form-label td2-eway-filter-label" for="td2EwayStatusFilter">Search By Status</label>
+                        <select class="form-select form-select-sm" id="td2EwayStatusFilter" name="eway_status_filter">
+                            <option value="">All</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-sm" type="button"
+                            data-bs-toggle="modal" data-bs-target="#addEwayForm">
+                        <i class="uil uil-plus me-1"></i>Add Eway
+                    </button>
+                </div>
+
+                {{-- Unassigned E-Ways table --}}
+                <div class="table-responsive">
+                    <table class="td2-table td2-eway-table" id="td2EwayTable">
+                        <thead>
+                            <tr>
+                                <th class="td2-eway-check-col">
+                                    <input type="checkbox" class="form-check-input" id="td2EwayCheckAll">
+                                </th>
+                                <th>Eway Bill Number</th>
+                                <th>Eway Date</th>
+                                <th>Vehicle Number</th>
+                                <th>Status</th>
+                                <th>Quantity</th>
+                                <th>Quantity Units</th>
+                                <th>Consigner</th>
+                                <th>Source</th>
+                                <th>Consignee</th>
+                                <th>Destination</th>
+                                <th>GSTIN</th>
+                                <th>Valid Upto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-status="Active">
+                                <td><input type="checkbox" class="form-check-input td2-eway-row-check" value="EWB001" data-qty="441"></td>
+                                <td>#001</td>
+                                <td>05/11/2025</td>
+                                <td>WB-12-AB-1237</td>
+                                <td><span class="td2-eway-status td2-eway-status-active">Active</span></td>
+                                <td>441</td>
+                                <td>KG</td>
+                                <td>Britania Kolkata</td>
+                                <td>Chennai</td>
+                                <td>Kolkata-Gen</td>
+                                <td>Kolkata</td>
+                                <td>GST00912267g6</td>
+                                <td>30/11/2025</td>
+                            </tr>
+                            <tr data-status="Active">
+                                <td><input type="checkbox" class="form-check-input td2-eway-row-check" value="EWB002" data-qty="441"></td>
+                                <td>#002</td>
+                                <td>05/11/2025</td>
+                                <td>WB-12-AB-1237</td>
+                                <td><span class="td2-eway-status td2-eway-status-active">Active</span></td>
+                                <td>441</td>
+                                <td>KG</td>
+                                <td>Britania Kolkata</td>
+                                <td>Chennai</td>
+                                <td>Kolkata-Gen</td>
+                                <td>Kolkata</td>
+                                <td>GST00912267g6</td>
+                                <td>30/11/2025</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <div class="modal-footer td2-eway-foot">
+                <div class="td2-eway-summary">
+                    <span>Total: <strong id="td2EwayTotal">2</strong></span>
+                    <span>Selected: <strong id="td2EwaySelected">0</strong></span>
+                    <span>Selected Quantity: <strong id="td2EwaySelQty">0.00</strong></span>
+                </div>
+                <div class="td2-eway-foot-actions">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="td2EwayAddToTrip">Add to Trip</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Add Eway — create a new e-way by GSTIN + bill number(s) --}}
+<div class="modal fade" id="addEwayForm" tabindex="-1" aria-labelledby="addEwayFormLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEwayFormLabel">Add Eway</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addEwayFormEl">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="td2EwayGstin">GSTIN <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal" id="td2EwayGstin" name="gstin">
+                                <option value="">Choose...</option>
+                                <option value="GST00912267g6">GST00912267g6 — Britania Kolkata</option>
+                                <option value="GST22AAAAA0000A1Z5">GST22AAAAA0000A1Z5 — Samsung Hydrabad</option>
+                                <option value="GST29BBBBB1111B2Z6">GST29BBBBB1111B2Z6 — Nestle Mumbai</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 td2-eway-err" data-for="gstin"></span>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="td2EwayBillNos">Eway Bill Number (s) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="td2EwayBillNos" name="eway_bill_numbers"
+                                   placeholder="Enter one or more e-way bill numbers, comma separated">
+                            <span class="text-danger small d-block mt-1 td2-eway-err" data-for="eway_bill_numbers"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -2295,6 +2413,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.1') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.2') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

@@ -12,6 +12,8 @@
  * v5.1 | 2026-06-16 — Resume modal: change-vehicle/driver notes; change-driver shows the
  *                     driver's currently-assigned vehicle card; condition notes (not on
  *                     another ongoing trip)
+ * v5.2 | 2026-06-16 — Eway+LR: Unassigned E-Ways modal (select-all + live selected count/qty,
+ *                     status filter) + nested Add Eway form modal (GSTIN + bill numbers)
  */
 
 /* =============================================================
@@ -1328,4 +1330,102 @@ $(document).ready(function () {
     $('#td2ExtVendorSelect').select2({ placeholder: 'Select vendor...', width: '100%', allowClear: true });
     $('#td2ExtVehicleSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
 
+});
+
+/* =============================================================
+   EWAY + LR — Unassigned E-Ways modal (#addEwayTable)
+   Select-all + live "Selected" count and "Selected Quantity".
+   ============================================================= */
+function td2EwayRefreshSummary() {
+    var $rows = $('#td2EwayTable tbody tr:visible');
+    var $checked = $rows.find('.td2-eway-row-check:checked');
+    var qty = 0;
+    $checked.each(function () { qty += parseFloat($(this).data('qty')) || 0; });
+
+    $('#td2EwayTotal').text($rows.length);
+    $('#td2EwaySelected').text($checked.length);
+    $('#td2EwaySelQty').text(qty.toFixed(2));
+
+    /* Keep the header checkbox in sync with the rows */
+    var $allRowChecks = $rows.find('.td2-eway-row-check');
+    $('#td2EwayCheckAll').prop('checked', $allRowChecks.length > 0 && $checked.length === $allRowChecks.length);
+}
+
+/* Header select-all toggles every visible row */
+$(document).on('change', '#td2EwayCheckAll', function () {
+    var on = $(this).is(':checked');
+    $('#td2EwayTable tbody tr:visible .td2-eway-row-check').prop('checked', on);
+    td2EwayRefreshSummary();
+});
+
+/* Any row checkbox change updates the summary */
+$(document).on('change', '.td2-eway-row-check', td2EwayRefreshSummary);
+
+/* Status filter — show only matching rows, then recompute summary */
+$(document).on('change', '#td2EwayStatusFilter', function () {
+    var val = $(this).val();
+    $('#td2EwayTable tbody tr').each(function () {
+        var match = !val || $(this).data('status') === val;
+        $(this).toggle(match);
+        if (!match) { $(this).find('.td2-eway-row-check').prop('checked', false); }
+    });
+    td2EwayRefreshSummary();
+});
+
+/* Reset summary each time the modal opens */
+$(document).on('shown.bs.modal', '#addEwayTable', function () {
+    td2EwayRefreshSummary();
+});
+
+/* Add to Trip */
+$(document).on('click', '#td2EwayAddToTrip', function () {
+    var n = $('#td2EwayTable tbody .td2-eway-row-check:checked').length;
+    if (n === 0) {
+        Toast.fire({ icon: 'error', title: 'Select at least one e-way.' });
+        return;
+    }
+    var modalEl = document.getElementById('addEwayTable');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    Toast.fire({ icon: 'success', title: n + ' e-way(s) added to trip.' });
+});
+
+/* =============================================================
+   EWAY + LR — Add Eway form modal (#addEwayForm)
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addEwayForm', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+function td2ClearEwayFormErrors() {
+    $('#addEwayFormEl .td2-eway-err').text('');
+}
+
+$(document).on('submit', '#addEwayFormEl', function (e) {
+    e.preventDefault();
+    td2ClearEwayFormErrors();
+
+    var gstin   = $('#td2EwayGstin').val();
+    var billNos = $.trim($('#td2EwayBillNos').val());
+    var ok = true;
+
+    if (!gstin) {
+        $('#addEwayFormEl .td2-eway-err[data-for="gstin"]').text('GSTIN is required.');
+        ok = false;
+    }
+    if (!billNos) {
+        $('#addEwayFormEl .td2-eway-err[data-for="eway_bill_numbers"]').text('Enter at least one e-way bill number.');
+        ok = false;
+    }
+    if (!ok) { return; }
+
+    /* Prototype: no backend yet — confirm + reset + return to the table modal */
+    var modalEl = document.getElementById('addEwayForm');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    this.reset();
+    if ($('#td2EwayGstin').hasClass('select2-hidden-accessible')) { $('#td2EwayGstin').val('').trigger('change'); }
+    Toast.fire({ icon: 'success', title: 'Eway saved.' });
 });
