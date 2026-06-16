@@ -6,6 +6,7 @@
  * v4.6 | 2026-06-15 — SOS → Pause → Resume operator flow (prototype, client-side)
  * v4.7 | 2026-06-15 — SOS / Resume events injected into the Status Timeline
  * v4.8 | 2026-06-16 — SOS incident location: auto GPS capture + editable Leaflet map
+ * v4.9 | 2026-06-16 — SOS submit Toast now success (was error)
  */
 
 /* =============================================================
@@ -915,7 +916,7 @@ $('#td2SosSubmitBtn').on('click', function () {
     $('#td2SosPanel').removeClass('show');
 
     Toast.fire({
-        icon : 'error',
+        icon : 'success',
         title: pauseTrip
             ? 'SOS reported — trip paused: ' + selected.join(', ')
             : 'SOS reported: ' + selected.join(', ')
