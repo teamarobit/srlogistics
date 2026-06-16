@@ -68,6 +68,14 @@
                         <span class="lr-trip-chip-label">Vehicle Size</span>
                         <span class="lr-trip-chip-value">12 Tyre - 32 (ft) * 8 (ft) * 7 (ft)</span>
                     </div>
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Driver Name</span>
+                        <span class="lr-trip-chip-value">Ramesh Kumar</span>
+                    </div>
+                    <div class="lr-trip-chip">
+                        <span class="lr-trip-chip-label">Driver Number</span>
+                        <span class="lr-trip-chip-value">+91 98765 43210</span>
+                    </div>
                 </div>
 
                 {{-- ── CARD 2: LR Details ────────────────────── --}}
@@ -126,12 +134,27 @@
                         <div class="col-md-3">
                             <label class="form-label" for="lr_transport_mode">Transport Mode</label>
                             <select class="form-select" name="transport_mode" id="lr_transport_mode">
-                                <option value="">Select mode</option>
-                                <option value="Road" {{ old('transport_mode') === 'Road' ? 'selected' : '' }}>Road</option>
-                                <option value="Rail" {{ old('transport_mode') === 'Rail' ? 'selected' : '' }}>Rail</option>
-                                <option value="Air"  {{ old('transport_mode') === 'Air'  ? 'selected' : '' }}>Air</option>
-                                <option value="Sea"  {{ old('transport_mode') === 'Sea'  ? 'selected' : '' }}>Sea</option>
+                                <option value="Road" {{ old('transport_mode', 'Road') === 'Road' ? 'selected' : '' }}>Road</option>
+                                {{-- <option value="Rail" {{ old('transport_mode') === 'Rail' ? 'selected' : '' }}>Rail</option> --}}
+                                {{-- <option value="Air"  {{ old('transport_mode') === 'Air'  ? 'selected' : '' }}>Air</option> --}}
+                                {{-- <option value="Sea"  {{ old('transport_mode') === 'Sea'  ? 'selected' : '' }}>Sea</option> --}}
                             </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="lr_payment_term">Payment Term</label>
+                            <select class="form-select" name="payment_term" id="lr_payment_term">
+                                <option value="">Select term</option>
+                                <option value="To Pay"  {{ old('payment_term') === 'To Pay'  ? 'selected' : '' }}>To Pay</option>
+                                <option value="Paid"    {{ old('payment_term') === 'Paid'    ? 'selected' : '' }}>Paid</option>
+                                <option value="TBB"     {{ old('payment_term') === 'TBB'     ? 'selected' : '' }}>TBB (To Be Billed)</option>
+                                <option value="FOC"     {{ old('payment_term') === 'FOC'     ? 'selected' : '' }}>FOC (Free of Cost)</option>
+                                <option value="COD"     {{ old('payment_term') === 'COD'     ? 'selected' : '' }}>COD (Cash on Delivery)</option>
+                                <option value="Credit"  {{ old('payment_term') === 'Credit'  ? 'selected' : '' }}>Credit</option>
+                                <option value="Advance" {{ old('payment_term') === 'Advance' ? 'selected' : '' }}>Advance</option>
+                                <option value="Collect" {{ old('payment_term') === 'Collect' ? 'selected' : '' }}>Collect</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 lr-field-error" id="err-payment_term"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -146,7 +169,7 @@
                                 <div class="form-check mb-0">
                                     <input class="form-check-input" type="radio" name="tarpaulin"
                                            id="tarp_no" value="No"
-                                           {{ old('tarpaulin', 'No') === 'No' ? 'checked' : '' }}>
+                                           {{ old('tarpaulin') === 'No' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="tarp_no">No</label>
                                 </div>
                             </div>
