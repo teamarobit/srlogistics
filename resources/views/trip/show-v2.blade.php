@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.9') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=9.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')

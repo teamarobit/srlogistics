@@ -2181,7 +2181,11 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 /* ── Status Timeline (Section 4) ── */
 .td2-tl {
     display: flex;
-    flex-direction: column;
+    /* Reverse order — newest event on top. Items are authored / appended
+       oldest→newest in the DOM; column-reverse flips the visual order so the
+       latest entry leads. Connector-line + padding resets move to :first-child
+       (the visually bottom-most item) accordingly. */
+    flex-direction: column-reverse;
 }
 .td2-tl-item {
     position: relative;
@@ -2189,7 +2193,7 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
     gap: 14px;
     padding-bottom: 22px;
 }
-.td2-tl-item:last-child { padding-bottom: 0; }
+.td2-tl-item:first-child { padding-bottom: 0; }
 .td2-tl-done { /* completed event - default marker colours apply */ }
 .td2-tl-manual .td2-tl-body {
     background: #fffbeb;
@@ -2206,7 +2210,7 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
     width: 2px;
     background: #e5e7eb;
 }
-.td2-tl-item:last-child::before { display: none; }
+.td2-tl-item:first-child::before { display: none; }
 .td2-tl-marker {
     position: relative;
     z-index: 1;
