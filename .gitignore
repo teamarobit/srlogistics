@@ -34,5 +34,5 @@ Thumbs.db
 *.bak
 /docs
 /public/.user.ini
-/public/.php.ini
+/public/php.ini
 composer-setup.php
