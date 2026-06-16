@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.8') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=8.9') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -41,7 +41,12 @@
                 <div class="v2-id-main">
                     <div class="v2-id-vno">
                         Kolkata – Mumbai
-                        <span class="v2-id-status td2-in-transit">In Transit</span>
+                        {{-- Lifecycle status. Dimmed while paused so the Paused pill leads. --}}
+                        <span class="v2-id-status td2-in-transit" id="td2LifecycleBadge">In Transit</span>
+                        {{-- Paused pill — shown only while body.td2-trip-paused (SOS pause). --}}
+                        <span class="v2-id-status td2-paused-badge" id="td2PausedBadge">
+                            <i class="uil uil-pause-circle"></i> Paused
+                        </span>
                     </div>
                     <div class="v2-id-sub">
                         Created 25/10/2025 &nbsp;·&nbsp; Anmol Kaur &nbsp;·&nbsp;
@@ -126,6 +131,15 @@
                         <span class="td2-step-label">Completed</span>
                     </div>
                 </div>
+
+                {{-- Paused flag on the horizontal status row — visible only while
+                     body.td2-trip-paused. Lets the operator read the trip state
+                     straight from the header without opening any tab. --}}
+                <span class="td2-stepper-paused-flag" id="td2StepperPausedFlag">
+                    <span class="td2-stepper-paused-dot"></span>
+                    <i class="uil uil-pause-circle"></i> Trip Paused
+                    <span class="td2-stepper-paused-sub">awaiting resume</span>
+                </span>
             </div>
 
         </div>{{-- /.v2-header-zone --}}

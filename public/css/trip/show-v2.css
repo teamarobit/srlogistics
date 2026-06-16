@@ -423,6 +423,68 @@
     background: #fecaca;
 }
 
+/* ── Paused stepper state — driven by body.td2-trip-paused ──
+   Recolours the current (active) step amber, tints the row, and
+   surfaces a "Trip Paused" flag at the end of the horizontal row
+   so the state is readable straight from the header. ── */
+body.td2-trip-paused .td2-stepper-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fffdf5;
+    border-top-color: #fde68a;
+}
+body.td2-trip-paused .td2-stepper { flex: 1; min-width: 0; }
+
+/* Active step turns amber + pulses while paused */
+body.td2-trip-paused .td2-step-active .td2-step-dot {
+    border-color: #d97706;
+    background: #d97706;
+    box-shadow: 0 0 0 3px rgba(217,119,6,0.18);
+    animation: td2StepPausePulse 1.5s ease-in-out infinite;
+}
+body.td2-trip-paused .td2-step-active .td2-step-label { color: #b45309; }
+@keyframes td2StepPausePulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(217,119,6,0.18); }
+    50%      { box-shadow: 0 0 0 6px rgba(217,119,6,0.05); }
+}
+
+/* The flag — hidden unless paused */
+.td2-stepper-paused-flag {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 999px;
+    padding: 5px 12px 5px 10px;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #b45309;
+    white-space: nowrap;
+}
+.td2-stepper-paused-flag i { font-size: 14px; line-height: 1; }
+.td2-stepper-paused-sub {
+    font-weight: 500;
+    color: #d97706;
+    opacity: 0.9;
+}
+.td2-stepper-paused-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+    flex-shrink: 0;
+    animation: td2SosPulse 1.2s ease-in-out infinite;
+}
+body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
+
+@media (max-width: 575px) {
+    .td2-stepper-paused-sub { display: none; }
+}
+
 /* ─────────────────────────────────────────────────────────────
    3. BODY — MAIN LAYOUT
 ───────────────────────────────────────────────────────────── */
@@ -3552,6 +3614,25 @@
 .v2-id-status.td2-in-transit  { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
 .v2-id-status.td2-completed  { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
 .v2-id-status.td2-cancelled  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* ── Paused header pill — driven by body.td2-trip-paused (SOS pause/resume) ── */
+.v2-id-status.td2-paused-badge {
+    display: none;                 /* hidden until the trip is paused */
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.v2-id-status.td2-paused-badge i { font-size: 12px; line-height: 1; }
+body.td2-trip-paused .td2-paused-badge {
+    display: inline-flex;
+    animation: td2PausedHalo 1.7s ease-in-out infinite;
+}
+/* Dim the lifecycle pill while paused so the Paused pill leads the eye */
+body.td2-trip-paused #td2LifecycleBadge { opacity: 0.5; }
+@keyframes td2PausedHalo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.40); }
+    50%      { box-shadow: 0 0 0 4px rgba(217,119,6,0); }
+}
 
 /* Override large icon to match v2-id-bar compact icon */
 .td2-bdwrap .v2-id-icon-wrap {
