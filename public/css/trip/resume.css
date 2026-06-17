@@ -342,14 +342,6 @@
     .td2-resume-page .td2-veh-accordion .accordion-item { animation: none; }
 }
 
-/* Assign-vehicle confirm strip */
-.td2-resume-page .td2-resume-assign-wrap {
-    background: #eef2ff;
-    border: 1px solid #d7e3fd;
-}
-
-.td2-resume-page .td2-resume-assign-pick { color: #032671; }
-
 /* =====================================================================
    Selected-vehicle highlight + Resume confirm dialog (v3.4)
    ===================================================================== */

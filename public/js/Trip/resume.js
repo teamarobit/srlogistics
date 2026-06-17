@@ -54,8 +54,6 @@ $(function () {
         $('.td2-resume-if-own').show();
         $('.td2-resume-if-ext').hide();
         $('#td2ResumeAssignedVehicle').val('');
-        $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
-        $('#td2ResumeAssignPick').html('');
         renderAllocVehCard(null);
     }
 
@@ -164,18 +162,12 @@ $(function () {
             renderAllocVehCard($(this).find('option:selected'));
         }
 
-        /* Selection IS the assignment — write straight to the hidden field,
-           no separate "Assign Vehicle" click needed. */
+        /* Selection IS the assignment — write straight to the hidden field. */
         if (reg) {
             $('#td2ResumeAssignedVehicle').val(reg);
-            $('#td2ResumeAssignPick').html('<i class="uil uil-check-circle me-1"></i>' +
-                '<strong>' + reg + '</strong> will be assigned on resume.');
-            $('#td2ResumeAssignWrap').removeClass('d-none').attr('data-reg', reg);
             $form.find('.td2-resume-err[data-for="vehicle"]').text('');
         } else {
             $('#td2ResumeAssignedVehicle').val('');
-            $('#td2ResumeAssignPick').html('');
-            $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
         }
     });
 

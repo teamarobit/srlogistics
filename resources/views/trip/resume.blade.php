@@ -3,7 +3,7 @@
 @section('css')
 {{-- Reuses td2-resume-* / td2-veh-card / td2-alloc styles from show-v2.css --}}
 <link href="{{ asset('css/trip/show-v2.css?v=9.5') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/resume.css?v=3.7') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/resume.css?v=3.8') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -260,11 +260,6 @@
                                     <div id="td2ResumeAllocVehCard"></div>
                                 </div>
 
-                                {{-- Selection confirmation — appears once a vehicle is picked (selection IS the assignment, no separate Assign step) --}}
-                                <div class="td2-resume-assign-wrap d-none" id="td2ResumeAssignWrap">
-                                    <div class="td2-resume-assign-pick" id="td2ResumeAssignPick"></div>
-                                </div>
-
                                 <input type="hidden" id="td2ResumeAssignedVehicle" name="new_vehicle">
                                 <span class="text-danger small d-block mt-1 td2-resume-err" data-for="vehicle"></span>
                             </div>
@@ -449,5 +444,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Trip/resume.js?v=1.6') }}"></script>
+<script src="{{ asset('js/Trip/resume.js?v=1.7') }}"></script>
 @endsection
