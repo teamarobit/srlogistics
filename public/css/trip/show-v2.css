@@ -2543,6 +2543,8 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
     border-radius: 4px;
 }
 .td2-dot-trigger:hover { background: #f3f4f6; color: #374151; }
+/* Hide Bootstrap dropdown caret — keep only the three dots */
+.td2-dot-trigger.dropdown-toggle::after { display: none; }
 
 /* ─────────────────────────────────────────────────────────────
    12. SPRINT 3 — POD Cards
