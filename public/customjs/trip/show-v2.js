@@ -32,6 +32,38 @@ const Toast = Swal.mixin({
 });
 
 /* =============================================================
+   SELECT2 — force modal dropdowns to always open BELOW the field
+   (Select2 flips upward inside a scrollable Bootstrap modal). Runs
+   at load so the patched prototype is bound by every later init.
+   Non-modal selects keep Select2's native above/below behaviour.
+   ============================================================= */
+(function () {
+    if (!(window.jQuery && $.fn.select2 && $.fn.select2.amd)) { return; }
+    try {
+        var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
+        if (!AttachBody || AttachBody.prototype.__td2BelowPatched) { return; }
+        var original = AttachBody.prototype._positionDropdown;
+        AttachBody.prototype._positionDropdown = function () {
+            var inModal = this.$dropdownParent && this.$dropdownParent.closest('.modal').length > 0;
+            if (!inModal) { return original.apply(this, arguments); }
+            var $op = this.$dropdownParent;
+            if ($op.css('position') === 'static') { $op = $op.offsetParent(); }
+            var offset = this.$container.offset();
+            var height = this.$container.outerHeight(false);
+            var parentOffset = { top: 0, left: 0 };
+            if ($.contains(document.body, $op[0]) || $op[0].isConnected) { parentOffset = $op.offset(); }
+            this.$dropdownContainer.css({
+                top:  offset.top + height - parentOffset.top,
+                left: offset.left - parentOffset.left
+            });
+            this.$dropdown.removeClass('select2-dropdown--above select2-dropdown--below').addClass('select2-dropdown--below');
+            this.$container.removeClass('select2-container--above select2-container--below').addClass('select2-container--below');
+        };
+        AttachBody.prototype.__td2BelowPatched = true;
+    } catch (e) { /* Select2 not ready — keep native behaviour */ }
+})();
+
+/* =============================================================
    PROTO CONFIG
    ─────────────────────────────────────────────────────────────
    PROTOTYPE_MODE = true   → use PROTO_CONFIG hardcoded values.
@@ -1451,4 +1483,99 @@ $(document).on('submit', '#addEwayFormEl', function (e) {
     this.reset();
     if ($('#td2EwayGstin').hasClass('select2-hidden-accessible')) { $('#td2EwayGstin').val('').trigger('change'); }
     Toast.fire({ icon: 'success', title: 'Eway saved.' });
+});
+
+/* =============================================================
+   ADD POD — LR-POD modal (#addPOD)  [v5.5 | 2026-06-17]
+   Select2 init + attachment dropzone/preview + prototype submit.
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addPOD', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+function td2PodHumanSize(bytes) {
+    if (bytes >= 1048576) { return (bytes / 1048576).toFixed(1) + ' MB'; }
+    if (bytes >= 1024)    { return (bytes / 1024).toFixed(1) + ' KB'; }
+    return bytes + ' B';
+}
+
+/* Render the preview grid from the file input + toggle the drop prompt */
+function td2PodRenderPreview() {
+    var input    = document.getElementById('td2PodFiles');
+    var $preview = $('#td2PodPreview').empty();
+    var files    = input && input.files ? input.files : [];
+
+    Array.prototype.forEach.call(files, function (file) {
+        var $pip = $('<span class="td2-pip"></span>');
+        if (file.type && file.type.indexOf('image/') === 0) {
+            $pip.append('<img class="td2-image-thumb" src="' + URL.createObjectURL(file) + '" alt="">');
+        } else {
+            $pip.append('<span class="td2-pip-fileicon"><i class="uil uil-file-alt"></i></span>');
+        }
+        $pip.append(
+            '<div class="td2-file-name-wrap"><p>' + $('<div>').text(file.name).html() +
+            '</p><small>' + td2PodHumanSize(file.size) + '</small></div>'
+        );
+        $pip.append('<span class="td2-file-remove" title="Remove"><i class="uil uil-trash-alt"></i></span>');
+        $preview.append($pip);
+    });
+
+    $('#td2PodDzPrompt').toggle(files.length === 0);
+}
+
+$(document).on('change', '#td2PodFiles', td2PodRenderPreview);
+
+/* Remove a previewed attachment (rebuilds the input FileList) */
+$(document).on('click', '#td2PodPreview .td2-file-remove', function () {
+    var idx   = $(this).closest('.td2-pip').index();
+    var input = document.getElementById('td2PodFiles');
+    var dt    = new DataTransfer();
+    Array.prototype.forEach.call(input.files, function (f, i) { if (i !== idx) { dt.items.add(f); } });
+    input.files = dt.files;
+    td2PodRenderPreview();
+});
+
+/* Drag & drop onto the dropzone */
+(function () {
+    function dz() { return document.getElementById('td2PodDropzone'); }
+    $(document).on('dragover dragenter', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).addClass('is-dragover');
+    });
+    $(document).on('dragleave dragend', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).removeClass('is-dragover');
+    });
+    $(document).on('drop', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).removeClass('is-dragover');
+        var dropped = e.originalEvent.dataTransfer.files;
+        if (!dropped || !dropped.length) { return; }
+        var input = document.getElementById('td2PodFiles');
+        var dt    = new DataTransfer();
+        Array.prototype.forEach.call(input.files, function (f) { dt.items.add(f); });
+        Array.prototype.forEach.call(dropped,     function (f) { dt.items.add(f); });
+        input.files = dt.files;
+        td2PodRenderPreview();
+    });
+})();
+
+/* Prototype submit: no backend yet — validate required ack, confirm, reset */
+$(document).on('submit', '#td2PodForm', function (e) {
+    e.preventDefault();
+
+    if (!$('#td2PodAck').val()) {
+        Toast.fire({ icon: 'error', title: 'Please select an acknowledgement.' });
+        return;
+    }
+
+    var modalEl = document.getElementById('addPOD');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    this.reset();
+    $('#td2PodPreview').empty();
+    $('#td2PodDzPrompt').show();
+    if ($('#td2PodAck').hasClass('select2-hidden-accessible')) { $('#td2PodAck').val('').trigger('change'); }
+    Toast.fire({ icon: 'success', title: 'POD saved.' });
 });

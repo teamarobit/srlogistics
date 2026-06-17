@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=9.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=9.8') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1291,24 +1291,122 @@
     </div>
 </div>
 
-{{-- Add POD — Sprint 3 --}}
+{{-- Add POD — LR-POD details, acknowledgement, dates + attachments --}}
 <div class="modal fade" id="addPOD" tabindex="-1" aria-labelledby="addPODLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addPODLabel">LR-POD</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                {{-- ═══ SPRINT 3 ═══ --}}
-                <div class="td2-sprint-note">
-                    <i class="uil uil-clock-three"></i> Add POD — Sprint 3
+            <form id="td2PodForm">
+                <div class="modal-body td2-pod-body pt-2">
+
+                    {{-- ── Consignment details (read-only) ── --}}
+                    <div class="td2-pod-detail-card">
+                        <div class="td2-pod-detail-head">
+                            <i class="uil uil-box"></i> Consignment Details
+                        </div>
+                        <div class="td2-pod-detail-grid">
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Material Description</span>
+                                <span class="td2-pod-dv">Hydrabad - Kolkata</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Invoice Number &amp; Date</span>
+                                <span class="td2-pod-dv">#INV001 &middot; 12/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">LR Number &amp; Date</span>
+                                <span class="td2-pod-dv">#LR001 &middot; 25/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Net Quantity</span>
+                                <span class="td2-pod-dv">50</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Value (with tax)</span>
+                                <span class="td2-pod-dv">&#8377;1,000</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Gross Weight</span>
+                                <span class="td2-pod-dv">10 KG</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Charged Weight</span>
+                                <span class="td2-pod-dv">5 KG</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Estimated Date of Delivery</span>
+                                <span class="td2-pod-dv">28/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di td2-pod-di-wide">
+                                <span class="td2-pod-dl">LR Comments</span>
+                                <span class="td2-pod-dv">Lorem ipsum doller sit amet.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── POD entry form ── --}}
+                    <div class="td2-pod-form-head">
+                        <i class="uil uil-clipboard-notes"></i> POD Information
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl" for="td2PodAck">Acknowledgement <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal" id="td2PodAck" name="acknowledgement">
+                                <option value="">Choose..</option>
+                                <option value="Good">Good</option>
+                                <option value="Damaged">Damaged</option>
+                                <option value="Short">Short</option>
+                                <option value="Claimed">Claimed</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-pod-fl" for="td2PodReportingDate">Reporting Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="td2PodReportingDate" name="reporting_date">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-pod-fl" for="td2PodUnloadingDate">Unloading Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="td2PodUnloadingDate" name="unloading_date">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodDetention">Detention Days <span class="text-danger">*</span></label>
+                            <input type="number" min="0" class="form-control" id="td2PodDetention" name="detention_days" placeholder="0">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodLateDelivery">Late Delivery Days <span class="text-danger">*</span></label>
+                            <input type="number" min="0" class="form-control" id="td2PodLateDelivery" name="late_delivery_days" placeholder="0">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodShortage">Shortage <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="td2PodShortage" name="shortage" placeholder="e.g. 2 units">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl" for="td2PodComments">PoD Comments <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="td2PodComments" name="pod_comments" rows="2" placeholder="Add any remarks about the delivery..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl">Attachments</label>
+                            <div class="td2-pod-dropzone" id="td2PodDropzone">
+                                <input type="file" id="td2PodFiles" name="files[]" multiple accept="image/*,application/pdf">
+                                <div class="td2-pod-dz-prompt" id="td2PodDzPrompt">
+                                    <i class="uil uil-cloud-upload"></i>
+                                    <p class="mb-0">Drag &amp; drop files here, or
+                                        <label class="td2-pod-browse" for="td2PodFiles">browse</label>
+                                    </p>
+                                    <small>PDF or image &middot; multiple allowed</small>
+                                </div>
+                                <div id="td2PodPreview" class="td2-upload-preview"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
+                <div class="modal-footer td2-pod-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="uil uil-check me-1"></i> Save POD</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -2415,6 +2513,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.3') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.6') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection
