@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/vehiclevendor.css?v=1.0') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/vehiclevendor.css?v=2.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -10,7 +10,6 @@
     <div class="cv2-wrap">
         <div class="cv2-container">
 
-            {{-- Page header --}}
             <div class="cv2-phead">
                 <div>
                     <div class="cv2-crumb"><a href="{{ route('home') }}">Master Data</a> · Contacts · Vehicle Vendor</div>
@@ -23,35 +22,33 @@
                 </div>
             </div>
 
-            {{-- KPI row --}}
             <div class="cv2-kpis">
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-buildings"></i></span><span class="cv2-kpi-trend cv2-up">+4%</span></div>
-                    <div class="cv2-kpi-val">118</div><div class="cv2-kpi-lbl">Total Vendors</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-buildings"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['total'] }}</div><div class="cv2-kpi-lbl">Total Vendors</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span><span class="cv2-kpi-trend cv2-up">+6</span></div>
-                    <div class="cv2-kpi-val">103</div><div class="cv2-kpi-lbl">Active</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['active'] }}</div><div class="cv2-kpi-lbl">Active</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span><span class="cv2-kpi-trend cv2-flat">0</span></div>
-                    <div class="cv2-kpi-val">12</div><div class="cv2-kpi-lbl">Inactive</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['inactive'] }}</div><div class="cv2-kpi-lbl">Inactive</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span><span class="cv2-kpi-trend cv2-down">+1</span></div>
-                    <div class="cv2-kpi-val">3</div><div class="cv2-kpi-lbl">Blacklisted</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['blacklisted'] }}</div><div class="cv2-kpi-lbl">Blacklisted</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span><span class="cv2-kpi-trend cv2-up">+18</span></div>
-                    <div class="cv2-kpi-val">642</div><div class="cv2-kpi-lbl">Vehicles Supplied</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['vehicles_supplied'] }}</div><div class="cv2-kpi-lbl">Vehicles Supplied</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-signpost-split"></i></span><span class="cv2-kpi-trend cv2-up">+9</span></div>
-                    <div class="cv2-kpi-val">87</div><div class="cv2-kpi-lbl">Routes Covered</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-signpost-split"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['routes'] }}</div><div class="cv2-kpi-lbl">Routes Covered</div>
                 </div>
             </div>
 
-            {{-- Recent + side --}}
             <div class="cv2-grid cv2-grid-2-1 cv2-mt">
                 <div class="cv2-card">
                     <div class="cv2-card-h"><h3>Recent Vendors</h3><a class="cv2-link" href="{{ route('contact.v2.vehiclevendor.index') }}">View all →</a></div>
@@ -59,7 +56,7 @@
                         <table class="cv2-table">
                             <thead><tr><th>Vendor</th><th>Vehicles</th><th>City</th><th>RAG</th><th>Status</th><th></th></tr></thead>
                             <tbody>
-                                @foreach($vendors as $v)
+                                @forelse($vendors as $v)
                                 <tr>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:11px;">
@@ -76,7 +73,9 @@
                                     </td>
                                     <td class="cv2-actions"><a href="{{ route('contact.v2.vehiclevendor.show', $v['id']) }}" class="cv2-ic-btn" title="Open"><i class="bi bi-arrow-right"></i></a></td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr><td colspan="6" class="text-center cv2-empty">No vendors yet.</td></tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -88,17 +87,16 @@
                         <div class="cv2-card-b" style="display:flex;flex-direction:column;gap:10px;">
                             <a href="{{ route('contact.v2.vehiclevendor.create') }}" class="cv2-btn cv2-btn-primary" style="justify-content:flex-start;"><i class="bi bi-building-add"></i>New Vendor</a>
                             <a href="{{ route('contact.v2.vehiclevendor.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-search"></i>Find a Vendor</a>
-                            <a href="{{ route('contact.v2.vehiclevendor.vehicle', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-truck"></i>Add Supplied Vehicle</a>
-                            <a href="{{ route('contact.v2.vehiclevendor.route', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-signpost-split"></i>Add Route</a>
                         </div>
                     </div>
                     <div class="cv2-card cv2-mt">
                         <div class="cv2-card-h"><h3>By RAG Status</h3></div>
                         <div class="cv2-card-b">
                             <ul class="cv2-mini">
-                                <li><span class="cv2-mini-ic" style="background:var(--cv2-ok-bg);color:var(--cv2-ok);"><i class="bi bi-circle-fill"></i></span><div class="cv2-mini-body"><b>Green</b><span>74 vendors</span></div><span class="cv2-t-mono">63%</span></li>
-                                <li><span class="cv2-mini-ic" style="background:var(--cv2-warn-bg);color:var(--cv2-warn);"><i class="bi bi-circle-fill"></i></span><div class="cv2-mini-body"><b>Yellow</b><span>31 vendors</span></div><span class="cv2-t-mono">26%</span></li>
-                                <li><span class="cv2-mini-ic" style="background:var(--cv2-bad-bg);color:var(--cv2-bad);"><i class="bi bi-circle-fill"></i></span><div class="cv2-mini-body"><b>Red</b><span>13 vendors</span></div><span class="cv2-t-mono">11%</span></li>
+                                @foreach($ragBreakdown as $row)
+                                @php $rmap=['Green'=>['var(--cv2-ok-bg)','var(--cv2-ok)'],'Yellow'=>['var(--cv2-warn-bg)','var(--cv2-warn)'],'Red'=>['var(--cv2-bad-bg)','var(--cv2-bad)']][$row['rag']]; @endphp
+                                <li><span class="cv2-mini-ic" style="background:{{ $rmap[0] }};color:{{ $rmap[1] }};"><i class="bi bi-circle-fill"></i></span><div class="cv2-mini-body"><b>{{ $row['rag'] }}</b><span>{{ $row['total'] }} vendors</span></div><span class="cv2-t-mono">{{ $row['pct'] }}%</span></li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>

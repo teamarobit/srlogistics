@@ -4,7 +4,7 @@
    Adds vendor-specific bits: bank-details repeater (E3, primary radio),
    TDS warning banner (E6).  Prefix: cv2-
    ===================================================================== */
-@import url('customer.css?v=1.3');
+@import url('customer.css?v=1.4');
 
 /* ---- bank-details repeater (E3) ---------------------------------- */
 /* Reuses .cv2-repeat-row from customer.css; these tune the primary radio. */

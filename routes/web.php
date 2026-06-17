@@ -957,6 +957,28 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/battery-vendors/{id}/activity',  [App\Http\Controllers\V2\BatteryVendorController::class, 'activity'])->name('batteryvendor.activity');
         Route::delete('/battery-vendors/{id}',        [App\Http\Controllers\V2\BatteryVendorController::class, 'destroy'])->name('batteryvendor.destroy');
 
+        /******************************** Contacts V2 — Vehicle Vendor (redesign) *********************/
+        // cotype_id = 5. New, isolated module. Does NOT touch existing contacts routes/controller/views.
+        // Gate 2 (live backend). Vehicle & Route submodules are READ-ONLY (no backing table — Amit 2026-06-17).
+        Route::get('/vehicle-vendors/dashboard',      [App\Http\Controllers\V2\VehicleVendorController::class, 'dashboard'])->name('vehiclevendor.dashboard');
+        Route::get('/vehicle-vendors',                [App\Http\Controllers\V2\VehicleVendorController::class, 'index'])->name('vehiclevendor.index');
+        Route::get('/vehicle-vendors/create',         [App\Http\Controllers\V2\VehicleVendorController::class, 'create'])->name('vehiclevendor.create');
+        // Write endpoints (Gate 2) — POST/DELETE. Defined before the {id} show route.
+        Route::post('/vehicle-vendors/save',                  [App\Http\Controllers\V2\VehicleVendorController::class, 'store'])->name('vehiclevendor.save');
+        Route::post('/vehicle-vendors/contact-person-wrapper',[App\Http\Controllers\V2\VehicleVendorController::class, 'contactPersonWrapper'])->name('vehiclevendor.contactpersonwrapper');
+        Route::post('/vehicle-vendors/attachment/save',       [App\Http\Controllers\V2\VehicleVendorController::class, 'storeAttachment'])->name('vehiclevendor.attachment.save');
+        Route::post('/vehicle-vendors/attachment/delete',     [App\Http\Controllers\V2\VehicleVendorController::class, 'deleteAttachment'])->name('vehiclevendor.attachment.delete');
+        Route::post('/vehicle-vendors/activity-notes/save',   [App\Http\Controllers\V2\VehicleVendorController::class, 'storeActivityNote'])->name('vehiclevendor.activitynotes.save');
+        Route::get('/vehicle-vendors/{id}',           [App\Http\Controllers\V2\VehicleVendorController::class, 'show'])->name('vehiclevendor.show');
+        Route::get('/vehicle-vendors/{id}/edit',      [App\Http\Controllers\V2\VehicleVendorController::class, 'edit'])->name('vehiclevendor.edit');
+        Route::post('/vehicle-vendors/{id}/update',   [App\Http\Controllers\V2\VehicleVendorController::class, 'update'])->name('vehiclevendor.update');
+        Route::post('/vehicle-vendors/{id}/toggle-status', [App\Http\Controllers\V2\VehicleVendorController::class, 'toggleStatus'])->name('vehiclevendor.toggle-status');
+        Route::get('/vehicle-vendors/{id}/documents', [App\Http\Controllers\V2\VehicleVendorController::class, 'documents'])->name('vehiclevendor.documents');
+        Route::get('/vehicle-vendors/{id}/vehicle',   [App\Http\Controllers\V2\VehicleVendorController::class, 'vehicle'])->name('vehiclevendor.vehicle');
+        Route::get('/vehicle-vendors/{id}/route',     [App\Http\Controllers\V2\VehicleVendorController::class, 'route'])->name('vehiclevendor.route');
+        Route::get('/vehicle-vendors/{id}/activity',  [App\Http\Controllers\V2\VehicleVendorController::class, 'activity'])->name('vehiclevendor.activity');
+        Route::delete('/vehicle-vendors/{id}',        [App\Http\Controllers\V2\VehicleVendorController::class, 'destroy'])->name('vehiclevendor.destroy');
+
         /******************************** Contacts V2 — Employee (redesign) *********************/
         // cotype_id = office staff. New, isolated module. Does NOT touch existing contacts routes/controller/views.
         Route::get('/employees/dashboard',            [App\Http\Controllers\V2\EmployeeController::class, 'dashboard'])->name('employee.dashboard');
