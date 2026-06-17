@@ -193,8 +193,8 @@
                                                 </select>
                                             </div>
 
-                                            {{-- VAHAN Details collapsible --}}
-                                            <div class="td2-vahan-wrap">
+                                            {{-- VAHAN Details collapsible — hidden until a vehicle is selected --}}
+                                            <div class="td2-vahan-wrap" style="display:none;">
                                                 <button class="td2-vahan-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#td2VahanDetails">
                                                     <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
                                                 </button>
@@ -344,8 +344,8 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Selected vehicle summary — same card style as Suggested Vehicles --}}
-                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mt-3">
+                                            {{-- Selected vehicle summary — same card style as Suggested Vehicles; hidden until a vehicle is selected --}}
+                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mt-3" style="display:none;">
                                                 <div class="td2-vc-header">
                                                     <div class="td2-vc-num">WB-12-AB-1237</div>
                                                 </div>
@@ -412,8 +412,8 @@
                                                 </div>
                                             </div>
 
-                                            {{-- VAHAN Details collapsible (external) --}}
-                                            <div class="td2-vahan-wrap mb-3">
+                                            {{-- VAHAN Details collapsible (external) — hidden until a vehicle is selected --}}
+                                            <div class="td2-vahan-wrap mb-3" style="display:none;">
                                                 <button class="td2-vahan-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#td2VahanDetailsExt">
                                                     <i class="uil uil-file-info-alt"></i> VAHAN Details <i class="uil uil-angle-down ms-auto"></i>
                                                 </button>
@@ -442,8 +442,8 @@
                                             </div>
 
                                             {{-- Selected vehicle summary — same card style (RAG-coloured border); driver fields blank for external --}}
-                                            {{-- data-vd-view="vahan": open Vehicle Details with VAHAN view instead of the map --}}
-                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mb-3" data-vd-view="vahan">
+                                            {{-- data-vd-view="vahan": open Vehicle Details with VAHAN view instead of the map; hidden until a vehicle is selected --}}
+                                            <div class="td2-veh-card td2-veh-card-green td2-open-map mb-3" data-vd-view="vahan" style="display:none;">
                                                 <div class="td2-vc-header">
                                                     <div class="td2-vc-num">WB-99-ZZ-0001</div>
                                                 </div>

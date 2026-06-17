@@ -2415,6 +2415,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.2') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.3') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection
