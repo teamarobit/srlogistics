@@ -449,5 +449,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Trip/resume.js?v=1.5') }}"></script>
+<script src="{{ asset('js/Trip/resume.js?v=1.6') }}"></script>
 @endsection

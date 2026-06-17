@@ -48,7 +48,8 @@ $(function () {
     /* Reset the vehicle-allocation picker (suggested cards + Add/Allocate) */
     function resumeVehReset() {
         $('input[name="td2ResumeVehSelect"]').prop('checked', false);
-        $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('');
+        $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect')
+            .val('').trigger('change.select2');
         $('#td2ResumeOwnVeh').prop('checked', true);
         $('.td2-resume-if-own').show();
         $('.td2-resume-if-ext').hide();
@@ -136,13 +137,13 @@ $(function () {
     $(document).on('change', '.td2-resume-own-veh', function () {
         $('.td2-resume-if-own').show();
         $('.td2-resume-if-ext').hide();
-        $('#td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('');
+        $('#td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('').trigger('change.select2');
         renderAllocVehCard(null);
     });
     $(document).on('change', '.td2-resume-ext-veh', function () {
         $('.td2-resume-if-own').hide();
         $('.td2-resume-if-ext').show();
-        $('#td2ResumeOwnVehSelect').val('');
+        $('#td2ResumeOwnVehSelect').val('').trigger('change.select2');
         renderAllocVehCard(null);
     });
 
@@ -151,14 +152,14 @@ $(function () {
         var reg;
         if ($(this).is('input[type="radio"]')) {
             reg = $(this).val();
-            $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect').val('');
+            $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect').val('').trigger('change.select2');
             /* Suggested card already shows its own details — hide the alloc detail card */
             renderAllocVehCard(null);
         } else {
             reg = $(this).val();
             $('input[name="td2ResumeVehSelect"]').prop('checked', false);
-            if (this.id === 'td2ResumeOwnVehSelect') { $('#td2ResumeExtVehicleSelect').val(''); }
-            else { $('#td2ResumeOwnVehSelect').val(''); }
+            if (this.id === 'td2ResumeOwnVehSelect') { $('#td2ResumeExtVehicleSelect').val('').trigger('change.select2'); }
+            else { $('#td2ResumeOwnVehSelect').val('').trigger('change.select2'); }
             /* Own / External pick → render the selected vehicle's detail card */
             renderAllocVehCard($(this).find('option:selected'));
         }
@@ -309,12 +310,14 @@ $(function () {
         resumeDriverReset();
         syncResumeActionFields();
 
-        /* Select2 for the driver dropdown */
-        $('.select2-modal').each(function () {
-            if (!$(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2({ width: '100%' });
-            }
-        });
+        /* Searchable Select2 on every dropdown — driver + own/external vehicle + vendor.
+           width:'100%' keeps them sized correctly even while their section is hidden. */
+        $('#td2ResumeDriverSelect, #td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect')
+            .each(function () {
+                if (!$(this).hasClass('select2-hidden-accessible')) {
+                    $(this).select2({ width: '100%' });
+                }
+            });
     })();
 
 });
