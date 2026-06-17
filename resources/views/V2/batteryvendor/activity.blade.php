@@ -9,24 +9,39 @@
         <div class="cv2-grid cv2-grid-2-1 cv2-mt">
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Activity Log</h3></div>
-                <div class="cv2-card-b">
+                <div class="cv2-card-b" id="cv2ActivityList">
                     <ul class="cv2-mini">
-                        <li><span class="cv2-mini-ic"><i class="bi bi-battery-charging"></i></span><div class="cv2-mini-body"><b>Battery EXD-150Ah-TT added to supply list</b><span>Superadmin · 12 Jun 26, 3:42 PM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-bank"></i></span><div class="cv2-mini-body"><b>Primary bank changed to HDFC Bank</b><span>Superadmin · 08 Jun 26, 10:15 AM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-paperclip"></i></span><div class="cv2-mini-body"><b>TDS Declaration uploaded</b><span>Operations · 15 Apr 26, 5:01 PM</span></div></li>
-                        <li><span class="cv2-mini-ic"><i class="bi bi-person-plus"></i></span><div class="cv2-mini-body"><b>Vendor created</b><span>Superadmin · 12 Apr 26, 9:30 AM</span></div></li>
+                        @forelse($activities as $act)
+                            <li>
+                                <span class="cv2-mini-ic"><i class="bi {{ $act->is_blacklisted === 'Yes' ? 'bi-exclamation-octagon' : 'bi-chat-left-text' }}"></i></span>
+                                <div class="cv2-mini-body">
+                                    <b>{{ $act->notes }}</b>
+                                    <span>{{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->format('d M y, g:i A') : '' }}</span>
+                                </div>
+                            </li>
+                        @empty
+                            <li><div class="cv2-mini-body"><span class="cv2-empty">No activity notes yet.</span></div></li>
+                        @endforelse
                     </ul>
                 </div>
             </div>
             <div class="cv2-card">
                 <div class="cv2-card-h"><h3>Add Note</h3></div>
                 <div class="cv2-card-b">
-                    <div class="cv2-field"><label class="cv2-label">Note</label><textarea rows="4" placeholder="Add an activity note…"></textarea></div>
-                    <button class="cv2-btn cv2-btn-primary cv2-mt" style="width:100%;justify-content:center;"><i class="bi bi-plus-lg"></i>Save Note</button>
+                    <form id="cv2ActivityForm" action="{{ route('contact.v2.batteryvendor.activitynotes.save') }}" method="POST" data-list-url="{{ route('contact.v2.batteryvendor.activity', $v['id']) }}">
+                        @csrf
+                        <input type="hidden" name="contact_id" value="{{ $v['id'] }}">
+                        <div class="cv2-field"><label class="cv2-label">Note</label><textarea name="activity_notes" rows="4" placeholder="Add an activity note…"></textarea></div>
+                        <button type="submit" class="cv2-btn cv2-btn-primary cv2-mt" style="width:100%;justify-content:center;"><i class="bi bi-plus-lg"></i>Save Note</button>
+                    </form>
                     <div class="cv2-locked cv2-mt"><i class="bi bi-exclamation-octagon"></i><div><b>Blacklist</b><div class="cv2-hint">Set status to Blacklisted from Edit Info to log a blacklist note.</div></div></div>
                 </div>
             </div>
         </div>
     </div></div>
 </div>
+@endsection
+@section('js')
+<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
+<script src="{{ asset('js/V2/batteryvendor.js?v=2.0') }}"></script>
 @endsection

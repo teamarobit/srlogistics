@@ -46,8 +46,8 @@
                                 <tr><td class="cv2-t-sub">GST Treatment</td><td><span class="cv2-pill">Registered</span></td></tr>
                                 <tr><td class="cv2-t-sub">Contact Code</td><td class="cv2-t-mono">{{ $v['code'] }}</td></tr>
                                 <tr><td class="cv2-t-sub">No. of Vehicles</td><td class="cv2-t-mono">{{ $v['vehicles'] }}</td></tr>
-                                <tr><td class="cv2-t-sub">TDS Percentage</td><td class="cv2-t-mono">{{ $v['tds'] }}%
-                                    @if($v['tds'] <= 1)<span class="cv2-badge is-warn" style="margin-left:6px;"><span class="cv2-badge-dot"></span>TDS Declaration required</span>@endif
+                                <tr><td class="cv2-t-sub">TDS Percentage</td><td class="cv2-t-mono">{{ is_null($v['tds']) ? '—' : $v['tds'].'%' }}
+                                    @if(!is_null($v['tds']) && $v['tds'] <= 1)<span class="cv2-badge is-warn" style="margin-left:6px;"><span class="cv2-badge-dot"></span>TDS Declaration required</span>@endif
                                 </td></tr>
                                 <tr><td class="cv2-t-sub">City</td><td>{{ $v['city'] }}</td></tr>
                             </tbody>
@@ -58,9 +58,14 @@
                     <div class="cv2-card-h"><h3>Recent Activity</h3><a class="cv2-link" href="{{ route('contact.v2.batteryvendor.activity', $v['id']) }}">View all →</a></div>
                     <div class="cv2-card-b">
                         <ul class="cv2-mini">
-                            <li><span class="cv2-mini-ic"><i class="bi bi-battery-charging"></i></span><div class="cv2-mini-body"><b>2 batteries added to supply list</b><span>by Superadmin · 2 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-bank"></i></span><div class="cv2-mini-body"><b>Primary bank updated</b><span>by Superadmin · 5 days ago</span></div></li>
-                            <li><span class="cv2-mini-ic"><i class="bi bi-paperclip"></i></span><div class="cv2-mini-body"><b>GST certificate uploaded</b><span>by Operations · 1 week ago</span></div></li>
+                            @forelse($activities as $act)
+                                <li>
+                                    <span class="cv2-mini-ic"><i class="bi {{ $act->is_blacklisted === 'Yes' ? 'bi-exclamation-octagon' : 'bi-chat-left-text' }}"></i></span>
+                                    <div class="cv2-mini-body"><b>{{ $act->notes }}</b><span>by {{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->diffForHumans() : '' }}</span></div>
+                                </li>
+                            @empty
+                                <li><div class="cv2-mini-body"><span class="cv2-empty">No activity yet.</span></div></li>
+                            @endforelse
                         </ul>
                     </div>
                 </div>
@@ -69,4 +74,8 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
 @endsection

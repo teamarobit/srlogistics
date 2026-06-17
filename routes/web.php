@@ -938,11 +938,24 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/battery-vendors/dashboard',      [App\Http\Controllers\V2\BatteryVendorController::class, 'dashboard'])->name('batteryvendor.dashboard');
         Route::get('/battery-vendors',                [App\Http\Controllers\V2\BatteryVendorController::class, 'index'])->name('batteryvendor.index');
         Route::get('/battery-vendors/create',         [App\Http\Controllers\V2\BatteryVendorController::class, 'create'])->name('batteryvendor.create');
+        // Write endpoints (Gate 2) — POST/PUT/DELETE. Defined before the {id} show route.
+        Route::post('/battery-vendors/save',                  [App\Http\Controllers\V2\BatteryVendorController::class, 'store'])->name('batteryvendor.save');
+        Route::post('/battery-vendors/contact-person-wrapper',[App\Http\Controllers\V2\BatteryVendorController::class, 'contactPersonWrapper'])->name('batteryvendor.contactpersonwrapper');
+        Route::post('/battery-vendors/attachment/save',       [App\Http\Controllers\V2\BatteryVendorController::class, 'storeAttachment'])->name('batteryvendor.attachment.save');
+        Route::post('/battery-vendors/attachment/delete',     [App\Http\Controllers\V2\BatteryVendorController::class, 'deleteAttachment'])->name('batteryvendor.attachment.delete');
+        Route::post('/battery-vendors/activity-notes/save',   [App\Http\Controllers\V2\BatteryVendorController::class, 'storeActivityNote'])->name('batteryvendor.activitynotes.save');
+        Route::post('/battery-vendors/battery/save',          [App\Http\Controllers\V2\BatteryVendorController::class, 'batterySave'])->name('batteryvendor.battery.save');
+        Route::get('/battery-vendors/battery/{batteryId}',    [App\Http\Controllers\V2\BatteryVendorController::class, 'batteryGet'])->name('batteryvendor.battery.get');
+        Route::post('/battery-vendors/battery/{batteryId}/update', [App\Http\Controllers\V2\BatteryVendorController::class, 'batteryUpdate'])->name('batteryvendor.battery.update');
+        Route::post('/battery-vendors/battery/delete',        [App\Http\Controllers\V2\BatteryVendorController::class, 'batteryDelete'])->name('batteryvendor.battery.delete');
         Route::get('/battery-vendors/{id}',           [App\Http\Controllers\V2\BatteryVendorController::class, 'show'])->name('batteryvendor.show');
         Route::get('/battery-vendors/{id}/edit',      [App\Http\Controllers\V2\BatteryVendorController::class, 'edit'])->name('batteryvendor.edit');
+        Route::post('/battery-vendors/{id}/update',   [App\Http\Controllers\V2\BatteryVendorController::class, 'update'])->name('batteryvendor.update');
+        Route::post('/battery-vendors/{id}/toggle-status', [App\Http\Controllers\V2\BatteryVendorController::class, 'toggleStatus'])->name('batteryvendor.toggle-status');
         Route::get('/battery-vendors/{id}/documents', [App\Http\Controllers\V2\BatteryVendorController::class, 'documents'])->name('batteryvendor.documents');
         Route::get('/battery-vendors/{id}/battery',   [App\Http\Controllers\V2\BatteryVendorController::class, 'battery'])->name('batteryvendor.battery');
         Route::get('/battery-vendors/{id}/activity',  [App\Http\Controllers\V2\BatteryVendorController::class, 'activity'])->name('batteryvendor.activity');
+        Route::delete('/battery-vendors/{id}',        [App\Http\Controllers\V2\BatteryVendorController::class, 'destroy'])->name('batteryvendor.destroy');
 
         /******************************** Contacts V2 — Employee (redesign) *********************/
         // cotype_id = office staff. New, isolated module. Does NOT touch existing contacts routes/controller/views.
