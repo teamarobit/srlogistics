@@ -55,8 +55,6 @@ $(function () {
         $('#td2ResumeAssignedVehicle').val('');
         $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
         $('#td2ResumeAssignPick').html('');
-        $('#td2ResumeAssignBtn').prop('disabled', false)
-            .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
         renderAllocVehCard(null);
     }
 
@@ -165,35 +163,90 @@ $(function () {
             renderAllocVehCard($(this).find('option:selected'));
         }
 
-        /* A new pick invalidates any previous assignment */
-        $('#td2ResumeAssignedVehicle').val('');
-        $('#td2ResumeAssignBtn').prop('disabled', false)
-            .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
-
+        /* Selection IS the assignment — write straight to the hidden field,
+           no separate "Assign Vehicle" click needed. */
         if (reg) {
-            $('#td2ResumeAssignPick').html('Selected: <strong>' + reg + '</strong>');
+            $('#td2ResumeAssignedVehicle').val(reg);
+            $('#td2ResumeAssignPick').html('<i class="uil uil-check-circle me-1"></i>' +
+                '<strong>' + reg + '</strong> will be assigned on resume.');
             $('#td2ResumeAssignWrap').removeClass('d-none').attr('data-reg', reg);
             $form.find('.td2-resume-err[data-for="vehicle"]').text('');
         } else {
+            $('#td2ResumeAssignedVehicle').val('');
+            $('#td2ResumeAssignPick').html('');
             $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
         }
-    });
-
-    /* Assign the picked vehicle (prototype — client side only) */
-    $(document).on('click', '#td2ResumeAssignBtn', function () {
-        var reg = $('#td2ResumeAssignWrap').attr('data-reg') || '';
-        if (!reg) { return; }
-        $('#td2ResumeAssignedVehicle').val(reg);
-        $(this).prop('disabled', true)
-            .html('<i class="uil uil-check-circle me-1"></i> Assigned · ' + reg);
-        $form.find('.td2-resume-err[data-for="vehicle"]').text('');
-        Toast.fire({ icon: 'success', title: 'Vehicle assigned.' });
     });
 
     /* Re-sync section visibility whenever the action changes */
     $(document).on('change', '#resumeTripForm input[name="resume_action"]', syncResumeActionFields);
 
-    /* Confirm resume → validate, then redirect to the trip details page */
+    /* ── SweetAlert confirmation builders ── */
+
+    /* Selected vehicle's detail-card HTML (suggested pick OR Own/External pick) */
+    function getSelectedVehCardHtml() {
+        var $picked = $('input[name="td2ResumeVehSelect"]:checked');
+        if ($picked.length) {
+            var $lbl = $picked.next('.td2-veh-card');
+            if ($lbl.length) { return $lbl[0].outerHTML; }
+        }
+        var $alloc = $('#td2ResumeAllocVehCard .td2-veh-card');
+        return $alloc.length ? $alloc[0].outerHTML : '';
+    }
+
+    /* Selected driver's currently-assigned-vehicle card HTML.
+       The reg shown is the driver's CURRENT vehicle, so label it as such. */
+    function getSelectedDriverCardHtml() {
+        var $card = $('.td2-resume-driver-veh-card').not('.d-none').first();
+        if (!$card.length) { return ''; }
+        var $clone = $card.clone().removeClass('d-none');
+        $clone.find('.td2-vc-num').first()
+            .append(' <span class="td2-rs-assigned-note">(Currently Assigned Vehicle)</span>');
+        return $clone[0].outerHTML;
+    }
+
+    /* The amber re-allocation note text from a section (kept in sync with the page) */
+    function getResumeNoteText(wrapSel) {
+        return $.trim($(wrapSel + ' .td2-resume-note span').first().text());
+    }
+
+    /* An amber warning row reusing the on-page note styling */
+    function noteRow(text) {
+        if (!text) { return ''; }
+        return '<div class="td2-resume-note td2-resume-note-amber td2-rs-confirm-warn">' +
+            '<i class="uil uil-info-circle"></i><span>' + text + '</span></div>';
+    }
+
+    /* Build the confirm-dialog body per action */
+    function buildResumeConfirmHtml(action) {
+        var blocks = '';
+        if (action === 'change_vehicle' || action === 'change_both') {
+            blocks += '<div class="td2-rs-confirm-block">' +
+                '<p class="td2-rs-confirm-h"><i class="uil uil-truck me-1"></i>New vehicle</p>' +
+                getSelectedVehCardHtml() +
+                noteRow(getResumeNoteText('#td2ResumeVehicleWrap')) + '</div>';
+        }
+        if (action === 'change_driver' || action === 'change_both') {
+            blocks += '<div class="td2-rs-confirm-block">' +
+                '<p class="td2-rs-confirm-h"><i class="uil uil-user me-1"></i>New driver</p>' +
+                getSelectedDriverCardHtml() +
+                noteRow(getResumeNoteText('#td2ResumeDriverWrap')) + '</div>';
+        }
+        if (!blocks) {
+            return '<p class="td2-rs-confirm-text">The trip will move from ' +
+                '<strong>Paused</strong> back to <strong>Ongoing</strong>.</p>';
+        }
+        return '<div class="td2-rs-confirm-wrap">' + blocks + '</div>';
+    }
+
+    var RESUME_TITLES = {
+        resume_only:    'Are you sure you want to resume this trip?',
+        change_vehicle: 'Resume trip and change vehicle?',
+        change_driver:  'Resume trip and change driver?',
+        change_both:    'Resume trip and change vehicle &amp; driver?'
+    };
+
+    /* Confirm resume → validate → SweetAlert confirm → redirect to trip details */
     $(document).on('click', '.td2-resume-confirm-btn', function () {
         clearResumeErrors();
 
@@ -208,7 +261,7 @@ $(function () {
             ok = false;
         }
         if ((action === 'change_vehicle' || action === 'change_both') && !vehicle) {
-            $form.find('.td2-resume-err[data-for="vehicle"]').text('Please select a vehicle and click Assign.');
+            $form.find('.td2-resume-err[data-for="vehicle"]').text('Please select a vehicle.');
             ok = false;
         }
         if ((action === 'change_driver' || action === 'change_both') && !driver) {
@@ -218,15 +271,31 @@ $(function () {
         if (!ok) { return; }
 
         var $btn = $(this);
-        $btn.prop('disabled', true)
-            .html('<i class="uil uil-play-circle me-1"></i> Resuming…');
 
-        Toast.fire({ icon: 'success', title: 'Trip resumed.' });
+        Swal.fire({
+            title: RESUME_TITLES[action] || RESUME_TITLES.resume_only,
+            html: buildResumeConfirmHtml(action),
+            showCancelButton: true,
+            confirmButtonText: '<i class="uil uil-play-circle me-1"></i> Yes, resume trip',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#032671',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true,
+            width: (action === 'change_both') ? 680 : 560,
+            customClass: { popup: 'td2-resume-confirm-swal' }
+        }).then(function (result) {
+            if (!result.isConfirmed) { return; }
 
-        /* Redirect to the trip details page */
-        setTimeout(function () {
-            if (DETAILS_URL) { window.location.href = DETAILS_URL; }
-        }, 900);
+            $btn.prop('disabled', true)
+                .html('<i class="uil uil-play-circle me-1"></i> Resuming…');
+
+            Toast.fire({ icon: 'success', title: 'Trip resumed.' });
+
+            /* Redirect to the trip details page */
+            setTimeout(function () {
+                if (DETAILS_URL) { window.location.href = DETAILS_URL; }
+            }, 900);
+        });
     });
 
     /* ── Page init ── */

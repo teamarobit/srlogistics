@@ -351,6 +351,88 @@
 .td2-resume-page .td2-resume-assign-pick { color: #032671; }
 
 /* =====================================================================
+   Selected-vehicle highlight + Resume confirm dialog (v3.4)
+   ===================================================================== */
+
+/* Light highlight ring on the picked suggested-vehicle card. Only the
+   top/right/bottom borders are recoloured so the status left-accent
+   (green/amber/red from show-v2.css) is preserved. */
+.td2-resume-page .td2-veh-radio:checked + .td2-veh-card {
+    border-top-color: #a8bce9;
+    border-right-color: #a8bce9;
+    border-bottom-color: #a8bce9;
+    box-shadow: 0 0 0 2px #a8bce9, 0 8px 20px rgba(3, 38, 113, 0.12);
+    position: relative;
+}
+
+/* "Selected" pill — on both the suggested card and the Own/External
+   detail card shown in the section below the OR divider. */
+.td2-resume-page .td2-veh-radio:checked + .td2-veh-card::after,
+.td2-resume-page .td2-resume-alloc-veh .td2-veh-card::after {
+    content: "\2713  Selected";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: #032671;
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .3px;
+    padding: 4px 9px;
+    border-radius: 999px;
+}
+
+/* Own / External selected-vehicle detail card — same light highlight + badge */
+.td2-resume-page .td2-resume-alloc-veh .td2-veh-card {
+    border-top-color: #a8bce9;
+    border-right-color: #a8bce9;
+    border-bottom-color: #a8bce9;
+    box-shadow: 0 0 0 2px #a8bce9, 0 8px 20px rgba(3, 38, 113, 0.10);
+    background: #eef2ff;
+    position: relative;
+}
+
+/* Resume confirmation dialog — Swal popup renders at <body> level, so these
+   classes are deliberately NOT scoped under .td2-resume-page. */
+.td2-resume-confirm-swal .td2-rs-confirm-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+    margin-top: 6px;
+}
+
+.td2-resume-confirm-swal .td2-rs-confirm-h {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #032671;
+}
+
+.td2-resume-confirm-swal .td2-rs-confirm-text {
+    font-size: 14px;
+    color: #334155;
+    margin: 6px 0 0;
+}
+
+/* "(Currently Assigned Vehicle)" note beside the New Driver's vehicle number */
+.td2-resume-confirm-swal .td2-rs-assigned-note {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* Re-allocation amber warning inside each confirm block */
+.td2-resume-confirm-swal .td2-rs-confirm-warn {
+    margin: 10px 0 0;
+    text-align: left;
+}
+
+/* =====================================================================
    Compact suggested-vehicle cards (scoped to this page only)
    Tightens spacing/padding without removing any field — every label
    and value from the inherited card layout is preserved.
