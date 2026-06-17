@@ -1392,7 +1392,8 @@ $(document).ready(function () {
    Select-all + live "Selected" count and "Selected Quantity".
    ============================================================= */
 function td2EwayRefreshSummary() {
-    var $rows = $('#td2EwayTable tbody tr:visible');
+    /* Only count data rows (exclude the empty-state row) */
+    var $rows = $('#td2EwayTable tbody tr:visible').not('.td2-eway-empty-row');
     var $checked = $rows.find('.td2-eway-row-check:checked');
     var qty = 0;
     $checked.each(function () { qty += parseFloat($(this).data('qty')) || 0; });
@@ -1401,35 +1402,65 @@ function td2EwayRefreshSummary() {
     $('#td2EwaySelected').text($checked.length);
     $('#td2EwaySelQty').text(qty.toFixed(2));
 
-    /* Keep the header checkbox in sync with the rows */
+    /* Highlight selected rows */
+    $rows.removeClass('td2-eway-selected');
+    $checked.closest('tr').addClass('td2-eway-selected');
+
+    /* Keep the header checkbox in sync with the visible rows */
     var $allRowChecks = $rows.find('.td2-eway-row-check');
     $('#td2EwayCheckAll').prop('checked', $allRowChecks.length > 0 && $checked.length === $allRowChecks.length);
+    $('#td2EwayCheckAll').prop('disabled', $allRowChecks.length === 0);
 }
 
-/* Header select-all toggles every visible row */
+/* Combined filter — search text + status. Hides non-matching rows,
+   shows the empty-state row when nothing matches, then recomputes summary. */
+function td2EwayApplyFilters() {
+    var term   = $.trim(($('#td2EwaySearch').val() || '')).toLowerCase();
+    var status = $('#td2EwayStatusFilter').val();
+    var shown  = 0;
+
+    $('#td2EwayTable tbody tr').not('.td2-eway-empty-row').each(function () {
+        var $row = $(this);
+        var statusOk = !status || $row.data('status') === status;
+        var textOk   = !term || $row.text().toLowerCase().indexOf(term) !== -1;
+        var match    = statusOk && textOk;
+
+        $row.toggle(match);
+        if (!match) { $row.find('.td2-eway-row-check').prop('checked', false); }
+        if (match)  { shown++; }
+    });
+
+    $('#td2EwayEmptyRow').prop('hidden', shown !== 0).toggle(shown === 0);
+    td2EwayRefreshSummary();
+}
+
+/* Header select-all toggles every visible data row */
 $(document).on('change', '#td2EwayCheckAll', function () {
     var on = $(this).is(':checked');
-    $('#td2EwayTable tbody tr:visible .td2-eway-row-check').prop('checked', on);
+    $('#td2EwayTable tbody tr:visible').not('.td2-eway-empty-row')
+        .find('.td2-eway-row-check').prop('checked', on);
     td2EwayRefreshSummary();
 });
 
 /* Any row checkbox change updates the summary */
 $(document).on('change', '.td2-eway-row-check', td2EwayRefreshSummary);
 
-/* Status filter — show only matching rows, then recompute summary */
-$(document).on('change', '#td2EwayStatusFilter', function () {
-    var val = $(this).val();
-    $('#td2EwayTable tbody tr').each(function () {
-        var match = !val || $(this).data('status') === val;
-        $(this).toggle(match);
-        if (!match) { $(this).find('.td2-eway-row-check').prop('checked', false); }
-    });
-    td2EwayRefreshSummary();
+/* Search + status filter inputs */
+$(document).on('input', '#td2EwaySearch', td2EwayApplyFilters);
+$(document).on('change', '#td2EwayStatusFilter', td2EwayApplyFilters);
+
+/* Reset filters */
+$(document).on('click', '#td2EwayResetFilters', function () {
+    $('#td2EwaySearch').val('');
+    $('#td2EwayStatusFilter').val('');
+    td2EwayApplyFilters();
 });
 
-/* Reset summary each time the modal opens */
+/* Reset filters + summary each time the modal opens */
 $(document).on('shown.bs.modal', '#addEwayTable', function () {
-    td2EwayRefreshSummary();
+    $('#td2EwaySearch').val('');
+    $('#td2EwayStatusFilter').val('');
+    td2EwayApplyFilters();
 });
 
 /* Add to Trip */

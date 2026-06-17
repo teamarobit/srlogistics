@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=9.8') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=9.9') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -1156,33 +1156,50 @@
 </div>
 
 {{-- Unassigned E-Ways — pick existing unassigned e-ways and attach them to this trip --}}
-<div class="modal fade" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
+<div class="modal fade td2-eway-modal" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
+            <div class="modal-header td2-eway-modal-head">
+                <div class="td2-eway-modal-titlewrap">
+                    <span class="td2-eway-modal-icon"><i class="uil uil-file-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
+                        <p class="td2-eway-modal-sub">Select one or more e-way bills to attach to this trip</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body td2-eway-modal-body">
 
-                {{-- Toolbar: status filter + Add Eway --}}
+                {{-- Toolbar: filters (search + status) + Add Eway --}}
                 <div class="td2-eway-toolbar">
-                    <div class="td2-eway-filter">
-                        <label class="form-label td2-eway-filter-label" for="td2EwayStatusFilter">Search By Status</label>
-                        <select class="form-select form-select-sm" id="td2EwayStatusFilter" name="eway_status_filter">
-                            <option value="">All</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
+                    <div class="td2-eway-filters">
+                        <div class="td2-eway-search">
+                            <i class="uil uil-search td2-eway-search-icon"></i>
+                            <input type="text" class="form-control form-control-sm td2-eway-search-input"
+                                   id="td2EwaySearch" autocomplete="off"
+                                   placeholder="Search bill no, vehicle, consigner, consignee or GSTIN…">
+                        </div>
+                        <div class="td2-eway-filter">
+                            <label class="form-label td2-eway-filter-label" for="td2EwayStatusFilter">Search By Status</label>
+                            <select class="form-select form-select-sm" id="td2EwayStatusFilter" name="eway_status_filter">
+                                <option value="">All</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-sm td2-eway-reset-btn" id="td2EwayResetFilters" title="Reset filters">
+                            <i class="uil uil-history-alt me-1"></i>Reset
+                        </button>
                     </div>
-                    <button class="btn btn-primary btn-sm" type="button"
+                    <button class="btn btn-primary btn-sm td2-eway-add-btn" type="button"
                             data-bs-toggle="modal" data-bs-target="#addEwayForm">
                         <i class="uil uil-plus me-1"></i>Add Eway
                     </button>
                 </div>
 
                 {{-- Unassigned E-Ways table --}}
-                <div class="table-responsive">
+                <div class="table-responsive td2-eway-table-wrap">
                     <table class="td2-table td2-eway-table" id="td2EwayTable">
                         <thead>
                             <tr>
@@ -1234,19 +1251,27 @@
                                 <td>GST00912267g6</td>
                                 <td>30/11/2025</td>
                             </tr>
+                            <tr class="td2-eway-empty-row" id="td2EwayEmptyRow" hidden>
+                                <td colspan="13">
+                                    <div class="td2-eway-empty">
+                                        <i class="uil uil-search-minus"></i>
+                                        <span>No e-ways match your filters.</span>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="modal-footer td2-eway-foot">
                 <div class="td2-eway-summary">
-                    <span>Total: <strong id="td2EwayTotal">2</strong></span>
-                    <span>Selected: <strong id="td2EwaySelected">0</strong></span>
-                    <span>Selected Quantity: <strong id="td2EwaySelQty">0.00</strong></span>
+                    <span class="td2-eway-chip"><i class="uil uil-list-ul"></i>Total<strong id="td2EwayTotal">2</strong></span>
+                    <span class="td2-eway-chip td2-eway-chip-sel"><i class="uil uil-check-circle"></i>Selected<strong id="td2EwaySelected">0</strong></span>
+                    <span class="td2-eway-chip td2-eway-chip-qty"><i class="uil uil-balance-scale"></i>Selected Quantity<strong id="td2EwaySelQty">0.00</strong></span>
                 </div>
                 <div class="td2-eway-foot-actions">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="td2EwayAddToTrip">Add to Trip</button>
+                    <button type="button" class="btn btn-primary" id="td2EwayAddToTrip"><i class="uil uil-plus-circle me-1"></i>Add to Trip</button>
                 </div>
             </div>
         </div>
@@ -2513,6 +2538,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.6') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.7') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection
