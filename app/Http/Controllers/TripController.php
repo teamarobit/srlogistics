@@ -61,6 +61,16 @@ class TripController extends Controller
     }
 
     /**
+     * Resume a paused trip — full page (replaces the in-page Resume modal).
+     * Mirrors the modal concept: date/time, further-action choice
+     * (resume only / change vehicle / driver / both), reason + note.
+     * On confirm the JS redirects back to the trip details page.
+     */
+    public function resume($trip){
+        return view('trip.resume', compact('trip'));
+    }
+
+    /**
      * Return a single trip-detail tab's content (AJAX, lazy-loaded).
      * Keeps the show-v2 first paint minimal — the server renders only empty
      * tab shells; every tab (incl. tripInit) fetches its partial via AJAX after

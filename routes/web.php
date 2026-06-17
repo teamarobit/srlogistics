@@ -816,6 +816,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get    ('/vehicle-sizes/{vehicletype_id}',[App\Http\Controllers\TripController::class, 'getVehicleSizes'])->name('vehicle.sizes');
         Route::get    ('/{trip}/edit',  [App\Http\Controllers\TripController::class, 'edit'])->name('edit');
         Route::get    ('/{trip}/tab/{tab}', [App\Http\Controllers\TripController::class, 'tabContent'])->name('tab');
+        Route::get    ('/{trip}/resume', [App\Http\Controllers\TripController::class, 'resume'])->name('resume');
         Route::get    ('/{trip}',       [App\Http\Controllers\TripController::class, 'show'])->name('details');
 
     });

@@ -1631,7 +1631,8 @@
     </div>
 </div>
 
-{{-- Resume Trip (shown only while the trip is Paused) --}}
+{{-- Resume Trip moved to a dedicated page: route('trip.resume', $trip) → trip/resume.blade.php --}}
+@if (false)
 <div class="modal fade" id="resumeTripModal" tabindex="-1" aria-labelledby="resumeTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -1913,6 +1914,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Driver Expense (Trip Payout tab) --}}
 <div class="modal fade" id="driverExpense" tabindex="-1" aria-labelledby="driverExpenseLabel" aria-hidden="true">
@@ -2188,10 +2190,10 @@
             <h6 class="td2-overlay-title" style="color:#991b1b;">Report SOS Incident</h6>
         </div>
         {{-- Resume Trip — only visible while the trip is Paused (body.td2-trip-paused) --}}
-        <button class="btn btn-sm td2-sos-resume-btn" type="button" id="td2SosResumeBtn"
-                data-bs-toggle="modal" data-bs-target="#resumeTripModal">
+        <a class="btn btn-sm td2-sos-resume-btn" id="td2SosResumeBtn"
+           href="{{ route('trip.resume', $trip) }}">
             <i class="uil uil-play-circle"></i> Resume Trip
-        </button>
+        </a>
         <button class="btn btn-sm" type="button" id="td2SosHistoryBtn"
                 style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-size:11px;font-weight:600;">
             <i class="uil uil-history"></i> View History

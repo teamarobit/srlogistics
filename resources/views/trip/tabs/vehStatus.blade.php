@@ -48,11 +48,10 @@
                                         {{-- Paused badge — visible only while the trip is paused (body.td2-trip-paused) --}}
                                         <span class="td2-vstatus-paused-badge"><i class="uil uil-pause-circle"></i> Paused</span>
                                         <span class="td2-vstatus-cur-meta"><i class="uil uil-clock"></i> Updated 22/12/2025 · 09:00 AM</span>
-                                        {{-- Resume Trip — visible only while paused; opens the Resume modal --}}
-                                        <button type="button" class="td2-vstatus-resume-btn"
-                                                data-bs-toggle="modal" data-bs-target="#resumeTripModal">
+                                        {{-- Resume Trip — visible only while paused; opens the Resume page --}}
+                                        <a href="{{ route('trip.resume', $trip) }}" class="td2-vstatus-resume-btn">
                                             <i class="uil uil-play-circle"></i> Resume Trip
-                                        </button>
+                                        </a>
                                         <a class="td2-vstage-change" id="td2UpdateStatusLink"
                                            data-bs-toggle="modal"
                                            data-bs-target="#changeStatus">Update Status</a>
