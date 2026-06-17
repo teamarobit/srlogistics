@@ -57,6 +57,62 @@ $(function () {
         $('#td2ResumeAssignPick').html('');
         $('#td2ResumeAssignBtn').prop('disabled', false)
             .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
+        renderAllocVehCard(null);
+    }
+
+    /* Build a single grid item for the detail card */
+    function vcItem(label, val) {
+        return '<div class="td2-vc-item"><span class="td2-vc-label">' + label +
+            '</span><span class="td2-vc-val">' + (val || '—') + '</span></div>';
+    }
+
+    /* Render the selected-vehicle detail card from an <option>'s data-* attributes.
+       Pass a null/empty option to hide the card. */
+    function renderAllocVehCard($opt) {
+        if (!$opt || !$opt.length || !$opt.val()) {
+            $('#td2ResumeAllocVehWrap').addClass('d-none');
+            $('#td2ResumeAllocVehCard').html('');
+            return;
+        }
+        var d = {
+            reg:         $opt.val(),
+            driver:      $opt.data('driver'),
+            phone:       $opt.data('phone'),
+            rag:         $opt.data('rag') || 'green',
+            bhv:         $opt.data('bhv') || 'green',
+            bhvExp:      $opt.data('bhv-exp') || '',
+            status:      $opt.data('status') || 'empty',
+            statusLabel: $opt.data('status-label') || '',
+            avail:       $opt.data('avail'),
+            loc:         $opt.data('loc'),
+            rank:        $opt.data('rank'),
+            since:       $opt.data('since')
+        };
+
+        var html =
+            '<div class="td2-veh-card td2-veh-card-' + d.rag + '">' +
+                '<div class="td2-vc-header"><div class="td2-vc-num">' + d.reg + '</div></div>' +
+                '<div class="td2-vc-grid">' +
+                    vcItem('Driver Name', d.driver) +
+                    vcItem('Driver Number', d.phone) +
+                    '<div class="td2-vc-item"><span class="td2-vc-label">About Driver</span>' +
+                        '<span class="td2-vc-val"><span class="td2-bhv-wrap">' +
+                            '<span class="td2-bhv-dot td2-bhv-' + d.bhv + '"></span>' +
+                            '<span class="td2-bhv-label">Behaviour</span>' +
+                            '<span class="td2-bhv-exp">' + d.bhvExp + '</span>' +
+                        '</span></span></div>' +
+                    '<div class="td2-vc-item"><span class="td2-vc-label">Status</span>' +
+                        '<span class="td2-vc-val"><span class="td2-veh-status-' + d.status + '">' +
+                            d.statusLabel + '</span></span></div>' +
+                    vcItem('Availability', d.avail) +
+                    vcItem('Live Location', d.loc) +
+                    vcItem('Vehicle Rank', d.rank) +
+                    vcItem('Associated Since', d.since) +
+                '</div>' +
+            '</div>';
+
+        $('#td2ResumeAllocVehCard').html(html);
+        $('#td2ResumeAllocVehWrap').removeClass('d-none');
     }
 
     /* Reset the driver picker (selected driver's assigned-vehicle card) */
@@ -78,14 +134,18 @@ $(function () {
         }
     });
 
-    /* Own / External toggle */
+    /* Own / External toggle — switching source clears any pick + detail card */
     $(document).on('change', '.td2-resume-own-veh', function () {
         $('.td2-resume-if-own').show();
         $('.td2-resume-if-ext').hide();
+        $('#td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('');
+        renderAllocVehCard(null);
     });
     $(document).on('change', '.td2-resume-ext-veh', function () {
         $('.td2-resume-if-own').hide();
         $('.td2-resume-if-ext').show();
+        $('#td2ResumeOwnVehSelect').val('');
+        renderAllocVehCard(null);
     });
 
     /* A vehicle was picked (suggested card OR own/external select) → reveal Assign button. */
@@ -94,11 +154,15 @@ $(function () {
         if ($(this).is('input[type="radio"]')) {
             reg = $(this).val();
             $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect').val('');
+            /* Suggested card already shows its own details — hide the alloc detail card */
+            renderAllocVehCard(null);
         } else {
             reg = $(this).val();
             $('input[name="td2ResumeVehSelect"]').prop('checked', false);
             if (this.id === 'td2ResumeOwnVehSelect') { $('#td2ResumeExtVehicleSelect').val(''); }
             else { $('#td2ResumeOwnVehSelect').val(''); }
+            /* Own / External pick → render the selected vehicle's detail card */
+            renderAllocVehCard($(this).find('option:selected'));
         }
 
         /* A new pick invalidates any previous assignment */

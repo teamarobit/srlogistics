@@ -3,7 +3,7 @@
 @section('css')
 {{-- Reuses td2-resume-* / td2-veh-card / td2-alloc styles from show-v2.css --}}
 <link href="{{ asset('css/trip/show-v2.css?v=9.5') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/resume.css?v=3.1') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/resume.css?v=3.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -113,6 +113,12 @@
 
                             <div class="rs-section-body">
 
+                                {{-- Note: effect of changing the vehicle (top of card) --}}
+                                <div class="td2-resume-note td2-resume-note-amber mb-3">
+                                    <i class="uil uil-info-circle"></i>
+                                    <span>Selecting the vehicle will unassign the vehicle's driver and assign the current driver to selected vehicle.</span>
+                                </div>
+
                                 {{-- Part A: Suggested Vehicles --}}
                                 <div class="td2-section">
                                     <div class="accordion td2-veh-accordion" id="td2ResumeSuggestedVeh">
@@ -160,12 +166,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Note: effect of changing the vehicle --}}
-                                <div class="td2-resume-note td2-resume-note-amber">
-                                    <i class="uil uil-info-circle"></i>
-                                    <span>Selecting the vehicle will unassign the vehicle's driver and assign the current driver to selected vehicle.</span>
-                                </div>
-
                                 {{-- OR Divider --}}
                                 <div class="td2-or-divider"><span>OR</span></div>
 
@@ -189,15 +189,32 @@
                                         </div>
                                     </div>
 
+                                    @php
+                                        /* Prototype vehicle meta — drives the detail card shown after a vehicle is picked. */
+                                        $resumeVehMeta = [
+                                            'WB-12-AB-1237' => ['driver'=>'Ashok Ray','phone'=>'+91 8879402641','rag'=>'green','bhv'=>'green','bhvExp'=>'10 Mo','status'=>'empty','statusLabel'=>'Empty ✓','avail'=>'Yes','loc'=>'Kolkata','rank'=>'5th','since'=>'10 Years 5 Months'],
+                                            'WB-34-CD-5678' => ['driver'=>'Ranjit Das','phone'=>'+91 9432101234','rag'=>'red','bhv'=>'yellow','bhvExp'=>'4 Mo','status'=>'onway','statusLabel'=>'Not Empty ✗','avail'=>'On the Way (2 days)','loc'=>'Mumbai','rank'=>'3rd','since'=>'7 Years 2 Months'],
+                                            'WB-56-EF-9012' => ['driver'=>'Manoj Kumar','phone'=>'+91 7654321098','rag'=>'yellow','bhv'=>'green','bhvExp'=>'14 Mo','status'=>'empty','statusLabel'=>'Empty ✓','avail'=>'Yes','loc'=>'Durgapur','rank'=>'8th','since'=>'4 Years 9 Months'],
+                                            'WB-99-ZZ-0001' => ['driver'=>'Bikash Mondal','phone'=>'+91 9000012345','rag'=>'green','bhv'=>'green','bhvExp'=>'8 Mo','status'=>'empty','statusLabel'=>'Empty ✓','avail'=>'Yes','loc'=>'Nagpur','rank'=>'—','since'=>'Vendor · ABC Logistics'],
+                                            'DL-01-XX-5050' => ['driver'=>'Sandeep Yadav','phone'=>'+91 9000054321','rag'=>'yellow','bhv'=>'yellow','bhvExp'=>'5 Mo','status'=>'onway','statusLabel'=>'On the Way (1 day)','avail'=>'On the Way (1 day)','loc'=>'Delhi','rank'=>'—','since'=>'Vendor · XYZ Transport'],
+                                        ];
+                                    @endphp
+
                                     {{-- If Own Vehicle --}}
                                     <div class="td2-resume-if-own td2-alloc-body">
                                         <div class="mb-1">
                                             <label class="form-label">Select Vehicle</label>
                                             <select class="form-select td2-resume-veh-pick" id="td2ResumeOwnVehSelect">
                                                 <option value="">Select vehicle...</option>
-                                                <option>WB-12-AB-1237</option>
-                                                <option>WB-34-CD-5678</option>
-                                                <option>WB-56-EF-9012</option>
+                                                @foreach (['WB-12-AB-1237','WB-34-CD-5678','WB-56-EF-9012'] as $reg)
+                                                    @php $m = $resumeVehMeta[$reg]; @endphp
+                                                    <option value="{{ $reg }}"
+                                                        data-driver="{{ $m['driver'] }}" data-phone="{{ $m['phone'] }}"
+                                                        data-rag="{{ $m['rag'] }}" data-bhv="{{ $m['bhv'] }}" data-bhv-exp="{{ $m['bhvExp'] }}"
+                                                        data-status="{{ $m['status'] }}" data-status-label="{{ $m['statusLabel'] }}"
+                                                        data-avail="{{ $m['avail'] }}" data-loc="{{ $m['loc'] }}"
+                                                        data-rank="{{ $m['rank'] }}" data-since="{{ $m['since'] }}">{{ $reg }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -221,13 +238,26 @@
                                             <div class="d-flex gap-2 align-items-center">
                                                 <select class="form-select td2-resume-veh-pick" id="td2ResumeExtVehicleSelect">
                                                     <option value="">Select vehicle...</option>
-                                                    <option>WB-99-ZZ-0001</option>
-                                                    <option>DL-01-XX-5050</option>
+                                                    @foreach (['WB-99-ZZ-0001','DL-01-XX-5050'] as $reg)
+                                                        @php $m = $resumeVehMeta[$reg]; @endphp
+                                                        <option value="{{ $reg }}"
+                                                            data-driver="{{ $m['driver'] }}" data-phone="{{ $m['phone'] }}"
+                                                            data-rag="{{ $m['rag'] }}" data-bhv="{{ $m['bhv'] }}" data-bhv-exp="{{ $m['bhvExp'] }}"
+                                                            data-status="{{ $m['status'] }}" data-status-label="{{ $m['statusLabel'] }}"
+                                                            data-avail="{{ $m['avail'] }}" data-loc="{{ $m['loc'] }}"
+                                                            data-rank="{{ $m['rank'] }}" data-since="{{ $m['since'] }}">{{ $reg }}</option>
+                                                    @endforeach
                                                 </select>
                                                 <a href="{{ route('vehiclemanagement.create') }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm text-nowrap">+ Add Vehicle</a>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                {{-- Selected vehicle detail card (Own / External) --}}
+                                <div class="td2-resume-alloc-veh d-none" id="td2ResumeAllocVehWrap">
+                                    <p class="td2-resume-driver-veh-title">Selected vehicle</p>
+                                    <div id="td2ResumeAllocVehCard"></div>
                                 </div>
 
                                 {{-- Assign button — appears once a vehicle is picked --}}
@@ -273,6 +303,12 @@
                                     ];
                                 @endphp
 
+                                {{-- Note: effect of changing the driver (above dropdown) --}}
+                                <div class="td2-resume-note td2-resume-note-amber mb-3">
+                                    <i class="uil uil-info-circle"></i>
+                                    <span>Selecting driver will unassign the driver from the assigned vehicle and assign to the current (trip) vehicle.</span>
+                                </div>
+
                                 <select class="form-select select2-modal" id="td2ResumeDriverSelect" name="new_driver">
                                     <option value="">Select driver…</option>
                                     @foreach ($resumeDrivers as $rd)
@@ -280,12 +316,6 @@
                                     @endforeach
                                 </select>
                                 <span class="text-danger small d-block mt-1 td2-resume-err" data-for="driver"></span>
-
-                                {{-- Note: effect of changing the driver --}}
-                                <div class="td2-resume-note td2-resume-note-amber mt-2">
-                                    <i class="uil uil-info-circle"></i>
-                                    <span>Selecting driver will unassign the driver from the assigned vehicle and assign to the current (trip) vehicle.</span>
-                                </div>
 
                                 {{-- Selected driver's currently-assigned vehicle --}}
                                 <div class="td2-resume-driver-veh d-none" id="td2ResumeDriverVehWrap">
@@ -422,5 +452,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Trip/resume.js?v=1.0') }}"></script>
+<script src="{{ asset('js/Trip/resume.js?v=1.1') }}"></script>
 @endsection

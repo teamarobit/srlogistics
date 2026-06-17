@@ -349,3 +349,54 @@
 }
 
 .td2-resume-page .td2-resume-assign-pick { color: #032671; }
+
+/* =====================================================================
+   Compact suggested-vehicle cards (scoped to this page only)
+   Tightens spacing/padding without removing any field — every label
+   and value from the inherited card layout is preserved.
+   ===================================================================== */
+
+.td2-resume-page .td2-veh-card-wrap {
+    padding: 0 12px 8px;
+}
+
+.td2-resume-page .td2-veh-card {
+    padding: 10px 14px;
+    border-radius: 9px;
+}
+
+.td2-resume-page .td2-vc-header {
+    margin-bottom: 6px;
+}
+
+.td2-resume-page .td2-vc-num {
+    font-size: 14px;
+}
+
+.td2-resume-page .td2-vc-grid {
+    gap: 5px 12px;
+    margin-bottom: 0;
+}
+
+.td2-resume-page .td2-vc-item {
+    gap: 1px;
+}
+
+.td2-resume-page .td2-vc-label {
+    font-size: 9.5px;
+    line-height: 1.2;
+}
+
+.td2-resume-page .td2-vc-val {
+    font-size: 11.5px;
+    line-height: 1.25;
+}
+
+/* Selected-vehicle detail card (Own / External pick) */
+.td2-resume-page .td2-resume-alloc-veh {
+    margin-top: 14px;
+}
+
+.td2-resume-page .td2-resume-alloc-veh .td2-veh-card {
+    cursor: default;
+}

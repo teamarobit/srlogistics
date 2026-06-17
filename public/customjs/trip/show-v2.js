@@ -344,6 +344,29 @@ $(document).on('change', '.td2-ext-veh', function () {
     $('.td2-if-ext').show();
 });
 
+/* VAHAN Details + selected vehicle card — reveal only after a vehicle is picked.
+   Hidden by default in the blade; shown (accordion expanded) on selection. */
+function td2ToggleVahan($scope, collapseSelector, show) {
+    var collapseEl = document.querySelector(collapseSelector);
+    if (show) {
+        $scope.find('.td2-vahan-wrap').show();
+        $scope.find('.td2-veh-card').show();
+        if (collapseEl) { bootstrap.Collapse.getOrCreateInstance(collapseEl).show(); }
+    } else {
+        if (collapseEl) { bootstrap.Collapse.getOrCreateInstance(collapseEl).hide(); }
+        $scope.find('.td2-vahan-wrap').hide();
+        $scope.find('.td2-veh-card').hide();
+    }
+}
+
+$(document).on('change', '#td2OwnVehSelect', function () {
+    td2ToggleVahan($(this).closest('.td2-if-own'), '#td2VahanDetails', !!$(this).val());
+});
+
+$(document).on('change', '#td2ExtVehicleSelect', function () {
+    td2ToggleVahan($(this).closest('.td2-if-ext'), '#td2VahanDetailsExt', !!$(this).val());
+});
+
 /* Edit Trip: + Add Stop */
 $(document).on('click', '.td2-add-stop-btn', function () {
     var $clone = $('.td2-edit-stop-item').first().clone();
