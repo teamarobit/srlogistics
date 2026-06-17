@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -59,24 +59,30 @@
                         <table class="cv2-table">
                             <thead><tr><th>Company</th><th>Contact</th><th>State</th><th>GST Number</th><th>Status</th><th></th></tr></thead>
                             <tbody>
-                                @foreach($providers as $p)
+                                @forelse($providers as $p)
                                 <tr>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:11px;">
-                                            <span class="cv2-avatar" style="width:36px;height:36px;font-size:13px;border-radius:10px;">{{ strtoupper(mb_substr($p['company'],0,1)) }}</span>
-                                            <div><span class="cv2-t-name">{{ $p['company'] }}</span><div class="cv2-t-sub">{{ $p['contactno'] }}</div></div>
+                                            @if($p->contact_image)
+                                                <img src="{{ asset('media/contact/'.$p->contact_image) }}" alt="logo" class="cv2-avatar" style="width:36px;height:36px;border-radius:10px;object-fit:cover;">
+                                            @else
+                                                <span class="cv2-avatar" style="width:36px;height:36px;font-size:13px;border-radius:10px;">{{ strtoupper(mb_substr($p->company_name ?? '?',0,1)) }}</span>
+                                            @endif
+                                            <div><span class="cv2-t-name">{{ $p->company_name }}</span><div class="cv2-t-sub">{{ $p->contactno }}</div></div>
                                         </div>
                                     </td>
-                                    <td>{{ $p['contact_name'] }}<div class="cv2-t-sub">{{ $p['phone'] }}</div></td>
-                                    <td>{{ $p['state'] }}</td>
-                                    <td class="cv2-t-mono">{{ $p['gst'] }}</td>
+                                    <td>{{ $p->contact_name }}<div class="cv2-t-sub">{{ trim(($p->ph_prefix ? $p->ph_prefix.' ' : '').$p->phone) }}</div></td>
+                                    <td>{{ $p->state?->name ?? '—' }}</td>
+                                    <td class="cv2-t-mono">{{ $p->gst_number ?: '—' }}</td>
                                     <td>
-                                        @php $sc=['Active'=>'is-active','Inactive'=>'is-inactive','Blacklisted'=>'is-black'][$p['status']]??'is-inactive'; @endphp
-                                        <span class="cv2-badge {{ $sc }}"><span class="cv2-badge-dot"></span>{{ $p['status'] }}</span>
+                                        @php $sc=['Active'=>'is-active','Inactive'=>'is-inactive','Blacklisted'=>'is-black'][$p->status]??'is-inactive'; @endphp
+                                        <span class="cv2-badge {{ $sc }}"><span class="cv2-badge-dot"></span>{{ $p->status }}</span>
                                     </td>
                                     <td class="cv2-actions"><a href="{{ route('contact.v2.insuranceprovider.index') }}" class="cv2-ic-btn" title="Open"><i class="bi bi-arrow-right"></i></a></td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr><td colspan="6" style="text-align:center;padding:24px;color:#94a3b8;">No insurance vendors yet.</td></tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -109,5 +115,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>
+<script src="{{ asset('js/V2/insuranceprovider.js?v=1.0') }}"></script>
 @endsection

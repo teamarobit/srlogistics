@@ -880,6 +880,27 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/customers/attachment/delete',             [App\Http\Controllers\V2\CustomerController::class, 'deleteAttachment'])->name('customer.attachment.delete');
         Route::post('/customers/activity-notes/save',           [App\Http\Controllers\V2\CustomerController::class, 'storeActivityNote'])->name('customer.activitynotes.save');
 
+        /******************************** Contacts V2 — Spare Part Vendor (redesign) *********************/
+        // cotype_id = 8. E3 banks (1 Primary) · E7 specialisation · derived Spare Parts page.
+        // Isolated module. Does NOT touch existing V1 contacts routes/controller/views.
+        // Static routes are declared BEFORE the {id} wildcards so they match first.
+        Route::get('/sparevendors/dashboard',           [App\Http\Controllers\V2\SpareVendorController::class, 'dashboard'])->name('sparevendor.dashboard');
+        Route::get('/sparevendors',                      [App\Http\Controllers\V2\SpareVendorController::class, 'index'])->name('sparevendor.index');
+        Route::get('/sparevendors/create',               [App\Http\Controllers\V2\SpareVendorController::class, 'create'])->name('sparevendor.create');
+        Route::post('/sparevendors/save',                [App\Http\Controllers\V2\SpareVendorController::class, 'store'])->name('sparevendor.save');
+        Route::post('/sparevendors/contact-person-wrapper', [App\Http\Controllers\V2\SpareVendorController::class, 'contactPersonWrapper'])->name('sparevendor.contactpersonwrapper');
+        Route::post('/sparevendors/attachment/save',     [App\Http\Controllers\V2\SpareVendorController::class, 'storeAttachment'])->name('sparevendor.attachment.save');
+        Route::post('/sparevendors/attachment/delete',   [App\Http\Controllers\V2\SpareVendorController::class, 'deleteAttachment'])->name('sparevendor.attachment.delete');
+        Route::post('/sparevendors/activity-notes/save', [App\Http\Controllers\V2\SpareVendorController::class, 'storeActivityNote'])->name('sparevendor.activitynotes.save');
+        Route::get('/sparevendors/{id}',                 [App\Http\Controllers\V2\SpareVendorController::class, 'show'])->name('sparevendor.show');
+        Route::get('/sparevendors/{id}/edit',            [App\Http\Controllers\V2\SpareVendorController::class, 'edit'])->name('sparevendor.edit');
+        Route::post('/sparevendors/{id}/update',         [App\Http\Controllers\V2\SpareVendorController::class, 'update'])->name('sparevendor.update');
+        Route::post('/sparevendors/{id}/toggle-status',  [App\Http\Controllers\V2\SpareVendorController::class, 'toggleStatus'])->name('sparevendor.toggle-status');
+        Route::get('/sparevendors/{id}/spareparts',      [App\Http\Controllers\V2\SpareVendorController::class, 'spareparts'])->name('sparevendor.spareparts');
+        Route::get('/sparevendors/{id}/documents',       [App\Http\Controllers\V2\SpareVendorController::class, 'documents'])->name('sparevendor.documents');
+        Route::get('/sparevendors/{id}/activity',        [App\Http\Controllers\V2\SpareVendorController::class, 'activity'])->name('sparevendor.activity');
+        Route::delete('/sparevendors/{id}',              [App\Http\Controllers\V2\SpareVendorController::class, 'destroy'])->name('sparevendor.destroy');
+
         /******************************** Contacts V2 — Driver (redesign) *********************/
         // cotype_id = 4. E1 letters · E2 exit-lock · E3 banks · E5 addresses.
         // New, isolated module. Does NOT touch existing contacts routes/controller/views.
@@ -988,6 +1009,18 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/tyre-vendors/tyre/delete',           [App\Http\Controllers\V2\TyreVendorController::class, 'deleteTyre'])->name('tyrevendor.tyre.delete');
         Route::post('/tyre-vendors/activity-notes/save',   [App\Http\Controllers\V2\TyreVendorController::class, 'storeActivityNote'])->name('tyrevendor.activitynotes.save');
         Route::post('/tyre-vendors/delete',                [App\Http\Controllers\V2\TyreVendorController::class, 'destroy'])->name('tyrevendor.delete');
+
+        /******************************** Contacts V2 — Insurance Vendor (redesign) *********************/
+        // cotype_id = 9. Flat record (E8) — no submodules. Reuses existing `contacts` table; NO schema change.
+        Route::get('/insurance-vendors/dashboard',          [App\Http\Controllers\V2\InsuranceProviderController::class, 'dashboard'])->name('insuranceprovider.dashboard');
+        Route::get('/insurance-vendors',                    [App\Http\Controllers\V2\InsuranceProviderController::class, 'index'])->name('insuranceprovider.index');
+
+        /**** Insurance Vendor — Gate 2 wiring (live backend; cotype_id = 9, NO schema change) ****/
+        Route::get   ('/insurance-vendors/{id}/json',          [App\Http\Controllers\V2\InsuranceProviderController::class, 'getProvider'])->name('insuranceprovider.json');
+        Route::post  ('/insurance-vendors/save',               [App\Http\Controllers\V2\InsuranceProviderController::class, 'store'])->name('insuranceprovider.save');
+        Route::post  ('/insurance-vendors/{id}/update',        [App\Http\Controllers\V2\InsuranceProviderController::class, 'update'])->name('insuranceprovider.update');
+        Route::post  ('/insurance-vendors/{id}/toggle-status', [App\Http\Controllers\V2\InsuranceProviderController::class, 'toggleStatus'])->name('insuranceprovider.toggle-status');
+        Route::delete('/insurance-vendors/{id}',               [App\Http\Controllers\V2\InsuranceProviderController::class, 'destroy'])->name('insuranceprovider.destroy');
     });
 
 }); // end auth middleware group

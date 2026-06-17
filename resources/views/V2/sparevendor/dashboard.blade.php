@@ -26,28 +26,28 @@
             {{-- KPI row --}}
             <div class="cv2-kpis">
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-shop"></i></span><span class="cv2-kpi-trend cv2-up">+4%</span></div>
-                    <div class="cv2-kpi-val">42</div><div class="cv2-kpi-lbl">Total Spare Vendors</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-shop"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['total'] }}</div><div class="cv2-kpi-lbl">Total Spare Vendors</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span><span class="cv2-kpi-trend cv2-up">+3</span></div>
-                    <div class="cv2-kpi-val">37</div><div class="cv2-kpi-lbl">Active</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['active'] }}</div><div class="cv2-kpi-lbl">Active</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span><span class="cv2-kpi-trend cv2-flat">0</span></div>
-                    <div class="cv2-kpi-val">4</div><div class="cv2-kpi-lbl">Inactive</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['inactive'] }}</div><div class="cv2-kpi-lbl">Inactive</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span><span class="cv2-kpi-trend cv2-down">+1</span></div>
-                    <div class="cv2-kpi-val">1</div><div class="cv2-kpi-lbl">Blacklisted</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['blacklisted'] }}</div><div class="cv2-kpi-lbl">Blacklisted</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-tags"></i></span><span class="cv2-kpi-trend cv2-up">+2</span></div>
-                    <div class="cv2-kpi-val">11</div><div class="cv2-kpi-lbl">Spare Categories</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-tags"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['categories'] }}</div><div class="cv2-kpi-lbl">Spare Categories</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-gear-wide-connected"></i></span><span class="cv2-kpi-trend cv2-up">+18</span></div>
-                    <div class="cv2-kpi-val">486</div><div class="cv2-kpi-lbl">Items Supplied</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-gear-wide-connected"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpis['items'] }}</div><div class="cv2-kpi-lbl">Catalogue Items</div>
                 </div>
             </div>
 
@@ -88,8 +88,8 @@
                         <div class="cv2-card-b" style="display:flex;flex-direction:column;gap:10px;">
                             <a href="{{ route('contact.v2.sparevendor.create') }}" class="cv2-btn cv2-btn-primary" style="justify-content:flex-start;"><i class="bi bi-person-plus"></i>New Spare Vendor</a>
                             <a href="{{ route('contact.v2.sparevendor.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-search"></i>Find a Spare Vendor</a>
-                            <a href="{{ route('contact.v2.sparevendor.spareparts', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-gear-wide-connected"></i>Add Spare Part</a>
-                            <a href="{{ route('contact.v2.sparevendor.documents', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-paperclip"></i>Upload Document</a>
+                            <a href="{{ route('contact.v2.sparevendor.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-gear-wide-connected"></i>Browse Spare Parts</a>
+                            <a href="{{ route('contact.v2.sparevendor.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-paperclip"></i>Manage Documents</a>
                         </div>
                     </div>
                     <div class="cv2-card cv2-mt">

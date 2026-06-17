@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.3') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -18,11 +18,12 @@
                 </div>
                 <div class="cv2-phead-actions">
                     <a href="{{ route('contact.v2.sparevendor.index') }}" class="cv2-btn cv2-btn-soft">Cancel</a>
-                    <button type="submit" form="cv2SpareForm" class="cv2-btn cv2-btn-primary"><i class="bi bi-check2"></i>Save Vendor</button>
+                    <button type="submit" form="cv2CustomerForm" class="cv2-btn cv2-btn-primary"><i class="bi bi-check2"></i>Save Vendor</button>
                 </div>
             </div>
 
-            <form id="cv2SpareForm" action="javascript:void(0)" data-create="1">
+            <form id="cv2CustomerForm" action="{{ route('contact.v2.sparevendor.save') }}" method="POST" enctype="multipart/form-data" data-create="1" data-index-url="{{ route('contact.v2.sparevendor.index') }}" data-person-wrapper-url="{{ route('contact.v2.sparevendor.contactpersonwrapper') }}">
+            @csrf
             <div class="cv2-grid cv2-grid-2-1">
                 <div style="display:flex;flex-direction:column;gap:16px;">
 
@@ -33,33 +34,33 @@
                             <div class="cv2-form-grid">
                                 <div class="cv2-field">
                                     <label class="cv2-label">GST Number</label>
-                                    <input type="text" name="gst_number" placeholder="18AAACT2727Q1ZW" maxlength="100">
+                                    <input type="text" name="gst_number" value="{{ old('gst_number') }}" placeholder="18AAACT2727Q1ZW" maxlength="100">
                                     <span class="cv2-help">Format: 18AAACT2727Q1ZW</span>
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Company Name <span class="req">*</span></label>
-                                    <input type="text" name="company_name" placeholder="Enter company name" maxlength="100">
+                                    <input type="text" name="company_name" value="{{ old('company_name') }}" placeholder="Enter company name" maxlength="100">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Contact Name <span class="req">*</span></label>
-                                    <input type="text" name="contact_name" placeholder="Primary contact" maxlength="100">
+                                    <input type="text" name="contact_name" value="{{ old('contact_name') }}" placeholder="Primary contact" maxlength="100">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Contact Code <span class="req">*</span></label>
-                                    <input type="text" name="contact_code" placeholder="e.g. AAS-01" maxlength="100">
+                                    <input type="text" name="contact_code" value="{{ old('contact_code') }}" placeholder="e.g. AAS-01" maxlength="100">
                                 </div>
                                 <div class="cv2-field is-full">
                                     <label class="cv2-label">Specialisation</label>
                                     <select class="cv2-select" name="specialisation[]" multiple style="width:100%;">
-                                        <option>Engine Parts</option><option>Brake System</option><option>Filters</option>
-                                        <option>Electricals</option><option>Lubricants</option><option>Suspension</option>
-                                        <option>Tyres &amp; Tubes</option><option>Body Parts</option><option>Transmission</option>
+                                        @foreach($spareCategories as $cat)
+                                            <option value="{{ $cat->id }}" {{ collect(old('specialisation'))->contains($cat->id) ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
                                     <span class="cv2-help">Select one or more spare-part categories — stored as comma-joined tags.</span>
                                 </div>
                                 <div class="cv2-field is-full">
                                     <label class="cv2-label">Comment</label>
-                                    <input type="text" name="contact_comment" placeholder="Optional note" maxlength="255">
+                                    <input type="text" name="contact_comment" value="{{ old('contact_comment') }}" placeholder="Optional note" maxlength="255">
                                 </div>
                             </div>
                         </div>
@@ -72,15 +73,15 @@
                             <div class="cv2-form-grid">
                                 <div class="cv2-field">
                                     <label class="cv2-label">Phone <span class="req">*</span></label>
-                                    <input type="tel" name="phone" data-intl-phone="1" placeholder="98640 22115">
+                                    <input type="tel" name="phone" value="{{ old('phone') }}" data-intl-phone="1" placeholder="98640 22115">
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">WhatsApp</label>
-                                    <input type="tel" name="whatsapp" data-intl-phone="1" placeholder="98640 22115">
+                                    <input type="tel" name="whatsapp" value="{{ old('whatsapp') }}" data-intl-phone="1" placeholder="98640 22115">
                                 </div>
                                 <div class="cv2-field is-full">
                                     <label class="cv2-label">Email</label>
-                                    <input type="email" name="email" placeholder="sales@company.in">
+                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="sales@company.in">
                                 </div>
                             </div>
                         </div>
@@ -91,17 +92,24 @@
                         <div class="cv2-card-h"><h3>Company Details <span class="cv2-pill" style="font-weight:600;">Optional</span></h3></div>
                         <div class="cv2-card-b">
                             <div class="cv2-form-grid">
-                                <div class="cv2-field"><label class="cv2-label">Full Company Name</label><input type="text" name="full_company_name" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Company Owner</label><input type="text" name="company_owner" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Registration No</label><input type="text" name="company_registration_no" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Registration Date</label><input type="date" name="company_registration_date"></div>
-                                <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since"></div>
-                                <div class="cv2-field"><label class="cv2-label">PAN No</label><input type="text" name="pan_no" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">PAN Status</label><select class="cv2-select" name="pan_status_id" style="width:100%;"><option value="">Choose…</option><option>Individual</option><option>Company</option><option>HUF</option></select></div>
+                                <div class="cv2-field"><label class="cv2-label">Full Company Name</label><input type="text" name="full_company_name" value="{{ old('full_company_name') }}" maxlength="100"></div>
+                                <div class="cv2-field"><label class="cv2-label">Company Owner</label><input type="text" name="company_owner" value="{{ old('company_owner') }}" maxlength="100"></div>
+                                <div class="cv2-field"><label class="cv2-label">Registration No</label><input type="text" name="company_registration_no" value="{{ old('company_registration_no') }}" maxlength="100"></div>
+                                <div class="cv2-field"><label class="cv2-label">Registration Date</label><input type="date" name="company_registration_date" value="{{ old('company_registration_date') }}"></div>
+                                <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since" value="{{ old('working_since') }}"></div>
+                                <div class="cv2-field"><label class="cv2-label">PAN No</label><input type="text" name="pan_no" value="{{ old('pan_no') }}" maxlength="100"></div>
+                                <div class="cv2-field"><label class="cv2-label">PAN Status</label>
+                                    <select class="cv2-select" name="pan_status_id" style="width:100%;">
+                                        <option value="">Choose…</option>
+                                        @foreach($pan_statuses as $ps)
+                                            <option value="{{ $ps->id }}" {{ old('pan_status_id') == $ps->id ? 'selected' : '' }}>{{ $ps->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">TDS Percentage</label>
-                                    <input type="number" name="tds_percentage" min="0" max="100" step="0.01" placeholder="e.g. 2">
-                                    <span class="cv2-help">If 0% or 1%, a TDS Declaration document is required (added on the Documents page).</span>
+                                    <input type="number" name="tds_percentage" value="{{ old('tds_percentage') }}" min="0" max="100" step="0.01" placeholder="e.g. 2">
+                                    <span class="cv2-help">Advisory: if 0% or 1%, add a TDS Declaration on the Documents page.</span>
                                 </div>
                             </div>
                         </div>
@@ -112,11 +120,20 @@
                         <div class="cv2-card-h"><h3>Address</h3></div>
                         <div class="cv2-card-b">
                             <div class="cv2-form-grid">
-                                <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><textarea name="address" rows="2" placeholder="Street, area" maxlength="1000"></textarea></div>
-                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label><select class="cv2-select" name="state_id" style="width:100%;"><option value="">Choose state…</option><option>Assam</option><option>West Bengal</option><option>Meghalaya</option></select></div>
-                                <div class="cv2-field"><label class="cv2-label">City <span class="req">*</span></label><select class="cv2-select" name="city_id" style="width:100%;"><option value="">Choose city…</option><option>Guwahati</option><option>Dibrugarh</option><option>Silchar</option><option>Tinsukia</option><option>Nagaon</option></select></div>
-                                <div class="cv2-field"><label class="cv2-label">Postal Code</label><input type="text" name="post_code" placeholder="781001" maxlength="6"></div>
-                                <div class="cv2-field is-full"><label class="cv2-label">Additional Info</label><textarea name="additional_info" rows="2" placeholder="Notes, landmarks, GSTIN remarks…" maxlength="10000"></textarea></div>
+                                <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><textarea name="address" rows="2" placeholder="Street, area" maxlength="1000">{{ old('address') }}</textarea></div>
+                                <div class="cv2-field"><label class="cv2-label">State <span class="req">*</span></label>
+                                    <select class="cv2-select cv2-state" name="state_id" data-city-target="#cv2SpareCity" style="width:100%;">
+                                        <option value="">Choose state…</option>
+                                        @foreach($states as $st)
+                                            <option value="{{ $st->id }}" data-cities='@json($st->cities->map(fn($ci)=>["id"=>$ci->id,"name"=>$ci->name]))' {{ old('state_id') == $st->id ? 'selected' : '' }}>{{ $st->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="cv2-field"><label class="cv2-label">City <span class="req">*</span></label>
+                                    <select class="cv2-select" id="cv2SpareCity" name="city_id" data-old="{{ old('city_id') }}" style="width:100%;"><option value="">Choose city…</option></select>
+                                </div>
+                                <div class="cv2-field"><label class="cv2-label">Postal Code</label><input type="text" name="post_code" value="{{ old('post_code') }}" placeholder="781001" maxlength="6"></div>
+                                <div class="cv2-field is-full"><label class="cv2-label">Additional Info</label><textarea name="additional_info" rows="2" placeholder="Notes, landmarks, GSTIN remarks…" maxlength="10000">{{ old('additional_info') }}</textarea></div>
                             </div>
                         </div>
                     </div>
@@ -128,13 +145,20 @@
                         <div class="cv2-card-b" id="cv2BankWrap">
                             <div class="cv2-repeat-row">
                                 <div class="cv2-form-grid is-3">
-                                    <div class="cv2-field"><label class="cv2-label">Bank <span class="req">*</span></label><input type="text" name="bank[]" placeholder="Bank name"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Bank <span class="req">*</span></label>
+                                        <select class="cv2-select cv2-plain" name="bank_id[]" style="width:100%;">
+                                            <option value="">Choose bank</option>
+                                            @foreach($banks as $bank)
+                                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="cv2-field"><label class="cv2-label">Account Number <span class="req">*</span></label><input type="text" name="account_number[]" placeholder="Account no"></div>
                                     <div class="cv2-field"><label class="cv2-label">IFSC Code <span class="req">*</span></label><input type="text" name="ifsc_code[]" placeholder="SBIN0001234"></div>
                                     <div class="cv2-field"><label class="cv2-label">UPI ID</label><input type="text" name="upi_id[]" placeholder="name@bank"></div>
                                     <div class="cv2-field"><label class="cv2-label">Primary</label>
                                         <div class="cv2-radio-group">
-                                            <span class="cv2-radio"><input type="radio" name="is_primary" value="0" checked><label>Primary</label></span>
+                                            <span class="cv2-radio"><input type="radio" name="primary_bank" value="0" checked><label>Primary</label></span>
                                         </div>
                                     </div>
                                 </div>
@@ -147,12 +171,15 @@
                         <div class="cv2-card-h"><h3>Contact Persons <span class="cv2-pill" style="font-weight:600;">At least 1</span></h3>
                             <a href="javascript:void(0)" class="cv2-link" id="cv2AddPerson"><i class="bi bi-plus-lg"></i> Add another</a></div>
                         <div class="cv2-card-b" id="cv2PersonWrap">
-                            <div class="cv2-repeat-row">
+                            <div class="cv2-repeat-row" data-index="0">
+                                <input type="hidden" name="contact_person_id[0]" value="">
+                                <input type="hidden" name="contact_person_ph_code[]" class="cv2-cp-phcode">
+                                <input type="hidden" name="contact_person_whatsapp_code[]" class="cv2-cp-wacode">
                                 <div class="cv2-form-grid is-3">
-                                    <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" placeholder="Person name"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Designation <span class="req">*</span></label><input type="text" placeholder="e.g. Sales Manager"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" data-intl-phone="1" placeholder="98640 22115"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Email</label><input type="email" placeholder="person@company.in"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[0]" placeholder="Person name"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Designation <span class="req">*</span></label><input type="text" name="contact_person_designation[0]" placeholder="e.g. Sales Manager"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[0]" data-intl-phone="1" placeholder="98640 22115"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Email</label><input type="email" name="contact_person_email[0]" placeholder="person@company.in"></div>
                                 </div>
                             </div>
                         </div>
@@ -174,11 +201,15 @@
                         <div class="cv2-card-h"><h3>Status</h3></div>
                         <div class="cv2-card-b">
                             <div class="cv2-field"><label class="cv2-label">Vendor Status</label>
-                                <select class="cv2-select" id="cv2Status" name="status" style="width:100%;"><option>Active</option><option>Inactive</option><option>Blacklisted</option></select>
+                                <select class="cv2-select" id="cv2Status" name="status" style="width:100%;">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Blacklisted">Blacklisted</option>
+                                </select>
                             </div>
                             <div class="cv2-field cv2-mt" id="cv2BlacklistWrap" style="display:none;">
                                 <label class="cv2-label">Blacklist Reason <span class="req">*</span></label>
-                                <textarea name="blacklist_reason" rows="3" placeholder="Why is this vendor being blacklisted?"></textarea>
+                                <textarea name="blacklist_reason" rows="3" placeholder="Why is this vendor being blacklisted?">{{ old('blacklist_reason') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -193,7 +224,7 @@
                     </div>
                     <div class="cv2-card cv2-mt">
                         <div class="cv2-card-b" style="display:flex;flex-direction:column;gap:10px;">
-                            <button type="submit" form="cv2SpareForm" class="cv2-btn cv2-btn-primary cv2-btn-lg" style="justify-content:center;"><i class="bi bi-check2"></i>Save Vendor</button>
+                            <button type="submit" form="cv2CustomerForm" class="cv2-btn cv2-btn-primary cv2-btn-lg" style="justify-content:center;"><i class="bi bi-check2"></i>Save Vendor</button>
                             <a href="{{ route('contact.v2.sparevendor.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:center;">Cancel</a>
                         </div>
                     </div>
@@ -207,6 +238,6 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=1.3') }}"></script>
-<script src="{{ asset('js/V2/sparevendor.js?v=1.0') }}"></script>
+<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
+<script src="{{ asset('js/V2/sparevendor.js?v=2.0') }}"></script>
 @endsection
