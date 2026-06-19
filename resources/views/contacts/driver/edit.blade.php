@@ -1008,15 +1008,15 @@
                                                     <div class="col-12 col-md-7 d-flex">
             
                                                         <div class="form-check">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
-                                                            <label class="form-check-label" for="is_primary_yes">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes_{{ $index }}" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_yes_{{ $index }}">
                                                                 Yes
                                                             </label>
                                                         </div>
-            
+
                                                         <div class="form-check mx-2">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_no" value="No" {{ $contactBank->is_primary == 'No' ? 'checked' : '' }} />
-                                                            <label class="form-check-label" for="is_primary_no">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_no_{{ $index }}" value="No" {{ $contactBank->is_primary == 'No' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_no_{{ $index }}">
                                                                 No
                                                             </label>
                                                         </div>
@@ -2085,7 +2085,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.9') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=2.0') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
@@ -2097,3 +2097,4 @@
 
 
 
+                                                                    
