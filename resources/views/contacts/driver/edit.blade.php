@@ -221,7 +221,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <div class="form-check me-2 change-vehicle">
-                                                       <input class="form-check-input" type="checkbox" name="change_vehicle" id="change_vehicle" value="Yes" {{ optional($currentVehicle)->change_vehicle == 'Yes' ? 'checked' : '' }} />
+                                                       <input class="form-check-input" type="checkbox" name="change_vehicle" id="change_vehicle" value="Yes" />
                                                        <small class="error text-danger" id="edit_change_vehicle_error"></small>
                                                     </div>
                                                 </div>
@@ -258,7 +258,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="row form-group reason_wrap" style="{{ !empty(optional($currentVehicle)->vehicle_change_reason) ? '' : 'display:none;' }}">
+                                            <div class="row form-group reason_wrap" style="display:none;">
                                                 <div class="col-12 col-md-5">
                                                     <label>Vehicle Change Reason <span class="text-danger">*</span></label>
                                                 </div>
