@@ -290,6 +290,9 @@
     /**/
     .blacklist_color .c_red {color:#ea0027 !important; }
     /**/
+    .voluntary_exit_color { background: #fff8e1; border-left: 3px solid #f59e0b; padding-left: 8px; border-radius: 4px; margin-bottom: 8px; }
+    .c_orange { color: #b45309 !important; }
+    /**/
     
     .table thead tr th {padding: 8px 15px; }
     .table tbody td {  padding: 8px 20px;  font-size: 13px; }

@@ -8439,6 +8439,18 @@ class ContactController extends Controller
                     $leaveActivity->created_by  = Auth::user()->id;
                     $leaveActivity->save();
                 }
+
+                // Log voluntary exit transition to activity tab
+                if ($request->status == 'Inactive' && $request->status_type == 'Voluntary Exit' && $previousStatusType !== 'Voluntary Exit') {
+                    $exitDate   = now()->format('d M Y');
+                    $exitReason = trim($request->voluntary_exit_reason ?? '');
+                    $exitActivity = new Contactactivity();
+                    $exitActivity->contact_id        = $contact->id;
+                    $exitActivity->notes             = "Driver marked as Voluntary Exit on {$exitDate}." . ($exitReason ? " Reason: {$exitReason}" : '');
+                    $exitActivity->is_voluntary_exit = 'Yes';
+                    $exitActivity->created_by        = Auth::user()->id;
+                    $exitActivity->save();
+                }
                 
                 
                 

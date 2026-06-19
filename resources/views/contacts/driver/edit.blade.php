@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/driver-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/driver-management.css?v=1.1') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 
@@ -1658,27 +1658,34 @@
                                             <div class="cmnt-wrap mt-4">
                                     
                                                 @forelse($contact->activities as $activity)
-                                            
-                                                    <div class="d-flex {{ ($activity->is_blacklisted === 'Yes') ? 'blacklist_color' : '' }}">
-                                                        <span class="avatar {{ ($activity->is_blacklisted === 'Yes') ? 'bg-circlesec btn-danger' : 'bg-avatar-primary' }} me-3">
+                                                    @php
+                                                        $isBlacklisted   = $activity->is_blacklisted === 'Yes';
+                                                        $isVoluntaryExit = ($activity->is_voluntary_exit ?? 'No') === 'Yes';
+                                                    @endphp
+
+                                                    <div class="d-flex {{ $isBlacklisted ? 'blacklist_color' : ($isVoluntaryExit ? 'voluntary_exit_color' : '') }}">
+                                                        <span class="avatar {{ $isBlacklisted ? 'bg-circlesec btn-danger' : ($isVoluntaryExit ? 'bg-circlesec btn-warning' : 'bg-avatar-primary') }} me-3">
                                                             {{ strtoupper(substr(optional($activity->createdBy)->name, 0, 1)) }}
                                                         </span>
-                                            
+
                                                         <div class="w-90">
-                                                            <h6 class="mb-0 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                            <h6 class="mb-0 {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ optional($activity->createdBy)->name ?? 'User' }}
+                                                                @if($isVoluntaryExit)
+                                                                    <span class="badge bg-warning text-dark ms-1" style="font-size:0.7rem;">Voluntary Exit</span>
+                                                                @endif
                                                             </h6>
-                                            
-                                                            <small class="d-block text-secondary {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                            <small class="d-block text-secondary {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ $activity->created_at->format('d M | h:i A') }}
                                                             </small>
-                                            
-                                                            <p class="text-secondary mb-2 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                            <p class="text-secondary mb-2 {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ $activity->notes }}
                                                             </p>
                                                         </div>
                                                     </div>
-                                            
+
                                                 @empty
                                                     <p class="text-muted">No activities found.</p>
                                                 @endforelse
