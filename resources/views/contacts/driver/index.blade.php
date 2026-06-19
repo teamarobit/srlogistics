@@ -256,6 +256,6 @@ var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 var DELETE_CONTACT  = "{{route('contact.delete')}}";
 </script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/index.js?v=1.4') }}"></script>
 
 @endsection
