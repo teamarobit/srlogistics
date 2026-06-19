@@ -13,14 +13,38 @@ body { background-color: #fff; }
 /* BUG-009 — search submit button */
 #searchBtn { vertical-align: bottom; }
 
-/* Issue 17 — toolbar keeps heading, Add, search/filter and Reset on one line */
+/* Issue 17 (retest 2026-06-18) — single non-wrapping toolbar; the name field shrinks
+   so heading, Add, search/filter and Reset always stay on ONE line. flex-wrap:wrap
+   previously let Reset drop to a 2nd line at laptop widths (≤ ~1366px). */
 .dl-toolbar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 8px;
 }
-.dl-toolbar #searchform .search-wrap:first-child { margin-left: 0 !important; }
+/* heading, Add CTA and Reset keep their natural size, never shrink */
+.dl-toolbar > h5,
+.dl-toolbar > a.btn-theme,
+.dl-toolbar > .reset-btn { flex: 0 0 auto; white-space: nowrap; }
+/* search form is a flex row grouped with the other controls.
+   display:flex !important overrides Bootstrap's .d-inline-block on the <form>. */
+.dl-toolbar #searchform {
+    display: flex !important;
+    align-items: center;
+    flex: 0 1 auto;          /* don't grow; shrink only when the row is tight */
+    min-width: 0;
+    gap: 8px;
+}
+.dl-toolbar #searchform .search-wrap,
+.dl-toolbar #searchform #searchBtn { margin-left: 0 !important; }
+/* name field keeps ~230px but can shrink so the row never wraps; status + search fixed */
+.dl-toolbar #searchform .search-wrap:first-child {
+    flex: 0 1 230px;
+    width: auto !important;
+    min-width: 140px;
+}
+.dl-toolbar #searchform .search-wrap:nth-child(2),
+.dl-toolbar #searchform #searchBtn { flex: 0 0 auto; }
 
 /* BUG-004 — sidebar active highlight (scoped) */
 .accordion-body p.active { box-shadow: inset 3px 0 0 #032671; }

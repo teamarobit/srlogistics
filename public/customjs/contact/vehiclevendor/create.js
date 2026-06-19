@@ -340,9 +340,15 @@ $(document).ready(function(){
 
                     const $newSection = $(response.data);
                     $('#bankDetailsContainer').append($newSection);
-                
-                    assignBankErrorIds(); 
-                
+
+                    // FIX (Asana 1215712380341043): initialize Select2 on the newly
+                    // added bank form so its Bank Name dropdown matches the first
+                    // form. Without this the cloned <select.select2> renders as a
+                    // plain native dropdown (different design).
+                    $newSection.find('.select2').select2();
+
+                    assignBankErrorIds();
+
                 }
     
             }

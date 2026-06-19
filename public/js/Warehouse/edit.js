@@ -1,7 +1,18 @@
 /**
  * Warehouse Master — Edit Page JS
- * SR Logistics | public/js/Warehouse/edit.js v1.3
+ * SR Logistics | public/js/Warehouse/edit.js v1.8
  *
+ * v1.8 (2026-06-18): Asana 1215319065738836 — saved E.164 number rendered with the
+ *                    +91 dial code left inside the input (e.g. "919184914141"), so the
+ *                    country code showed twice next to the flag. setNumber() ran before
+ *                    the async iti utils loaded. Now deferred to itiPhone.promise.then().
+ *                    Also added the exactly-10-digit pre-submit guard (parity with
+ *                    create.js) so non-10-digit numbers are rejected and the +91 dial
+ *                    code can no longer be doubled on save.
+ * v1.6 (2026-06-18): Asana 1215319065738830 — on state CHANGE the city dropdown
+ *                    auto-selected the first city. Prepend a blank placeholder
+ *                    option in loadCities() (mirrors create.js fix) so Select2
+ *                    selects nothing on state change. Saved-city restore intact.
  * v1.3 (2026-05-25): BUG-004 — layout already loads intl-tel-input v17.0.3
  *                    (js + utils). Removed utilsScript to avoid third version.
  *
@@ -51,10 +62,19 @@ $(function () {
             preferredCountries: ['in'],
             utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/js/utils.js',
         });
-        // If saved number is in E.164 (+91…) or plain format, set it
+        // If saved number is in E.164 (+91…) or plain format, set it.
+        // The utils script (needed to split the +91 dial code from the national
+        // number) loads asynchronously. Calling setNumber() before utils is ready
+        // leaves the dial code inside the input (e.g. "919184914141" instead of
+        // "9184914141"), so the country code appears twice next to the flag.
+        // Defer setNumber until the iti utils promise resolves.
         var savedNumber = phoneEl.value;
         if (savedNumber) {
-            itiPhone.setNumber(savedNumber);
+            if (itiPhone.promise && typeof itiPhone.promise.then === 'function') {
+                itiPhone.promise.then(function () { itiPhone.setNumber(savedNumber); });
+            } else {
+                itiPhone.setNumber(savedNumber);
+            }
         }
     }
 
@@ -102,6 +122,10 @@ $(function () {
         var url = CITIES_URL.replace('__STATE_ID__', stateId);
         $.getJSON(url, function (cities) {
             $('#wh_city_name').prop('disabled', false).empty();
+            // Blank placeholder option first so Select2 auto-selects nothing
+            // when the state changes (preselectCity = null). Saved-city restore
+            // on initial load still works via initCitySelect2(preselectCity).
+            $('#wh_city_name').append(new Option('', '', false, false));
             $.each(cities, function (i, c) {
                 $('#wh_city_name').append(new Option(c.name, c.name, false, false));
             });
@@ -148,6 +172,15 @@ $(function () {
     $form.on('submit', function (e) {
         e.preventDefault();
         clearValidationErrors();
+
+        // Contact phone must be exactly 10 national digits (separateDialCode → input
+        // holds national digits only). Blocks <10 / >10 and prevents the +91 dial code
+        // from being doubled on save. Mirrors create.js.
+        var contactDigits = ($('#wh_contact_number').val() || '').replace(/\D/g, '');
+        if (contactDigits.length > 0 && contactDigits.length !== 10) {
+            showValidationErrors({ contact_number: ['Enter a valid 10-digit phone number.'] });
+            return;
+        }
 
         // SD-13: set full E.164 number (+919876543210) before serialize.
         // BUG-004 followup: global layout loads two iti versions; getNumber()

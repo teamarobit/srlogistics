@@ -313,8 +313,13 @@ $(document).ready(function(){
     
     
     // Add More Contact Person Start -------------------------------------------
-    
-    var contactperson_rowindex = 0;
+
+    // FIX (Asana 1215714442707341): on edit, existing contact persons already
+    // occupy array keys 0..n-1. Start the row counter after them so a newly
+    // added row's error-span index matches the server's array key (PHP appends
+    // contact_person_name[] at key n). Starting at 0 collided with existing rows
+    // and left the added row's validation errors with no span to render into.
+    var contactperson_rowindex = $('#contactPersonContainer .contact-person').length;
 
     $(document).on('click', '.add-person', function (e) {
         e.preventDefault();

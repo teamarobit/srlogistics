@@ -71,6 +71,20 @@ document.addEventListener("DOMContentLoaded", function () {
     yesRadio.addEventListener("change", function () {
         if (this.checked) {
             caseBox.style.display = "block";
+
+            // FIX (Asana 1215649653370465): the City Select2 lives inside a
+            // section that is display:none at page load, so its initial init
+            // (jQuery ready block below) mis-measures width/offset and the open
+            // dropdown renders misaligned and won't position correctly on scroll.
+            // Re-init now that the section is actually visible.
+            var $city = $('#workExperienceModal select[name="previous_city_id"]');
+            if ($city.hasClass('select2-hidden-accessible')) {
+                $city.select2('destroy');
+            }
+            $city.select2({
+                dropdownParent: $('#workExperienceModal'),
+                width: '100%'
+            });
         }
     });
 

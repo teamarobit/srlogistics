@@ -1408,10 +1408,17 @@
                                                 <h6>Alloted Asset</h6>
                                             </div>
                                             <div class="col-12 col-md-3 text-end">
+                                                @php
+                                                    // Asana 1215649653370471: gate Assign Asset on the driver's CURRENT
+                                                    // status, not on the existence of a historical exit-detail record.
+                                                    // An Active driver can always assign assets even if an old exit
+                                                    // record exists.
+                                                    $assetAssignLocked = ($contact->status ?? null) !== 'Active';
+                                                @endphp
                                                 <a href="javascript:void(0)"
-                                                   class="btn btn-theme {{ $contact->employeeExitDetail ? 'disabled' : '' }}"
-                                                   data-bs-toggle="{{ $contact->employeeExitDetail ? '' : 'modal' }}"
-                                                   data-bs-target="{{ $contact->employeeExitDetail ? '' : '#assettypeModal' }}">
+                                                   class="btn btn-theme {{ $assetAssignLocked ? 'disabled' : '' }}"
+                                                   data-bs-toggle="{{ $assetAssignLocked ? '' : 'modal' }}"
+                                                   data-bs-target="{{ $assetAssignLocked ? '' : '#assettypeModal' }}">
                                                     <i class="uil uil-plus me-1"></i> Assign Asset
                                                 </a>
                                                 <!--<a href="javascript:void(0)" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#assettypeModal"><i class="uil uil-plus me-1"></i> Assign Asset</a>-->
@@ -2062,7 +2069,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.6') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.7') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
