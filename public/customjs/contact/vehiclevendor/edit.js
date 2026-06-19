@@ -403,17 +403,17 @@ $(document).ready(function(){
     
     // Add More Bank Detail Start ----------------------------------------------
     
-    var bank_rowindex = 0;
-    
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
+
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();
-    
+
         var currentIndex = bank_rowindex;
         bank_rowindex++;
-    
+
         var formData = new FormData();
         formData.append('rowindex', currentIndex);
-    
+
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -477,12 +477,16 @@ $(document).ready(function(){
         //}
     });
     
-    $(document).on('change', '.bank-status[value="Yes"]', function () {
-        if ($(this).is(':checked')) {
-            $('.bank-status[value="Yes"]').not(this).prop('checked', false);
+    // Mutual exclusion: selecting Yes on one bank forces all others to No
+    $(document).on('change', 'input[type="radio"][name^="is_primary"]', function () {
+        if ($(this).val() === 'Yes') {
+            var $thisRow = $(this).closest('.bank-data');
+            $('#bankDetailsContainer .bank-data').not($thisRow).each(function () {
+                $(this).find('input[type="radio"][value="No"]').prop('checked', true);
+            });
         }
     });
-    
+
     // Add More Bank Detail Ends -----------------------------------------------
     
     

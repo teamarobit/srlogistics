@@ -498,8 +498,8 @@ $(document).ready(function(){
     
     
     // Add More Bank Detail Start ----------------------------------------------
-    
-    var bank_rowindex = 0;
+
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
     
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();

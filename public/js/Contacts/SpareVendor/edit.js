@@ -192,7 +192,7 @@ $(document).ready(function(){
 
 
     // ── Bank Details ──────────────────────────────────────────────────────────
-    var bank_rowindex = 0;
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
 
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();

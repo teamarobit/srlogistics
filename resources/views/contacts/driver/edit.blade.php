@@ -2092,7 +2092,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=2.0') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=2.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
