@@ -507,6 +507,11 @@ $(document).ready(function(){
             $('.reason_wrap').hide();
         }
     });
+
+    // Initialize on page load — if checkbox is pre-checked, show the vehicle/reason fields
+    if ($('#change_vehicle').is(':checked')) {
+        $('.reason_wrap').show();
+    }
     
     
     
