@@ -295,11 +295,15 @@ $(document).ready(function(){
     });
     
     $('.select2').select2();
-    
+
+    // Explicit city init with placeholder per SKILL.md standard
+    $('#permanentAddrCity, #presentAddrCity').select2({
+        placeholder: 'Choose city',
+        width: '100%'
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
-    
-    
-    
+
     setupDependentSelect('.dependent-select', 'Choose city');
     
     function setupDependentSelect(firstSelectSelector, placeholder = 'Select option...') {
@@ -339,8 +343,8 @@ $(document).ready(function(){
     
                     // Re-init Select2
                     $target.select2({
-                        width: '100%',
-                        dropdownAutoWidth: true
+                        placeholder: placeholder,
+                        width: '100%'
                     });
                 },
                 error: function (xhr) {
