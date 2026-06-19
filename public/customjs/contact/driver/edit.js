@@ -1484,17 +1484,16 @@ $(document).ready(function () {
             autoUpdateInput  : false,
             maxDate          : maxDate,
             locale           : { format: 'DD/MM/YYYY' }
-        }, function (start) {
-            $display.val(start.format('DD/MM/YYYY'));
-            $hidden.val(start.format('YYYY-MM-DD')).trigger('change');
+        });
+
+        $display.on('apply.daterangepicker', function (ev, picker) {
+            $display.val(picker.startDate.format('DD/MM/YYYY'));
+            $hidden.val(picker.startDate.format('YYYY-MM-DD'));
+        });
+
+        $display.on('cancel.daterangepicker', function () {
+            $display.val('');
+            $hidden.val('');
         });
     });
 });
-
-
-
-
-
-
-
-

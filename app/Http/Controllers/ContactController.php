@@ -8329,100 +8329,115 @@ class ContactController extends Controller
 
                 
                 
-                // Driver other infos
+                // Driver other infos — always find or create the driverinfo record
+                $contact_other_info = Driverinfo::where('contact_id', $contact->id)->first();
+
+                if (!$contact_other_info) {
+                    $contact_other_info = new Driverinfo;
+                    $contact_other_info->contact_id = $contact->id;
+                }
+
+                // Capture previous status_type for activity log transition detection
+                $previousStatusType = $contact_other_info->status_type;
+
+                // File uploads + category-specific fields (only when driver_category is provided)
                 if (!empty($request->get('driver_category'))) {
-                
-                    $contact_other_info = Driverinfo::where('contact_id', $contact->id)->first();
-                
-                    if (!$contact_other_info) {
-                        $contact_other_info = new Driverinfo;
-                        $contact_other_info->contact_id = $contact->id;
-                    }
-                
+
                     $uploadPath = public_path('media' . DIRECTORY_SEPARATOR . 'contact');
-                
+
                     if (!File::exists($uploadPath)) {
                         File::makeDirectory($uploadPath, 0755, true);
                     }
-                
+
                     // Driving License File
                     if ($request->hasFile('driving_license_proof_file')) {
-                
+
                         if (!empty($contact_other_info->driving_license_proof_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->driving_license_proof_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->driving_license_proof_file);
                         }
-                
+
                         $file = $request->file('driving_license_proof_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'driving_license_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->driving_license_proof_file = $filename;
                     }
-                
+
                     // Aadhaar Card File
                     if ($request->hasFile('aadhaar_card_proof_file')) {
-                
+
                         if (!empty($contact_other_info->aadhaar_card_proof_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->aadhaar_card_proof_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->aadhaar_card_proof_file);
                         }
-                
+
                         $file = $request->file('aadhaar_card_proof_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'aadhaar_card_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->aadhaar_card_proof_file = $filename;
                     }
-                
+
                     // Signed Driver Form File
                     if ($request->hasFile('signed_driver_form_file')) {
-                
+
                         if (!empty($contact_other_info->signed_driver_form_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->signed_driver_form_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->signed_driver_form_file);
                         }
-                
+
                         $file = $request->file('signed_driver_form_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'signed_driver_form_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->signed_driver_form_file = $filename;
                     }
-                
-                    // Update fields
+
+                    // Category-specific fields
                     $contact_other_info->category                   = $request->driver_category ?? null;
                     $contact_other_info->driving_licence_no         = $request->driving_licence_no ?? null;
                     $contact_other_info->licence_issue_date         = $request->licence_issue_date ?? null;
                     $contact_other_info->licence_expiry_date        = $request->licence_expiry_date ?? null;
                     $contact_other_info->original_licence_location  = $request->original_licence_location ?? null;
-                
                     $contact_other_info->aadhaar_no                 = $request->aadhaar_no ?? null;
-                
-                    $contact_other_info->status_type                = $request->status_type ?? null;
-                    $contact_other_info->expected_return_date       = $request->expected_return_date ?? null;
-                    $contact_other_info->set_reminder               = $request->set_reminder ?? null;
-                    $contact_other_info->voluntary_exit_reason      = $request->voluntary_exit_reason ?? null;
-                
                     $contact_other_info->hisab_category             = $request->hisab_category ?? null;
                     $contact_other_info->opening_balance_date       = $request->opening_balance_date ?? null;
                     $contact_other_info->opening_balance_type       = $request->opening_balance_type ?? null;
                     $contact_other_info->opening_balance            = $request->opening_balance ?? null;
-                
                     $contact_other_info->guarantor_name             = $request->guarantor_name ?? null;
                     $contact_other_info->guarantor_phone_code       = $request->guarantor_phone_code ?? $phoneCode;
                     $contact_other_info->guarantor_phone            = $request->guarantor_phone ?? null;
-                
-                    $contact_other_info->save();
+                }
+
+                // Status/leave fields — always saved regardless of driver_category
+                $contact_other_info->status_type           = $request->status_type ?? null;
+                $contact_other_info->expected_return_date  = $request->expected_return_date ?? null;
+                $contact_other_info->set_reminder          = $request->set_reminder ?? null;
+                $contact_other_info->voluntary_exit_reason = $request->voluntary_exit_reason ?? null;
+
+                $contact_other_info->save();
+
+                // Log leave transition to activity tab
+                if ($request->status == 'Inactive' && $request->status_type == 'On Leave' && $previousStatusType !== 'On Leave') {
+                    $leaveStart  = now()->format('d M Y');
+                    $leaveEnd    = $request->expected_return_date
+                        ? \Carbon\Carbon::parse($request->expected_return_date)->format('d M Y')
+                        : 'N/A';
+                    $leaveActivity = new Contactactivity();
+                    $leaveActivity->contact_id  = $contact->id;
+                    $leaveActivity->notes       = "Driver marked On Leave from {$leaveStart} to {$leaveEnd}.";
+                    $leaveActivity->created_by  = Auth::user()->id;
+                    $leaveActivity->save();
                 }
                 
                 
