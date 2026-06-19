@@ -192,7 +192,7 @@
                             
                             <div class="form-group row">
                                 <div class="col-12 col-md-3">
-                                    <label>Payment Within Day</label>
+                                    <label>Payment Within Day <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="input-group">
