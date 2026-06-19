@@ -7804,6 +7804,7 @@ class ContactController extends Controller
              'coaddresses',
              'bank',
              'driverinfo',
+             'driverVehiclePhotos',
              'vehicleAllocations',
              'employeeAssets',
              'coattachments.coattachtype',

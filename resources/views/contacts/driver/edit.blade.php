@@ -436,45 +436,53 @@
                                         
                                         
                                         <!--///////////////////////////////-->
-                                        <div class="status-content statusinactive" style="display:none;">
+                                        @php
+                                            $driverStatusType       = optional($contact->driverinfo)->status_type;
+                                            $isInactive             = $contact->status == 'Inactive';
+                                            $isOnLeave              = $isInactive && $driverStatusType == 'On Leave';
+                                            $isVoluntaryExit        = $isInactive && $driverStatusType == 'Voluntary Exit';
+                                            $expectedReturnRaw      = optional($contact->driverinfo)->expected_return_date;
+                                            $expectedReturnDisplay  = $expectedReturnRaw ? \Carbon\Carbon::parse($expectedReturnRaw)->format('d/m/Y') : '';
+                                        @endphp
+                                        <div class="status-content statusinactive" style="display:{{ $isInactive ? 'block' : 'none' }};">
                                             <div class="row form-group">
                                               <div class="col-12 col-md-5"></div>
-                                              
-                                              <div class="col-12 col-md-7 flex-wrap d-flex voluntaryexe-wrap" style="display:none;">
+
+                                              <div class="col-12 col-md-7 flex-wrap d-flex voluntaryexe-wrap" style="display:{{ $isInactive ? 'flex' : 'none' }};">
 
                                                     <div class="form-check me-2 onLeaveDiv">
-                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="onLeave" value="On Leave">
+                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="onLeave" value="On Leave" {{ $isOnLeave ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="onLeave">
-                                                           On Leave  
+                                                           On Leave
                                                         </label>
                                                     </div>
-                                                    
+
                                                     <div class="form-check mx-0 voluntaryExitDiv">
-                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="voluntaryExit" value="Voluntary Exit">
+                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="voluntaryExit" value="Voluntary Exit" {{ $isVoluntaryExit ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="voluntaryExit">
-                                                           Voluntary Exit 
+                                                           Voluntary Exit
                                                         </label>
                                                     </div>
-                                                    
+
                                               </div>
                                               <small class="error text-danger" id="edit_status_type_error"></small>
                                             </div>
 
-                                            <div class="leavevoluntary_wrap" style="display:none;">
-                                                
-                                                <div class="onleave_wrap" style="display:none;">
-                                                    
+                                            <div class="leavevoluntary_wrap" style="display:{{ ($isOnLeave || $isVoluntaryExit) ? 'block' : 'none' }};">
+
+                                                <div class="onleave_wrap" style="display:{{ $isOnLeave ? 'block' : 'none' }};">
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Expected Return Date<span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
-                                                          <input type="text" class="form-control app-date-display" data-target="expected_return_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
-                                          <input type="hidden" name="expected_return_date" id="expected_return_date" value="">
+                                                          <input type="text" class="form-control app-date-display" data-target="expected_return_date" value="{{ $expectedReturnDisplay }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                          <input type="hidden" name="expected_return_date" id="expected_return_date" value="{{ $expectedReturnRaw }}">
                                                           <small class="error text-danger" id="edit_expected_return_date_error"></small>
                                                       </div>
                                                     </div>
-                                                    
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Set Reminder<span class="text-danger">*</span></label>
@@ -485,22 +493,22 @@
                                                           <small class="error text-danger" id="edit_set_reminder_error"></small>
                                                       </div>
                                                     </div>
-                                                    
+
                                                 </div>
-                                                
-                                                <div class="voluntary_wrap" style="display:none;">
-                                                    
+
+                                                <div class="voluntary_wrap" style="display:{{ $isVoluntaryExit ? 'block' : 'none' }};">
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Exit Reason <span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
-                                                         <textarea class="form-control" name="voluntary_exit_reason" rows="3" placeholder=""></textarea>
+                                                         <textarea class="form-control" name="voluntary_exit_reason" rows="3" placeholder="">{{ optional($contact->driverinfo)->voluntary_exit_reason }}</textarea>
                                                          <small class="error text-danger" id="edit_voluntary_exit_reason_error"></small>
                                                       </div>
                                                     </div>
-                                                    
-                                                    
+
+
                                                     <div class="row">
                                                         <div class="col-12 col-md-6">
                                                             <label>Vehicle Photos <span class="text-danger">*</span></label>
@@ -515,7 +523,15 @@
                                                                         <small class="error text-danger" id="edit_vehicle_photos_error"></small>
                                                                     </label>
                                                                   </div>
-                                                                  <div class="upload__img-wrap"></div>
+                                                                  <div class="upload__img-wrap">
+                                                                    @foreach($contact->driverVehiclePhotos as $photo)
+                                                                    <div class="upload__img-box" data-photo-id="{{ $photo->id }}">
+                                                                        <div style="background-image: url('{{ asset('media/contact/' . $photo->file_name) }}');" data-file="{{ $photo->file_name }}" class="img-bg">
+                                                                            <div class="upload__img-close"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endforeach
+                                                                  </div>
                                                                 </div>
                                                             </div>
                                                         </div>
