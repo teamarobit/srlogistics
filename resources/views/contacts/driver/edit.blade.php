@@ -212,7 +212,7 @@
                                         <div class="current_allocvehic">
                                             
                                             @php
-                                                $currentVehicle = $contact->vehicleAllocations->first();
+                                                $currentVehicle = $contact->currentVehicleAllocation;
                                             @endphp
                                         
                                             <div class="row form-group">
