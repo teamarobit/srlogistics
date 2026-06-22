@@ -12970,6 +12970,8 @@ class ContactController extends Controller
                 $contact->pan_no          = $request->pan_no;
                 $contact->pan_status_id   = $request->pan_status_id;
                 $contact->tds_percentage  = $request->tds_percentage;
+                $contact->gst_treatment   = $request->gst_treatment ?? null;
+                $contact->gst_number      = $request->gst_number ?? null;
                 $contact->address1        = $request->address;
                 $contact->state_id        = $request->state_id;
                 $contact->city_id         = $request->city_id;
