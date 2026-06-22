@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     // ── City filter — Select2 ─────────────────────────────────────────────
     $('#spvCityFilter').select2({
-        width: '180px',
+        width: '100%',
         placeholder: 'Filter by City',
         allowClear: true,
     });
