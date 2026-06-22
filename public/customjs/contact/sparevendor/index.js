@@ -1,5 +1,15 @@
 $(document).ready(function () {
 
+    // ── City filter — Select2 ─────────────────────────────────────────────
+    $('#spvCityFilter').select2({
+        width: '180px',
+        placeholder: 'Filter by City',
+        allowClear: true,
+    });
+    $('#spvCityFilter').on('change', function () {
+        $('#filterForm').submit();
+    });
+
     const Toast = Swal.mixin({
         toast: true,
         position: 'top',

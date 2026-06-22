@@ -29,7 +29,7 @@
                             <form action="{{ route('contact.sparevendor.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap ms-1" id="filterForm">
                                 <input type="text" name="name" value="{{ $search_name ?? '' }}"
                                     class="form-control form-control-sm" placeholder="Search by Name" style="width:170px;">
-                                <select name="city" class="form-select form-select-sm" style="width:140px;" onchange="this.form.submit()">
+                                <select name="city" id="spvCityFilter" class="form-select form-select-sm">
                                     <option value="">Filter by City</option>
                                     @foreach($cities as $city)
                                     <option value="{{ $city->id }}" {{ ($search_city ?? '') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
@@ -181,5 +181,5 @@ var DELETE_BASE = '/contacts/sparevendor/';
 var DELETE_SELECTED_CONTACT = "{{ route('contact.delete.selected') }}";
 var DELETE_ALL  = "{{ route('contact.delete.all') }}";
 </script>
-<script src="{{ asset('customjs/contact/sparevendor/index.js?v=1.2') }}"></script>
+<script src="{{ asset('customjs/contact/sparevendor/index.js?v=1.3') }}"></script>
 @endsection
