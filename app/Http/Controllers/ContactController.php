@@ -12875,6 +12875,11 @@ class ContactController extends Controller
             'contact_person_phone.*'      => ['required', 'string', 'distinct'],
             'contact_person_email'        => 'nullable|array|min:1',
             'contact_person_email.*'      => 'nullable|email:rfc,dns|distinct',
+            'attachtypes'                 => 'nullable|array',
+            'attachtypes.*'               => 'nullable|exists:coattachtypes,id',
+            'files'                       => 'nullable|array',
+            'files.*'                     => 'nullable|array|max:2',
+            'files.*.*'                   => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
             'required' => 'This field is required.',
             'max'      => 'Maximum 100 characters allowed.',
@@ -12890,12 +12895,60 @@ class ContactController extends Controller
             if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
         });
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'data' => $validator->errors()->toArray(), 'message' => 'Validation error.'], 422);
+        // Attachment-level validation
+        $attachErrors   = [];
+        $attachErrCount = 0;
+        $existingTypeIds = $contact->coattachments()->pluck('coattachtype_id')->toArray();
+        $attachtypes    = $request->attachtypes ?? [];
+        $filesInput     = $request->file('files') ?? [];
+        $seenTypes      = array_map('intval', $existingTypeIds);
+
+        foreach (array_unique(array_merge(array_keys($attachtypes), array_keys($filesInput))) as $key) {
+            $attachtype = $attachtypes[$key] ?? null;
+            $files      = $filesInput[$key]  ?? null;
+            if (empty($attachtype) && empty($files)) continue;
+            if (!empty($files) && empty($attachtype)) {
+                $attachErrCount++;
+                $attachErrors['coattachtype_' . $key] = ['Document type is required.'];
+                continue;
+            }
+            if (!empty($attachtype) && empty($files)) {
+                $attachErrCount++;
+                $attachErrors['coattachments_' . $key] = ['Please upload file.'];
+                continue;
+            }
+            if (in_array((int)$attachtype, $seenTypes, true)) {
+                $attachErrCount++;
+                $attachErrors['coattachtype_' . $key] = ['You\'ve already added this attachment type.'];
+                continue;
+            }
+            $seenTypes[] = (int)$attachtype;
+            if (count($files) > 2) {
+                $attachErrCount++;
+                $attachErrors['coattachments_' . $key] = ['You cannot upload more than 2 files.'];
+                continue;
+            }
+            foreach ($files as $file) {
+                $ext  = strtolower($file->getClientOriginalExtension());
+                $size = $file->getSize();
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
+                    $attachErrCount++;
+                    $attachErrors['coattachments_' . $key] = ['File type must be jpg, jpeg, png or pdf.'];
+                }
+                if ($size > 2097152) {
+                    $attachErrCount++;
+                    $attachErrors['coattachments_' . $key] = ['File size must not exceed 2MB.'];
+                }
+            }
+        }
+
+        $allErrors = array_merge($validator->errors()->toArray(), $attachErrors);
+        if ($validator->fails() || $attachErrCount > 0) {
+            return response()->json(['success' => false, 'data' => $allErrors, 'message' => 'Validation error.'], 422);
         }
 
         try {
-            DB::transaction(function () use ($request, $contact) {
+            DB::transaction(function () use ($request, $contact, $attachtypes, $filesInput) {
                 $phoneCode = getPhoneCode();
 
                 $contact->contact_name    = $request->contact_name;
@@ -12984,6 +13037,31 @@ class ContactController extends Controller
                         'upi_id'           => $upiIds[$idx]     ?? null,
                         'is_primary'       => $isPrimary[$idx]  ?? 'No',
                     ]);
+                }
+
+                // Save new attachments
+                if (!empty($attachtypes)) {
+                    foreach ($attachtypes as $key => $attachtype) {
+                        if (empty($attachtype) || empty($filesInput[$key])) continue;
+                        foreach ($filesInput[$key] as $file) {
+                            $fileoriginalname = $file->getClientOriginalName();
+                            $extension        = $file->getClientOriginalExtension();
+                            $filesize         = $file->getSize();
+                            $filename         = 'contact-attachment-' . Str::random(4) . '_' . time() . '.' . $extension;
+                            $file->move(
+                                public_path('media' . DIRECTORY_SEPARATOR . 'contact' . DIRECTORY_SEPARATOR),
+                                $filename
+                            );
+                            $att                  = new Coattachment;
+                            $att->name            = $filename;
+                            $att->original_name   = $fileoriginalname;
+                            $att->file_size       = $filesize / (1024 * 1024);
+                            $att->coattachtype_id = $attachtype;
+                            $att->created_by      = Auth::id();
+                            $att->contact_id      = $contact->id;
+                            $att->save();
+                        }
+                    }
                 }
             });
 
