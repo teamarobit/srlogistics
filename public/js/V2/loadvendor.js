@@ -116,8 +116,8 @@ $(function () {
                     var $row = $(rec.el).closest('.cv2-repeat-row');
                     if ($row.length && cd && cd.dialCode) {
                         var nm = $(rec.el).attr('name') || '';
-                        if (nm.indexOf('phone') > -1) { $row.find('.cv2-cp-phcode').val(cd.dialCode); }
-                        if (nm.indexOf('whatsapp') > -1) { $row.find('.cv2-cp-wacode').val(cd.dialCode); }
+                        if (nm.indexOf('phone') > -1) { $row.find('.cv2-cp-phcode').val('+' + cd.dialCode); }
+                        if (nm.indexOf('whatsapp') > -1) { $row.find('.cv2-cp-wacode').val('+' + cd.dialCode); }
                     }
                 } catch (e) {}
             }
@@ -208,7 +208,7 @@ $(function () {
             showCancelButton: true, confirmButtonColor: '#ea0027', confirmButtonText: 'Delete'
         }).then(function (r) {
             if (!r.isConfirmed) { return; }
-            $.post('/contacts/delete', { id: id }, function (res) {
+            $.post('/contacts/v2/load-vendors/delete', { id: id }, function (res) {
                 Toast.fire({ icon: 'success', title: res.message || 'Deleted.' });
                 setTimeout(function () { window.location.reload(); }, 900);
             }).fail(handleAjaxError);

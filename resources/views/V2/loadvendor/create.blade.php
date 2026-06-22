@@ -205,5 +205,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/loadvendor.js?v=1.1') }}"></script>
+<script src="{{ asset('js/V2/loadvendor.js?v=1.2') }}"></script>
 @endsection

@@ -1021,6 +1021,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/load-vendors/{id}/documents',    [App\Http\Controllers\V2\LoadVendorController::class, 'documents'])->name('loadvendor.documents');
         Route::get('/load-vendors/{id}/activity',     [App\Http\Controllers\V2\LoadVendorController::class, 'activity'])->name('loadvendor.activity');
 
+        /**** Load Vendor — Gate 2 POST wiring (live backend; cotype_id = 2, NO schema change).
+              Re-added after the 2026-06-15 routes/web.php truncation wiped this block
+              (see docs/HumanAttention/2026-06-15-routes-web-truncation-recovery.md). ****/
+        Route::get ('/load-vendors/{id}/locations/list',    [App\Http\Controllers\V2\LoadVendorController::class, 'filterLocations'])->name('loadvendor.filter.locations');
+        Route::post('/load-vendors/save',                   [App\Http\Controllers\V2\LoadVendorController::class, 'store'])->name('loadvendor.save');
+        Route::post('/load-vendors/{id}/update',            [App\Http\Controllers\V2\LoadVendorController::class, 'update'])->name('loadvendor.update');
+        Route::post('/load-vendors/contact-person-wrapper', [App\Http\Controllers\V2\LoadVendorController::class, 'contactPersonWrapper'])->name('loadvendor.contactpersonwrapper');
+        Route::post('/load-vendors/location/save',          [App\Http\Controllers\V2\LoadVendorController::class, 'storeLocation'])->name('loadvendor.location.save');
+        Route::post('/load-vendors/location/delete',        [App\Http\Controllers\V2\LoadVendorController::class, 'deleteLocation'])->name('loadvendor.location.delete');
+        Route::post('/load-vendors/location/midpoints',     [App\Http\Controllers\V2\LoadVendorController::class, 'getLocationMidpoints'])->name('loadvendor.get.location.midpoints');
+        Route::post('/load-vendors/attachment/save',        [App\Http\Controllers\V2\LoadVendorController::class, 'storeAttachment'])->name('loadvendor.attachment.save');
+        Route::post('/load-vendors/attachment/delete',      [App\Http\Controllers\V2\LoadVendorController::class, 'deleteAttachment'])->name('loadvendor.attachment.delete');
+        Route::post('/load-vendors/activity-notes/save',    [App\Http\Controllers\V2\LoadVendorController::class, 'storeActivityNote'])->name('loadvendor.activitynotes.save');
+        Route::post('/load-vendors/delete',                 [App\Http\Controllers\V2\LoadVendorController::class, 'destroy'])->name('loadvendor.delete');
+
         /******************************** Contacts V2 — Tyre Vendor (redesign) *********************/
         // cotype_id = 6. New, isolated module. Does NOT touch existing contacts routes/controller/views.
         Route::get('/tyre-vendors/dashboard',         [App\Http\Controllers\V2\TyreVendorController::class, 'dashboard'])->name('tyrevendor.dashboard');

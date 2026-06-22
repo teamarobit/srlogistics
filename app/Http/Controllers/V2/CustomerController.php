@@ -470,7 +470,7 @@ class CustomerController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
-            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/|unique:contacts,gstin',
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',
@@ -500,22 +500,23 @@ class CustomerController extends Controller
             'contact_person_comment'      => 'nullable|array|min:1',
             'contact_person_comment.*'    => 'nullable|string|min:1',
         ], [
-            'required'             => 'This field is required.',
-            'gstin.required_if'    => 'This field is required.',
-            'contact_email.unique' => 'This email has already been taken.',
-            'max'                  => 'Maximum 100 characters allowed.',
-            'contact_comment.max'  => 'Maximum 255 characters allowed.',
-            'exists'               => "This field's value is invalid.",
-            'distinct'             => 'Duplicate value.',
-            'email'                => 'This email is invalid.',
-            'gst_number.regex'     => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
+            'required'              => 'This field is required.',
+            'gstin.required_if'     => 'This field is required.',
+            'email.unique'          => 'This email has already been taken.',
+            'gst_number.unique'     => 'This GST number is already registered.',
+            'max'                   => 'Maximum 100 characters allowed.',
+            'contact_comment.max'   => 'Maximum 255 characters allowed.',
+            'exists'                => "This field's value is invalid.",
+            'distinct'              => 'Duplicate value.',
+            'email'                 => 'This email is invalid.',
+            'gst_number.regex'      => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
             'halting_charges_per_day.required_if' => 'Please enter halting charges per day when halting charge is checked.',
-            'phone.digits' => 'This field must contain 10 digits.',
-            'whatsapp.digits' => 'This field must contain 10 digits.',
-            'contact_person_phone.*.digits' => 'This field must contain 10 digits.',
+            'phone.digits'                     => 'This field must contain 10 digits.',
+            'whatsapp.digits'                  => 'This field must contain 10 digits.',
+            'contact_person_phone.*.digits'    => 'This field must contain 10 digits.',
             'contact_person_whatsapp.*.digits' => 'This field must contain 10 digits.',
-            'contact_name.required' => 'This field is required.',
-            'contact_name.max'      => 'This cannot exceed 100 characters.',
+            'contact_name.required'            => 'This field is required.',
+            'contact_name.max'                 => 'This cannot exceed 100 characters.',
         ]);
 
         $errorcount = 0;
@@ -801,7 +802,7 @@ class CustomerController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+            'gst_number'          => ['required','max:100','regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/', Rule::unique('contacts','gstin')->ignore($id)],
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',
@@ -833,22 +834,23 @@ class CustomerController extends Controller
             'contact_person_comment'      => 'nullable|array|min:1',
             'contact_person_comment.*'    => 'nullable|string|distinct|min:1',
         ], [
-            'required'             => 'This field is required.',
-            'gstin.required_if'    => 'This field is required.',
-            'contact_email.unique' => 'This email has already been taken.',
-            'max'                  => 'Maximum 100 characters allowed.',
-            'contact_comment.max'  => 'Maximum 255 characters allowed.',
-            'exists'               => "This field's value is invalid.",
-            'distinct'             => 'Duplicate value.',
-            'email'                => 'This email is invalid.',
-            'gst_number.regex'     => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
+            'required'              => 'This field is required.',
+            'gstin.required_if'     => 'This field is required.',
+            'email.unique'          => 'This email has already been taken.',
+            'gst_number.unique'     => 'This GST number is already registered.',
+            'max'                   => 'Maximum 100 characters allowed.',
+            'contact_comment.max'   => 'Maximum 255 characters allowed.',
+            'exists'                => "This field's value is invalid.",
+            'distinct'              => 'Duplicate value.',
+            'email'                 => 'This email is invalid.',
+            'gst_number.regex'      => 'Invalid GST format. Example: 27AAACT2727Q1ZW.',
             'halting_charges_per_day.required_if' => 'Please enter halting charges per day when halting charge is checked.',
-            'phone.digits' => 'This field must contain 10 digits.',
-            'whatsapp.digits' => 'This field must contain 10 digits.',
-            'contact_person_phone.*.digits' => 'This field must contain 10 digits.',
+            'phone.digits'                     => 'This field must contain 10 digits.',
+            'whatsapp.digits'                  => 'This field must contain 10 digits.',
+            'contact_person_phone.*.digits'    => 'This field must contain 10 digits.',
             'contact_person_whatsapp.*.digits' => 'This field must contain 10 digits.',
-            'contact_name.required' => 'This field is required.',
-            'contact_name.max'      => 'This cannot exceed 100 characters.',
+            'contact_name.required'            => 'This field is required.',
+            'contact_name.max'                 => 'This cannot exceed 100 characters.',
         ]);
 
         $errorcount = 0;
@@ -2141,12 +2143,14 @@ class CustomerController extends Controller
             'v_fixed_amount' => ['required', 'numeric', 'min:0'],
             'v_extra_amount_per_km' => ['required', 'numeric', 'min:0'],
         ], [
-            'required' => 'This field is required.',
-            'max'      => 'Maximum 100 characters allowed.',
-            'exists'   => "This field's value is invalid.",
-            'digits'   => 'Invalid format.',
-            'distinct' => 'Duplicate value.',
-            'email'    => 'This email is invalid.',
+            'required'                      => 'This field is required.',
+            'max'                           => 'Maximum 100 characters allowed.',
+            'exists'                        => "This field's value is invalid.",
+            'digits'                        => 'Invalid format.',
+            'distinct'                      => 'Duplicate value.',
+            'email'                         => 'This email is invalid.',
+            'v_start_date.before_or_equal'  => 'Start date must be on or before the end date.',
+            'v_end_date.after_or_equal'     => 'End date must be on or after the start date.',
         ]);
 
         if ($validator->fails()) {
@@ -2195,9 +2199,10 @@ class CustomerController extends Controller
             'coattachtype_id'   => 'required|exists:coattachtypes,id',
             'attachment_file'   => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
-            'required' => 'This field is required.',
-            'mimes'    => 'File type must be jpg, jpeg, png or pdf.',
-            'max'      => 'File size must not exceed 2MB.',
+            'required'                 => 'This field is required.',
+            'mimes'                    => 'File type must be jpg, jpeg, png or pdf.',
+            'attachment_file.max'      => 'File size must not exceed 2MB.',
+            'attachment_file.uploaded' => 'File size must not exceed 2MB.',
         ]);
 
         if ($validator->fails()) {

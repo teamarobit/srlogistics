@@ -88,6 +88,12 @@ class LoadVendorController extends Controller
         return Contact::where('cotype_id', self::CONTACT_TYPE_LOAD_VENDOR)->findOrFail($id);
     }
 
+    /** B9 — sub-entity writes are blocked when the vendor is not Active. */
+    private function vendorWriteLocked(Contact $contact): bool
+    {
+        return in_array($contact->status, ['Inactive', 'Blacklisted'], true);
+    }
+
     /* ===============================================================
      | Screens (public GET) — real Eloquent, Gate-1 array-key shape
      | =============================================================== */
@@ -318,9 +324,22 @@ class LoadVendorController extends Controller
             $request->merge(['contact_person_whatsapp' => $whatsapps]);
         }
 
+        // BV-D2 / B8 — normalise every dial-code prefix to '+<code>' so an edit-save never
+        // flips '+91'->'91' and the duplicate-phone guard always compares a consistent format.
+        $request->merge([
+            'phone_code'    => $request->filled('phone_code')    ? '+' . ltrim($request->phone_code, '+')    : $request->phone_code,
+            'whatsapp_code' => $request->filled('whatsapp_code') ? '+' . ltrim($request->whatsapp_code, '+') : $request->whatsapp_code,
+        ]);
+        if ($request->has('contact_person_ph_code')) {
+            $request->merge(['contact_person_ph_code' => array_map(fn ($c) => $c ? '+' . ltrim($c, '+') : $c, (array) $request->contact_person_ph_code)]);
+        }
+        if ($request->has('contact_person_whatsapp_code')) {
+            $request->merge(['contact_person_whatsapp_code' => array_map(fn ($c) => $c ? '+' . ltrim($c, '+') : $c, (array) $request->contact_person_whatsapp_code)]);
+        }
+
         $validate_phone = function ($attribute, $value, $fail) use ($request) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+            $code = ltrim($request->phone_code ?? getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -351,9 +370,9 @@ class LoadVendorController extends Controller
             'contact_person_designation.*' => 'required|string|min:1',
             'contact_person_ph_code'       => 'nullable|array|min:1',
             'contact_person_phone'         => 'required|array|min:1',
-            'contact_person_phone.*'       => ['required', 'string', 'distinct'],
+            'contact_person_phone.*'       => ['required', 'distinct', 'digits:10'],
             'contact_person_whatsapp'      => 'nullable|array|min:1',
-            'contact_person_whatsapp.*'    => ['nullable', 'string', 'distinct'],
+            'contact_person_whatsapp.*'    => ['nullable', 'distinct', 'digits:10'],
             'contact_person_email'         => 'nullable|array|min:1',
             'contact_person_email.*'       => 'nullable|email|distinct',
             'contact_person_comment'       => 'nullable|array|min:1',
@@ -371,8 +390,11 @@ class LoadVendorController extends Controller
             'exists'                  => "This field's value is invalid.",
             'distinct'                => 'Duplicate value.',
             'email'                   => 'This email is invalid.',
+            'email.unique'            => 'This email is already in use.',
             'phone.digits'            => 'This field must contain 10 digits.',
             'whatsapp.digits'         => 'This field must contain 10 digits.',
+            'contact_person_phone.*.digits'    => 'This field must contain 10 digits.',
+            'contact_person_whatsapp.*.digits' => 'This field must contain 10 digits.',
             'contact_name.required'   => 'This field is required.',
             'contact_person_designation.*.required' => 'Designation is required.',
             'blacklist_reason.required_if' => 'Blacklist reason is required when status is Blacklisted.',
@@ -561,9 +583,22 @@ class LoadVendorController extends Controller
             $request->merge(['contact_person_whatsapp' => $whatsapps]);
         }
 
+        // BV-D2 / B8 — normalise every dial-code prefix to '+<code>' so an edit-save never
+        // flips '+91'->'91' and the duplicate-phone guard always compares a consistent format.
+        $request->merge([
+            'phone_code'    => $request->filled('phone_code')    ? '+' . ltrim($request->phone_code, '+')    : $request->phone_code,
+            'whatsapp_code' => $request->filled('whatsapp_code') ? '+' . ltrim($request->whatsapp_code, '+') : $request->whatsapp_code,
+        ]);
+        if ($request->has('contact_person_ph_code')) {
+            $request->merge(['contact_person_ph_code' => array_map(fn ($c) => $c ? '+' . ltrim($c, '+') : $c, (array) $request->contact_person_ph_code)]);
+        }
+        if ($request->has('contact_person_whatsapp_code')) {
+            $request->merge(['contact_person_whatsapp_code' => array_map(fn ($c) => $c ? '+' . ltrim($c, '+') : $c, (array) $request->contact_person_whatsapp_code)]);
+        }
+
         $validate_phone = function (string $attribute, mixed $value, Closure $fail) use ($id) {
-            $code = getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+            $code = ltrim(getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->where('id', '!=', $id)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -599,9 +634,9 @@ class LoadVendorController extends Controller
             'contact_person_designation.*' => 'required|string|min:1',
             'contact_person_ph_code'       => 'nullable|array|min:1',
             'contact_person_phone'         => 'required|array|min:1',
-            'contact_person_phone.*'       => ['required', 'string', 'distinct'],
+            'contact_person_phone.*'       => ['required', 'distinct', 'digits:10'],
             'contact_person_whatsapp'      => 'nullable|array|min:1',
-            'contact_person_whatsapp.*'    => ['nullable', 'string', 'distinct'],
+            'contact_person_whatsapp.*'    => ['nullable', 'distinct', 'digits:10'],
             'contact_person_email'         => 'nullable|array|min:1',
             'contact_person_email.*'       => 'nullable|email|distinct',
             'contact_person_comment'       => 'nullable|array|min:1',
@@ -613,8 +648,11 @@ class LoadVendorController extends Controller
             'exists'                  => "This field's value is invalid.",
             'distinct'                => 'Duplicate value.',
             'email'                   => 'This email is invalid.',
+            'email.unique'            => 'This email is already in use.',
             'phone.digits'            => 'This field must contain 10 digits.',
             'whatsapp.digits'         => 'This field must contain 10 digits.',
+            'contact_person_phone.*.digits'    => 'This field must contain 10 digits.',
+            'contact_person_whatsapp.*.digits' => 'This field must contain 10 digits.',
             'contact_name.required'   => 'This field is required.',
             'contact_person_designation.*.required' => 'Designation is required.',
             'blacklist_reason.required_if' => 'Blacklist reason is required when status is Blacklisted.',
@@ -826,6 +864,10 @@ class LoadVendorController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Load Vendor not found!'], 422);
         }
 
+        if ($this->vendorWriteLocked($contact)) {
+            return response()->json(['success' => false, 'data' => [], 'message' => 'This load vendor is not Active — records cannot be added.'], 422);
+        }
+
         $request->merge([
             'onsite_contact_person_phone'    => str_replace(' ', '', $request->onsite_contact_person_phone),
             'onsite_contact_person_whatsapp' => str_replace(' ', '', $request->onsite_contact_person_whatsapp),
@@ -969,6 +1011,10 @@ class LoadVendorController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Load Vendor not found!'], 422);
         }
 
+        if ($this->vendorWriteLocked($contact)) {
+            return response()->json(['success' => false, 'data' => [], 'message' => 'This load vendor is not Active — documents cannot be added.'], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'coattachtype_id' => 'required|exists:coattachtypes,id',
             'attachment_file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -1071,6 +1117,30 @@ class LoadVendorController extends Controller
 
         } catch (\Exception $exp) {
             return response()->json(['success' => false, 'data' => [], 'message' => $exp->getMessage()], 500);
+        }
+    }
+
+    /* ===============================================================
+     | Destroy (LV-D2: V2 soft-delete — index delete no longer hits V1)
+     | =============================================================== */
+
+    public function destroy(Request $request)
+    {
+        $contact = Contact::where('cotype_id', self::CONTACT_TYPE_LOAD_VENDOR)->find($request->id);
+        if (!$contact) {
+            return response()->json(['success' => false, 'message' => 'Load Vendor not found.'], 422);
+        }
+
+        try {
+            DB::transaction(function () use ($contact) {
+                $contact->delete();
+                $this->storeUseractivity(4, 6, Auth::user()->id, $contact->id, 'Load Vendor deleted [ID: ' . $contact->id . '].');
+                return $contact;
+            });
+
+            return response()->json(['success' => true, 'message' => 'Load Vendor deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }
