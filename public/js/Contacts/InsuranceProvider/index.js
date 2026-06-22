@@ -275,12 +275,15 @@ const Toast = Swal.mixin({
         $('#add_state_id').select2({ dropdownParent: $('#addProviderModal'),  width: '100%', placeholder: '— Select State —', allowClear: true });
         $('#edit_state_id').select2({ dropdownParent: $('#editProviderModal'), width: '100%', placeholder: '— Select State —', allowClear: true });
 
-        // Issue 22: searchable Select2 on the list State filter; auto-submit on change
+        // Filter: auto-submit on change — no Search button needed
         var $ipFilterState = $('#ipFilterState');
         if ($ipFilterState.length) {
-            $ipFilterState.select2({ width: '180px', placeholder: 'All States', allowClear: true });
-            $ipFilterState.on('change', function () { document.getElementById('ipFilterForm').submit(); });
+            $ipFilterState.select2({ width: '220px', placeholder: 'All States', allowClear: true });
+            $ipFilterState.on('change', function () { $('#ipFilterForm').submit(); });
         }
+        $('#ipFilterName').on('keypress', function (e) {
+            if (e.which === 13) { e.preventDefault(); $('#ipFilterForm').submit(); }
+        });
     });
 
     /* ── Clear add modal on close ── */
