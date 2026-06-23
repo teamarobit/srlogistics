@@ -12682,6 +12682,10 @@ class ContactController extends Controller
             $primaryCount = collect($isPrimaryArr)->filter(fn($v) => $v === 'Yes')->count();
             if ($primaryCount === 0) $validator->errors()->add('is_primary', 'At least one bank must be Primary.');
             if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
+
+            if (!$request->hasFile('files')) {
+                $validator->errors()->add('files', 'At least one attachment is required.');
+            }
         });
 
         if ($validator->fails()) {
