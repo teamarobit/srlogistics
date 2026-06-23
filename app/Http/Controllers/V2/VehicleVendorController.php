@@ -94,6 +94,23 @@ class VehicleVendorController extends Controller
         return Contact::where('cotype_id', self::COTYPE_ID)->findOrFail($id);
     }
 
+    /**
+     * B9 — server-side write-lock. A Blacklisted vendor is locked for all writes
+     * (main record + every sub-entity). Inactive remains writable; reads are never
+     * blocked. Returns a 422 JSON response to short-circuit the caller, or null.
+     */
+    private function blockIfWriteLocked(?Contact $contact)
+    {
+        if ($contact && $contact->status === 'Blacklisted') {
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => 'This vendor is Blacklisted and is locked for edits.',
+            ], 422);
+        }
+        return null;
+    }
+
     /* ===============================================================
      | Screens (public GET)
      | =============================================================== */
@@ -378,6 +395,9 @@ class VehicleVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Vehicle vendor not found.'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         try {
             $result = DB::transaction(function () use ($request, $contact) {
@@ -611,6 +631,9 @@ class VehicleVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Vehicle vendor not found!'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), [
             'coattachtype_id' => 'required|exists:coattachtypes,id',
@@ -618,7 +641,8 @@ class VehicleVendorController extends Controller
         ], [
             'required' => 'This field is required.',
             'mimes'    => 'File type must be jpg, jpeg, png or pdf.',
-            'max'      => 'File size must not exceed 2MB.',
+            'max'      => 'File size must not exceed 2 MB.',
+            'uploaded' => 'File size must not exceed 2 MB.',
         ]);
 
         if ($validator->fails()) {
@@ -669,6 +693,10 @@ class VehicleVendorController extends Controller
         if (! $attachment) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Attachment not found.'], 422);
         }
+        $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($attachment->contact_id);
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         try {
             DB::transaction(fn () => $attachment->delete());
@@ -691,6 +719,11 @@ class VehicleVendorController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($request->contact_id);
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
         }
 
         try {

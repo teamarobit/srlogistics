@@ -5,6 +5,7 @@ namespace App\Http\Requests\V2;
 use App\Models\Contact;
 use App\Models\Coattachment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Vehicle Vendor V2 — store/update validation.  (cotype_id = 5)
@@ -36,10 +37,23 @@ class VehicleVendorRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge([
+        $merge = [
             'phone'    => $this->normalisePhone($this->phone),
             'whatsapp' => $this->normalisePhone($this->whatsapp),
-        ]);
+        ];
+
+        // VV-D3 — normalise every contact-person phone to the national 10-digit
+        // form so the digits:10 rule (added below) holds, regardless of any
+        // dial-code prefix the intl-tel JS may prepend.
+        $cpPhones = $this->input('contact_person_phone');
+        if (is_array($cpPhones)) {
+            $merge['contact_person_phone'] = array_map(
+                fn ($v) => $this->normalisePhone($v),
+                $cpPhones
+            );
+        }
+
+        $this->merge($merge);
     }
 
     private function normalisePhone($value): ?string
@@ -53,11 +67,13 @@ class VehicleVendorRequest extends FormRequest
 
     public function rules(): array
     {
-        $id   = $this->route('id');
-        $code = getPhoneCode();
+        $id = $this->route('id');
 
-        $phoneUnique = function ($attribute, $value, $fail) use ($id, $code) {
-            $q = Contact::where('phone', $value)->where('ph_prefix', $code);
+        // B8 — match on the national phone digits irrespective of ph_prefix so a
+        // legacy "91"-prefixed duplicate is caught the same as a "+91" one.
+        // (Code-level guard only; stored data is not altered here.)
+        $phoneUnique = function ($attribute, $value, $fail) use ($id) {
+            $q = Contact::where('phone', $value);
             if ($id) {
                 $q->where('id', '!=', $id);
             }
@@ -89,7 +105,18 @@ class VehicleVendorRequest extends FormRequest
             'pan_status_id'               => 'nullable|integer|exists:panstatuses,id',
             // gst_treatment real field; gst_number required only when Registered.
             'gst_treatment'               => 'nullable|in:Registered,Unregistered',
-            'gst_number'                  => 'nullable|required_if:gst_treatment,Registered|max:100',
+            // B2 — unique per vehicle vendor (cotype 5), ignoring this record and
+            // soft-deleted rows. nullable + required_if keep it optional unless
+            // GST Treatment = Registered; unique is skipped on an empty value.
+            'gst_number'                  => [
+                'nullable',
+                'required_if:gst_treatment,Registered',
+                'max:100',
+                Rule::unique('contacts', 'gst_number')
+                    ->where('cotype_id', 5)
+                    ->whereNull('deleted_at')
+                    ->ignore($id),
+            ],
             'tds_percentage'              => 'nullable|numeric|min:0|max:100',
             'address'                     => 'required|string|max:1000',
             'state_id'                    => 'required|exists:states,id',
@@ -117,7 +144,7 @@ class VehicleVendorRequest extends FormRequest
             'contact_person_designation'  => 'required|array|min:1',
             'contact_person_designation.*'=> 'required|string|min:1',
             'contact_person_phone'        => 'required|array|min:1',
-            'contact_person_phone.*'      => ['required', 'string', 'distinct'],
+            'contact_person_phone.*'      => ['required', 'digits:10', 'distinct'],
             'contact_person_email'        => 'nullable|array',
             'contact_person_email.*'      => 'nullable|email:rfc|distinct',
             'contact_person_comment'      => 'nullable|array',
@@ -132,17 +159,58 @@ class VehicleVendorRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'required'              => 'This field is required.',
-            'max'                   => 'Maximum :max characters allowed.',
-            'exists'                => "This field's value is invalid.",
-            'distinct'              => 'Duplicate value.',
-            'email'                 => 'This email is invalid.',
-            'phone.digits'          => 'This field must contain 10 digits.',
-            'whatsapp.digits'       => 'This field must contain 10 digits.',
-            'post_code.digits'      => 'Postal code must be 6 digits.',
-            'gst_number.required_if'=> 'GST Number is required when GST Treatment is Registered.',
-            'primary_bank.required' => 'At least one bank must be marked as Primary.',
-            'mimes'                 => 'File type must be jpg, jpeg, png or pdf.',
+            'required'                      => 'This field is required.',
+            'max'                           => 'Maximum :max characters allowed.',
+            'exists'                        => "This field's value is invalid.",
+            'distinct'                      => 'Duplicate value.',
+            'email'                         => 'This email is invalid.',
+            'phone.digits'                  => 'This field must contain 10 digits.',
+            'whatsapp.digits'               => 'This field must contain 10 digits.',
+            'post_code.digits'              => 'Postal code must be 6 digits.',
+            'gst_number.required_if'        => 'GST Number is required when GST Treatment is Registered.',
+            'gst_number.unique'             => 'This GST number is already registered for a vehicle vendor.',
+            'primary_bank.required'         => 'At least one bank must be marked as Primary.',
+            'mimes'                         => 'File type must be jpg, jpeg, png or pdf.',
+            // B5 — numeric max must not borrow the char-count message.
+            'tds_percentage.max'            => 'TDS % cannot exceed 100.',
+            // VV-D3 — contact-person phone digit rule.
+            'contact_person_phone.*.digits' => 'Contact person phone must be 10 digits.',
+            // B4 — oversize document (both the size rule and the PHP uploaded rule).
+            'attachment_file.max'           => 'File size must not exceed 2 MB.',
+            'attachment_file.uploaded'      => 'File size must not exceed 2 MB.',
+        ];
+    }
+
+    /**
+     * B5 — human-readable attribute names so messages don't surface raw field
+     * keys (e.g. "company registration date", "contact_person_email.0").
+     */
+    public function attributes(): array
+    {
+        return [
+            'gst_number'                   => 'GST number',
+            'company_name'                 => 'company name',
+            'contact_name'                 => 'contact name',
+            'contact_code'                 => 'contact code',
+            'no_of_vehicles'               => 'number of vehicles',
+            'company_registration_date'    => 'company registration date',
+            'working_since'                => 'working since date',
+            'pan_no'                       => 'PAN number',
+            'pan_status_id'                => 'PAN status',
+            'tds_percentage'               => 'TDS percentage',
+            'post_code'                    => 'postal code',
+            'state_id'                     => 'state',
+            'city_id'                      => 'city',
+            'blacklist_reason'             => 'blacklist reason',
+            'vehicle_ownership_type_id'    => 'vehicle ownership type',
+            'bank_id.*'                    => 'bank',
+            'account_number.*'             => 'account number',
+            'ifsc_code.*'                  => 'IFSC code',
+            'contact_person_name.*'        => 'contact person name',
+            'contact_person_designation.*' => 'contact person designation',
+            'contact_person_phone.*'       => 'contact person phone',
+            'contact_person_email.*'       => 'contact person email',
+            'attachment_file'              => 'document',
         ];
     }
 
