@@ -12433,6 +12433,13 @@ class ContactController extends Controller
                 $upiIds           = $request->upi_id ?? [];
                 $contactBankIds   = $request->contact_bank_id ?? []; // hidden input for existing bank row id
                 
+                // Reset all existing banks to 'No' BEFORE loading model instances.
+                // Doing it inside the loop causes an Eloquent dirty-tracking bug:
+                // the bulk update() changes DB to 'No', but the already-loaded model
+                // still has 'Yes' as its original value, so the subsequent assignment
+                // $bank->is_primary = 'Yes' is not seen as dirty, and save() omits it.
+                Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
+
                 foreach ($bankIds as $i => $bankId) {
                 
                     // Find existing or create new
@@ -12443,10 +12450,6 @@ class ContactController extends Controller
                         $bank->contact_id = $contact->id;
                     }
                 
-                    // If this one is primary → make others No
-                    if (($isPrimaryArr[$i] ?? 'No') === 'Yes') {
-                        Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
-                    }
                 
                     $bank->bank_id          = $bankId;
                     $bank->is_primary       = ($isPrimaryArr[$i] ?? 'No') === 'Yes' ? 'Yes' : 'No';
