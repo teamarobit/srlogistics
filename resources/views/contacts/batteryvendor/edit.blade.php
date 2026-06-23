@@ -566,8 +566,8 @@
                                         <div id="bankDetailsContainer">
                                             
                                             @foreach($contact->bankDetails as $index => $contactBank)
-                                            <div class="bank-data border p-3 mb-3 position-relative">
-                                                
+                                            <div class="bank-data border p-3 mb-3 position-relative" data-index="{{ $index }}">
+
                                                 @if( $index > 0)
                                                   <a href="javascript:void(0)" class="text-end text-secondary d-block mb-0 close-bank"><i class="uil uil-times-circle"></i></a>
                                                 @endif
@@ -595,8 +595,7 @@
                                                         </div>
                                                         
                                                     </div>
-                                                    <small class="error text-danger" id="edit_is_primary_error"></small>
-                                                    <small class="error text-danger" id="edit_is_primary_0_error"></small>
+                                                    <small class="error text-danger" id="edit_is_primary_{{ $index }}_error"></small>
                                                 </div>
             
                                                 <div class="row form-group">
@@ -612,7 +611,7 @@
                                                             </option>
                                                             @endforeach
                                                         </select>
-                                                        <small class="error text-danger" id="edit_bank_id_0_error"></small>
+                                                        <small class="error text-danger" id="edit_bank_id_{{ $index }}_error"></small>
                                                     </div>
                                                 </div>
                                                 
@@ -622,7 +621,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="beneficiary_name[{{ $index }}]" value="{{ $contactBank->beneficiary_name ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_beneficiary_name_0_error"></small>
+                                                        <small class="error text-danger" id="edit_beneficiary_name_{{ $index }}_error"></small>
                                                     </div>
                                                 </div>
             
@@ -632,7 +631,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="account_number[{{ $index }}]" value="{{ $contactBank->account_number ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_account_number_0_error"></small>
+                                                        <small class="error text-danger" id="edit_account_number_{{ $index }}_error"></small>
                                                     </div>
                                                 </div>
                                                 
@@ -642,7 +641,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="ifsc_code[{{ $index }}]"  value="{{ $contactBank->ifsc_code ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_ifsc_code_0_error"></small>
+                                                        <small class="error text-danger" id="edit_ifsc_code_{{ $index }}_error"></small>
                                                     </div>
                                                 </div>
             
@@ -652,7 +651,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="upi_id[{{ $index }}]" value="{{ $contactBank->upi_id ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_upi_id_0_error"></small>
+                                                        <small class="error text-danger" id="edit_upi_id_{{ $index }}_error"></small>
                                                     </div>
                                                 </div> 
                                             
