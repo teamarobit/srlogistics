@@ -128,6 +128,12 @@ class EmployeeController extends Controller
         return Contact::where('cotype_id', self::COTYPE)->findOrFail($id);
     }
 
+    /** True when the employee has an exit record (read-only-after-exit gate). */
+    private function employeeExited(Contact $contact): bool
+    {
+        return (bool) $contact->employeeExitDetail;
+    }
+
     /** Common payload for hub/submodule pages. */
     private function payload(Contact $c, string $active): array
     {
@@ -431,14 +437,17 @@ class EmployeeController extends Controller
         ]);
 
         $validate_phone = function ($attribute, $value, $fail) use ($request) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+            $code = ltrim($request->phone_code ?? getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->exists()) {
                 $fail('This phone number already exists.');
             }
         };
         $validate_cp_phone = function (string $attribute, mixed $value, Closure $fail) use ($request) {
             $index = explode('.', $attribute)[1] ?? null;
             $code  = $request->get('contact_person_ph_code')[$index] ?? null;
+            if (!empty($value) && !preg_match('/^\d{10}$/', $value)) {
+                $fail('Emergency contact phone must be exactly 10 digits.');
+            }
         };
 
         $validator = Validator::make($request->all(), [
@@ -506,14 +515,30 @@ class EmployeeController extends Controller
             'present_addr_state_id'      => 'required|exists:states,id',
             'present_addr_city_id'       => 'nullable|exists:cities,id',
             'present_addr_postal_code'   => 'required|digits:6',
+
+            'bank_id'          => 'nullable|exists:banks,id',
+            'account_number'   => 'nullable|required_with:bank_id|string|max:20',
+            'ifsc_code'        => 'nullable|required_with:bank_id|string|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
+            'beneficiary_name' => 'nullable|string|max:100',
+            'upi_id'           => 'nullable|string|max:100',
         ], [
             'required'    => 'This field is required.',
             'max'         => 'Maximum 100 characters allowed.',
             'exists'      => "This field's value is invalid.",
             'distinct'    => 'Duplicate value.',
-            'email'       => 'This email is invalid.',
+            'email'        => 'This email is invalid.',
+            'email.unique' => 'This email has already been taken.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
+            'account_number.required_with' => 'Account number is required when a bank is selected.',
+            'ifsc_code.required_with'      => 'IFSC code is required when a bank is selected.',
+            'ifsc_code.regex'              => 'IFSC code format is invalid (e.g. SBIN0001234).',
+        ]);
+        $validator->setAttributeNames([
+            'dob'                        => 'Date of Birth',
+            'doj'                        => 'Date of Joining',
+            'permanent_addr_postal_code' => 'Permanent Address Postal Code',
+            'present_addr_postal_code'   => 'Present Address Postal Code',
         ]);
 
         // Attachment row validation (type/file pairing, dup type, size, mime)
@@ -728,15 +753,23 @@ class EmployeeController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Employee not found.'], 422);
         }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — the profile cannot be edited.'], 422);
+        }
 
         $validate_phone = function ($attribute, $value, $fail) use ($request, $id) {
-            $code = $request->phone_code;
-            if (!$code) { $fail('Phone number required country code to be selected.'); return; }
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+            $code = ltrim($request->phone_code ?? getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->where('id', '!=', $id)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
-        $validate_cp_phone = function (string $attribute, mixed $value, Closure $fail) use ($request) {};
+        $validate_cp_phone = function (string $attribute, mixed $value, Closure $fail) use ($request) {
+            $index = explode('.', $attribute)[1] ?? null;
+            $code  = $request->get('contact_person_ph_code')[$index] ?? null;
+            if (!empty($value) && !preg_match('/^\d{10}$/', $value)) {
+                $fail('Emergency contact phone must be exactly 10 digits.');
+            }
+        };
 
         $validator = Validator::make($request->all(), [
             'contact_name'        => 'required|max:100',
@@ -805,14 +838,30 @@ class EmployeeController extends Controller
             'present_addr_state_id'      => 'required|exists:states,id',
             'present_addr_city_id'       => 'nullable|exists:cities,id',
             'present_addr_postal_code'   => 'required|digits:6',
+
+            'bank_id'          => 'nullable|exists:banks,id',
+            'account_number'   => 'nullable|required_with:bank_id|string|max:20',
+            'ifsc_code'        => 'nullable|required_with:bank_id|string|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
+            'beneficiary_name' => 'nullable|string|max:100',
+            'upi_id'           => 'nullable|string|max:100',
         ], [
             'required'    => 'This field is required.',
             'max'         => 'Maximum 100 characters allowed.',
             'exists'      => "This field's value is invalid.",
             'distinct'    => 'Duplicate value.',
-            'email'       => 'This email is invalid.',
+            'email'        => 'This email is invalid.',
+            'email.unique' => 'This email has already been taken.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
+            'account_number.required_with' => 'Account number is required when a bank is selected.',
+            'ifsc_code.required_with'      => 'IFSC code is required when a bank is selected.',
+            'ifsc_code.regex'              => 'IFSC code format is invalid (e.g. SBIN0001234).',
+        ]);
+        $validator->setAttributeNames([
+            'dob'                        => 'Date of Birth',
+            'doj'                        => 'Date of Joining',
+            'permanent_addr_postal_code' => 'Permanent Address Postal Code',
+            'present_addr_postal_code'   => 'Present Address Postal Code',
         ]);
 
         $errorcount = 0;
@@ -1034,6 +1083,9 @@ class EmployeeController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Employee not found!'], 422);
         }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — assets cannot be assigned.'], 422);
+        }
 
         $validator = Validator::make($request->all(), [
             'asset_type' => 'required|in:Motor Vehicle,Electronics,Others',
@@ -1093,6 +1145,11 @@ class EmployeeController extends Controller
             return response()->json(['success' => false, 'message' => 'Asset is already revoked or not found.'], 422);
         }
 
+        $revokeContact = Contact::where('cotype_id', self::COTYPE)->find($employeeAsset->contact_id);
+        if ($revokeContact && $this->employeeExited($revokeContact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — assets cannot be revoked.'], 422);
+        }
+
         try {
             $result = DB::transaction(function () use ($request, $employeeAsset) {
                 $employeeAsset->status      = 'Unassigned';
@@ -1128,6 +1185,9 @@ class EmployeeController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Employee not found!'], 422);
+        }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — work experience records cannot be added.'], 422);
         }
 
         $validator = Validator::make($request->all(), [
@@ -1210,6 +1270,9 @@ class EmployeeController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Employee not found!'], 422);
         }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — salary records cannot be added.'], 422);
+        }
 
         $validator = Validator::make($request->all(), [
             'contact_id'      => 'required|exists:contacts,id',
@@ -1220,6 +1283,9 @@ class EmployeeController extends Controller
             'required' => 'This field is required.',
             'numeric'  => 'Only numeric values are allowed.',
             'min'      => 'Value must be at least :min.',
+        ]);
+        $validator->setAttributeNames([
+            'effective_from' => 'Effective From',
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
@@ -1324,6 +1390,9 @@ class EmployeeController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'message' => 'Employee not found.'], 422);
         }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — documents cannot be uploaded.'], 422);
+        }
 
         $validator = Validator::make($request->all(), [
             'contact_id'      => 'required|exists:contacts,id',
@@ -1331,8 +1400,11 @@ class EmployeeController extends Controller
             'files'           => 'required|array|min:1|max:2',
             'files.*'         => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
-            'required' => 'This field is required.',
-            'files.max' => 'You cannot upload more than 2 files.',
+            'required'         => 'This field is required.',
+            'files.max'        => 'You cannot upload more than 2 files.',
+            'files.*.mimes'    => 'Document must be a jpg, jpeg, png, or pdf file.',
+            'files.*.max'      => 'Document must not exceed 2 MB.',
+            'files.*.uploaded' => 'Document upload failed — file may exceed the 2 MB server limit.',
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
@@ -1394,6 +1466,9 @@ class EmployeeController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (!$contact) {
             return response()->json(['success' => false, 'message' => 'Employee not found.'], 422);
+        }
+        if ($this->employeeExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This employee has exited — activity notes cannot be added.'], 422);
         }
 
         $validator = Validator::make($request->all(), [
