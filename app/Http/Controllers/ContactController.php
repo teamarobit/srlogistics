@@ -10206,13 +10206,11 @@ class ContactController extends Controller
     public function tyreVendorList(Request $request): View
     {
         $cotypeId = self::CONTACT_TYPE_TYRE_VENDOR;
-        
-        
-        // Filter 
+
+
+        // Filter
         $search_name     = $request->name;
         $search_city     = $request->city;
-        $search_size     = $request->size;
-        $search_city = $request->city;
         
         $contacts = Contact::query()->where('cotype_id', $cotypeId);
 
@@ -10226,16 +10224,6 @@ class ContactController extends Controller
             $contacts->where('city_id', $request->city);
         }
     
-        // Filter by Size
-        if ($request->filled('size')) {
-            $contacts->where('size', $request->size);
-        }
-        
-        // Filter by Location (IMPORTANT FIX)
-        if ($request->filled('city')) {
-            $contacts->where('city_id', $request->city);
-        }
-        
         // Load relationships
         $contacts = $contacts
                             ->with([
@@ -10258,7 +10246,7 @@ class ContactController extends Controller
         $useractivity = $this->storeUseractivity(59, 5, Auth::user()->id, 0, $description);
         
         
-        return view('contacts.tyrevendor.index', compact('contacts','cities','cotype','search_name','search_city','search_size','search_city')); 
+        return view('contacts.tyrevendor.index', compact('contacts','cities','cotype','search_name','search_city'));
        
     }
     
