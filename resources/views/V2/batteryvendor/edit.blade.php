@@ -40,8 +40,8 @@
                 <div class="cv2-card">
                     <div class="cv2-card-h"><h3>Contact Details</h3></div>
                     <div class="cv2-card-b"><div class="cv2-form-grid">
-                        <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="phone" data-intl-phone="1" value="{{ old('phone', trim(($contact->ph_prefix ? '+'.$contact->ph_prefix.' ' : '').$contact->phone)) }}"></div>
-                        <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="whatsapp" data-intl-phone="1" value="{{ old('whatsapp', $contact->whatsapp ? trim(($contact->whatsapp_prefix ? '+'.$contact->whatsapp_prefix.' ' : '').$contact->whatsapp) : '') }}"></div>
+                        <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="phone" data-intl-phone="1" value="{{ old('phone', trim(($contact->ph_prefix ? '+'.ltrim($contact->ph_prefix, '+').' ' : '').$contact->phone)) }}"></div>
+                        <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="whatsapp" data-intl-phone="1" value="{{ old('whatsapp', $contact->whatsapp ? trim(($contact->whatsapp_prefix ? '+'.ltrim($contact->whatsapp_prefix, '+').' ' : '').$contact->whatsapp) : '') }}"></div>
                     </div></div>
                 </div>
 
@@ -141,7 +141,7 @@
                             <div class="cv2-form-grid is-3">
                                 <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[{{ $i }}]" value="{{ optional($rel)->name }}"></div>
                                 <div class="cv2-field"><label class="cv2-label">Designation <span class="req">*</span></label><input type="text" name="contact_person_designation[{{ $i }}]" value="{{ optional($rel)->position }}"></div>
-                                <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[{{ $i }}]" data-intl-phone="1" value="{{ optional($rel)->phone ? '+'.optional($rel)->ph_prefix.' '.optional($rel)->phone : '' }}"></div>
+                                <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[{{ $i }}]" data-intl-phone="1" value="{{ optional($rel)->phone ? '+'.ltrim(optional($rel)->ph_prefix, '+').' '.optional($rel)->phone : '' }}"></div>
                                 <div class="cv2-field"><label class="cv2-label">Email</label><input type="email" name="contact_person_email[{{ $i }}]" value="{{ optional($rel)->email }}"></div>
                                 <div class="cv2-field"><label class="cv2-label">Comment</label><input type="text" name="contact_person_comment[{{ $i }}]" value="{{ optional($rel)->comment }}" placeholder="Optional"></div>
                             </div>

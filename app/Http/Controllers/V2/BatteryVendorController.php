@@ -92,6 +92,23 @@ class BatteryVendorController extends Controller
         return Contact::where('cotype_id', self::COTYPE_ID)->findOrFail($id);
     }
 
+    /**
+     * B9 — server-side write-lock. A Blacklisted vendor is locked for all writes
+     * (main record + every sub-entity). Inactive remains writable; reads are never
+     * blocked. Returns a 422 JSON response to short-circuit the caller, or null.
+     */
+    private function blockIfWriteLocked(?Contact $contact)
+    {
+        if ($contact && $contact->status === 'Blacklisted') {
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => 'This vendor is Blacklisted and is locked for edits.',
+            ], 422);
+        }
+        return null;
+    }
+
     /* ===============================================================
      | Screens (public GET)
      | =============================================================== */
@@ -360,6 +377,9 @@ class BatteryVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Battery vendor not found.'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         try {
             $result = DB::transaction(function () use ($request, $contact) {
@@ -449,7 +469,11 @@ class BatteryVendorController extends Controller
             }
             $cp->name      = $name;
             $cp->position  = $desigs[$idx]   ?? null;
-            $cp->ph_prefix = ($phcodes[$idx] ?? null) ?: $phoneCode;
+            // BV-D2 — store the cp dial-code in one canonical "+91" form. The
+            // intl-tel JS may post a bare "91"; normalise so an edit-save can no
+            // longer silently flip the stored prefix +91 → 91 (which widened B8).
+            $rawPrefix     = ($phcodes[$idx] ?? null) ?: $phoneCode;
+            $cp->ph_prefix = '+' . ltrim((string) $rawPrefix, '+');
             $cp->phone     = $this->nationalDigits($phones[$idx] ?? null);
             $cp->email     = $emails[$idx]   ?? null;
             $cp->comment   = $comments[$idx] ?? null;
@@ -590,6 +614,9 @@ class BatteryVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Battery vendor not found!'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), [
             'coattachtype_id' => 'required|exists:coattachtypes,id',
@@ -597,7 +624,8 @@ class BatteryVendorController extends Controller
         ], [
             'required' => 'This field is required.',
             'mimes'    => 'File type must be jpg, jpeg, png or pdf.',
-            'max'      => 'File size must not exceed 2MB.',
+            'max'      => 'File size must not exceed 2 MB.',
+            'uploaded' => 'File size must not exceed 2 MB.',
         ]);
 
         if ($validator->fails()) {
@@ -672,6 +700,11 @@ class BatteryVendorController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($request->contact_id);
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
+
         try {
             $activity = DB::transaction(function () use ($request) {
                 $activity = new Contactactivity();
@@ -710,6 +743,23 @@ class BatteryVendorController extends Controller
         ];
     }
 
+    /** B5 — human-readable attribute names for the battery sub-entity validators. */
+    private function batteryAttributes(): array
+    {
+        return [
+            'battery_serial'          => 'battery serial',
+            'battery_brand'           => 'battery brand',
+            'battery_model'           => 'battery model',
+            'battery_capacity'        => 'battery capacity',
+            'battery_voltage'         => 'battery voltage',
+            'battery_warranty_months' => 'warranty months',
+            'battery_purchase_date'   => 'purchase date',
+            'battery_purchase_cost'   => 'purchase cost',
+            'current_status'          => 'status',
+            'battery_notes'           => 'notes',
+        ];
+    }
+
     /** Map request fields onto a Battery model. */
     private function fillBattery(Battery $battery, Request $request): void
     {
@@ -731,12 +781,15 @@ class BatteryVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Battery vendor not found.'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), $this->batteryRules(), [
             'required' => 'This field is required.',
             'numeric'  => 'Enter a valid number.',
             'in'       => 'Invalid status.',
-        ]);
+        ], $this->batteryAttributes());
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
         }
@@ -792,12 +845,16 @@ class BatteryVendorController extends Controller
         if (! $battery) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Battery not found.'], 422);
         }
+        $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($battery->vendor_id);
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), $this->batteryRules(), [
             'required' => 'This field is required.',
             'numeric'  => 'Enter a valid number.',
             'in'       => 'Invalid status.',
-        ]);
+        ], $this->batteryAttributes());
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
         }
@@ -825,6 +882,10 @@ class BatteryVendorController extends Controller
         $battery = Battery::find($id);
         if (! $battery) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Battery not found.'], 422);
+        }
+        $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($battery->vendor_id);
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
         }
 
         try {
