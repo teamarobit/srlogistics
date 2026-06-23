@@ -470,10 +470,14 @@ class SpareVendorController extends Controller
                 $cp->contact_id = $contact->id;
                 $cp->created_by = Auth::id();
             }
+            // Store digits-only national number (strip any intl-tel artefacts, keep last 10) — D1.
+            $cpDigits = preg_replace('/\D+/', '', (string) ($phones[$idx] ?? ''));
+            $cpDigits = strlen($cpDigits) > 10 ? substr($cpDigits, -10) : $cpDigits;
+
             $cp->name      = $name;
             $cp->position  = $desigs[$idx]   ?? null;
             $cp->ph_prefix = $phoneCode;
-            $cp->phone     = $phones[$idx]   ?? null;
+            $cp->phone     = $cpDigits !== '' ? $cpDigits : null;
             $cp->email     = $emails[$idx]   ?? null;
             $cp->comment   = $comments[$idx] ?? null;
             if ($isUpdate) {
@@ -606,14 +610,18 @@ class SpareVendorController extends Controller
 
         try {
             $attachment = DB::transaction(function () use ($request, $contact) {
-                $file = $request->file('attachment_file');
-                $filename = 'contact-attachment-' . Str::random(4) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file             = $request->file('attachment_file');
+                $fileoriginalname = $file->getClientOriginalName();
+                $extension        = $file->getClientOriginalExtension();
+                $filesize         = $file->getSize();   // capture BEFORE move() — temp path is gone after (D2)
+
+                $filename = 'contact-attachment-' . Str::random(4) . '_' . time() . '.' . $extension;
                 $file->move(public_path('media' . DIRECTORY_SEPARATOR . 'contact' . DIRECTORY_SEPARATOR), $filename);
 
                 $attachment = new Coattachment;
                 $attachment->name            = $filename;
-                $attachment->original_name   = $file->getClientOriginalName();
-                $attachment->file_size       = ($request->file('attachment_file')->getSize() / (1024 * 1024));
+                $attachment->original_name   = $fileoriginalname;
+                $attachment->file_size       = ($filesize / (1024 * 1024));
                 $attachment->coattachtype_id = $request->coattachtype_id;
                 $attachment->created_by      = Auth::id();
                 $attachment->contact_id      = $contact->id;
@@ -658,6 +666,9 @@ class SpareVendorController extends Controller
         $validator = Validator::make($request->all(), [
             'activity_notes' => 'required|string',
             'contact_id'     => 'required|exists:contacts,id',
+        ], [], [
+            'activity_notes' => 'activity note',
+            'contact_id'     => 'spare vendor',
         ]);
 
         if ($validator->fails()) {

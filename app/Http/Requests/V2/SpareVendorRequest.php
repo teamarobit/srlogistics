@@ -35,9 +35,15 @@ class SpareVendorRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $cpPhones = $this->contact_person_phone;
+        if (is_array($cpPhones)) {
+            $cpPhones = array_map(fn ($v) => $this->normalisePhone($v), $cpPhones);
+        }
+
         $this->merge([
-            'phone'    => $this->normalisePhone($this->phone),
-            'whatsapp' => $this->normalisePhone($this->whatsapp),
+            'phone'                => $this->normalisePhone($this->phone),
+            'whatsapp'             => $this->normalisePhone($this->whatsapp),
+            'contact_person_phone' => $cpPhones,
         ]);
     }
 
@@ -112,7 +118,7 @@ class SpareVendorRequest extends FormRequest
             'contact_person_designation'  => 'required|array|min:1',
             'contact_person_designation.*'=> 'required|string|min:1',
             'contact_person_phone'        => 'required|array|min:1',
-            'contact_person_phone.*'      => ['required', 'string', 'distinct'],
+            'contact_person_phone.*'      => ['required', 'digits:10', 'distinct'],
             'contact_person_email'        => 'nullable|array',
             'contact_person_email.*'      => 'nullable|email:rfc|distinct',
         ];
@@ -128,7 +134,28 @@ class SpareVendorRequest extends FormRequest
             'email'         => 'This email is invalid.',
             'phone.digits'  => 'Must be 10 digits.',
             'whatsapp.digits' => 'Must be 10 digits.',
+            'contact_person_phone.*.digits' => 'Contact person phone must be 10 digits.',
             'primary_bank.required' => 'At least one bank must be marked as Primary.',
+            'tds_percentage.max' => 'TDS percentage cannot exceed 100.',
+            'tds_percentage.min' => 'TDS percentage cannot be less than 0.',
+        ];
+    }
+
+    /** Friendly attribute names so messages read cleanly (D4/B5). */
+    public function attributes(): array
+    {
+        return [
+            'company_name'              => 'Company Name',
+            'contact_name'              => 'Contact Name',
+            'contact_code'              => 'Contact Code',
+            'company_registration_date' => 'Company Registration Date',
+            'working_since'             => 'Working Since',
+            'tds_percentage'            => 'TDS Percentage',
+            'post_code'                 => 'Post Code',
+            'pan_status_id'             => 'PAN Status',
+            'state_id'                  => 'State',
+            'city_id'                   => 'City',
+            'additional_info'           => 'Additional Info',
         ];
     }
 
@@ -138,9 +165,11 @@ class SpareVendorRequest extends FormRequest
         $validator->after(function ($validator) {
             $primary  = $this->input('primary_bank');
             $bankIds  = $this->input('bank_id', []);
+            // Blank case is handled solely by the `required` rule + messages() entry (D5).
             if ($primary === null || $primary === '') {
-                $validator->errors()->add('primary_bank', 'At least one bank must be Primary.');
-            } elseif (! array_key_exists($primary, $bankIds) && ! in_array((string) $primary, array_map('strval', array_keys($bankIds)), true)) {
+                return;
+            }
+            if (! array_key_exists($primary, $bankIds) && ! in_array((string) $primary, array_map('strval', array_keys($bankIds)), true)) {
                 $validator->errors()->add('primary_bank', 'Invalid Primary bank selection.');
             }
         });
