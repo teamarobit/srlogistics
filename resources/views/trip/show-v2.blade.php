@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=10.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=11.0') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -955,11 +955,17 @@
 ═══════════════════════════════════════════════════════════════ --}}
 
 {{-- Settle Trip --}}
-<div class="modal fade" id="closeTrip" tabindex="-1" aria-labelledby="closeTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="closeTrip" tabindex="-1" aria-labelledby="closeTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="closeTripLabel">Settle Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-check-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="closeTripLabel">Settle Trip</h5>
+                        <p class="td2-modal-head-sub">Confirm trip settlement</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -974,11 +980,17 @@
 </div>
 
 {{-- Cancel Trip --}}
-<div class="modal fade" id="cancelTrip" tabindex="-1" aria-labelledby="cancelTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="cancelTrip" tabindex="-1" aria-labelledby="cancelTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="cancelTripLabel">Cancel Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-exclamation-octagon"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="cancelTripLabel">Cancel Trip</h5>
+                        <p class="td2-modal-head-sub">Confirm trip cancellation</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -993,11 +1005,17 @@
 </div>
 
 {{-- Edit Trip — Sprint 2 (placeholder structure) --}}
-<div class="modal fade" id="editTrip" tabindex="-1" aria-labelledby="editTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="editTrip" tabindex="-1" aria-labelledby="editTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editTripLabel">Edit Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-edit"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="editTripLabel">Edit Trip</h5>
+                        <p class="td2-modal-head-sub">Update trip details</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1156,15 +1174,15 @@
 </div>
 
 {{-- Unassigned E-Ways — pick existing unassigned e-ways and attach them to this trip --}}
-<div class="modal fade td2-eway-modal" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
+<div class="modal fade td2-eway-modal td2-modal-pro" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header td2-eway-modal-head">
-                <div class="td2-eway-modal-titlewrap">
-                    <span class="td2-eway-modal-icon"><i class="uil uil-file-alt"></i></span>
+            <div class="modal-header">
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-file-alt"></i></span>
                     <div>
                         <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
-                        <p class="td2-eway-modal-sub">Select one or more e-way bills to attach to this trip</p>
+                        <p class="td2-modal-head-sub">Select one or more e-way bills to attach to this trip</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1279,11 +1297,17 @@
 </div>
 
 {{-- Add Eway — create a new e-way by GSTIN + bill number(s) --}}
-<div class="modal fade" id="addEwayForm" tabindex="-1" aria-labelledby="addEwayFormLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addEwayForm" tabindex="-1" aria-labelledby="addEwayFormLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addEwayFormLabel">Add Eway</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-file-plus-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addEwayFormLabel">Add Eway</h5>
+                        <p class="td2-modal-head-sub">Attach an e-way bill</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="addEwayFormEl">
@@ -1317,11 +1341,17 @@
 </div>
 
 {{-- Add POD — LR-POD details, acknowledgement, dates + attachments --}}
-<div class="modal fade" id="addPOD" tabindex="-1" aria-labelledby="addPODLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addPOD" tabindex="-1" aria-labelledby="addPODLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPODLabel">LR-POD</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addPODLabel">LR-POD</h5>
+                        <p class="td2-modal-head-sub">Proof of delivery details</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="td2PodForm">
@@ -1437,54 +1467,91 @@
 </div>
 
 {{-- Add Expense — Sprint 4 --}}
-<div class="modal fade" id="addExpense" tabindex="-1" aria-labelledby="addExpenseLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addExpense" tabindex="-1" aria-labelledby="addExpenseLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addExpenseLabel">Add Expense</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-receipt-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addExpenseLabel">Add Expense</h5>
+                        <p class="td2-modal-head-sub">Record a trip expense entry</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label">Expense Head</label>
-                        <input type="text" class="form-control" name="expense_head">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Expense Type</label>
-                        <select class="form-select" name="expense_type">
-                            <option value="">Choose...</option>
-                            <option>Debit</option>
-                            <option>Credit</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Amount (₹)</label>
-                        <div class="input-group">
-                            <span class="input-group-text">₹</span>
-                            <input type="text" class="form-control" name="amount">
+                <form id="addExpenseForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Head <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal td2-expense-head" id="td2AddExpenseHead" name="expense_head">
+                                <option value="">Choose…</option>
+                                <option>Diesel</option>
+                                <option>Toll Charges</option>
+                                <option>Driver Advance</option>
+                                <option>Maintenance</option>
+                                <option>Fooding</option>
+                                <option>Miscl. Exp.</option>
+                            </select>
+                            <small class="td2-exp-hint d-block mt-1">
+                                <i class="uil uil-info-circle"></i>
+                                Select an existing expense head or type to add your own.
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Type</label>
+                            <select class="form-select" id="td2AddExpenseType" name="expense_type">
+                                <option value="">Choose…</option>
+                                <option>Cash</option>
+                                <option>Online</option>
+                                <option>UPI</option>
+                                <option>Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Amount (₹)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="text" class="form-control" id="td2AddExpenseAmount" name="amount" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Date &amp; Time</label>
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2AddExpenseDate"
+                                       name="expense_datetime" placeholder="Select date &amp; time"
+                                       autocomplete="off" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="td2AddExpenseNotes" name="notes" rows="2" placeholder="Optional remarks…"></textarea>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" name="notes" rows="2"></textarea>
-                    </div>
-                </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary td2-add-exp-save"><i class="uil uil-check me-1"></i>Save</button>
             </div>
         </div>
     </div>
 </div>
 
 {{-- Assign Vehicle to This Trip — opened from the Vehicle Details panel "Assign" button --}}
-<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                        <p class="td2-modal-head-sub">Allocate a vehicle and route</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1611,11 +1678,17 @@
 </div>
 
 {{-- Add Review --}}
-<div class="modal fade" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addReviewLabel">Trip Review</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-star"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addReviewLabel">Trip Review</h5>
+                        <p class="td2-modal-head-sub">Rate driver, vehicle & timeliness</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1669,11 +1742,17 @@
 </div>
 
 {{-- View Full History --}}
-<div class="modal fade" id="viewHistory" tabindex="-1" aria-labelledby="viewHistoryLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="viewHistory" tabindex="-1" aria-labelledby="viewHistoryLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewHistoryLabel">Full Trip History</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-history"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="viewHistoryLabel">Full Trip History</h5>
+                        <p class="td2-modal-head-sub">All activity on this trip</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -1709,11 +1788,17 @@
 </div>
 
 {{-- Change Vehicle Status --}}
-<div class="modal fade" id="changeStatus" tabindex="-1" aria-labelledby="changeStatusLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="changeStatus" tabindex="-1" aria-labelledby="changeStatusLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="changeStatusLabel">Change Vehicle Status</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-map-marker"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="changeStatusLabel">Change Vehicle Status</h5>
+                        <p class="td2-modal-head-sub">Update the current trip stage</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2040,11 +2125,17 @@
 @endif
 
 {{-- Driver Expense (Trip Payout tab) --}}
-<div class="modal fade" id="driverExpense" tabindex="-1" aria-labelledby="driverExpenseLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="driverExpense" tabindex="-1" aria-labelledby="driverExpenseLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="driverExpenseLabel">Add Driver Transaction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-transaction"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="driverExpenseLabel">Add Driver Transaction</h5>
+                        <p class="td2-modal-head-sub">Record a driver transaction</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2060,7 +2151,7 @@
                                 <option>Late Delivery</option>
                                 <option>Bonus</option>
                             </select>
-                            <small class="text-muted d-block mt-1">Select an existing expense head or type to add a new one.</small>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing expense head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Expense Type</label>
@@ -2103,11 +2194,17 @@
 </div>
 
 {{-- Add Vehicle (Vehicle Allocation — External) --}}
-<div class="modal fade" id="addVeh" tabindex="-1" aria-labelledby="addVehLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addVeh" tabindex="-1" aria-labelledby="addVehLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addVehLabel">Add External Vehicle</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addVehLabel">Add External Vehicle</h5>
+                        <p class="td2-modal-head-sub">Register an external vehicle</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2148,11 +2245,17 @@
 </div>
 
 {{-- Add Addition (P&L tab) --}}
-<div class="modal fade" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAdditionLabel">Add Addition</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-plus-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addAdditionLabel">Add Addition</h5>
+                        <p class="td2-modal-head-sub">Add an income line</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2196,11 +2299,17 @@
 </div>
 
 {{-- Add Deduction (P&L tab) --}}
-<div class="modal fade" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDeductionLabel">Add Deduction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-minus-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addDeductionLabel">Add Deduction</h5>
+                        <p class="td2-modal-head-sub">Add a deduction line</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2244,11 +2353,17 @@
 </div>
 
 {{-- Add Transaction (P&L + Memo tabs) --}}
-<div class="modal fade" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addTransactionLabel">Add Transaction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-transaction"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addTransactionLabel">Add Transaction</h5>
+                        <p class="td2-modal-head-sub">Record a payment</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2545,6 +2660,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.9') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=6.1') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

@@ -4470,50 +4470,50 @@ body.td2-trip-paused #td2LifecycleBadge { opacity: 0.5; }
 }
 
 /* =============================================================
-   DRIVER TRANSACTION MODAL — professional polish
+   EXPENSE / DRIVER-TRANSACTION MODALS — shared body polish (.td2-exp-modal)
    ============================================================= */
-#driverExpense .modal-content {
+.td2-exp-modal .modal-content {
     border: none;
     border-radius: 14px;
     box-shadow: 0 24px 60px rgba(15, 23, 42, .22);
 }
-#driverExpense .modal-header {
+.td2-exp-modal .modal-header {
     border-bottom: 1px solid #eef1f6;
     padding: 18px 24px;
 }
-#driverExpense .modal-title {
+.td2-exp-modal .modal-title {
     font-weight: 600;
     font-size: 1.05rem;
     color: #1e293b;
 }
-#driverExpense .modal-body {
+.td2-exp-modal .modal-body {
     padding: 22px 26px;
     overflow-x: hidden;
 }
 /* Keep every control inside its column — never spill out */
-#driverExpense .form-control,
-#driverExpense .form-select,
-#driverExpense .input-group,
-#driverExpense .select2-container {
+.td2-exp-modal .form-control,
+.td2-exp-modal .form-select,
+.td2-exp-modal .input-group,
+.td2-exp-modal .select2-container {
     max-width: 100%;
     box-sizing: border-box;
 }
-#driverExpense .row {
+.td2-exp-modal .row {
     --bs-gutter-x: 1.25rem;
 }
-#driverExpense .modal-footer {
+.td2-exp-modal .modal-footer {
     border-top: 1px solid #eef1f6;
     padding: 14px 24px;
 }
-#driverExpense .form-label {
+.td2-exp-modal .form-label {
     font-weight: 600;
     font-size: .82rem;
     color: #475569;
     margin-bottom: .35rem;
 }
-#driverExpense .form-control,
-#driverExpense .form-select:not(.select2-hidden-accessible),
-#driverExpense .input-group-text {
+.td2-exp-modal .form-control,
+.td2-exp-modal .form-select:not(.select2-hidden-accessible),
+.td2-exp-modal .input-group-text {
     border-color: #dfe3ea;
     border-radius: 8px;
     min-height: 42px;
@@ -4521,7 +4521,7 @@ body.td2-trip-paused #td2LifecycleBadge { opacity: 0.5; }
 }
 /* The native <select> behind Select2 must stay fully off-screen (some
    Select2 builds don't clip it, which let it spill past the modal). */
-#driverExpense select.select2-hidden-accessible {
+.td2-exp-modal select.select2-hidden-accessible {
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -4533,82 +4533,82 @@ body.td2-trip-paused #td2LifecycleBadge { opacity: 0.5; }
     clip: rect(0 0 0 0) !important;
     white-space: nowrap !important;
 }
-#driverExpense .input-group-text {
+.td2-exp-modal .input-group-text {
     background: #f8fafc;
     color: #64748b;
 }
-#driverExpense .input-group .form-control {
+.td2-exp-modal .input-group .form-control {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
-#driverExpense .input-group .input-group-text:first-child {
+.td2-exp-modal .input-group .input-group-text:first-child {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
-#driverExpense .form-control:focus,
-#driverExpense .form-select:focus {
+.td2-exp-modal .form-control:focus,
+.td2-exp-modal .form-select:focus {
     border-color: #3b5bdb;
     box-shadow: 0 0 0 2px rgba(59, 91, 219, .12);
 }
-#driverExpense .text-muted.d-block {
+.td2-exp-modal .text-muted.d-block {
     font-size: .68rem;
     line-height: 1.3;
     color: #94a3b8 !important;
     margin-top: .3rem !important;
 }
 /* Select2 height + look matched to Bootstrap form-control */
-#driverExpense .select2-container--default .select2-selection--single {
+.td2-exp-modal .select2-container--default .select2-selection--single {
     height: 42px;
     border-color: #dfe3ea;
     border-radius: 8px;
     display: flex;
     align-items: center;
 }
-#driverExpense .select2-container--default .select2-selection--single .select2-selection__rendered {
+.td2-exp-modal .select2-container--default .select2-selection--single .select2-selection__rendered {
     line-height: 1.4;
     padding-left: 12px;
     color: #1e293b;
 }
-#driverExpense .select2-container--default .select2-selection--single .select2-selection__arrow {
+.td2-exp-modal .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 40px;
 }
-#driverExpense .td2-exp-datetime { cursor: pointer; background: transparent; }
+.td2-exp-modal .td2-exp-datetime { cursor: pointer; background: transparent; }
 
 /* Unified input-group — render as ONE bordered box with the icon sitting
    inside it (instead of a detached, shaded addon box next to the input). */
-#driverExpense .input-group {
+.td2-exp-modal .input-group {
     border: 1px solid #dfe3ea;
     border-radius: 8px;
     background: #fff;
     overflow: hidden;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
-#driverExpense .input-group .input-group-text,
-#driverExpense .input-group .form-control {
+.td2-exp-modal .input-group .input-group-text,
+.td2-exp-modal .input-group .form-control {
     border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     min-height: 40px;
 }
-#driverExpense .input-group .input-group-text {
+.td2-exp-modal .input-group .input-group-text {
     color: #94a3b8;
     padding-right: .25rem;
 }
-#driverExpense .input-group .form-control {
+.td2-exp-modal .input-group .form-control {
     padding-left: .35rem;
     margin-left: 0;
 }
 /* Inner controls must never draw their own focus border/ring/outline —
    the single focus ring belongs to the group (avoids a double border). */
-#driverExpense .input-group .form-control:focus,
-#driverExpense .input-group .form-select:focus,
-#driverExpense .input-group .input-group-text:focus {
+.td2-exp-modal .input-group .form-control:focus,
+.td2-exp-modal .input-group .form-select:focus,
+.td2-exp-modal .input-group .input-group-text:focus {
     border: 0 !important;
     box-shadow: none !important;
     outline: 0 !important;
 }
-#driverExpense .input-group:focus-within {
+.td2-exp-modal .input-group:focus-within {
     border-color: #3b5bdb;
     box-shadow: 0 0 0 2px rgba(59, 91, 219, .15);
 }
@@ -5546,11 +5546,11 @@ body.td2-trip-paused #td2UpdateStatusLink {
 ───────────────────────────────────────────────────────────── */
 #addPOD .modal-content { border: none; border-radius: 14px; overflow: hidden; }
 #addPOD .modal-header {
-    background: #f8fafc;
-    border-bottom: 1px solid #eef0f4;
-    padding: 16px 22px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    border-bottom: 0;
+    padding: 1rem 1.25rem;
 }
-#addPOD .modal-title { font-size: 16px; font-weight: 700; color: #0f172a; letter-spacing: .2px; }
+#addPOD .modal-title { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: .2px; }
 .td2-pod-body { padding: 20px 22px; background: #fff; }
 
 /* Consignment details card */
@@ -5691,3 +5691,66 @@ body.td2-trip-paused #td2UpdateStatusLink {
     overflow-y: auto;
 }
 #addPOD .td2-pod-footer { flex: 0 0 auto; }
+
+/* =============================================================
+   UNIFIED PRO MODAL HEADER — gradient (.td2-modal-pro)
+   Shared by all standard trip-details modals (Expense, Driver
+   Transaction, Edit Trip, Assign, POD, Eway, Add Vehicle,
+   Addition/Deduction/Transaction, Review, History, Change Status,
+   Settle/Cancel). SOS-themed modals (Resume, SOS History) are
+   intentionally excluded so their green/red severity colour stays.
+   ============================================================= */
+.td2-modal-pro .modal-content {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .22);
+}
+.td2-modal-pro .modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    border-bottom: 0;
+    padding: 1rem 1.25rem;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.td2-modal-pro .modal-title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+    line-height: 1.2;
+}
+.td2-modal-pro .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: .85;
+}
+.td2-modal-head-wrap {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+.td2-modal-head-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    font-size: 1.25rem;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+.td2-modal-head-sub {
+    margin: 0;
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .82);
+}
+.td2-exp-modal .td2-exp-hint {
+    font-size: .72rem;
+    color: #94a3b8;
+    margin-top: .3rem;
+    line-height: 1.3;
+}
+.td2-exp-modal .td2-exp-hint i { color: #2563eb; }

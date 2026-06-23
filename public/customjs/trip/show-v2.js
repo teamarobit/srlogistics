@@ -1650,3 +1650,55 @@ $(document).on('submit', '#td2PodForm', function (e) {
     if ($('#td2PodAck').hasClass('select2-hidden-accessible')) { $('#td2PodAck').val('').trigger('change'); }
     Toast.fire({ icon: 'success', title: 'POD saved.' });
 });
+
+/* =============================================================
+   ADD EXPENSE MODAL (#addExpense — Expenses tab)
+   Expense Head supports selecting an existing head OR typing a new
+   one (Select2 tags: true). Date & Time uses the single-date +
+   time daterangepicker. Prototype only — no persistence (SD-1: all
+   logic lives here, not inline in the blade).
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addExpense', function () {
+    var $head = $('#td2AddExpenseHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an expense head',
+            allowClear: true
+        });
+    }
+
+    /* Date & Time — single date + time picker (daterangepicker, already
+       loaded in layouts.app). */
+    var $expDate = $('#td2AddExpenseDate');
+    if ($expDate.length && typeof $.fn.daterangepicker === 'function' && !$expDate.data('daterangepicker')) {
+        $expDate.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: false,
+            parentEl: '#addExpense',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $expDate.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $expDate.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
+});
+
+/* Save (prototype) — Toast + reset, no persistence per "nothing dynamic". */
+$(document).on('click', '.td2-add-exp-save', function () {
+    Toast.fire({ icon: 'success', title: 'Expense added (prototype).' });
+    $('#addExpense').modal('hide');
+    if ($('#addExpenseForm').length) { $('#addExpenseForm')[0].reset(); }
+    if ($('#td2AddExpenseHead').hasClass('select2-hidden-accessible')) {
+        $('#td2AddExpenseHead').val('').trigger('change');
+    }
+    $('#td2AddExpenseDate').val('');
+});
