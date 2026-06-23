@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=10.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=10.5') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -2052,14 +2052,15 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Expense Head</label>
-                            <select class="form-select" name="expense_head">
+                            <select class="form-select select2-modal td2-expense-head" id="td2ExpenseHead" name="expense_head">
                                 <option value="">Choose…</option>
                                 <option>Vehicle Challan</option>
-                                <option>Material Shortage</option>
-                                <option>Material Damage</option>
+                                <option>Accident charges paid to car</option>
+                                <option>Material shortage</option>
+                                <option>Late Delivery</option>
                                 <option>Bonus</option>
-                                <option>Other</option>
                             </select>
+                            <small class="text-muted d-block mt-1">Select an existing expense head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Expense Type</label>
@@ -2067,6 +2068,7 @@
                                 <option value="">Choose…</option>
                                 <option>Debit</option>
                                 <option>Credit</option>
+                                <option>UPI</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -2077,8 +2079,13 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="txn_date">
+                            <label class="form-label">Date &amp; Time</label>
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2ExpenseDate"
+                                       name="txn_datetime" placeholder="Select date &amp; time"
+                                       autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -2538,6 +2545,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=5.7') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=5.9') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

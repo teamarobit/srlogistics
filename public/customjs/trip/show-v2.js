@@ -426,6 +426,42 @@ $(document).on('shown.bs.modal', '#assignModal', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
 });
 
+/* Select2 init for Driver Transaction modal — Expense Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#driverExpense', function () {
+    var $head = $('#td2ExpenseHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an expense head',
+            allowClear: true
+        });
+    }
+
+    /* Date & Time — single date + time picker (daterangepicker, already loaded
+       in layouts.app). Replaces the native datetime-local control. */
+    var $expDate = $('#td2ExpenseDate');
+    if ($expDate.length && typeof $.fn.daterangepicker === 'function' && !$expDate.data('daterangepicker')) {
+        $expDate.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: false,
+            parentEl: '#driverExpense',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $expDate.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $expDate.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
+});
+
 /* =============================================================
    Assign  ->  Allocated Vehicle view  (Vehicle Allocation tab)
    On Assign: hide the selection view, reveal the allocated view.
@@ -630,6 +666,10 @@ $(document).on('click', '.td2-driver-exp-save', function () {
     Toast.fire({ icon: 'success', title: 'Driver transaction added (prototype).' });
     $('#driverExpense').modal('hide');
     $('#driverExpenseForm')[0].reset();
+    if ($('#td2ExpenseHead').hasClass('select2-hidden-accessible')) {
+        $('#td2ExpenseHead').val('').trigger('change');
+    }
+    $('#td2ExpenseDate').val('');
 });
 
 /* =============================================================
