@@ -379,6 +379,16 @@ $(function () {
             });
     });
 
+    /* ---------------- D6: client-side file size pre-check (before AJAX) ---- */
+    $(document).on('change', 'input[type="file"]', function () {
+        var MAX = 2 * 1024 * 1024; // 2 MB
+        Array.prototype.forEach.call(this.files, function (f) {
+            if (f.size > MAX) {
+                Toast.fire({ icon: 'warning', title: '"' + f.name + '" exceeds 2 MB and will be rejected by the server.' });
+            }
+        });
+    });
+
     /* ---------------- E1 letter seen-status (post then open) ---------------- */
     $(document).on('click', '.cv2-letter-link', function (e) {
         var $a = $(this);

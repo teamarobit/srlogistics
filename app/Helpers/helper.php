@@ -41,23 +41,29 @@ if(! function_exists('getPhoneCode'))
 {
     function getPhoneCode()
     {
-        $ip = request()->ip();
-
-        $response = @file_get_contents("http://ip-api.com/json/{$ip}");
-        $data = json_decode($response, true);
-        
-        $countryCode = $data['countryCode'] ?? 'IN';
-        
-        $phoneCode = [
+        // M-1: external HTTP calls must use Http::timeout() — never bare file_get_contents.
+        // Fallback '+91' (India) is returned on any error or slow response.
+        static $phoneDialMap = [
             'IN' => '+91',
             'US' => '+1',
             'GB' => '+44',
             'AU' => '+61',
             'CA' => '+1',
             'AE' => '+971',
-        ][$countryCode] ?? '+91';
+        ];
 
-        return $phoneCode;
+        try {
+            $ip = request()->ip();
+            $response = \Illuminate\Support\Facades\Http::timeout(2)->get("http://ip-api.com/json/{$ip}");
+            if ($response->ok()) {
+                $countryCode = $response->json('countryCode') ?? 'IN';
+                return $phoneDialMap[$countryCode] ?? '+91';
+            }
+        } catch (\Exception $e) {
+            // Timeout or network error — fall through to safe default.
+        }
+
+        return '+91';
     }
 }
 

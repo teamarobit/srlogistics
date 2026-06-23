@@ -119,11 +119,12 @@
                     <div class="cv2-card-h"><h3>Bank Details <span class="cv2-pill" style="font-weight:600;">Exactly one primary</span></h3>
                         <a href="javascript:void(0)" class="cv2-link" id="cv2AddBank"><i class="bi bi-plus-lg"></i> Add bank</a></div>
                     <div class="cv2-card-b" id="cv2BankWrap">
+                        @php $hasPrimary = $contactBanks->contains('is_primary', 'Yes'); @endphp
                         @forelse($contactBanks as $i => $bank)
                         <div class="cv2-bank-row">
                             <button type="button" class="cv2-remove" title="Remove bank"><i class="bi bi-x-lg"></i></button>
                             <input type="hidden" name="contact_bank_id[]" value="{{ $bank->id }}">
-                            <div class="cv2-bank-head"><label class="cv2-primary-pick"><input type="radio" name="primary_bank" value="{{ $i }}" @checked($bank->is_primary==='Yes')> Set as primary account</label></div>
+                            <div class="cv2-bank-head"><label class="cv2-primary-pick"><input type="radio" name="primary_bank" value="{{ $i }}" @checked($bank->is_primary==='Yes' || (!$hasPrimary && $i===0))> Set as primary account</label></div>
                             <div class="cv2-form-grid is-3">
                                 <div class="cv2-field"><label class="cv2-label">Bank <span class="req">*</span></label><select class="cv2-select cv2-plain" name="bank_id[]" style="width:100%;"><option value="">Choose bank</option>@foreach($banks as $bk)<option value="{{ $bk->id }}" @selected($bank->bank_id==$bk->id)>{{ $bk->name }}</option>@endforeach</select></div>
                                 <div class="cv2-field"><label class="cv2-label">Beneficiary Name</label><input type="text" name="beneficiary_name[]" value="{{ $bank->beneficiary_name }}"></div>

@@ -145,6 +145,12 @@ class DriverController extends Controller
         ];
     }
 
+    /** E2 — true once the driver has an exit record; used to block sub-entity writes. */
+    private function driverExited(Contact $contact): bool
+    {
+        return (bool) $contact->employeeExitDetail;
+    }
+
     /** Dropdown lookups shared by create + edit. */
     private function formLookups(): array
     {
@@ -426,8 +432,8 @@ class DriverController extends Controller
         ]);
 
         $validate_phone = function ($attribute, $value, $fail) use ($request) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+            $code = ltrim($request->phone_code ?? getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -522,7 +528,15 @@ class DriverController extends Controller
             'distinct'        => 'Duplicate value.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
-            'primary_bank.required' => 'At least one bank must be marked as Primary.',
+            'primary_bank.required'                   => 'At least one bank must be marked as Primary.',
+            'doj.required'                            => 'Date of Joining is required.',
+            'doj.before_or_equal'                     => 'Date of Joining cannot be a future date.',
+            'dob.date_format'                         => 'Date of Birth must be in YYYY-MM-DD format.',
+            'permanent_addr_postal_code.required'     => 'Permanent Address Postal Code is required.',
+            'permanent_addr_postal_code.digits'       => 'Permanent Address Postal Code must be 6 digits.',
+            'present_addr_postal_code.required'       => 'Present Address Postal Code is required.',
+            'present_addr_postal_code.digits'         => 'Present Address Postal Code must be 6 digits.',
+            'driving_licence_no.unique'               => 'This driving licence number is already registered.',
         ]);
 
         // Attachment row validation (type/file pairing, dup type, size, mime)
@@ -721,7 +735,6 @@ class DriverController extends Controller
                     $b->account_number   = $request->get('account_number')[$i] ?? null;
                     $b->ifsc_code        = $request->get('ifsc_code')[$i] ?? null;
                     $b->upi_id           = $request->get('upi_id')[$i] ?? null;
-                    $b->created_by       = Auth::user()->id;
                     $b->save();
                 }
 
@@ -775,11 +788,14 @@ class DriverController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Driver not found.'], 422);
         }
+        if ($this->driverExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This driver has exited — the profile cannot be edited.'], 422);
+        }
         $driverinfo = Driverinfo::where('contact_id', $contact->id)->first();
 
         $validate_phone = function ($attribute, $value, $fail) use ($request, $id) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+            $code = ltrim($request->phone_code ?? getPhoneCode(), '+');
+            if (Contact::where('phone', $value)->whereIn('ph_prefix', ['+' . $code, $code])->where('id', '!=', $id)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -869,7 +885,15 @@ class DriverController extends Controller
             'distinct'        => 'Duplicate value.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
-            'primary_bank.required' => 'At least one bank must be marked as Primary.',
+            'primary_bank.required'                   => 'At least one bank must be marked as Primary.',
+            'doj.required'                            => 'Date of Joining is required.',
+            'doj.before_or_equal'                     => 'Date of Joining cannot be a future date.',
+            'dob.date_format'                         => 'Date of Birth must be in YYYY-MM-DD format.',
+            'permanent_addr_postal_code.required'     => 'Permanent Address Postal Code is required.',
+            'permanent_addr_postal_code.digits'       => 'Permanent Address Postal Code must be 6 digits.',
+            'present_addr_postal_code.required'       => 'Present Address Postal Code is required.',
+            'present_addr_postal_code.digits'         => 'Present Address Postal Code must be 6 digits.',
+            'driving_licence_no.unique'               => 'This driving licence number is already registered.',
         ]);
 
         $errorcount = 0;
@@ -1078,7 +1102,7 @@ class DriverController extends Controller
                     if (empty($bankId)) { continue; }
                     $rowId = $bankRowIds[$i] ?? null;
                     $b = $rowId ? Contactbank::where('id', $rowId)->where('contact_id', $contact->id)->first() : null;
-                    if (!$b) { $b = new Contactbank; $b->contact_id = $contact->id; $b->created_by = Auth::user()->id; }
+                    if (!$b) { $b = new Contactbank; $b->contact_id = $contact->id; }
                     $b->bank_id          = $bankId;
                     $b->is_primary       = ((string) $i === (string) $primaryIdx) ? 'Yes' : 'No';
                     $b->beneficiary_name = $request->get('beneficiary_name')[$i] ?? null;
@@ -1132,6 +1156,9 @@ class DriverController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Driver not found!'], 422);
+        }
+        if ($this->driverExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This driver has exited — work experience records cannot be added.'], 422);
         }
 
         $validator = Validator::make($request->all(), [
@@ -1213,6 +1240,9 @@ class DriverController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (!$contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Driver not found!'], 422);
+        }
+        if ($this->driverExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This driver has exited — assets cannot be assigned.'], 422);
         }
 
         $validator = Validator::make($request->all(), [
@@ -1381,6 +1411,9 @@ class DriverController extends Controller
         if (!$contact) {
             return response()->json(['success' => false, 'message' => 'Driver not found.'], 422);
         }
+        if ($this->driverExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This driver has exited — documents cannot be uploaded.'], 422);
+        }
 
         $validator = Validator::make($request->all(), [
             'contact_id'      => 'required|exists:contacts,id',
@@ -1388,8 +1421,11 @@ class DriverController extends Controller
             'files'           => 'required|array|min:1|max:2',
             'files.*'         => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
-            'required'  => 'This field is required.',
-            'files.max' => 'You cannot upload more than 2 files.',
+            'required'         => 'This field is required.',
+            'files.max'        => 'You cannot upload more than 2 files.',
+            'files.*.mimes'    => 'Document must be a jpg, jpeg, png, or pdf file.',
+            'files.*.max'      => 'Document must not exceed 2 MB.',
+            'files.*.uploaded' => 'Document upload failed — file may exceed the 2 MB server limit.',
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
@@ -1430,6 +1466,11 @@ class DriverController extends Controller
         $attachment = Coattachment::find($request->id);
         if (!$attachment) {
             return response()->json(['success' => false, 'message' => 'Document not found.'], 422);
+        }
+
+        $contact = Contact::where('cotype_id', self::COTYPE)->find($attachment->contact_id);
+        if ($contact && $this->driverExited($contact)) {
+            return response()->json(['success' => false, 'message' => 'This driver has exited — documents cannot be deleted.'], 422);
         }
 
         try {
