@@ -11221,17 +11221,17 @@ class ContactController extends Controller
                 $contact->additional_info = $request->get('additional_info') ?? null;
                 
                 if ($request->get('status') === 'Blacklisted') {
-                    $contact->blacklisted_at = now();
-                }else {
-                    $contact->blacklisted_at = null;
+                    $contact->blacklisted_at   = now();
+                    $contact->blacklist_reason = $request->get('blacklist_reason') ?? null;
+                } else {
+                    $contact->blacklisted_at   = null;
+                    $contact->blacklist_reason = null;
                 }
 
-                $contact->blacklist_reason = $request->get('blacklist_reason') ?? null;
-                $contact->comment          = $request->get('contact_comment');
-                
-                $contact->updated_by      = Auth::user()->id;
+                $contact->comment    = $request->get('contact_comment');
+                $contact->updated_by = Auth::user()->id;
                 $contact->save();
-    
+
                 // === Update Relcontacts ===
                 $relcontact_ids = [];
                 foreach ($request->contact_person_name ?? [] as $i => $name) {
@@ -11279,21 +11279,23 @@ class ContactController extends Controller
                 $upiIds           = $request->upi_id ?? [];
                 $contactBankIds   = $request->contact_bank_id ?? []; // hidden input for existing bank row id
                 
+                // Reset all existing banks to 'No' BEFORE loading model instances.
+                // Doing it inside the loop causes an Eloquent dirty-tracking bug:
+                // the bulk update() changes DB to 'No', but the already-loaded model
+                // still has 'Yes' as its original value, so the subsequent assignment
+                // $bank->is_primary = 'Yes' is not seen as dirty, and save() omits it.
+                Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
+
                 foreach ($bankIds as $i => $bankId) {
-                
+
                     // Find existing or create new
                     $bank = Contactbank::find($contactBankIds[$i] ?? 0);
-                
+
                     if (!$bank) {
                         $bank = new Contactbank();
                         $bank->contact_id = $contact->id;
                     }
-                
-                    // If this one is primary → make others No
-                    if (($isPrimaryArr[$i] ?? 'No') === 'Yes') {
-                        Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
-                    }
-                
+
                     $bank->bank_id          = $bankId;
                     $bank->is_primary       = ($isPrimaryArr[$i] ?? 'No') === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
@@ -11301,7 +11303,7 @@ class ContactController extends Controller
                     $bank->ifsc_code        = $ifscCodes[$i] ?? null;
                     $bank->upi_id           = $upiIds[$i] ?? null;
                     $bank->save();
-                
+
                     $bankDetailIds[] = $bank->id;
                 }
                 
@@ -11313,7 +11315,7 @@ class ContactController extends Controller
                 
                 
                           
-                if ($request->filled('blacklist_reason')) {
+                if ($request->filled('blacklist_reason') && $request->get('status') === 'Blacklisted') {
                     $activity = new Contactactivity();
                     $activity->contact_id = $contact->id;
                     $activity->notes = $request->blacklist_reason; 
