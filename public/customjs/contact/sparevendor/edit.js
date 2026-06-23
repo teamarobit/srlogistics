@@ -228,6 +228,7 @@ $(document).ready(function(){
         if ($(this).val() === 'Yes') {
             var $thisRow = $(this).closest('.bank-data');
             $('#bankDetailsContainer .bank-data').not($thisRow).each(function () {
+                $(this).find('input[type="radio"][value="Yes"]').prop('checked', false);
                 $(this).find('input[type="radio"][value="No"]').prop('checked', true);
             });
         }

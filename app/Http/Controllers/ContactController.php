@@ -12963,7 +12963,7 @@ class ContactController extends Controller
                 $contact->whatsapp_prefix = $request->whatsapp_code ?? $phoneCode;
                 $contact->whatsapp        = $request->whatsapp;
                 $contact->status          = $request->status ?? 'Active';
-                $contact->blacklist_reason= $request->blacklist_reason;
+                $contact->blacklist_reason= ($request->status === 'Blacklisted') ? $request->blacklist_reason : null;
                 $contact->comment         = $request->contact_comment;
                 $contact->specialisation  = $request->specialisation ? implode(',', (array)$request->specialisation) : null;
                 $contact->full_company_name = $request->full_company_name;
