@@ -5,7 +5,7 @@
    Validation errors as field-error spans below the field (SD-4).
    intl-tel getNumber()/dial codes written back before serialize (SD-13).
    Mirrors public/js/V2/customer.js patterns.
-   version: 2.0
+   version: 2.1
    ===================================================================== */
 $(function () {
     'use strict';
@@ -232,7 +232,7 @@ $(function () {
         // Work-experience duration MUST use ' - ' (hyphen-minus) separator.
         $('.cv2-daterange-hyphen').each(function () {
             var $inp = $(this);
-            $inp.daterangepicker({ autoUpdateInput: false, locale: { format: 'DD/MM/YYYY', cancelLabel: 'Clear' } });
+            $inp.daterangepicker({ maxDate: moment(), autoUpdateInput: false, locale: { format: 'DD/MM/YYYY', cancelLabel: 'Clear' } });
             $inp.on('apply.daterangepicker', function (ev, picker) {
                 $inp.val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
             });
@@ -395,6 +395,7 @@ $(function () {
                 Toast.fire({ icon: 'success', title: (res && res.message) || 'Deleted.' });
                 setTimeout(function () { window.location.reload(); }, 800);
             }).fail(handleAjaxError);
+     
         });
     });
 });

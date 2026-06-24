@@ -33,7 +33,7 @@
             </div>
             <div class="cv2-card-b is-flush">
                 <table class="cv2-table">
-                    <thead><tr><th>Company</th><th>Designation</th><th>Duration</th><th>Salary</th><th>Legal Case</th><th>Exit Reason</th><th style="text-align:right;">Actions</th></tr></thead>
+                    <thead><tr><th>Company</th><th>Designation</th><th>Duration</th><th>Salary</th><th>Legal Case</th><th>Exit Reason</th><th>Notes</th><th style="text-align:right;">Actions</th></tr></thead>
                     <tbody>
                         @forelse($workExperiences as $w)
                         <tr>
@@ -43,10 +43,11 @@
                             <td class="cv2-t-mono">₹{{ number_format((float)$w->salary) }}</td>
                             <td><span class="cv2-badge {{ $w->any_legal_case=='Yes'?'is-black':'is-active' }}"><span class="cv2-badge-dot"></span>{{ $w->any_legal_case }}</span></td>
                             <td>{{ $w->exit_reason }}</td>
+                            <td>{{ $w->notes ?? '—' }}</td>
                             <td class="cv2-actions"><span class="cv2-hint">—</span></td>
                         </tr>
                         @empty
-                        <tr><td colspan="7" class="text-center cv2-empty" style="padding:24px;">No work experience recorded yet.</td></tr>
+                        <tr><td colspan="8" class="text-center cv2-empty" style="padding:24px;">No work experience recorded yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -90,4 +91,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/employee.js?v=2.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/employee.js?v=2.1') }}"></script>@endsection

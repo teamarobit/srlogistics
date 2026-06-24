@@ -1090,6 +1090,7 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'asset_type' => 'required|in:Motor Vehicle,Electronics,Others',
             'asset_id'   => 'required|exists:assets,id',
+            'comment'    => 'nullable|string',
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
@@ -1106,7 +1107,7 @@ class EmployeeController extends Controller
                 if ($existing) {
                     $existing->status      = 'Assigned';
                     $existing->revoke_date = null;
-                    $existing->comment     = 'Reassigned asset.';
+                    $existing->comment     = $request->comment ?: 'Reassigned asset.';
                     $existing->created_by  = Auth::user()->id;
                     $existing->save();
                     $empasset = $existing;
@@ -1115,7 +1116,7 @@ class EmployeeController extends Controller
                     $empasset->contact_id = $request->contact_id;
                     $empasset->asset_id   = $request->asset_id;
                     $empasset->status     = 'Assigned';
-                    $empasset->comment    = 'Condition is okay.';
+                    $empasset->comment    = $request->comment ?: 'Condition is okay.';
                     $empasset->created_by = Auth::user()->id;
                     $empasset->save();
                 }
@@ -1133,8 +1134,10 @@ class EmployeeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employeeasset_id' => 'required|exists:employeeassets,id',
-            'revoke_date'      => 'required|date',
+            'revoke_date'      => 'required|date|before_or_equal:today',
             'revoke_reason'    => 'required|string',
+        ], [
+            'revoke_date.before_or_equal' => 'Revoke date cannot be a future date.',
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);

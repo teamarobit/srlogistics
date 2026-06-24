@@ -280,5 +280,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/employee.js?v=2.0') }}"></script>
+<script src="{{ asset('js/V2/employee.js?v=2.1') }}"></script>
 @endsection

@@ -37,7 +37,7 @@
                     <form id="cv2ExitForm" action="{{ route('contact.v2.employee.exit.save') }}" data-reload="1">
                         <input type="hidden" name="contact_id" value="{{ $contact->id }}">
                         <div class="cv2-form-grid">
-                            <div class="cv2-field"><label class="cv2-label">Exit Date <span class="req">*</span></label><input type="date" name="exit_date" max="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"></div>
+                            <div class="cv2-field"><label class="cv2-label">Exit Date <span class="req">*</span></label><input type="date" name="exit_date" @if($contact->doj) min="{{ \Carbon\Carbon::parse($contact->doj)->format('Y-m-d') }}" @endif max="{{ \Carbon\Carbon::today()->format('Y-m-d') }}"></div>
                             <div class="cv2-field"><label class="cv2-label">Exit Reason <span class="req">*</span></label><input type="text" name="exit_reason" placeholder="e.g. Resignation"></div>
                             <div class="cv2-field is-full"><label class="cv2-label">Exit Feedback <span class="req">*</span></label><textarea name="exit_feedback" rows="3" placeholder="Handover notes, feedback…"></textarea></div>
                         </div>
@@ -49,4 +49,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/employee.js?v=2.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/employee.js?v=2.1') }}"></script>@endsection
