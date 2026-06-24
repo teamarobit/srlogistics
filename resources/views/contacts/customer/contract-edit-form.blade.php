@@ -192,13 +192,10 @@
                             
                             <div class="form-group row">
                                 <div class="col-12 col-md-3">
-                                    <label>Payment Within Day</label>
+                                    <label>Payment Within Day <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <div class="input-group">
-                                        <span class="input-group-text" id="price">₹</span> 
-                                        <input type="text" name="payment_within_day" value="{{ old('payment_within_day', $contract->payment_within_day) }}" class="form-control numericonly">
-                                    </div>                                    
+                                    <input type="text" name="payment_within_day" value="{{ old('payment_within_day', $contract->payment_within_day) }}" class="form-control numericonly">
                                     <small class="error text-danger" id="add_payment_within_day_error"></small>
                                 </div>
                             </div>

@@ -163,14 +163,11 @@
                                     <label>Payment Within Day <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <div class="input-group"> 
-                                      <span class="input-group-text" id="rate">₹</span> 
-                                      <input type="text" name="payment_within_day" class="form-control numericonly">
-                                    </div>                                    
+                                    <input type="text" name="payment_within_day" class="form-control numericonly">
                                     <small class="error text-danger" id="add_payment_within_day_error"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="row form-group">
                                 <div class="col-12 col-md-3">
                                     <div class="d-flex">

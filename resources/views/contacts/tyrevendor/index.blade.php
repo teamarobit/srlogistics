@@ -42,15 +42,6 @@
                                     </select>
                                 </div>
 
-                                <div class="search-wrap d-inline-block ms-1" style="width:110px;">
-                                    <select name="size" id="search_size" class="form-select select2">
-                                        <option value="">Filter by Size</option>
-                                        <option value="Small"  {{ ($search_size ?? '') == 'Small'  ? 'selected' : '' }}>Small</option>
-                                        <option value="Medium" {{ ($search_size ?? '') == 'Medium' ? 'selected' : '' }}>Medium</option>
-                                        <option value="Large"  {{ ($search_size ?? '') == 'Large'  ? 'selected' : '' }}>Large</option>
-                                    </select>
-                                </div>
-                                
                                 <a href="{{ route('contact.tyrevendor.index') }}" style="text-transform: capitalize;" class="btn btn-primary reset-btn ms-1"><i class="uil uil-history me-1"></i>Reset</a>
                             
                                 <button type="button" id="bulkDeleteBtn" class="btn btn-danger reset-btn ms-1" style="text-transform: capitalize; display:none;" data-bs-toggle="modal" data-bs-target="#deleteModal">

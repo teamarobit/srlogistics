@@ -16,7 +16,11 @@ $(document).ready(function(){
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
     
-    $('#search_name , #search_rag , #search_category').on('change blur', function () { 
+    $('#search_vehicle , #search_rag , #search_category').on('change', function () {
+        $('#searchform').submit();
+    });
+
+    $('#search_name').on('blur', function () {
         $('#searchform').submit();
     });
     

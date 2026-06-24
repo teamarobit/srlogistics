@@ -71,6 +71,20 @@ document.addEventListener("DOMContentLoaded", function () {
     yesRadio.addEventListener("change", function () {
         if (this.checked) {
             caseBox.style.display = "block";
+
+            // FIX (Asana 1215649653370465): the City Select2 lives inside a
+            // section that is display:none at page load, so its initial init
+            // (jQuery ready block below) mis-measures width/offset and the open
+            // dropdown renders misaligned and won't position correctly on scroll.
+            // Re-init now that the section is actually visible.
+            var $city = $('#workExperienceModal select[name="previous_city_id"]');
+            if ($city.hasClass('select2-hidden-accessible')) {
+                $city.select2('destroy');
+            }
+            $city.select2({
+                dropdownParent: $('#workExperienceModal'),
+                width: '100%'
+            });
         }
     });
 
@@ -281,11 +295,15 @@ $(document).ready(function(){
     });
     
     $('.select2').select2();
-    
+
+    // Explicit city init with placeholder per SKILL.md standard
+    $('#permanentAddrCity, #presentAddrCity').select2({
+        placeholder: 'Choose city',
+        width: '100%'
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
-    
-    
-    
+
     setupDependentSelect('.dependent-select', 'Choose city');
     
     function setupDependentSelect(firstSelectSelector, placeholder = 'Select option...') {
@@ -325,8 +343,8 @@ $(document).ready(function(){
     
                     // Re-init Select2
                     $target.select2({
-                        width: '100%',
-                        dropdownAutoWidth: true
+                        placeholder: placeholder,
+                        width: '100%'
                     });
                 },
                 error: function (xhr) {
@@ -489,6 +507,7 @@ $(document).ready(function(){
             $('.reason_wrap').hide();
         }
     });
+
     
     
     
@@ -634,7 +653,7 @@ $(document).ready(function(){
     
     // Add More Bank Detail Start ----------------------------------------------
     
-    var bank_rowindex = 0;
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
     
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();
@@ -702,12 +721,22 @@ $(document).ready(function(){
     
     $(document).on('click', '.close-bank', function (e) {
         e.preventDefault();
-    
+
         //if ($('.bank-data').length > 1) {
             $(this).closest('.bank-data').remove();
         //}
     });
-    
+
+    // Mutual exclusion: selecting Yes on one bank forces all others to No
+    $(document).on('change', 'input[type="radio"][name^="is_primary"]', function () {
+        if ($(this).val() === 'Yes') {
+            var $thisRow = $(this).closest('.bank-data');
+            $('#bankDetailsContainer .bank-data').not($thisRow).each(function () {
+                $(this).find('input[type="radio"][value="No"]').prop('checked', true);
+            });
+        }
+    });
+
     // Add More Bank Detail Ends -----------------------------------------------
     
     
@@ -1465,17 +1494,16 @@ $(document).ready(function () {
             autoUpdateInput  : false,
             maxDate          : maxDate,
             locale           : { format: 'DD/MM/YYYY' }
-        }, function (start) {
-            $display.val(start.format('DD/MM/YYYY'));
-            $hidden.val(start.format('YYYY-MM-DD')).trigger('change');
+        });
+
+        $display.on('apply.daterangepicker', function (ev, picker) {
+            $display.val(picker.startDate.format('DD/MM/YYYY'));
+            $hidden.val(picker.startDate.format('YYYY-MM-DD'));
+        });
+
+        $display.on('cancel.daterangepicker', function () {
+            $display.val('');
+            $hidden.val('');
         });
     });
 });
-
-
-
-
-
-
-
-

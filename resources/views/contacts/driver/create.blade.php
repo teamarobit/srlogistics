@@ -108,13 +108,13 @@
                                             
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
-                                                    <label>Profile Photo</label>
+                                                    <label>Profile Photo <span class="text-danger">*</span></label>
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <div class="upload__box">
                                                       <div class="upload__btn-box">
                                                         <label class="upload__btn">
-                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Images <span class="text-danger">*</span></p>
+                                                          <p class="btn btn-theme mb-0"><i class="uil uil-plus me-1"></i>Image</p>
                                                           <input type="file" name="contact_image" data-max_length="20" class="upload__inputfile">
                                                           <small class="error text-danger" id="add_contact_image_error"></small>
                                                         </label>
@@ -1582,7 +1582,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.3') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.4') }}"></script>
 
 <!-- <script type="text/javascript" src="{{ asset('js/Contacts/Driver/index.js') }}"></script> -->
 

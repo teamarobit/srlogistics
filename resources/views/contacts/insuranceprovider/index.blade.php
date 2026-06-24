@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/Contacts/InsuranceProvider/index.css?v=1.2') }}">
+<link rel="stylesheet" href="{{ asset('css/Contacts/InsuranceProvider/index.css?v=1.3') }}">
 @endsection
 
 @section('content')
@@ -33,7 +33,7 @@
             <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;">
                 <i class="uil uil-filter me-1"></i>Filter
             </span>
-            <input type="text" name="name" value="{{ request('name') }}"
+            <input type="text" name="name" id="ipFilterName" value="{{ request('name') }}"
                    class="form-control ip-filter-search" placeholder="Search company or contact…">
             <select name="state" id="ipFilterState" class="form-select ip-filter-state">
                 <option value="">All States</option>
@@ -41,9 +41,6 @@
                 <option value="{{ $state->id }}" {{ request('state') == $state->id ? 'selected' : '' }}>{{ $state->name }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="btn btn-sm btn-primary ip-filter-btn">
-                <i class="uil uil-search me-1"></i>Search
-            </button>
             <a href="{{ route('contact.insuranceprovider.index') }}" class="btn btn-sm btn-primary reset-btn">
                 <i class="uil uil-history me-1"></i>Reset
             </a>
@@ -365,5 +362,5 @@
 window.IP_SAVE     = '{{ route("contact.insuranceprovider.save") }}';
 window.IP_JSON_URL = '{{ url("contacts/insurance-provider") }}';
 </script>
-<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.4') }}"></script>
+<script src="{{ asset('js/Contacts/InsuranceProvider/index.js?v=1.7') }}"></script>
 @endsection

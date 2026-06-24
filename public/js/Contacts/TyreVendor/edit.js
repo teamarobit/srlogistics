@@ -390,9 +390,9 @@ $(document).ready(function(){
     
     
     // Add More Bank Detail Start ----------------------------------------------
-    
-    var bank_rowindex = 0;
-    
+
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
+
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();
     
@@ -542,7 +542,7 @@ $(document).ready(function(){
         
             // Check NEW selections (dropdown)
             $('select[name="coattachtypes[]"]').each(function () {
-                if ($(this).val() == 8) {
+                if ($(this).val() == 7) {
                     hasTdsDeclaration = true;
                 }
             });
@@ -569,8 +569,8 @@ $(document).ready(function(){
         
             // Final validation
             if (!hasTdsDeclaration) {
-                $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
-                isValid = false;
+                // $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
+                // isValid = false;
             }
         }
         

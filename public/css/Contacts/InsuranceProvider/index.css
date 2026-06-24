@@ -1,4 +1,4 @@
-/* Insurance Providers — index.css v1.2 */
+/* Insurance Providers — index.css v1.3 */
 body { background-color: #fff; }
 
 /* ── Page header subtitle ── */
@@ -13,10 +13,10 @@ body { background-color: #fff; }
 .ip-filter .form-control,
 .ip-filter .form-select { font-size: 12px; height: 34px; border-color: #dde4f5; }
 .ip-filter-search { width: 220px; }
-.ip-filter-state  { width: 180px; }
+.ip-filter-state  { width: 220px; }
 .ip-filter-btn    { font-size: 12px; height: 34px; padding: 0 14px; }
-/* Issue 22: size the Select2-rendered State filter to match the filter bar */
-.ip-filter .select2-container { min-width: 180px; }
+/* Fix: constrain Select2-rendered State filter to match search bar width */
+.ip-filter .select2-container { width: 220px !important; flex-shrink: 0; }
 .ip-filter .select2-container--default .select2-selection--single {
     height: 34px; border-color: #dde4f5;
     display: flex; align-items: center;

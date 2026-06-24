@@ -124,7 +124,7 @@
                                             <label>Vehicle Vendor Code <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control"/>
+                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control bg-light" readonly/>
                                             <small class="error text-danger" id="edit_contact_code_error"></small>
                                         </div>
                                     </div>
@@ -777,7 +777,10 @@
                                                 <small class="error text-danger atyperr" id="edit_coattachtype_0_error"></small>
                                             </div>
                                         </div>
-                                        
+
+                                        {{-- TDS Declaration rule message (shown when TDS % is 0 or 1 and the document is missing) --}}
+                                        <small class="error text-danger d-block mt-1" id="edit_attachtypes_error"></small>
+
                                         <hr>
                                         
                                         <!--dropzone-->
@@ -1071,7 +1074,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.4') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

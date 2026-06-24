@@ -125,7 +125,7 @@
                                             <label>Tyre Vendor Code <span class="text-danger">*</span></label>
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control"/>
+                                            <input type="text" name="contact_code" value="{{ $contact->contact_code ?? '' }}" class="form-control bg-light" readonly/>
                                             <small class="error text-danger" id="edit_contact_code_error"></small>
                                         </div>
                                     </div>
@@ -575,7 +575,7 @@
                                                         
                                                     </div>
                                                     <small class="error text-danger" id="edit_is_primary_error"></small>
-                                                    <small class="error text-danger" id="edit_is_primary_0_error"></small>
+                                                    <small class="error text-danger b_primary_err" id="edit_is_primary_0_error"></small>
                                                 </div>
             
                                                 <div class="row form-group">
@@ -591,7 +591,7 @@
                                                             </option>
                                                             @endforeach
                                                         </select>
-                                                        <small class="error text-danger" id="edit_bank_id_0_error"></small>
+                                                        <small class="error text-danger b_id_err" id="edit_bank_id_0_error"></small>
                                                     </div>
                                                 </div>
                                                 
@@ -601,7 +601,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="beneficiary_name[{{ $index }}]" value="{{ $contactBank->beneficiary_name ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_beneficiary_name_0_error"></small>
+                                                        <small class="error text-danger b_name_err" id="edit_beneficiary_name_0_error"></small>
                                                     </div>
                                                 </div>
             
@@ -611,7 +611,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="account_number[{{ $index }}]" value="{{ $contactBank->account_number ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_account_number_0_error"></small>
+                                                        <small class="error text-danger b_accno_err" id="edit_account_number_0_error"></small>
                                                     </div>
                                                 </div>
                                                 
@@ -621,7 +621,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="ifsc_code[{{ $index }}]"  value="{{ $contactBank->ifsc_code ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_ifsc_code_0_error"></small>
+                                                        <small class="error text-danger b_ifsc_err" id="edit_ifsc_code_0_error"></small>
                                                     </div>
                                                 </div>
             
@@ -631,7 +631,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-7">
                                                         <input type="text" name="upi_id[{{ $index }}]" value="{{ $contactBank->upi_id ?? '' }}" class="form-control" />
-                                                        <small class="error text-danger" id="edit_upi_id_0_error"></small>
+                                                        <small class="error text-danger b_upi_err" id="edit_upi_id_0_error"></small>
                                                     </div>
                                                 </div> 
                                             
@@ -701,7 +701,10 @@
                                                 <small class="error text-danger atyperr" id="edit_coattachtype_0_error"></small>
                                             </div>
                                         </div>
-                                        
+
+                                        {{-- TDS Declaration rule message (shown when TDS % is 0 or 1 and the document is missing) --}}
+                                        <small class="error text-danger d-block mt-1" id="edit_attachtypes_error"></small>
+
                                         <hr>
                                         
                                         <!--dropzone-->
@@ -983,7 +986,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.2') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.6') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 

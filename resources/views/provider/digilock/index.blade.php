@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.5') }}">
+<link rel="stylesheet" href="{{ asset('css/Provider/digilock-index.css?v=1.7') }}">
 
 
 @endsection

@@ -261,6 +261,19 @@ $(document).ready(function(){
             });
         });
 
+        // Validate: at least one file must be uploaded
+        var totalFiles = 0;
+        dropzones.forEach(function ({ dz }) {
+            dz.files.forEach(function (file) {
+                if (file.status !== 'removed') { totalFiles++; }
+            });
+        });
+        if (totalFiles === 0) {
+            Toast.fire({ icon: 'error', title: 'Please upload at least one attachment.' });
+            $('#add_coattachments_0_error').text('At least one attachment is required.');
+            return false;
+        }
+
         $('.error').html('');
         $button.html('<div class="spinner-border spinner-border-sm" role="status"></div>').attr('disabled', true);
 

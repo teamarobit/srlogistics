@@ -571,8 +571,36 @@ class ContactController extends Controller
         /*if(File::exists(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR.$contactattachment->name))){
             File::delete(public_path('media'.DIRECTORY_SEPARATOR.'contact'.DIRECTORY_SEPARATOR.$contactattachment->name));
         }*/
+        /*
+        |--------------------------------------------------------------------------
+        | TDS Declaration guard (coattachtype_id = 7)
+        |--------------------------------------------------------------------------
+        | A TDS Declaration document is mandatory while the contact's TDS % is
+        | 0 or 1. Block its deletion unless another TDS Declaration remains.
+        */
+        if ((int) $contactattachment->coattachtype_id === 7) {
+
+            $tds = optional($contactattachment->contact)->tds_percentage;
+
+            if ($tds !== null && $tds !== '' && in_array((float) $tds, [0, 1])) {
+
+                $remainingTdsDocs = Coattachment::where('contact_id', $contactattachment->contact_id)
+                    ->where('coattachtype_id', 7)
+                    ->where('id', '!=', $contactattachment->id)
+                    ->count();
+
+                if ($remainingTdsDocs === 0) {
+                    return response()->json([
+                        'success' => false,
+                        'data'    => [],
+                        'message' => 'TDS Declaration document cannot be deleted while TDS % is 0 or 1 for this contact.'
+                    ], 422);
+                }
+            }
+        }
+
         $contactattachment->delete();
-        
+
         return response()->json(['success' => true, 'data' => [], 'message' => 'Attachment deleted successfully.']);
     }
     // For Dropzone ----------------------------------------------------------------------------------------------------------
@@ -7675,16 +7703,22 @@ class ContactController extends Controller
                     $contact_bank->save();
                 }*/
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -7692,10 +7726,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -7770,6 +7804,7 @@ class ContactController extends Controller
              'coaddresses',
              'bank',
              'driverinfo',
+             'driverVehiclePhotos',
              'vehicleAllocations',
              'employeeAssets',
              'coattachments.coattachtype',
@@ -8294,100 +8329,127 @@ class ContactController extends Controller
 
                 
                 
-                // Driver other infos
+                // Driver other infos — always find or create the driverinfo record
+                $contact_other_info = Driverinfo::where('contact_id', $contact->id)->first();
+
+                if (!$contact_other_info) {
+                    $contact_other_info = new Driverinfo;
+                    $contact_other_info->contact_id = $contact->id;
+                }
+
+                // Capture previous status_type for activity log transition detection
+                $previousStatusType = $contact_other_info->status_type;
+
+                // File uploads + category-specific fields (only when driver_category is provided)
                 if (!empty($request->get('driver_category'))) {
-                
-                    $contact_other_info = Driverinfo::where('contact_id', $contact->id)->first();
-                
-                    if (!$contact_other_info) {
-                        $contact_other_info = new Driverinfo;
-                        $contact_other_info->contact_id = $contact->id;
-                    }
-                
+
                     $uploadPath = public_path('media' . DIRECTORY_SEPARATOR . 'contact');
-                
+
                     if (!File::exists($uploadPath)) {
                         File::makeDirectory($uploadPath, 0755, true);
                     }
-                
+
                     // Driving License File
                     if ($request->hasFile('driving_license_proof_file')) {
-                
+
                         if (!empty($contact_other_info->driving_license_proof_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->driving_license_proof_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->driving_license_proof_file);
                         }
-                
+
                         $file = $request->file('driving_license_proof_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'driving_license_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->driving_license_proof_file = $filename;
                     }
-                
+
                     // Aadhaar Card File
                     if ($request->hasFile('aadhaar_card_proof_file')) {
-                
+
                         if (!empty($contact_other_info->aadhaar_card_proof_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->aadhaar_card_proof_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->aadhaar_card_proof_file);
                         }
-                
+
                         $file = $request->file('aadhaar_card_proof_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'aadhaar_card_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->aadhaar_card_proof_file = $filename;
                     }
-                
+
                     // Signed Driver Form File
                     if ($request->hasFile('signed_driver_form_file')) {
-                
+
                         if (!empty($contact_other_info->signed_driver_form_file) &&
                             File::exists($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->signed_driver_form_file)) {
-                
+
                             File::delete($uploadPath . DIRECTORY_SEPARATOR . $contact_other_info->signed_driver_form_file);
                         }
-                
+
                         $file = $request->file('signed_driver_form_file');
                         $extension = $file->getClientOriginalExtension();
                         $filename = 'signed_driver_form_' . time() . '_' . Str::random(6) . '.' . $extension;
-                
+
                         $file->move($uploadPath, $filename);
-                
+
                         $contact_other_info->signed_driver_form_file = $filename;
                     }
-                
-                    // Update fields
+
+                    // Category-specific fields
                     $contact_other_info->category                   = $request->driver_category ?? null;
                     $contact_other_info->driving_licence_no         = $request->driving_licence_no ?? null;
                     $contact_other_info->licence_issue_date         = $request->licence_issue_date ?? null;
                     $contact_other_info->licence_expiry_date        = $request->licence_expiry_date ?? null;
                     $contact_other_info->original_licence_location  = $request->original_licence_location ?? null;
-                
                     $contact_other_info->aadhaar_no                 = $request->aadhaar_no ?? null;
-                
-                    $contact_other_info->status_type                = $request->status_type ?? null;
-                    $contact_other_info->expected_return_date       = $request->expected_return_date ?? null;
-                    $contact_other_info->set_reminder               = $request->set_reminder ?? null;
-                    $contact_other_info->voluntary_exit_reason      = $request->voluntary_exit_reason ?? null;
-                
                     $contact_other_info->hisab_category             = $request->hisab_category ?? null;
                     $contact_other_info->opening_balance_date       = $request->opening_balance_date ?? null;
                     $contact_other_info->opening_balance_type       = $request->opening_balance_type ?? null;
                     $contact_other_info->opening_balance            = $request->opening_balance ?? null;
-                
                     $contact_other_info->guarantor_name             = $request->guarantor_name ?? null;
                     $contact_other_info->guarantor_phone_code       = $request->guarantor_phone_code ?? $phoneCode;
                     $contact_other_info->guarantor_phone            = $request->guarantor_phone ?? null;
-                
-                    $contact_other_info->save();
+                }
+
+                // Status/leave fields — always saved regardless of driver_category
+                $contact_other_info->status_type           = $request->status_type ?? null;
+                $contact_other_info->expected_return_date  = $request->expected_return_date ?? null;
+                $contact_other_info->set_reminder          = $request->set_reminder ?? null;
+                $contact_other_info->voluntary_exit_reason = $request->voluntary_exit_reason ?? null;
+
+                $contact_other_info->save();
+
+                // Log leave transition to activity tab
+                if ($request->status == 'Inactive' && $request->status_type == 'On Leave' && $previousStatusType !== 'On Leave') {
+                    $leaveStart  = now()->format('d M Y');
+                    $leaveEnd    = $request->expected_return_date
+                        ? \Carbon\Carbon::parse($request->expected_return_date)->format('d M Y')
+                        : 'N/A';
+                    $leaveActivity = new Contactactivity();
+                    $leaveActivity->contact_id  = $contact->id;
+                    $leaveActivity->notes       = "Driver marked On Leave from {$leaveStart} to {$leaveEnd}.";
+                    $leaveActivity->created_by  = Auth::user()->id;
+                    $leaveActivity->save();
+                }
+
+                // Log voluntary exit transition to activity tab
+                if ($request->status == 'Inactive' && $request->status_type == 'Voluntary Exit' && $previousStatusType !== 'Voluntary Exit') {
+                    $exitDate   = now()->format('d M Y');
+                    $exitReason = trim($request->voluntary_exit_reason ?? '');
+                    $exitActivity = new Contactactivity();
+                    $exitActivity->contact_id        = $contact->id;
+                    $exitActivity->notes             = "Driver marked as Voluntary Exit on {$exitDate}." . ($exitReason ? " Reason: {$exitReason}" : '');
+                    $exitActivity->is_voluntary_exit = 'Yes';
+                    $exitActivity->created_by        = Auth::user()->id;
+                    $exitActivity->save();
                 }
                 
                 
@@ -9280,6 +9342,37 @@ class ContactController extends Controller
                 }
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | At least one document (Document Type + attachment file) is mandatory
+        |--------------------------------------------------------------------------
+        */
+        $validator->after(function ($validator) use ($request) {
+            $attachtypes = $request->attachtypes ?? [];
+            $files = $request->file('files') ?? [];
+
+            $hasCompleteDoc = false;
+            foreach ($attachtypes as $key => $attachtype) {
+                if ($attachtype && isset($files[$key]) && !empty($files[$key])) {
+                    $hasCompleteDoc = true;
+                    break;
+                }
+            }
+
+            if (!$hasCompleteDoc) {
+                $firstType    = $attachtypes[0] ?? null;
+                $firstHasFile = isset($files[0]) && !empty($files[0]);
+
+                if (!$firstType) {
+                    $validator->errors()->add('coattachtype.0', 'Document type is required.');
+                }
+                if (!$firstHasFile) {
+                    $validator->errors()->add('coattachments.0', 'Attachment file is required.');
+                }
+            }
+        });
+
         
         
         
@@ -9401,16 +9494,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -9418,10 +9517,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -9788,7 +9887,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
@@ -10107,13 +10206,11 @@ class ContactController extends Controller
     public function tyreVendorList(Request $request): View
     {
         $cotypeId = self::CONTACT_TYPE_TYRE_VENDOR;
-        
-        
-        // Filter 
+
+
+        // Filter
         $search_name     = $request->name;
         $search_city     = $request->city;
-        $search_size     = $request->size;
-        $search_city = $request->city;
         
         $contacts = Contact::query()->where('cotype_id', $cotypeId);
 
@@ -10127,16 +10224,6 @@ class ContactController extends Controller
             $contacts->where('city_id', $request->city);
         }
     
-        // Filter by Size
-        if ($request->filled('size')) {
-            $contacts->where('size', $request->size);
-        }
-        
-        // Filter by Location (IMPORTANT FIX)
-        if ($request->filled('city')) {
-            $contacts->where('city_id', $request->city);
-        }
-        
         // Load relationships
         $contacts = $contacts
                             ->with([
@@ -10159,7 +10246,7 @@ class ContactController extends Controller
         $useractivity = $this->storeUseractivity(59, 5, Auth::user()->id, 0, $description);
         
         
-        return view('contacts.tyrevendor.index', compact('contacts','cities','cotype','search_name','search_city','search_size','search_city')); 
+        return view('contacts.tyrevendor.index', compact('contacts','cities','cotype','search_name','search_city'));
        
     }
     
@@ -10437,6 +10524,37 @@ class ContactController extends Controller
                 }
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | At least one document (Document Type + attachment file) is mandatory
+        |--------------------------------------------------------------------------
+        */
+        $validator->after(function ($validator) use ($request) {
+            $attachtypes = $request->attachtypes ?? [];
+            $files = $request->file('files') ?? [];
+
+            $hasCompleteDoc = false;
+            foreach ($attachtypes as $key => $attachtype) {
+                if ($attachtype && isset($files[$key]) && !empty($files[$key])) {
+                    $hasCompleteDoc = true;
+                    break;
+                }
+            }
+
+            if (!$hasCompleteDoc) {
+                $firstType    = $attachtypes[0] ?? null;
+                $firstHasFile = isset($files[0]) && !empty($files[0]);
+
+                if (!$firstType) {
+                    $validator->errors()->add('coattachtype.0', 'Document type is required.');
+                }
+                if (!$firstHasFile) {
+                    $validator->errors()->add('coattachments.0', 'Attachment file is required.');
+                }
+            }
+        });
+
         
         
         
@@ -10554,16 +10672,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -10571,10 +10695,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -10937,7 +11061,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
@@ -11085,17 +11209,17 @@ class ContactController extends Controller
                 $contact->additional_info = $request->get('additional_info') ?? null;
                 
                 if ($request->get('status') === 'Blacklisted') {
-                    $contact->blacklisted_at = now();
-                }else {
-                    $contact->blacklisted_at = null;
+                    $contact->blacklisted_at   = now();
+                    $contact->blacklist_reason = $request->get('blacklist_reason') ?? null;
+                } else {
+                    $contact->blacklisted_at   = null;
+                    $contact->blacklist_reason = null;
                 }
 
-                $contact->blacklist_reason = $request->get('blacklist_reason') ?? null;
-                $contact->comment          = $request->get('contact_comment');
-                
-                $contact->updated_by      = Auth::user()->id;
+                $contact->comment    = $request->get('contact_comment');
+                $contact->updated_by = Auth::user()->id;
                 $contact->save();
-    
+
                 // === Update Relcontacts ===
                 $relcontact_ids = [];
                 foreach ($request->contact_person_name ?? [] as $i => $name) {
@@ -11143,21 +11267,23 @@ class ContactController extends Controller
                 $upiIds           = $request->upi_id ?? [];
                 $contactBankIds   = $request->contact_bank_id ?? []; // hidden input for existing bank row id
                 
+                // Reset all existing banks to 'No' BEFORE loading model instances.
+                // Doing it inside the loop causes an Eloquent dirty-tracking bug:
+                // the bulk update() changes DB to 'No', but the already-loaded model
+                // still has 'Yes' as its original value, so the subsequent assignment
+                // $bank->is_primary = 'Yes' is not seen as dirty, and save() omits it.
+                Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
+
                 foreach ($bankIds as $i => $bankId) {
-                
+
                     // Find existing or create new
                     $bank = Contactbank::find($contactBankIds[$i] ?? 0);
-                
+
                     if (!$bank) {
                         $bank = new Contactbank();
                         $bank->contact_id = $contact->id;
                     }
-                
-                    // If this one is primary → make others No
-                    if (($isPrimaryArr[$i] ?? 'No') === 'Yes') {
-                        Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
-                    }
-                
+
                     $bank->bank_id          = $bankId;
                     $bank->is_primary       = ($isPrimaryArr[$i] ?? 'No') === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
@@ -11165,7 +11291,7 @@ class ContactController extends Controller
                     $bank->ifsc_code        = $ifscCodes[$i] ?? null;
                     $bank->upi_id           = $upiIds[$i] ?? null;
                     $bank->save();
-                
+
                     $bankDetailIds[] = $bank->id;
                 }
                 
@@ -11177,7 +11303,7 @@ class ContactController extends Controller
                 
                 
                           
-                if ($request->filled('blacklist_reason')) {
+                if ($request->filled('blacklist_reason') && $request->get('status') === 'Blacklisted') {
                     $activity = new Contactactivity();
                     $activity->contact_id = $contact->id;
                     $activity->notes = $request->blacklist_reason; 
@@ -11692,16 +11818,22 @@ class ContactController extends Controller
                 
                 
                 
-                $isPrimaryArr = $request->is_primary;
-                $bankIds = $request->bank_id;
+                $isPrimaryArr = $request->is_primary ?? [];
+                $bankIds = $request->bank_id ?? [];
                 $beneficiaryNames = $request->beneficiary_name ?? [];
-                $accountNumbers = $request->account_number;
-                $ifscCodes = $request->ifsc_code;
+                $accountNumbers = $request->account_number ?? [];
+                $ifscCodes = $request->ifsc_code ?? [];
                 $upiIds = $request->upi_id ?? [];
                 
                 for ($i = 0; $i < count($bankIds); $i++) {
 
-                    if ($isPrimaryArr[$i] === 'Yes') {
+                    // Skip empty / incomplete bank rows (e.g. an extra row added but not filled in).
+                    // is_primary is a radio group, so its array can be shorter than bank_id — guard all access.
+                    if (empty($bankIds[$i]) || empty($accountNumbers[$i] ?? null)) {
+                        continue;
+                    }
+
+                    if (($isPrimaryArr[$i] ?? null) === 'Yes') {
                         // Make sure no previous bank is primary
                         Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
                     }
@@ -11709,10 +11841,10 @@ class ContactController extends Controller
                     $bank = new Contactbank();
                     $bank->contact_id = $contact->id;
                     $bank->bank_id = $bankIds[$i];
-                    $bank->is_primary = $isPrimaryArr[$i] === 'Yes' ? 'Yes' : 'No';
+                    $bank->is_primary = ($isPrimaryArr[$i] ?? null) === 'Yes' ? 'Yes' : 'No';
                     $bank->beneficiary_name = $beneficiaryNames[$i] ?? null;
-                    $bank->account_number = $accountNumbers[$i];
-                    $bank->ifsc_code = $ifscCodes[$i];
+                    $bank->account_number = $accountNumbers[$i] ?? null;
+                    $bank->ifsc_code = $ifscCodes[$i] ?? null;
                     $bank->upi_id = $upiIds[$i] ?? null;
                     $bank->save();
                 }
@@ -12082,7 +12214,7 @@ class ContactController extends Controller
             
             $allAttachTypes = array_map('intval', array_unique(array_merge($existingAttachTypes, $newAttachTypes)));
             
-            if ($tds === 0.0) {
+            if ($request->tds_percentage !== null && $request->tds_percentage !== '' && $tds === 0.0) {
                 if (!in_array(7, $allAttachTypes)) {
                     $validator->errors()->add(
                         'attachtypes',
@@ -12301,6 +12433,13 @@ class ContactController extends Controller
                 $upiIds           = $request->upi_id ?? [];
                 $contactBankIds   = $request->contact_bank_id ?? []; // hidden input for existing bank row id
                 
+                // Reset all existing banks to 'No' BEFORE loading model instances.
+                // Doing it inside the loop causes an Eloquent dirty-tracking bug:
+                // the bulk update() changes DB to 'No', but the already-loaded model
+                // still has 'Yes' as its original value, so the subsequent assignment
+                // $bank->is_primary = 'Yes' is not seen as dirty, and save() omits it.
+                Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
+
                 foreach ($bankIds as $i => $bankId) {
                 
                     // Find existing or create new
@@ -12311,10 +12450,6 @@ class ContactController extends Controller
                         $bank->contact_id = $contact->id;
                     }
                 
-                    // If this one is primary → make others No
-                    if (($isPrimaryArr[$i] ?? 'No') === 'Yes') {
-                        Contactbank::where('contact_id', $contact->id)->update(['is_primary' => 'No']);
-                    }
                 
                     $bank->bank_id          = $bankId;
                     $bank->is_primary       = ($isPrimaryArr[$i] ?? 'No') === 'Yes' ? 'Yes' : 'No';
@@ -12515,8 +12650,8 @@ class ContactController extends Controller
             'upi_id.*'                    => 'nullable|string|max:100',
             'contact_person_name'         => 'required|array|min:1',
             'contact_person_name.*'       => 'required|string|distinct|min:1',
-            'contact_person_designation'  => 'required|array|min:1',
-            'contact_person_designation.*'=> 'required|string|min:1',
+            'contact_person_designation'  => 'nullable|array|min:1',
+            'contact_person_designation.*'=> 'nullable|string|min:1',
             'contact_person_phone'        => 'required|array|min:1',
             'contact_person_phone.*'      => ['required', 'string', 'distinct', $validate_cp_phone],
             'contact_person_email'        => 'nullable|array|min:1',
@@ -12540,6 +12675,10 @@ class ContactController extends Controller
             $primaryCount = collect($isPrimaryArr)->filter(fn($v) => $v === 'Yes')->count();
             if ($primaryCount === 0) $validator->errors()->add('is_primary', 'At least one bank must be Primary.');
             if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
+
+            if (!$request->hasFile('files')) {
+                $validator->errors()->add('files', 'At least one attachment is required.');
+            }
         });
 
         if ($validator->fails()) {
@@ -12727,12 +12866,17 @@ class ContactController extends Controller
             'upi_id.*'                    => 'nullable|string|max:100',
             'contact_person_name'         => 'required|array|min:1',
             'contact_person_name.*'       => 'required|string|distinct|min:1',
-            'contact_person_designation'  => 'required|array|min:1',
-            'contact_person_designation.*'=> 'required|string|min:1',
+            'contact_person_designation'  => 'nullable|array|min:1',
+            'contact_person_designation.*'=> 'nullable|string|min:1',
             'contact_person_phone'        => 'required|array|min:1',
             'contact_person_phone.*'      => ['required', 'string', 'distinct'],
             'contact_person_email'        => 'nullable|array|min:1',
             'contact_person_email.*'      => 'nullable|email:rfc,dns|distinct',
+            'attachtypes'                 => 'nullable|array',
+            'attachtypes.*'               => 'nullable|exists:coattachtypes,id',
+            'files'                       => 'nullable|array',
+            'files.*'                     => 'nullable|array|max:2',
+            'files.*.*'                   => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
             'required' => 'This field is required.',
             'max'      => 'Maximum 100 characters allowed.',
@@ -12748,12 +12892,60 @@ class ContactController extends Controller
             if ($primaryCount > 1)  $validator->errors()->add('is_primary', 'Only one bank can be Primary.');
         });
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'data' => $validator->errors()->toArray(), 'message' => 'Validation error.'], 422);
+        // Attachment-level validation
+        $attachErrors   = [];
+        $attachErrCount = 0;
+        $existingTypeIds = $contact->coattachments()->pluck('coattachtype_id')->toArray();
+        $attachtypes    = $request->attachtypes ?? [];
+        $filesInput     = $request->file('files') ?? [];
+        $seenTypes      = array_map('intval', $existingTypeIds);
+
+        foreach (array_unique(array_merge(array_keys($attachtypes), array_keys($filesInput))) as $key) {
+            $attachtype = $attachtypes[$key] ?? null;
+            $files      = $filesInput[$key]  ?? null;
+            if (empty($attachtype) && empty($files)) continue;
+            if (!empty($files) && empty($attachtype)) {
+                $attachErrCount++;
+                $attachErrors['coattachtype_' . $key] = ['Document type is required.'];
+                continue;
+            }
+            if (!empty($attachtype) && empty($files)) {
+                $attachErrCount++;
+                $attachErrors['coattachments_' . $key] = ['Please upload file.'];
+                continue;
+            }
+            if (in_array((int)$attachtype, $seenTypes, true)) {
+                $attachErrCount++;
+                $attachErrors['coattachtype_' . $key] = ['You\'ve already added this attachment type.'];
+                continue;
+            }
+            $seenTypes[] = (int)$attachtype;
+            if (count($files) > 2) {
+                $attachErrCount++;
+                $attachErrors['coattachments_' . $key] = ['You cannot upload more than 2 files.'];
+                continue;
+            }
+            foreach ($files as $file) {
+                $ext  = strtolower($file->getClientOriginalExtension());
+                $size = $file->getSize();
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
+                    $attachErrCount++;
+                    $attachErrors['coattachments_' . $key] = ['File type must be jpg, jpeg, png or pdf.'];
+                }
+                if ($size > 2097152) {
+                    $attachErrCount++;
+                    $attachErrors['coattachments_' . $key] = ['File size must not exceed 2MB.'];
+                }
+            }
+        }
+
+        $allErrors = array_merge($validator->errors()->toArray(), $attachErrors);
+        if ($validator->fails() || $attachErrCount > 0) {
+            return response()->json(['success' => false, 'data' => $allErrors, 'message' => 'Validation error.'], 422);
         }
 
         try {
-            DB::transaction(function () use ($request, $contact) {
+            DB::transaction(function () use ($request, $contact, $attachtypes, $filesInput) {
                 $phoneCode = getPhoneCode();
 
                 $contact->contact_name    = $request->contact_name;
@@ -12764,7 +12956,7 @@ class ContactController extends Controller
                 $contact->whatsapp_prefix = $request->whatsapp_code ?? $phoneCode;
                 $contact->whatsapp        = $request->whatsapp;
                 $contact->status          = $request->status ?? 'Active';
-                $contact->blacklist_reason= $request->blacklist_reason;
+                $contact->blacklist_reason= ($request->status === 'Blacklisted') ? $request->blacklist_reason : null;
                 $contact->comment         = $request->contact_comment;
                 $contact->specialisation  = $request->specialisation ? implode(',', (array)$request->specialisation) : null;
                 $contact->full_company_name = $request->full_company_name;
@@ -12775,6 +12967,8 @@ class ContactController extends Controller
                 $contact->pan_no          = $request->pan_no;
                 $contact->pan_status_id   = $request->pan_status_id;
                 $contact->tds_percentage  = $request->tds_percentage;
+                $contact->gst_treatment   = $request->gst_treatment ?? null;
+                $contact->gst_number      = $request->gst_number ?? null;
                 $contact->address1        = $request->address;
                 $contact->state_id        = $request->state_id;
                 $contact->city_id         = $request->city_id;
@@ -12842,6 +13036,31 @@ class ContactController extends Controller
                         'upi_id'           => $upiIds[$idx]     ?? null,
                         'is_primary'       => $isPrimary[$idx]  ?? 'No',
                     ]);
+                }
+
+                // Save new attachments
+                if (!empty($attachtypes)) {
+                    foreach ($attachtypes as $key => $attachtype) {
+                        if (empty($attachtype) || empty($filesInput[$key])) continue;
+                        foreach ($filesInput[$key] as $file) {
+                            $fileoriginalname = $file->getClientOriginalName();
+                            $extension        = $file->getClientOriginalExtension();
+                            $filesize         = $file->getSize();
+                            $filename         = 'contact-attachment-' . Str::random(4) . '_' . time() . '.' . $extension;
+                            $file->move(
+                                public_path('media' . DIRECTORY_SEPARATOR . 'contact' . DIRECTORY_SEPARATOR),
+                                $filename
+                            );
+                            $att                  = new Coattachment;
+                            $att->name            = $filename;
+                            $att->original_name   = $fileoriginalname;
+                            $att->file_size       = $filesize / (1024 * 1024);
+                            $att->coattachtype_id = $attachtype;
+                            $att->created_by      = Auth::id();
+                            $att->contact_id      = $contact->id;
+                            $att->save();
+                        }
+                    }
                 }
             });
 

@@ -2,7 +2,7 @@
 
 @section('css')
 
-<link rel="stylesheet" href="{{ asset('css/driver-management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/driver-management.css?v=1.1') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" />
 
 
@@ -212,7 +212,7 @@
                                         <div class="current_allocvehic">
                                             
                                             @php
-                                                $currentVehicle = $contact->vehicleAllocations->first();
+                                                $currentVehicle = $contact->currentVehicleAllocation;
                                             @endphp
                                         
                                             <div class="row form-group">
@@ -221,7 +221,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <div class="form-check me-2 change-vehicle">
-                                                       <input class="form-check-input" type="checkbox" name="change_vehicle" id="change_vehicle" value="Yes" {{ optional($currentVehicle)->change_vehicle == 'Yes' ? 'checked' : '' }} />
+                                                       <input class="form-check-input" type="checkbox" name="change_vehicle" id="change_vehicle" value="Yes" />
                                                        <small class="error text-danger" id="edit_change_vehicle_error"></small>
                                                     </div>
                                                 </div>
@@ -258,7 +258,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="row form-group reason_wrap" style="{{ !empty(optional($currentVehicle)->vehicle_change_reason) ? '' : 'display:none;' }}">
+                                            <div class="row form-group reason_wrap" style="display:none;">
                                                 <div class="col-12 col-md-5">
                                                     <label>Vehicle Change Reason <span class="text-danger">*</span></label>
                                                 </div>
@@ -436,45 +436,53 @@
                                         
                                         
                                         <!--///////////////////////////////-->
-                                        <div class="status-content statusinactive" style="display:none;">
+                                        @php
+                                            $driverStatusType       = optional($contact->driverinfo)->status_type;
+                                            $isInactive             = $contact->status == 'Inactive';
+                                            $isOnLeave              = $isInactive && $driverStatusType == 'On Leave';
+                                            $isVoluntaryExit        = $isInactive && $driverStatusType == 'Voluntary Exit';
+                                            $expectedReturnRaw      = optional($contact->driverinfo)->expected_return_date;
+                                            $expectedReturnDisplay  = $expectedReturnRaw ? \Carbon\Carbon::parse($expectedReturnRaw)->format('d/m/Y') : '';
+                                        @endphp
+                                        <div class="status-content statusinactive" style="display:{{ $isInactive ? 'block' : 'none' }};">
                                             <div class="row form-group">
                                               <div class="col-12 col-md-5"></div>
-                                              
-                                              <div class="col-12 col-md-7 flex-wrap d-flex voluntaryexe-wrap" style="display:none;">
+
+                                              <div class="col-12 col-md-7 flex-wrap d-flex voluntaryexe-wrap" style="display:{{ $isInactive ? 'flex' : 'none' }};">
 
                                                     <div class="form-check me-2 onLeaveDiv">
-                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="onLeave" value="On Leave">
+                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="onLeave" value="On Leave" {{ $isOnLeave ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="onLeave">
-                                                           On Leave  
+                                                           On Leave
                                                         </label>
                                                     </div>
-                                                    
+
                                                     <div class="form-check mx-0 voluntaryExitDiv">
-                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="voluntaryExit" value="Voluntary Exit">
+                                                        <input class="form-check-input status-type" type="radio" name="status_type" id="voluntaryExit" value="Voluntary Exit" {{ $isVoluntaryExit ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="voluntaryExit">
-                                                           Voluntary Exit 
+                                                           Voluntary Exit
                                                         </label>
                                                     </div>
-                                                    
+
                                               </div>
                                               <small class="error text-danger" id="edit_status_type_error"></small>
                                             </div>
 
-                                            <div class="leavevoluntary_wrap" style="display:none;">
-                                                
-                                                <div class="onleave_wrap" style="display:none;">
-                                                    
+                                            <div class="leavevoluntary_wrap" style="display:{{ ($isOnLeave || $isVoluntaryExit) ? 'block' : 'none' }};">
+
+                                                <div class="onleave_wrap" style="display:{{ $isOnLeave ? 'block' : 'none' }};">
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Expected Return Date<span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
-                                                          <input type="text" class="form-control app-date-display" data-target="expected_return_date" value="" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
-                                          <input type="hidden" name="expected_return_date" id="expected_return_date" value="">
+                                                          <input type="text" class="form-control app-date-display" data-target="expected_return_date" value="{{ $expectedReturnDisplay }}" placeholder="DD/MM/YYYY" autocomplete="off" readonly>
+                                          <input type="hidden" name="expected_return_date" id="expected_return_date" value="{{ $expectedReturnRaw }}">
                                                           <small class="error text-danger" id="edit_expected_return_date_error"></small>
                                                       </div>
                                                     </div>
-                                                    
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Set Reminder<span class="text-danger">*</span></label>
@@ -485,22 +493,22 @@
                                                           <small class="error text-danger" id="edit_set_reminder_error"></small>
                                                       </div>
                                                     </div>
-                                                    
+
                                                 </div>
-                                                
-                                                <div class="voluntary_wrap" style="display:none;">
-                                                    
+
+                                                <div class="voluntary_wrap" style="display:{{ $isVoluntaryExit ? 'block' : 'none' }};">
+
                                                     <div class="row form-group">
                                                       <div class="col-12 col-md-5">
                                                           <label>Exit Reason <span class="text-danger">*</span></label>
                                                       </div>
                                                       <div class="col-12 col-md-7">
-                                                         <textarea class="form-control" name="voluntary_exit_reason" rows="3" placeholder=""></textarea>
+                                                         <textarea class="form-control" name="voluntary_exit_reason" rows="3" placeholder="">{{ optional($contact->driverinfo)->voluntary_exit_reason }}</textarea>
                                                          <small class="error text-danger" id="edit_voluntary_exit_reason_error"></small>
                                                       </div>
                                                     </div>
-                                                    
-                                                    
+
+
                                                     <div class="row">
                                                         <div class="col-12 col-md-6">
                                                             <label>Vehicle Photos <span class="text-danger">*</span></label>
@@ -515,7 +523,15 @@
                                                                         <small class="error text-danger" id="edit_vehicle_photos_error"></small>
                                                                     </label>
                                                                   </div>
-                                                                  <div class="upload__img-wrap"></div>
+                                                                  <div class="upload__img-wrap">
+                                                                    @foreach($contact->driverVehiclePhotos as $photo)
+                                                                    <div class="upload__img-box" data-photo-id="{{ $photo->id }}">
+                                                                        <div style="background-image: url('{{ asset('media/contact/' . $photo->file_name) }}');" data-file="{{ $photo->file_name }}" class="img-bg">
+                                                                            <div class="upload__img-close"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endforeach
+                                                                  </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -992,15 +1008,15 @@
                                                     <div class="col-12 col-md-7 d-flex">
             
                                                         <div class="form-check">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
-                                                            <label class="form-check-label" for="is_primary_yes">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_yes_{{ $index }}" value="Yes" {{ $contactBank->is_primary == 'Yes' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_yes_{{ $index }}">
                                                                 Yes
                                                             </label>
                                                         </div>
-            
+
                                                         <div class="form-check mx-2">
-                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_no" value="No" {{ $contactBank->is_primary == 'No' ? 'checked' : '' }} />
-                                                            <label class="form-check-label" for="is_primary_no">
+                                                            <input class="form-check-input bank-status" type="radio" name="is_primary[{{ $index }}]" id="is_primary_no_{{ $index }}" value="No" {{ $contactBank->is_primary == 'No' ? 'checked' : '' }} />
+                                                            <label class="form-check-label" for="is_primary_no_{{ $index }}">
                                                                 No
                                                             </label>
                                                         </div>
@@ -1408,10 +1424,17 @@
                                                 <h6>Alloted Asset</h6>
                                             </div>
                                             <div class="col-12 col-md-3 text-end">
+                                                @php
+                                                    // Asana 1215649653370471: gate Assign Asset on the driver's CURRENT
+                                                    // status, not on the existence of a historical exit-detail record.
+                                                    // An Active driver can always assign assets even if an old exit
+                                                    // record exists.
+                                                    $assetAssignLocked = ($contact->status ?? null) !== 'Active';
+                                                @endphp
                                                 <a href="javascript:void(0)"
-                                                   class="btn btn-theme {{ $contact->employeeExitDetail ? 'disabled' : '' }}"
-                                                   data-bs-toggle="{{ $contact->employeeExitDetail ? '' : 'modal' }}"
-                                                   data-bs-target="{{ $contact->employeeExitDetail ? '' : '#assettypeModal' }}">
+                                                   class="btn btn-theme {{ $assetAssignLocked ? 'disabled' : '' }}"
+                                                   data-bs-toggle="{{ $assetAssignLocked ? '' : 'modal' }}"
+                                                   data-bs-target="{{ $assetAssignLocked ? '' : '#assettypeModal' }}">
                                                     <i class="uil uil-plus me-1"></i> Assign Asset
                                                 </a>
                                                 <!--<a href="javascript:void(0)" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#assettypeModal"><i class="uil uil-plus me-1"></i> Assign Asset</a>-->
@@ -1635,27 +1658,34 @@
                                             <div class="cmnt-wrap mt-4">
                                     
                                                 @forelse($contact->activities as $activity)
-                                            
-                                                    <div class="d-flex {{ ($activity->is_blacklisted === 'Yes') ? 'blacklist_color' : '' }}">
-                                                        <span class="avatar {{ ($activity->is_blacklisted === 'Yes') ? 'bg-circlesec btn-danger' : 'bg-avatar-primary' }} me-3">
+                                                    @php
+                                                        $isBlacklisted   = $activity->is_blacklisted === 'Yes';
+                                                        $isVoluntaryExit = ($activity->is_voluntary_exit ?? 'No') === 'Yes';
+                                                    @endphp
+
+                                                    <div class="d-flex {{ $isBlacklisted ? 'blacklist_color' : ($isVoluntaryExit ? 'voluntary_exit_color' : '') }}">
+                                                        <span class="avatar {{ $isBlacklisted ? 'bg-circlesec btn-danger' : ($isVoluntaryExit ? 'bg-circlesec btn-warning' : 'bg-avatar-primary') }} me-3">
                                                             {{ strtoupper(substr(optional($activity->createdBy)->name, 0, 1)) }}
                                                         </span>
-                                            
+
                                                         <div class="w-90">
-                                                            <h6 class="mb-0 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+                                                            <h6 class="mb-0 {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ optional($activity->createdBy)->name ?? 'User' }}
+                                                                @if($isVoluntaryExit)
+                                                                    <span class="badge bg-warning text-dark ms-1" style="font-size:0.7rem;">Voluntary Exit</span>
+                                                                @endif
                                                             </h6>
-                                            
-                                                            <small class="d-block text-secondary {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                            <small class="d-block text-secondary {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ $activity->created_at->format('d M | h:i A') }}
                                                             </small>
-                                            
-                                                            <p class="text-secondary mb-2 {{ ($activity->is_blacklisted === 'Yes') ? 'c_red' : '' }}">
+
+                                                            <p class="text-secondary mb-2 {{ $isBlacklisted ? 'c_red' : ($isVoluntaryExit ? 'c_orange' : '') }}">
                                                                 {{ $activity->notes }}
                                                             </p>
                                                         </div>
                                                     </div>
-                                            
+
                                                 @empty
                                                     <p class="text-muted">No activities found.</p>
                                                 @endforelse
@@ -2062,7 +2092,7 @@
 <script>
     var HAS_EXISTING_PHOTO = {{ !empty($contact->contact_image) ? 'true' : 'false' }};
 </script>
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=1.5') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/edit.js?v=2.1') }}"></script>
 
 <script type="text/javascript" src="{{ asset('customjs/contact/activity.js') }}"></script>
 
@@ -2074,3 +2104,4 @@
 
 
 
+                                                                    

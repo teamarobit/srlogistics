@@ -306,8 +306,11 @@ $(document).ready(function(){
     
     
     // Add More Contact Person Start -------------------------------------------
-    
-    var contactperson_rowindex = 0;
+
+    // Init to the number of existing contact-person rows so appended rows
+    // (name="contact_person_name[]") get a data-index that matches the
+    // server-side array key, keeping field-level error IDs unique & aligned.
+    var contactperson_rowindex = $('#contactPersonContainer .contact-person').length;
 
     $(document).on('click', '.add-person', function (e) {
         e.preventDefault();
@@ -391,17 +394,17 @@ $(document).ready(function(){
     
     // Add More Bank Detail Start ----------------------------------------------
     
-    var bank_rowindex = 0;
-    
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
+
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();
-    
+
         var currentIndex = bank_rowindex;
         bank_rowindex++;
-    
+
         var formData = new FormData();
         formData.append('rowindex', currentIndex);
-    
+
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -420,57 +423,84 @@ $(document).ready(function(){
 
                     const $newSection = $(response.data);
                     $('#bankDetailsContainer').append($newSection);
-                
-                    assignBankErrorIds(); 
-                
+
+                    reindexBankRows();
+
                 }
-    
+
             }
         });
     });
-    
-    
-    function assignBankErrorIds(prefix = "edit") {
+
+
+    // Renumber every bank row's field-name index AND error-placeholder id to
+    // its live DOM position (0..n). The server validates the bank arrays by
+    // positional index, so keeping the span ids in lock-step with that order
+    // guarantees each validation message lands under the correct row — even
+    // after rows are added or removed.
+    function reindexBankRows(prefix = "edit") {
+
+        const nameBases = [
+            'is_primary', 'bank_id', 'beneficiary_name',
+            'account_number', 'ifsc_code', 'upi_id',
+            'contact_bank_id', 'row_index'
+        ];
 
         const errorMap = {
             b_primary_err: 'is_primary',
-            b_id_err:   'bank_id',
+            b_id_err:      'bank_id',
             b_name_err:    'beneficiary_name',
-            b_accno_err:      'account_number',
-            b_ifsc_err:     'ifsc_code',
+            b_accno_err:   'account_number',
+            b_ifsc_err:    'ifsc_code',
             b_upi_err:     'upi_id'
         };
-    
-        $('.bank-data').each(function () {
-    
-            let rowIndex = $(this).data('index'); // use actual row index
-    
+
+        $('#bankDetailsContainer .bank-data').each(function (rowIndex) {
+
+            const $row = $(this);
+
+            $row.attr('data-index', rowIndex);
+
+            // Re-key field names to the live DOM position.
+            $row.find('[name]').each(function () {
+                const name = $(this).attr('name');
+                const base = name.replace(/\[.*?\]$/, '');
+                if (nameBases.indexOf(base) !== -1) {
+                    $(this).attr('name', base + '[' + rowIndex + ']');
+                }
+            });
+
+            // Re-key error placeholders to the same position.
             Object.entries(errorMap).forEach(([className, baseId]) => {
-    
-                $(this).find('.' + className).attr(
+                $row.find('.' + className).attr(
                     'id',
                     `${prefix}_${baseId}_${rowIndex}_error`
                 );
-    
             });
-    
+
         });
     }
-    
+
+    // Normalise the pre-rendered rows on load (also fixes their duplicate ids).
+    reindexBankRows();
+
     $(document).on('click', '.close-bank', function (e) {
         e.preventDefault();
-    
-        //if ($('.bank-data').length > 1) {
-            $(this).closest('.bank-data').remove();
-        //}
+
+        $(this).closest('.bank-data').remove();
+        reindexBankRows();
     });
     
-    $(document).on('change', '.vehiclevendor-status[value="Yes"]', function () {
-        if ($(this).is(':checked')) {
-            $('.vehiclevendor-status[value="Yes"]').not(this).prop('checked', false);
+    // Mutual exclusion: selecting Yes on one bank forces all others to No
+    $(document).on('change', 'input[type="radio"][name^="is_primary"]', function () {
+        if ($(this).val() === 'Yes') {
+            var $thisRow = $(this).closest('.bank-data');
+            $('#bankDetailsContainer .bank-data').not($thisRow).each(function () {
+                $(this).find('input[type="radio"][value="No"]').prop('checked', true);
+            });
         }
     });
-    
+
     // Add More Bank Detail Ends -----------------------------------------------
     
     
@@ -502,9 +532,12 @@ $(document).ready(function(){
         e.preventDefault();   // VERY IMPORTANT
         
         $button = $('#editContactBtn');
-        
+
+        // Make sure bank field indexes match their DOM order before serializing.
+        reindexBankRows();
+
         var formData = new FormData(this);
-        
+
         let hasFiles = false;
     
         dropzones.forEach(({ dz, id }) => {
@@ -542,7 +575,7 @@ $(document).ready(function(){
         
             // Check NEW selections (dropdown)
             $('select[name="coattachtypes[]"]').each(function () {
-                if ($(this).val() == 8) {
+                if ($(this).val() == 7) {
                     hasTdsDeclaration = true;
                 }
             });
@@ -569,8 +602,8 @@ $(document).ready(function(){
         
             // Final validation
             if (!hasTdsDeclaration) {
-                $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
-                isValid = false;
+                // $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
+                // isValid = false;
             }
         }
         

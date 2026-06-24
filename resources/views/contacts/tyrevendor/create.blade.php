@@ -495,7 +495,9 @@
                                     <div class="bank-details-wrap">
                                         
                                         <div id="bankDetailsContainer">
-                                    
+
+                                            <div class="bank-data" data-index="0">
+
                                             <div class="row form-group">
                                                 <div class="col-12 col-md-5">
                                                     <label>Is Primary ? <span class="text-danger">*</span></label>
@@ -519,7 +521,7 @@
                                                     
                                                 </div>
                                                 <small class="error text-danger" id="add_is_primary_error"></small>
-                                                <small class="error text-danger" id="add_is_primary_0_error"></small>
+                                                <small class="error text-danger b_primary_err" id="add_is_primary_0_error"></small>
                                             </div>
         
                                             <div class="row form-group">
@@ -535,7 +537,7 @@
                                                         </option>
                                                         @endforeach
                                                     </select>
-                                                    <small class="error text-danger" id="add_bank_id_0_error"></small>
+                                                    <small class="error text-danger b_id_err" id="add_bank_id_0_error"></small>
                                                 </div>
                                             </div>
                                             
@@ -545,7 +547,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="beneficiary_name[]" class="form-control" />
-                                                    <small class="error text-danger" id="add_beneficiary_name_0_error"></small>
+                                                    <small class="error text-danger b_name_err" id="add_beneficiary_name_0_error"></small>
                                                 </div>
                                             </div>
         
@@ -555,7 +557,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="account_number[]" class="form-control" />
-                                                    <small class="error text-danger" id="add_account_number_0_error"></small>
+                                                    <small class="error text-danger b_accno_err" id="add_account_number_0_error"></small>
                                                 </div>
                                             </div>
                                             
@@ -565,7 +567,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="ifsc_code[]" class="form-control" />
-                                                    <small class="error text-danger" id="add_ifsc_code_0_error"></small>
+                                                    <small class="error text-danger b_ifsc_err" id="add_ifsc_code_0_error"></small>
                                                 </div>
                                             </div>
         
@@ -575,10 +577,12 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" name="upi_id[]" class="form-control" />
-                                                    <small class="error text-danger" id="add_upi_id_0_error"></small>
+                                                    <small class="error text-danger b_upi_err" id="add_upi_id_0_error"></small>
                                                 </div>
-                                            </div> 
-                                        
+                                            </div>
+
+                                            </div>{{-- /.bank-data --}}
+
                                         </div>
                                     
                                     </div>
@@ -642,7 +646,10 @@
                                                 <small class="error text-danger atyperr" id="add_coattachtype_0_error"></small>
                                             </div>
                                         </div>
-                                        
+
+                                        {{-- TDS Declaration rule message (shown when TDS % is 0 or 1 and the document is missing) --}}
+                                        <small class="error text-danger d-block mt-1" id="add_attachtypes_error"></small>
+
                                         <hr>
                                         
                                         <!--dropzone-->
@@ -834,11 +841,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
-<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.1') }}"></script>
+<script type="text/javascript" src="{{ asset('customjs/contact/' . $cotype->slug . '/create.js?v=1.2') }}"></script>
 
 @endsection
-
-
-
-
-

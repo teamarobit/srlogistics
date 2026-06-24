@@ -197,7 +197,7 @@ $(document).ready(function(){
 
 
     // ── Bank Details ──────────────────────────────────────────────────────────
-    var bank_rowindex = 0;
+    var bank_rowindex = $('#bankDetailsContainer .bank-data').length;
 
     $(document).on('click', '.add-bank', function (e) {
         e.preventDefault();
@@ -223,8 +223,15 @@ $(document).ready(function(){
         $(this).closest('.bank-data').remove();
     });
 
-    $(document).on('change', '.bank-status[value="Yes"]', function () {
-        if ($(this).is(':checked')) { $('.bank-status[value="Yes"]').not(this).prop('checked', false); }
+    // Mutual exclusion: selecting Yes on one bank forces all others to No
+    $(document).on('change', 'input[type="radio"][name^="is_primary"]', function () {
+        if ($(this).val() === 'Yes') {
+            var $thisRow = $(this).closest('.bank-data');
+            $('#bankDetailsContainer .bank-data').not($thisRow).each(function () {
+                $(this).find('input[type="radio"][value="Yes"]').prop('checked', false);
+                $(this).find('input[type="radio"][value="No"]').prop('checked', true);
+            });
+        }
     });
 
 
@@ -283,7 +290,7 @@ $(document).ready(function(){
         if (tdsPercentage === 0) {
             let hasTdsDeclaration = false;
             $('select[name="coattachtypes[]"]').each(function () {
-                if ($(this).val() == 8) { hasTdsDeclaration = true; }
+                if ($(this).val() == 7) { hasTdsDeclaration = true; }
             });
             if (!hasTdsDeclaration) {
                 let existing = $('#existing_attachtypes').val();
@@ -295,8 +302,8 @@ $(document).ready(function(){
                 }
             }
             if (!hasTdsDeclaration) {
-                $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
-                return false;
+                // $("#edit_coattachtype_0_error").text("TDS Declaration document is mandatory when TDS % is 0.");
+                // return false;
             }
         }
 
