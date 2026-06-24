@@ -914,6 +914,18 @@ class LoadVendorController extends Controller
             'location_type.required' => 'Please select a Location Type.',
         ]);
 
+        // BUG3 — server-side guard: capping amount must be <= min(loading, unloading) charge (parity with V1).
+        $validator->after(function ($v) use ($request) {
+            if ($request->brone_by === 'mixed' && $request->filled('capping_amount') && is_numeric($request->capping_amount)) {
+                $loading   = is_numeric($request->loading_charge)   ? (float) $request->loading_charge   : null;
+                $unloading = is_numeric($request->unloading_charge) ? (float) $request->unloading_charge : null;
+                $charges   = array_values(array_filter([$loading, $unloading], fn ($n) => $n !== null));
+                if (!empty($charges) && (float) $request->capping_amount > min($charges)) {
+                    $v->errors()->add('capping_amount', 'Capping amount cannot be greater than loading or unloading charge.');
+                }
+            }
+        });
+
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
         }

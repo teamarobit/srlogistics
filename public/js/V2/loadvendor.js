@@ -245,19 +245,44 @@ $(function () {
     if ($('#cv2LocationsCard').length) { loadLocations(); }
     $('#cv2LocFilter').on('change', loadLocations);
 
+    /* BUG1 — Route Type drives Company Role (parity with V1) */
     $(document).on('change', '#cv2RouteType input[name="route_type"]', function () {
         var v = $(this).val();
         $('.cv2-cond[data-rt]').hide();
         $('.cv2-cond[data-rt="' + v + '"]').show();
+        if (v === 'source') { $('#cr_cor').prop('checked', true); }
+        else if (v === 'destination') { $('#cr_cee').prop('checked', true); }
+        // midpoint: leave Company Role as chosen by the user (parity with V1)
     });
+    /* BUG2 — Location Type drives Company Role (parity with V1) */
     $(document).on('change', '#cv2LocType input[name="location_type"]', function () {
         var v = $(this).val();
         $('.cv2-cond[data-lt="Loading"]').toggle(v === 'Loading' || v === 'Both');
         $('.cv2-cond[data-lt="Unloading"]').toggle(v === 'Unloading' || v === 'Both');
+        if (v === 'Loading') { $('#cr_cee').prop('checked', false); $('#cr_cor').prop('checked', true); }
+        else if (v === 'Unloading') { $('#cr_cor').prop('checked', false); $('#cr_cee').prop('checked', true); }
     });
     $(document).on('change', '#cv2BroneBy input[name="brone_by"]', function () {
         $('.cv2-cond[data-bb="mixed"]').toggle($(this).val() === 'mixed');
     });
+
+    /* BUG3 — Capping Amount must be <= min(loading, unloading) charge (parity with V1) */
+    function cv2ValidateCapping() {
+        var loading   = parseFloat($('input[name="loading_charge"]').val());
+        var unloading = parseFloat($('input[name="unloading_charge"]').val());
+        var capping   = parseFloat($('input[name="capping_amount"]').val());
+        if (isNaN(capping)) { return; }
+        var maxAllowed = null;
+        if (!isNaN(loading) && !isNaN(unloading)) { maxAllowed = Math.min(loading, unloading); }
+        else if (!isNaN(loading))   { maxAllowed = loading; }
+        else if (!isNaN(unloading)) { maxAllowed = unloading; }
+        else { return; }
+        if (capping > maxAllowed) {
+            Toast.fire({ icon: 'error', title: 'Capping amount cannot be greater than loading or unloading charge!' });
+            $('input[name="capping_amount"]').val(maxAllowed);
+        }
+    }
+    $(document).on('input', 'input[name="capping_amount"], input[name="loading_charge"], input[name="unloading_charge"]', cv2ValidateCapping);
 
     $('#cv2LocationForm').on('submit', function (e) {
         e.preventDefault();
