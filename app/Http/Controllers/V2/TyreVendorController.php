@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V2;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 use App\Models\Country;
 use App\Models\State;
@@ -106,6 +107,27 @@ class TyreVendorController extends Controller
     private function findVendorOrFail($id): Contact
     {
         return Contact::where('cotype_id', self::COTYPE)->findOrFail($id);
+    }
+
+    /**
+     * B9 - server-side write-lock. A Blacklisted vendor is locked for all writes.
+     * Inactive stays writable; reads are never blocked. Passing $newStatus allows
+     * the un-blacklist transition (existing Blacklisted -> a non-Blacklisted status).
+     * Returns a 422 JSON response to short-circuit the caller, or null.
+     */
+    private function blockIfWriteLocked(?Contact $contact, ?string $newStatus = null)
+    {
+        if ($contact && $contact->status === 'Blacklisted') {
+            if ($newStatus !== null && $newStatus !== 'Blacklisted') {
+                return null; // allow un-blacklisting
+            }
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => 'This vendor is Blacklisted and cannot be modified.',
+            ], 422);
+        }
+        return null;
     }
 
     /** Dropdown lookups shared by create + edit. */
@@ -319,15 +341,20 @@ class TyreVendorController extends Controller
             'phone'    => preg_replace('/\s+/', '', (string) $request->phone),
             'whatsapp' => preg_replace('/\s+/', '', (string) $request->whatsapp),
         ]);
+        if ($request->has('contact_person_phone')) {
+            $request->merge([
+                'contact_person_phone' => array_map(fn ($p) => preg_replace('/\D/', '', (string) $p), $request->contact_person_phone ?? []),
+            ]);
+        }
 
-        $validate_phone = function ($attribute, $value, $fail) use ($request) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+        $validate_phone = function ($attribute, $value, $fail) {
+            // B8 — match on the 10 digits regardless of prefix (blocks 91 vs +91 duplicates).
+            if (Contact::where('phone', $value)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
 
-        $validator = Validator::make($request->all(), $this->rules($validate_phone), $this->messages());
+        $validator = Validator::make($request->all(), $this->rules($validate_phone), $this->messages(), $this->attributes());
 
         $validator->after(function ($validator) use ($request) {
             $this->validatePrimaryBank($validator, $request);
@@ -441,15 +468,18 @@ class TyreVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre vendor not found!'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact, $request->status ?? 'Active')) {
+            return $locked;
+        }
 
         $validate_phone = function ($attribute, $value, $fail) use ($id) {
-            $code = getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+            // B8 — match on the 10 digits regardless of prefix (blocks 91 vs +91 duplicates).
+            if (Contact::where('phone', $value)->where('id', '!=', $id)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
 
-        $validator = Validator::make($request->all(), $this->rules($validate_phone), $this->messages());
+        $validator = Validator::make($request->all(), $this->rules($validate_phone, $contact->id), $this->messages(), $this->attributes());
 
         $validator->after(function ($validator) use ($request, $contact) {
             $this->validatePrimaryBank($validator, $request);
@@ -534,7 +564,7 @@ class TyreVendorController extends Controller
      | Shared validation + write helpers
      | =============================================================== */
 
-    private function rules(Closure $validate_phone): array
+    private function rules(Closure $validate_phone, $ignoreId = null): array
     {
         return [
             'company_name'               => 'required|max:100',
@@ -553,7 +583,12 @@ class TyreVendorController extends Controller
             'pan_no'                     => 'nullable|max:100',
             'pan_status_id'              => 'nullable|integer|exists:panstatuses,id',
             'gst_treatment'             => 'nullable|in:Registered,Unregistered',
-            'gst_number'                => 'nullable|required_if:gst_treatment,Registered|max:100',
+            'gst_number'                => [
+                'nullable', 'required_if:gst_treatment,Registered', 'max:100',
+                Rule::unique('contacts', 'gst_number')
+                    ->where(fn ($q) => $q->where('cotype_id', self::COTYPE)->whereNull('deleted_at'))
+                    ->ignore($ignoreId),
+            ],
             'tds_percentage'            => 'nullable|numeric|min:0|max:100',
             'address'                   => 'required|string|max:1000',
             'state_id'                  => 'required|exists:states,id',
@@ -578,7 +613,7 @@ class TyreVendorController extends Controller
             'contact_person_designation'    => 'nullable|array',
             'contact_person_designation.*'  => 'nullable|string',
             'contact_person_phone'          => 'required|array|min:1',
-            'contact_person_phone.*'        => ['required', 'string', 'distinct'],
+            'contact_person_phone.*'        => ['required', 'string', 'distinct', 'digits:10'],
             'contact_person_whatsapp'       => 'nullable|array',
             'contact_person_whatsapp.*'     => 'nullable|string',
             'contact_person_email'          => 'nullable|array',
@@ -602,8 +637,24 @@ class TyreVendorController extends Controller
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
             'post_code.digits'=> 'Postal code must be 6 digits.',
-            'tds_declaration.mimes' => 'File type must be jpg, jpeg, png or pdf.',
-            'tds_declaration.max'   => 'File size must not exceed 2MB.',
+            'contact_person_phone.*.digits' => 'Contact person phone must contain 10 digits.',
+            'tds_percentage.max'     => 'TDS % may not be greater than 100.',
+            'tds_percentage.numeric' => 'TDS % must be a number.',
+            'gst_number.unique'      => 'This GST number is already registered to another tyre vendor.',
+            'tds_declaration.mimes'    => 'File type must be jpg, jpeg, png or pdf.',
+            'tds_declaration.max'      => 'File size must not exceed 2MB.',
+            'tds_declaration.uploaded' => 'File size must not exceed 2MB.',
+        ];
+    }
+
+    /** Friendly attribute names for validation messages (TV-D2). */
+    private function attributes(): array
+    {
+        return [
+            'company_registration_date' => 'company registration date',
+            'working_since'             => 'working since date',
+            'gst_number'                => 'GST number',
+            'tds_percentage'            => 'TDS %',
         ];
     }
 
@@ -763,14 +814,19 @@ class TyreVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre vendor not found!'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), [
             'coattachtype_id' => 'required|exists:coattachtypes,id',
             'attachment_file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
-            'required' => 'This field is required.',
-            'mimes'    => 'File type must be jpg, jpeg, png or pdf.',
-            'max'      => 'File size must not exceed 2MB.',
+            'required'                 => 'This field is required.',
+            'mimes'                    => 'File type must be jpg, jpeg, png or pdf.',
+            'max'                      => 'File size must not exceed 2MB.',
+            'attachment_file.max'      => 'File size must not exceed 2MB.',
+            'attachment_file.uploaded' => 'File size must not exceed 2MB.',
         ]);
 
         if ($validator->fails()) {
@@ -824,6 +880,11 @@ class TyreVendorController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Woops! attachment not found.'], 422);
         }
 
+        $vendor = Contact::where('cotype_id', self::COTYPE)->find($attachment->contact_id);
+        if ($locked = $this->blockIfWriteLocked($vendor)) {
+            return $locked;
+        }
+
         // E6 - do not allow removing the only TDS Declaration while tds is 0 or 1.
         if ((int) $attachment->coattachtype_id === self::TDS_DECLARATION_TYPE) {
             $contact = Contact::find($attachment->contact_id);
@@ -873,6 +934,9 @@ class TyreVendorController extends Controller
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre vendor not found!'], 422);
         }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
+        }
 
         $validator = Validator::make($request->all(), $this->tyreRules(), $this->messages());
         if ($validator->fails()) {
@@ -912,6 +976,9 @@ class TyreVendorController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre vendor not found!'], 422);
+        }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
         }
 
         $tyre = Tyre::where('id', $tyreId)->where('contact_id', $contact->id)->first();
@@ -955,6 +1022,11 @@ class TyreVendorController extends Controller
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre not found!'], 422);
         }
 
+        $vendor = Contact::where('cotype_id', self::COTYPE)->find($tyre->contact_id);
+        if ($locked = $this->blockIfWriteLocked($vendor)) {
+            return $locked;
+        }
+
         try {
             DB::transaction(function () use ($tyre) {
                 $vendorId = $tyre->contact_id;
@@ -981,6 +1053,9 @@ class TyreVendorController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE)->find($request->contact_id);
         if (! $contact) {
             return response()->json(['success' => false, 'data' => [], 'message' => 'Tyre vendor not found!'], 422);
+        }
+        if ($locked = $this->blockIfWriteLocked($contact)) {
+            return $locked;
         }
 
         $validator = Validator::make($request->all(), [
