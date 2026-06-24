@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 /**
  * Insurance Vendor Module V2 — Controller (Gate 2: live backend wiring).
@@ -59,6 +60,46 @@ class InsuranceProviderController extends Controller
     {
         return State::whereHas('country', fn($q) => $q->where('iso2', 'IN'))
             ->orderBy('name')->get();
+    }
+
+    /** B5 — human-readable attribute names so validator messages read "GST Number", not "gst number". */
+    private function attributeNames(): array
+    {
+        return [
+            'company_name'    => 'company name',
+            'contact_name'    => 'contact name',
+            'contact_code'    => 'contact code',
+            'phone'           => 'phone',
+            'whatsapp'        => 'WhatsApp number',
+            'email'           => 'email',
+            'gst_number'      => 'GST number',
+            'contact_comment' => 'comment',
+            'country_id'      => 'country',
+            'state_id'        => 'state',
+            'city_id'         => 'city',
+            'contact_image'   => 'logo',
+        ];
+    }
+
+    /**
+     * B9 — server-side write-lock. A Blacklisted vendor is locked for edits.
+     * The 2-arg form allows un-blacklisting via the edit form: when the incoming
+     * status is anything other than Blacklisted, the write is permitted.
+     * toggleStatus + reads are never blocked. Returns a 422 JSON response, or null.
+     */
+    private function blockIfWriteLocked(?Contact $contact, ?string $newStatus = null)
+    {
+        if ($contact && $contact->status === 'Blacklisted') {
+            if ($newStatus !== null && $newStatus !== 'Blacklisted') {
+                return null; // allow un-blacklisting
+            }
+            return response()->json([
+                'success' => false,
+                'data'    => [],
+                'message' => 'This vendor is Blacklisted and cannot be modified.',
+            ], 422);
+        }
+        return null;
     }
 
     /* ---------------------------------------------------------------
@@ -122,13 +163,16 @@ class InsuranceProviderController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'phone'    => preg_replace('/\s+/', '', $request->phone ?? ''),
-            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+            'phone'      => preg_replace('/\s+/', '', $request->phone ?? ''),
+            'whatsapp'   => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+            'gst_number' => trim((string) $request->gst_number) ?: null,   // B2 — blank → null so empty GSTs don't collide
         ]);
 
-        $validate_phone = function ($attribute, $value, $fail) use ($request) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->exists()) {
+        // B8 — match on the national phone digits irrespective of ph_prefix so a
+        // legacy "91"-prefixed duplicate is caught the same as a "+91" one.
+        // (Code-level guard only; stored data is not altered here.)
+        $validate_phone = function ($attribute, $value, $fail) {
+            if (Contact::where('phone', $value)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -145,9 +189,16 @@ class InsuranceProviderController extends Controller
             'country_id'      => 'nullable|exists:countries,id',
             'state_id'        => 'nullable|exists:states,id',
             'city_id'         => 'nullable|exists:cities,id',
-            'gst_number'      => 'nullable|string|max:20',
+            'gst_number'      => [
+                'nullable', 'string', 'max:20',
+                Rule::unique('contacts', 'gst_number')   // B2 — scoped to cotype 9, soft-deletes ignored
+                    ->where('cotype_id', self::COTYPE_ID)
+                    ->whereNull('deleted_at'),
+            ],
             'contact_image'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+        ], [
+            'gst_number.unique' => 'This GST number is already registered to another insurance vendor.',
+        ], $this->attributeNames());
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors()], 422);
@@ -221,8 +272,9 @@ class InsuranceProviderController extends Controller
     public function update(Request $request, $id)
     {
         $request->merge([
-            'phone'    => preg_replace('/\s+/', '', $request->phone ?? ''),
-            'whatsapp' => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+            'phone'      => preg_replace('/\s+/', '', $request->phone ?? ''),
+            'whatsapp'   => preg_replace('/\s+/', '', $request->whatsapp ?? ''),
+            'gst_number' => trim((string) $request->gst_number) ?: null,   // B2 — blank → null so empty GSTs don't collide
         ]);
 
         $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($id);
@@ -230,9 +282,15 @@ class InsuranceProviderController extends Controller
             return response()->json(['success' => false, 'message' => 'Insurance vendor not found.'], 422);
         }
 
-        $validate_phone = function (string $attribute, mixed $value, Closure $fail) use ($request, $id) {
-            $code = $request->phone_code ?? getPhoneCode();
-            if (Contact::where('phone', $value)->where('ph_prefix', $code)->where('id', '!=', $id)->exists()) {
+        // B9 — Blacklisted write-lock (un-blacklist via edit allowed; Tyre variant).
+        if ($locked = $this->blockIfWriteLocked($contact, $request->status ?? 'Active')) {
+            return $locked;
+        }
+
+        // B8 — match on the national phone digits irrespective of ph_prefix; keep
+        // the self-ignore so editing a record with its own number still passes.
+        $validate_phone = function (string $attribute, mixed $value, Closure $fail) use ($id) {
+            if (Contact::where('phone', $value)->where('id', '!=', $id)->exists()) {
                 $fail('This phone number already exists.');
             }
         };
@@ -249,9 +307,17 @@ class InsuranceProviderController extends Controller
             'country_id'      => 'nullable|exists:countries,id',
             'state_id'        => 'nullable|exists:states,id',
             'city_id'         => 'nullable|exists:cities,id',
-            'gst_number'      => 'nullable|string|max:20',
+            'gst_number'      => [
+                'nullable', 'string', 'max:20',
+                Rule::unique('contacts', 'gst_number')   // B2 — scoped to cotype 9, soft-deletes ignored, self ignored
+                    ->where('cotype_id', self::COTYPE_ID)
+                    ->whereNull('deleted_at')
+                    ->ignore($id),
+            ],
             'contact_image'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+        ], [
+            'gst_number.unique' => 'This GST number is already registered to another insurance vendor.',
+        ], $this->attributeNames());
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'data' => $validator->errors()], 422);
@@ -313,6 +379,14 @@ class InsuranceProviderController extends Controller
         $contact = Contact::where('cotype_id', self::COTYPE_ID)->find($id);
         if (! $contact) {
             return response()->json(['success' => false, 'message' => 'Insurance vendor not found.'], 422);
+        }
+
+        // IV-D1 — never silently un-blacklist via the toggle; status must be changed through the edit form.
+        if ($contact->status === 'Blacklisted') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Blacklisted vendors cannot be toggled. Edit the vendor to change its status.',
+            ], 422);
         }
 
         $newStatus = $contact->status === 'Active' ? 'Inactive' : 'Active';

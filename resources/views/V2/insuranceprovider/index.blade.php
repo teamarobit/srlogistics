@@ -143,6 +143,7 @@
               <div class="cv2-radio-group">
                 <span class="cv2-radio"><input type="radio" name="status" id="cv2IpStAct" value="Active" checked><label for="cv2IpStAct">Active</label></span>
                 <span class="cv2-radio"><input type="radio" name="status" id="cv2IpStIn" value="Inactive"><label for="cv2IpStIn">Inactive</label></span>
+                <span class="cv2-radio"><input type="radio" name="status" id="cv2IpStBl" value="Blacklisted"><label for="cv2IpStBl">Blacklisted</label></span>
               </div>
               <span class="cv2-err text-danger small d-block mt-1"></span>
             </div>
