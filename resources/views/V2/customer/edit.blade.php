@@ -78,8 +78,10 @@
                         <div class="cv2-field"><label class="cv2-label">Postal Code</label><input type="text" name="post_code" value="{{ old('post_code', $contact->zipcode) }}" maxlength="6"></div>
                         <div class="cv2-field"><label class="cv2-label">Map Location</label><input type="text" name="head_office_map_location" value="{{ old('head_office_map_location', $contact->head_office_map_location) }}" placeholder="Paste map link"></div>
                         <div class="cv2-field is-full" style="background:var(--cv2-soft);border:1px solid var(--cv2-line);border-radius:10px;padding:12px 14px;">
-                            <label class="cv2-label" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="is_deduction_chargeable" value="1" {{ $headDeduct ? 'checked' : '' }} style="width:auto;"> Halting deduction chargeable</label>
-                            <input type="number" name="halting_charges_per_day" value="{{ old('halting_charges_per_day', $contact->halting_charges_per_day) }}" placeholder="Halting charges / day (₹)" style="margin-top:8px;">
+                            <label class="cv2-label" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="is_deduction_chargeable" value="1" class="cv2-halting-toggle" {{ $headDeduct ? 'checked' : '' }} style="width:auto;"> Halting deduction chargeable</label>
+                            <div class="cv2-halting-wrap" style="margin-top:8px;{{ $headDeduct ? '' : 'display:none;' }}">
+                                <input type="number" name="halting_charges_per_day" value="{{ old('halting_charges_per_day', $contact->halting_charges_per_day) }}" placeholder="Halting charges / day (₹)">
+                            </div>
                         </div>
                     </div></div>
                 </div>
@@ -184,4 +186,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.5') }}"></script>@endsection

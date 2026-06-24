@@ -35,8 +35,8 @@
                     </div>
                     <div class="cv2-field"><label class="cv2-label">Advance Payment <span class="req">*</span></label><input type="number" step="0.01" name="advance_payment" value="{{ old('advance_payment') }}" placeholder="0.00"></div>
                     <div class="cv2-field"><label class="cv2-label">Payment Within (days) <span class="req">*</span></label><input type="number" name="payment_within_day" value="{{ old('payment_within_day') }}" placeholder="30"></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="date" name="start_date" value="{{ old('start_date') }}"></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="date" name="end_date" value="{{ old('end_date') }}"></div>
+                    <div class="cv2-field" data-when="dated"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="text" class="cv2-date" name="start_date" value="{{ old('start_date') }}" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
+                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="text" class="cv2-date" name="end_date" value="{{ old('end_date') }}" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
                     <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Allowed KM <span class="req">*</span></label><input type="number" name="total_allowed_kilometer" value="{{ old('total_allowed_kilometer') }}" placeholder="e.g. 8000"></div>
                     <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Price <span class="req">*</span></label><input type="number" step="0.01" name="monthly_total_price" value="{{ old('monthly_total_price') }}" placeholder="₹"></div>
                     <div class="cv2-field is-full"><label class="cv2-label">Routes <span class="req">*</span></label>
@@ -58,4 +58,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.5') }}"></script>@endsection

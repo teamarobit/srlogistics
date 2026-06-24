@@ -61,4 +61,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.5') }}"></script>@endsection

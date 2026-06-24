@@ -212,6 +212,18 @@ $(function () {
                 if ($inp.data('end')) { $($inp.data('end')).val(''); }
             });
         });
+
+        /* Single-date picker (contract / vehicle dates) -> writes YYYY-MM-DD into the field */
+        $('.cv2-date').each(function () {
+            var $inp = $(this);
+            $inp.daterangepicker({
+                singleDatePicker: true,
+                autoUpdateInput: false,
+                locale: { format: 'YYYY-MM-DD', cancelLabel: 'Clear' }
+            });
+            $inp.on('apply.daterangepicker', function (ev, picker) { $inp.val(picker.startDate.format('YYYY-MM-DD')); });
+            $inp.on('cancel.daterangepicker', function () { $inp.val(''); });
+        });
     }
 
     /* ===============================================================
@@ -270,6 +282,11 @@ $(function () {
     /* Status -> blacklist reason toggle (edit) */
     $('#cv2Status').on('change', function () { $('#cv2BlacklistWrap').toggle($(this).val() === 'Blacklisted'); });
 
+    /* Halting deduction checkbox -> show/hide halting charges field (REG-04) */
+    $(document).on('change', '.cv2-halting-toggle', function () {
+        $('.cv2-halting-wrap').toggle($(this).is(':checked'));
+    });
+
     /* ===============================================================
      | Customer LIST — delete (index page)
      | =============================================================== */
@@ -318,6 +335,28 @@ $(function () {
     $(document).on('change', '#cv2BroneBy input[name="brone_by"]', function () {
         $('.cv2-cond[data-bb="mixed"]').toggle($(this).val() === 'mixed');
     });
+
+    /* Capping must not exceed loading / unloading charge (parity with V1 validateCapping) */
+    function cv2ValidateCapping() {
+        var $f        = $('#cv2LocationForm');
+        var loading   = parseFloat($f.find('input[name="loading_charge"]').val());
+        var unloading = parseFloat($f.find('input[name="unloading_charge"]').val());
+        var $cap      = $f.find('input[name="capping_amount"]');
+        var capping   = parseFloat($cap.val());
+        if (isNaN(capping)) { return; }
+        var maxAllowed = null;
+        if (!isNaN(loading) && !isNaN(unloading)) { maxAllowed = Math.min(loading, unloading); }
+        else if (!isNaN(loading))   { maxAllowed = loading; }
+        else if (!isNaN(unloading)) { maxAllowed = unloading; }
+        else { return; }
+        if (capping > maxAllowed) {
+            Toast.fire({ icon: 'error', title: 'Capping amount cannot be greater than loading or unloading charge.' });
+            $cap.val(maxAllowed);
+        }
+    }
+    $(document).on('change blur',
+        '#cv2LocationForm input[name="capping_amount"], #cv2LocationForm input[name="loading_charge"], #cv2LocationForm input[name="unloading_charge"]',
+        cv2ValidateCapping);
 
     $('#cv2LocationForm').on('submit', function (e) {
         e.preventDefault();

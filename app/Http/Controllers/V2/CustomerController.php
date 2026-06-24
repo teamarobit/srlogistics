@@ -1126,6 +1126,24 @@ class CustomerController extends Controller
             return response()->json(['success' => false, 'data' => $validator->errors(), 'message' => 'Please check validation errors.'], 422);
         }
 
+        // REG-03: Capping must not exceed the loading/unloading charge it caps.
+        if ($request->brone_by === 'mixed' && is_numeric($request->capping_amount)) {
+            $charges = [];
+            if (in_array($request->location_type, ['Loading', 'Both']) && is_numeric($request->loading_charge)) {
+                $charges[] = (float) $request->loading_charge;
+            }
+            if (in_array($request->location_type, ['Unloading', 'Both']) && is_numeric($request->unloading_charge)) {
+                $charges[] = (float) $request->unloading_charge;
+            }
+            if (! empty($charges) && (float) $request->capping_amount > min($charges)) {
+                return response()->json([
+                    'success' => false,
+                    'data'    => ['capping_amount' => ['Capping amount cannot be greater than loading or unloading charge.']],
+                    'message' => 'Capping amount cannot be greater than loading or unloading charge.',
+                ], 422);
+            }
+        }
+
         try {
             DB::transaction(function () use ($request, $contact) {
 

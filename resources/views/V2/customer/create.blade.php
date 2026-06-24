@@ -119,8 +119,10 @@
                                     <input type="text" name="head_office_map_location" value="{{ old('head_office_map_location') }}" placeholder="Paste map link">
                                 </div>
                                 <div class="cv2-field is-full" style="background:var(--cv2-soft);border:1px solid var(--cv2-line);border-radius:10px;padding:12px 14px;">
-                                    <label class="cv2-label" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="is_deduction_chargeable" value="1" {{ old('is_deduction_chargeable') ? 'checked' : '' }} style="width:auto;"> Halting deduction chargeable</label>
-                                    <input type="number" name="halting_charges_per_day" value="{{ old('halting_charges_per_day') }}" placeholder="Halting charges / day (₹)" style="margin-top:8px;">
+                                    <label class="cv2-label" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" name="is_deduction_chargeable" value="1" class="cv2-halting-toggle" {{ old('is_deduction_chargeable') ? 'checked' : '' }} style="width:auto;"> Halting deduction chargeable</label>
+                                    <div class="cv2-halting-wrap" style="margin-top:8px;{{ old('is_deduction_chargeable') ? '' : 'display:none;' }}">
+                                        <input type="number" name="halting_charges_per_day" value="{{ old('halting_charges_per_day') }}" placeholder="Halting charges / day (₹)">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -227,5 +229,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
+<script src="{{ asset('js/V2/customer.js?v=1.5') }}"></script>
 @endsection
