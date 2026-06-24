@@ -1094,12 +1094,27 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 .td2-overlay.bill-popup {
     width: calc(100vw - 350px);
     right: calc(-100vw + 350px - 20px);
-    top: 237px;
-    height: calc(100vh - 237px);
+    top: 0;
+    height: 100vh;
 }
 
 .td2-overlay.bill-popup.show {
     right: 0;
+}
+
+/* Dim backdrop behind Bill Entry panel */
+.td2-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.td2-overlay-backdrop.show {
+    opacity: 1;
+    visibility: visible;
 }
 
 .td2-overlay-header {
@@ -3727,21 +3742,114 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SPRINT 5 — Bill Entry Panel
+   SPRINT 5 — Bill Entry Panel  (professional redesign)
 ───────────────────────────────────────────────────────────── */
+
+/* Branded header */
+.bill-popup .td2-overlay-header.td2-bill-header {
+    background: linear-gradient(90deg, #032671 0%, #0a3aa0 100%);
+    border-bottom: none;
+    align-items: center;
+    padding: 12px 20px;
+}
+.td2-bill-head-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.bill-popup .td2-bill-header .td2-overlay-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 15px;
+}
+.bill-popup .td2-bill-header .td2-overlay-title i { font-size: 17px; opacity: 0.9; }
+.td2-bill-head-sub {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.72);
+}
+.bill-popup .td2-bill-header .td2-overlay-close {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+}
+.bill-popup .td2-bill-header .td2-overlay-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+.bill-popup .td2-bill-header .td2-bill-save-btn {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    font-weight: 600;
+}
+
+/* Reference chips */
 .td2-bill-refbar {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     flex-wrap: wrap;
-    padding: 10px 14px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid #032671;
-    font-family: Inter, sans-serif;
-    font-size: 12px;
-    color: #374151;
-    margin-bottom: 16px;
+    padding: 0;
+    background: transparent;
+    border-left: none;
+    margin-bottom: 18px;
 }
+.td2-bill-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 14px;
+    background: #f8f9fb;
+    border: 1px solid #eceef3;
+    border-radius: 8px;
+    min-width: 120px;
+}
+.td2-bill-chip-label {
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9aa1ad;
+}
+.td2-bill-chip-value {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Income / Expense cards */
+.td2-bill-card {
+    height: 100%;
+    background: #fff;
+    border: 1px solid #e9ecf2;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+}
+.td2-bill-card-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #eef0f4;
+}
+.td2-bill-card-income  .td2-bill-card-head { background: #ecfdf5; }
+.td2-bill-card-expense .td2-bill-card-head { background: #fef2f2; }
+.td2-bill-card-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+}
+.td2-bill-card-income  .td2-bill-card-icon { background: #10b981; }
+.td2-bill-card-expense .td2-bill-card-icon { background: #ef4444; }
+.td2-bill-card-body { padding: 6px 14px 14px; }
 
 .td2-bill-col-title {
     font-family: Inter, sans-serif;
@@ -3749,20 +3857,21 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin: 0 0 12px;
-    padding-bottom: 6px;
-    border-bottom: 2px solid;
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+    flex: 1;
 }
-.td2-bill-income-title  { color: #065f46; border-color: #10b981; }
-.td2-bill-expense-title { color: #991b1b; border-color: #ef4444; }
+.td2-bill-income-title  { color: #065f46; }
+.td2-bill-expense-title { color: #991b1b; }
 
 .td2-bill-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 5px 0;
-    border-bottom: 1px solid #f9fafb;
+    padding: 6px 0;
+    border-bottom: 1px solid #f4f5f8;
 }
 .td2-bill-row:last-of-type { border-bottom: none; }
 
@@ -3775,16 +3884,34 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 }
 
 .td2-bill-row .input-group {
-    width: 130px;
+    width: 140px;
     flex-shrink: 0;
+}
+.td2-bill-row .input-group-text {
+    background: #f8f9fb;
+    border-color: #e5e7eb;
+    color: #6b7280;
+    font-size: 12px;
+}
+.td2-bill-row .form-control {
+    text-align: right;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    border-color: #e5e7eb;
+}
+.td2-bill-row .form-control:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3, 38, 113, 0.12);
 }
 
 .td2-bill-subtotal {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0 0;
-    margin-top: 4px;
+    padding: 10px 0 2px;
+    margin-top: 6px;
     border-top: 2px solid;
     font-family: Inter, sans-serif;
     font-weight: 700;
@@ -3793,19 +3920,50 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 .td2-bill-income-sub  { border-color: #10b981; color: #065f46; }
 .td2-bill-expense-sub { border-color: #ef4444; color: #991b1b; }
 
+/* Net P&L banner */
 .td2-bill-result {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     padding: 14px 18px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-top: 16px;
     font-family: Inter, sans-serif;
     font-weight: 700;
-    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
 }
-.td2-bill-profit { background: #d1fae5; color: #065f46; }
-.td2-bill-loss   { background: #fee2e2; color: #991b1b; }
+.td2-bill-result-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+.td2-bill-result-label i { font-size: 17px; }
+.td2-bill-result-amt { font-size: 19px; letter-spacing: 0.01em; }
+.td2-bill-profit {
+    background: linear-gradient(90deg, #d1fae5, #ecfdf5);
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+.td2-bill-loss {
+    background: linear-gradient(90deg, #fee2e2, #fef2f2);
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Notes */
+.td2-bill-notes-lbl {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+.td2-bill-notes .form-control:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3, 38, 113, 0.12);
+}
 
 /* ─────────────────────────────────────────────────────────────
    SPRINT 5 — Review Modal (star rating)

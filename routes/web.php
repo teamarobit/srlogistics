@@ -817,6 +817,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get    ('/{trip}/edit',  [App\Http\Controllers\TripController::class, 'edit'])->name('edit');
         Route::get    ('/{trip}/tab/{tab}', [App\Http\Controllers\TripController::class, 'tabContent'])->name('tab');
         Route::get    ('/{trip}/resume', [App\Http\Controllers\TripController::class, 'resume'])->name('resume');
+        Route::get    ('/{trip}/bill-finalise', [App\Http\Controllers\TripController::class, 'billFinalise'])->name('billFinalise');
         Route::get    ('/{trip}',       [App\Http\Controllers\TripController::class, 'show'])->name('details');
 
     });

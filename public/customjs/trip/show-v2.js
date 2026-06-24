@@ -255,18 +255,26 @@ function applyConditionalVisibility() {
    ============================================================= */
 function closeAllOverlays() {
     $('.td2-overlay').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
 }
 
 /* Attachment overlay */
 $(document).on('click', '#attachmentBtn', function () {
     closeAllOverlays();
     $('.attachment-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
 });
 
 /* Bill Entry overlay */
 $(document).on('click', '.td2-bill-click', function () {
     closeAllOverlays();
     $('.bill-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
+});
+
+/* Close Bill Entry overlay when backdrop is clicked */
+$(document).on('click', '.td2-overlay-backdrop', function () {
+    closeAllOverlays();
 });
 
 /* Map / Vehicle Detail overlay — eye button or card click.
@@ -281,6 +289,7 @@ $(document).on('click', '.td2-open-map', function (e) {
     $('.map-popup .td2-vd-vahan-view').toggleClass('d-none', !showVahan);
 
     $('.map-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
 });
 
 /* Close any overlay */
@@ -907,6 +916,7 @@ $(document).on('click', '#td2SosGpsBtn', function () {
 /* ── Open / close SOS panel ── */
 $('#td2SosFabBtn').on('click', function () {
     $('#td2SosPanel').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
     /* Leaflet must size against a visible container — init/refresh after the
        slide-in transition so the map renders at full width. */
     setTimeout(function () {
@@ -917,11 +927,13 @@ $('#td2SosFabBtn').on('click', function () {
 
 $('#td2SosPanelClose').on('click', function () {
     $('#td2SosPanel').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
 });
 
 /* ── View History link (inside panel) ── */
 $('#td2SosHistoryBtn').on('click', function () {
     $('#td2SosPanel').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
     renderSosHistory();
     $('#sosHistory').modal('show');
 });

@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=11.0') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=11.3') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -806,10 +806,16 @@
             </div>
         </div>
 
+        {{-- Overlay backdrop (Bill Entry) --}}
+        <div class="td2-overlay-backdrop"></div>
+
         {{-- Bill Entry Panel --}}
         <div class="td2-overlay bill-popup">
-            <div class="td2-overlay-header">
-                <h6 class="td2-overlay-title">Bill Entry</h6>
+            <div class="td2-overlay-header td2-bill-header">
+                <div class="td2-bill-head-titles">
+                    <h6 class="td2-overlay-title"><i class="uil uil-bill"></i> Bill Entry</h6>
+                    <span class="td2-bill-head-sub">Trip income &amp; expense reconciliation</span>
+                </div>
                 <div class="ms-auto d-flex gap-2">
                     <button class="btn btn-success btn-sm td2-bill-save-btn" type="button">
                         <i class="uil uil-save"></i> Save Bill
@@ -824,9 +830,18 @@
 
                     {{-- Trip reference bar --}}
                     <div class="td2-bill-refbar">
-                        <span><strong>Trip:</strong> #TRIP001</span>
-                        <span><strong>Vehicle:</strong> WB-12-AB-1237</span>
-                        <span><strong>Route:</strong> Kolkata – Mumbai</span>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Trip</span>
+                            <span class="td2-bill-chip-value">#TRIP001</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Vehicle</span>
+                            <span class="td2-bill-chip-value">WB-12-AB-1237</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Route</span>
+                            <span class="td2-bill-chip-value">Kolkata – Mumbai</span>
+                        </div>
                     </div>
 
                     {{-- Two-column layout: Income | Expense --}}
@@ -834,98 +849,110 @@
 
                         {{-- Income side --}}
                         <div class="col-md-6">
-                            <p class="td2-bill-col-title td2-bill-income-title">Income</p>
-
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Freight</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="freight" value="35,000">
+                            <div class="td2-bill-card td2-bill-card-income">
+                                <div class="td2-bill-card-head">
+                                    <span class="td2-bill-card-icon"><i class="uil uil-plus"></i></span>
+                                    <p class="td2-bill-col-title td2-bill-income-title">Income</p>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Loading / Unloading</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="loading_charge" value="2,000">
+                                <div class="td2-bill-card-body">
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Freight</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="freight" value="35,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Loading / Unloading</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="loading_charge" value="2,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Halting</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="halting_income" value="1,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Multi-Point</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="multipoint_income" value="1,500">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Other</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="other_income" placeholder="0">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-subtotal td2-bill-income-sub">
+                                        <span>Total Income</span>
+                                        <span id="td2BillIncomeTotal">₹39,500</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Halting</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="halting_income" value="1,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Multi-Point</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="multipoint_income" value="1,500">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Other</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="other_income" placeholder="0">
-                                </div>
-                            </div>
-                            <div class="td2-bill-subtotal td2-bill-income-sub">
-                                <span>Total Income</span>
-                                <span id="td2BillIncomeTotal">₹39,500</span>
                             </div>
                         </div>
 
                         {{-- Expense side --}}
                         <div class="col-md-6">
-                            <p class="td2-bill-col-title td2-bill-expense-title">Expense</p>
-
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Diesel</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="diesel_expense" value="15,000">
+                            <div class="td2-bill-card td2-bill-card-expense">
+                                <div class="td2-bill-card-head">
+                                    <span class="td2-bill-card-icon"><i class="uil uil-minus"></i></span>
+                                    <p class="td2-bill-col-title td2-bill-expense-title">Expense</p>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Toll Charges</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="toll_expense" value="10,000">
+                                <div class="td2-bill-card-body">
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Diesel</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="diesel_expense" value="15,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Toll Charges</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="toll_expense" value="10,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Driver Advance</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="driver_advance" value="50,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Maintenance</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="maintenance_expense" value="3,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Fooding</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="fooding_expense" value="5,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Misc.</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="misc_expense" value="2,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-subtotal td2-bill-expense-sub">
+                                        <span>Total Expense</span>
+                                        <span id="td2BillExpenseTotal">₹85,000</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Driver Advance</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="driver_advance" value="50,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Maintenance</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="maintenance_expense" value="3,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Fooding</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="fooding_expense" value="5,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Misc.</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="misc_expense" value="2,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-subtotal td2-bill-expense-sub">
-                                <span>Total Expense</span>
-                                <span id="td2BillExpenseTotal">₹85,000</span>
                             </div>
                         </div>
 
@@ -933,12 +960,12 @@
 
                     {{-- P&L result --}}
                     <div class="td2-bill-result td2-bill-loss" id="td2BillResult">
-                        <span>Profit / Loss</span>
-                        <span id="td2BillPLAmt">– ₹45,500</span>
+                        <span class="td2-bill-result-label"><i class="uil uil-chart-line"></i> Net Profit / Loss</span>
+                        <span class="td2-bill-result-amt" id="td2BillPLAmt">– ₹45,500</span>
                     </div>
 
-                    <div class="mt-3">
-                        <label class="form-label small fw-semibold">Notes</label>
+                    <div class="td2-bill-notes mt-3">
+                        <label class="td2-bill-notes-lbl">Notes</label>
                         <textarea class="form-control form-control-sm" name="bill_notes" rows="2"
                                   placeholder="Any remarks for this bill entry…"></textarea>
                     </div>
@@ -2660,6 +2687,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=6.1') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=6.4') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

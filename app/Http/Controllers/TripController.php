@@ -61,6 +61,15 @@ class TripController extends Controller
     }
 
     /**
+     * Finalise Bill — standalone invoice / print page for a trip.
+     * Reached from the "Finalise Bill" button on the Profit or Loss tab.
+     * Standalone page (own <head>); does NOT extend layouts.app.
+     */
+    public function billFinalise($trip){
+        return view('trip.bill-finalise', compact('trip'));
+    }
+
+    /**
      * Resume a paused trip — full page (replaces the in-page Resume modal).
      * Mirrors the modal concept: date/time, further-action choice
      * (resume only / change vehicle / driver / both), reason + note.
