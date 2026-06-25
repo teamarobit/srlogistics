@@ -3786,36 +3786,56 @@ body.td2-trip-paused .td2-stepper-paused-flag { display: inline-flex; }
 /* Reference chips */
 .td2-bill-refbar {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
     padding: 0;
     background: transparent;
     border-left: none;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 .td2-bill-chip {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 8px 14px;
-    background: #f8f9fb;
-    border: 1px solid #eceef3;
+    gap: 3px;
+    padding: 7px 12px 7px 14px;
+    background: #ffffff;
+    border: 1px solid #e7eaf1;
     border-radius: 8px;
-    min-width: 120px;
+    min-width: 96px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.td2-bill-chip::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 3px;
+    background: #2563eb;
+    opacity: 0.55;
+}
+.td2-bill-chip:hover {
+    border-color: #d4dbeb;
+    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.07);
+    transform: translateY(-1px);
 }
 .td2-bill-chip-label {
     font-family: Inter, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
+    font-size: 9px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #9aa1ad;
+    letter-spacing: 0.07em;
+    color: #98a2b3;
 }
 .td2-bill-chip-value {
     font-family: Inter, sans-serif;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: #1f2937;
+    color: #111827;
+    line-height: 1.35;
 }
 
 /* Income / Expense cards */
@@ -5912,3 +5932,52 @@ body.td2-trip-paused #td2UpdateStatusLink {
     line-height: 1.3;
 }
 .td2-exp-modal .td2-exp-hint i { color: #2563eb; }
+
+/* ============================================================
+   Bill Entry overlay — added sections (Loading / Unloading /
+   Other Charges) + vehicle-type badge in reference bar
+   ============================================================ */
+.td2-bill-vehtype {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    font-family: Inter, sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    border-radius: 10px;
+    vertical-align: middle;
+}
+.td2-bill-vehtype-own {
+    background: #e7f5ee;
+    color: #157347;
+    border: 1px solid #bfe3cf;
+}
+.td2-bill-vehtype-rental {
+    background: #fdeceb;
+    color: #b02a37;
+    border: 1px solid #f5c6c2;
+}
+.td2-bill-section {
+    margin-top: 18px;
+}
+.td2-bill-fieldgrid .td2-bill-fld-lbl,
+.td2-bill-fld-lbl {
+    display: block;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+.td2-bill-fieldgrid {
+    margin-top: 4px;
+}
+.td2-bill-subhead {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2a44;
+    margin: 10px 0 6px;
+}

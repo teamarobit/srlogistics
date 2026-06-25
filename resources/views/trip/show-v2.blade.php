@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=11.3') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=11.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -818,7 +818,7 @@
                 </div>
                 <div class="ms-auto d-flex gap-2">
                     <button class="btn btn-success btn-sm td2-bill-save-btn" type="button">
-                        <i class="uil uil-save"></i> Save Bill
+                        <i class="uil uil-save"></i> Generate Bill
                     </button>
                     <button class="td2-overlay-close close-overlay" type="button">
                         <i class="uil uil-angle-right-b"></i>
@@ -828,19 +828,39 @@
             <div class="td2-overlay-body">
                 <form id="td2BillEntryForm">
 
-                    {{-- Trip reference bar --}}
+                                        {{-- Trip / bill reference bar --}}
                     <div class="td2-bill-refbar">
                         <div class="td2-bill-chip">
                             <span class="td2-bill-chip-label">Trip</span>
                             <span class="td2-bill-chip-value">#TRIP001</span>
                         </div>
                         <div class="td2-bill-chip">
-                            <span class="td2-bill-chip-label">Vehicle</span>
-                            <span class="td2-bill-chip-value">WB-12-AB-1237</span>
+                            <span class="td2-bill-chip-label">Bill Number</span>
+                            <span class="td2-bill-chip-value">#BILL45678</span>
                         </div>
                         <div class="td2-bill-chip">
-                            <span class="td2-bill-chip-label">Route</span>
-                            <span class="td2-bill-chip-value">Kolkata – Mumbai</span>
+                            <span class="td2-bill-chip-label">Billing Party</span>
+                            <span class="td2-bill-chip-value">Gitanjali LLP.</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Location / State</span>
+                            <span class="td2-bill-chip-value">Hyderabad</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">State Code</span>
+                            <span class="td2-bill-chip-value">HYD</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Vehicle Number</span>
+                            <span class="td2-bill-chip-value">WB-12-AB-1237<span class="td2-bill-vehtype td2-bill-vehtype-own">Own</span></span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Source</span>
+                            <span class="td2-bill-chip-value">Kolkata</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Destination</span>
+                            <span class="td2-bill-chip-value">Mumbai</span>
                         </div>
                     </div>
 
@@ -962,6 +982,170 @@
                     <div class="td2-bill-result td2-bill-loss" id="td2BillResult">
                         <span class="td2-bill-result-label"><i class="uil uil-chart-line"></i> Net Profit / Loss</span>
                         <span class="td2-bill-result-amt" id="td2BillPLAmt">– ₹45,500</span>
+                    </div>
+
+                    {{-- Loading section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-import me-1"></i>Loading</p>
+                        </div>
+                        <div class="row g-3 td2-bill-fieldgrid">
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Arrival Date/Time for Loading</label>
+                                <input type="datetime-local" class="form-control form-control-sm" name="loading_arrival_at">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Actual Date/Time of Loading</label>
+                                <input type="datetime-local" class="form-control form-control-sm" name="loading_actual_at">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Loading Charges</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="loading_charges" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Loading Detention Time</label>
+                                <input type="text" class="form-control form-control-sm" name="loading_detention_time" placeholder="e.g. 2 Days">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Detention Charges</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="loading_detention_charges" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Unloading section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-export me-1"></i>Unloading</p>
+                        </div>
+                        <div class="row g-3 td2-bill-fieldgrid">
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Arrival Date/Time for Reporting</label>
+                                <input type="datetime-local" class="form-control form-control-sm" name="unloading_arrival_at">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Actual Date/Time of Unloading</label>
+                                <input type="datetime-local" class="form-control form-control-sm" name="unloading_actual_at">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Charges</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="unloading_charges" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Detention Time</label>
+                                <input type="text" class="form-control form-control-sm" name="unloading_detention_time" placeholder="e.g. 1 Day">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Detention Charges</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="unloading_detention_charges" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Other Charges section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-bill me-1"></i>Other Charges</p>
+                        </div>
+
+                        {{-- Addition --}}
+                        <p class="td2-bill-subhead">Addition</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Addition Head</th>
+                                        <th>Amount</th>
+                                        <th>Recorded By</th>
+                                        <th>Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Fixed Fee</td>
+                                        <td>&#8377;7,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Loading/Unloading Charge</td>
+                                        <td>&#8377;1,000</td>
+                                        <td>Abhishek Nayak</td>
+                                        <td>13/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Deduction --}}
+                        <p class="td2-bill-subhead mt-3">Deduction</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Deduction Head</th>
+                                        <th>Amount</th>
+                                        <th>Recorded By</th>
+                                        <th>Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TDS</td>
+                                        <td>&#8377;7,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mamul</td>
+                                        <td>&#8377;3,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Transaction --}}
+                        <p class="td2-bill-subhead mt-3">Transaction</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Mode of Payment</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>12/11/2025</td>
+                                        <td>Advance</td>
+                                        <td>Cash</td>
+                                        <td>&#8377;3,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="td2-bill-notes mt-3">
