@@ -239,6 +239,14 @@
                                     <span class="cv2-radio"><input type="radio" name="set_reminder" id="sr_no" value="No" @checked(optional($info)->set_reminder==='No')><label for="sr_no">No</label></span>
                                 </div></div>
                             <div class="cv2-field cv2-mt cv2-cond" data-st="Voluntary Exit" style="display:none;"><label class="cv2-label">Voluntary Exit Reason <span class="req">*</span></label><textarea name="voluntary_exit_reason" rows="2">{{ optional($info)->voluntary_exit_reason }}</textarea></div>
+                            <div class="cv2-field cv2-mt cv2-cond" data-st="Voluntary Exit" style="display:none;"><label class="cv2-label">Vehicle Handover Photos</label>
+                                @if($contact->driverVehiclePhotos && $contact->driverVehiclePhotos->count())
+                                    <div class="cv2-hint" style="margin-bottom:6px;">Current:
+                                        @foreach($contact->driverVehiclePhotos as $vp)<a href="{{ asset('media/contact/'.$vp->file_name) }}" target="_blank">photo {{ $loop->iteration }}</a>@if(!$loop->last), @endif @endforeach
+                                    </div>
+                                @endif
+                                <input type="file" name="vehicle_photos[]" accept=".jpg,.jpeg,.png" multiple class="cv2-file">
+                                <span class="cv2-hint">Upload to add more · existing photos are kept</span></div>
                         </div>
 
                         <div class="cv2-field cv2-mt" id="cv2BlacklistWrap" style="display:none;"><label class="cv2-label">Blacklist Reason <span class="req">*</span></label><textarea name="blacklist_reason" rows="3">{{ $contact->blacklist_reason }}</textarea></div>

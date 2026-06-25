@@ -12,7 +12,7 @@
                 <div class="cv2-card-b">
                     <ul class="cv2-mini">
                         @forelse($activities as $act)
-                        <li><span class="cv2-mini-ic"><i class="bi bi-dot"></i></span><div class="cv2-mini-body"><b>{{ $act->notes }}</b><span>{{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->format('d M y, g:i A') : '' }}</span></div></li>
+                        <li><span class="cv2-mini-ic"><i class="bi bi-dot"></i></span><div class="cv2-mini-body"><b>{{ $act->notes }}</b>@if($act->is_voluntary_exit==='Yes')<span class="cv2-badge is-inactive" style="margin-left:6px;">Voluntary Exit</span>@elseif($act->is_blacklisted==='Yes')<span class="cv2-badge is-inactive" style="margin-left:6px;">Blacklisted</span>@endif<span>{{ optional($act->createdBy)->name ?? 'System' }} · {{ $act->created_at ? $act->created_at->format('d M y, g:i A') : '' }}</span></div></li>
                         @empty
                         <li><div class="cv2-mini-body"><span>No activity recorded yet.</span></div></li>
                         @endforelse

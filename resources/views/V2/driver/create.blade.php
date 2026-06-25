@@ -80,7 +80,7 @@
                                     </select>
                                 </div>
                                 <div class="cv2-field is-full">
-                                    <label class="cv2-label">Driver Photo</label>
+                                    <label class="cv2-label">Driver Photo <span class="req">*</span></label>
                                     <input type="file" name="contact_image" accept=".jpg,.jpeg,.png,.webp" class="cv2-file">
                                     <span class="cv2-hint">JPG/PNG/WEBP · max 2 MB</span>
                                 </div>

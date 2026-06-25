@@ -141,14 +141,17 @@ class DriverController extends Controller
             'd'        => $this->shapeDriver($c),
             'counts'   => $this->tabCounts($c),
             'active'   => $active,
-            'isExited' => (bool) $c->employeeExitDetail,
+            // REG-03 (F6): lock follows current status, not merely a historical exit record.
+            // A re-activated (status=Active) driver is editable even if an exit row exists.
+            'isExited' => $c->employeeExitDetail && $c->status !== 'Active',
         ];
     }
 
-    /** E2 — true once the driver has an exit record; used to block sub-entity writes. */
+    /** E2 — true once the driver has an exit record AND is not currently Active; blocks sub-entity writes.
+     *  REG-03 (F6): an Active (re-activated) driver is never locked, even with a historical exit record. */
     private function driverExited(Contact $contact): bool
     {
-        return (bool) $contact->employeeExitDetail;
+        return $contact->employeeExitDetail && $contact->status !== 'Active';
     }
 
     /** Dropdown lookups shared by create + edit. */
@@ -967,6 +970,21 @@ class DriverController extends Controller
                     $activity->notes          = $request->blacklist_reason;
                     $activity->is_blacklisted = 'Yes';
                     $activity->created_by     = Auth::user()->id;
+                    $activity->save();
+                }
+
+                // REG-01 (F1): auto-log Voluntary Exit to the Activity tab.
+                // $driverinfo still holds the pre-update status_type here, so this fires
+                // only on the transition INTO Voluntary Exit (no duplicate on re-save).
+                if ($request->status === 'Inactive'
+                    && $request->status_type === 'Voluntary Exit'
+                    && optional($driverinfo)->status_type !== 'Voluntary Exit') {
+                    $activity = new Contactactivity();
+                    $activity->contact_id        = $contact->id;
+                    $activity->notes             = 'Voluntary Exit recorded on ' . now()->format('d M Y')
+                                                   . ' — Reason: ' . ($request->voluntary_exit_reason ?: '—');
+                    $activity->is_voluntary_exit = 'Yes';
+                    $activity->created_by        = Auth::user()->id;
                     $activity->save();
                 }
 
