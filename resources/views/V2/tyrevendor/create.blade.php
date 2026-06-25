@@ -37,11 +37,11 @@
                                 <div class="cv2-field"><label class="cv2-label">Company Name <span class="req">*</span></label><input type="text" name="company_name" placeholder="e.g. MRF Distributors" maxlength="100"></div>
                                 <div class="cv2-field"><label class="cv2-label">Full Company Name</label><input type="text" name="full_company_name" placeholder="Registered legal name" maxlength="100"></div>
                                 <div class="cv2-field"><label class="cv2-label">Contact Name <span class="req">*</span></label><input type="text" name="contact_name" placeholder="Primary contact" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Contact Code <span class="req">*</span></label><input type="text" name="contact_code" value="{{ $tyreCode }}" maxlength="100"></div>
+                                <div class="cv2-field"><label class="cv2-label">Contact Code <span class="req">*</span></label><input type="text" name="contact_code" value="{{ $tyreCode }}" maxlength="100" readonly style="background:#f1f3f5;cursor:not-allowed;"></div>
                                 <div class="cv2-field"><label class="cv2-label">Company Owner</label><input type="text" name="company_owner" placeholder="Owner / proprietor" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since"></div>
+                                <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since" max="{{ date('Y-m-d') }}"></div>
                                 <div class="cv2-field"><label class="cv2-label">Company Registration No</label><input type="text" name="company_registration_no" maxlength="100"></div>
-                                <div class="cv2-field"><label class="cv2-label">Company Registration Date</label><input type="date" name="company_registration_date"></div>
+                                <div class="cv2-field"><label class="cv2-label">Company Registration Date</label><input type="date" name="company_registration_date" max="{{ date('Y-m-d') }}"></div>
                                 {{-- E7: NO size field for Tyre Vendor --}}
                                 <div class="cv2-field is-full"><label class="cv2-label">Comment</label><input type="text" name="contact_comment" placeholder="Optional note" maxlength="255"></div>
                             </div>

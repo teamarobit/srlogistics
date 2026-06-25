@@ -27,11 +27,11 @@
                         <div class="cv2-field"><label class="cv2-label">Company Name <span class="req">*</span></label><input type="text" name="company_name" value="{{ $contact->company_name }}" maxlength="100"></div>
                         <div class="cv2-field"><label class="cv2-label">Full Company Name</label><input type="text" name="full_company_name" value="{{ $contact->full_company_name }}" maxlength="100"></div>
                         <div class="cv2-field"><label class="cv2-label">Contact Name <span class="req">*</span></label><input type="text" name="contact_name" value="{{ $contact->contact_name }}" maxlength="100"></div>
-                        <div class="cv2-field"><label class="cv2-label">Contact Code <span class="req">*</span></label><input type="text" name="contact_code" value="{{ $contact->contact_code }}" maxlength="100"></div>
+                        <div class="cv2-field"><label class="cv2-label">Contact Code <span class="req">*</span></label><input type="text" name="contact_code" value="{{ $contact->contact_code }}" maxlength="100" readonly style="background:#f1f3f5;cursor:not-allowed;"></div>
                         <div class="cv2-field"><label class="cv2-label">Company Owner</label><input type="text" name="company_owner" value="{{ $contact->company_owner }}" maxlength="100"></div>
-                        <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since" value="{{ $contact->working_since ? Carbon::parse($contact->working_since)->format('Y-m-d') : '' }}"></div>
+                        <div class="cv2-field"><label class="cv2-label">Working Since</label><input type="date" name="working_since" value="{{ $contact->working_since ? Carbon::parse($contact->working_since)->format('Y-m-d') : '' }}" max="{{ date('Y-m-d') }}"></div>
                         <div class="cv2-field"><label class="cv2-label">Company Registration No</label><input type="text" name="company_registration_no" value="{{ $contact->company_registration_no }}" maxlength="100"></div>
-                        <div class="cv2-field"><label class="cv2-label">Company Registration Date</label><input type="date" name="company_registration_date" value="{{ $contact->company_registration_date ? Carbon::parse($contact->company_registration_date)->format('Y-m-d') : '' }}"></div>
+                        <div class="cv2-field"><label class="cv2-label">Company Registration Date</label><input type="date" name="company_registration_date" value="{{ $contact->company_registration_date ? Carbon::parse($contact->company_registration_date)->format('Y-m-d') : '' }}" max="{{ date('Y-m-d') }}"></div>
                         {{-- E7: NO size field --}}
                         <div class="cv2-field is-full"><label class="cv2-label">Comment</label><input type="text" name="contact_comment" value="{{ $contact->comment }}" maxlength="255"></div>
                     </div></div>
