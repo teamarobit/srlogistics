@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=11.6') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=11.9') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -992,28 +992,34 @@
                         <div class="row g-3 td2-bill-fieldgrid">
                             <div class="col-12 col-md-6">
                                 <label class="td2-bill-fld-lbl">Arrival Date/Time for Loading</label>
-                                <input type="datetime-local" class="form-control form-control-sm" name="loading_arrival_at">
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="loading_arrival_at" id="td2BillLoadArrival" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <label class="td2-bill-fld-lbl">Actual Date/Time of Loading</label>
-                                <input type="datetime-local" class="form-control form-control-sm" name="loading_actual_at">
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="loading_actual_at" id="td2BillLoadActual" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Loading Charges</label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">&#8377;</span>
-                                    <input type="text" class="form-control" name="loading_charges" placeholder="0">
+                                    <input type="text" class="form-control" name="loading_charges" placeholder="0.00">
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Loading Detention Time</label>
-                                <input type="text" class="form-control form-control-sm" name="loading_detention_time" placeholder="e.g. 2 Days">
+                                <input type="text" class="form-control" name="loading_detention_time" placeholder="e.g. 2 Days">
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Detention Charges</label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">&#8377;</span>
-                                    <input type="text" class="form-control" name="loading_detention_charges" placeholder="0">
+                                    <input type="text" class="form-control" name="loading_detention_charges" placeholder="0.00">
                                 </div>
                             </div>
                         </div>
@@ -1027,28 +1033,34 @@
                         <div class="row g-3 td2-bill-fieldgrid">
                             <div class="col-12 col-md-6">
                                 <label class="td2-bill-fld-lbl">Arrival Date/Time for Reporting</label>
-                                <input type="datetime-local" class="form-control form-control-sm" name="unloading_arrival_at">
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="unloading_arrival_at" id="td2BillUnloadArrival" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <label class="td2-bill-fld-lbl">Actual Date/Time of Unloading</label>
-                                <input type="datetime-local" class="form-control form-control-sm" name="unloading_actual_at">
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="unloading_actual_at" id="td2BillUnloadActual" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Unloading Charges</label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">&#8377;</span>
-                                    <input type="text" class="form-control" name="unloading_charges" placeholder="0">
+                                    <input type="text" class="form-control" name="unloading_charges" placeholder="0.00">
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Unloading Detention Time</label>
-                                <input type="text" class="form-control form-control-sm" name="unloading_detention_time" placeholder="e.g. 1 Day">
+                                <input type="text" class="form-control" name="unloading_detention_time" placeholder="e.g. 1 Day">
                             </div>
                             <div class="col-12 col-md-4">
                                 <label class="td2-bill-fld-lbl">Unloading Detention Charges</label>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">&#8377;</span>
-                                    <input type="text" class="form-control" name="unloading_detention_charges" placeholder="0">
+                                    <input type="text" class="form-control" name="unloading_detention_charges" placeholder="0.00">
                                 </div>
                             </div>
                         </div>
@@ -2456,7 +2468,7 @@
 </div>
 
 {{-- Add Addition (P&L tab) --}}
-<div class="modal fade td2-modal-pro" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -2474,14 +2486,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Addition Head</label>
-                            <select class="form-select" name="addition_head">
+                            <select class="form-select" name="addition_head" id="td2AdditionHead">
                                 <option value="">Choose…</option>
                                 <option>Fixed Fee</option>
                                 <option>Loading/Unloading Charge</option>
-                                <option>Halting Charge</option>
-                                <option>Penalty Recovery</option>
-                                <option>Other</option>
+                                <option>Extra KM</option>
+                                <option>Tax</option>
                             </select>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing addition head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Amount (₹)</label>
@@ -2492,7 +2504,10 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="addition_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2AdditionDate" name="addition_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -2510,7 +2525,7 @@
 </div>
 
 {{-- Add Deduction (P&L tab) --}}
-<div class="modal fade td2-modal-pro" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -2528,14 +2543,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Deduction Head</label>
-                            <select class="form-select" name="deduction_head">
+                            <select class="form-select" name="deduction_head" id="td2DeductionHead">
                                 <option value="">Choose…</option>
                                 <option>TDS</option>
                                 <option>Mamul</option>
-                                <option>Damage Recovery</option>
-                                <option>Short Delivery</option>
-                                <option>Other</option>
+                                <option>P/R</option>
+                                <option>Previous Adjustments</option>
                             </select>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing deduction head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Amount (₹)</label>
@@ -2546,7 +2561,10 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="deduction_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2DeductionDate" name="deduction_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -2564,7 +2582,7 @@
 </div>
 
 {{-- Add Transaction (P&L + Memo tabs) --}}
-<div class="modal fade td2-modal-pro" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -2582,7 +2600,10 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="txn_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2TxnDate" name="txn_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Type</label>
@@ -2871,6 +2892,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=6.4') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=6.6') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

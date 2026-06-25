@@ -270,7 +270,59 @@ $(document).on('click', '.td2-bill-click', function () {
     closeAllOverlays();
     $('.bill-popup').addClass('show');
     $('.td2-overlay-backdrop').addClass('show');
+    initBillDateTimePickers();
 });
+
+/* Add Addition / Deduction / Transaction modals — single DATE picker
+   (daterangepicker). Reuses the Expense-modal field styling (.td2-exp-modal
+   + .td2-exp-datetime). SD-1: init lives here, not inline in the blade. */
+$(document).on('shown.bs.modal', '#addAddition, #addDeduction, #addTransaction', function () {
+    var modalId = this.id;
+    $(this).find('.td2-exp-datetime').each(function () {
+        var $el = $(this);
+        if ($el.data('daterangepicker')) { return; }
+        $el.daterangepicker({
+            singleDatePicker: true,
+            autoApply: true,
+            showDropdowns: true,
+            autoUpdateInput: false,
+            parentEl: '#' + modalId,
+            locale: { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
+        });
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    });
+});
+
+/* Loading / Unloading date+time pickers (daterangepicker, loaded in
+   layouts.app). SD-1: init lives here in the external JS, not inline in blade.
+   Idempotent — safe to call every time the overlay opens. */
+function initBillDateTimePickers() {
+    if (typeof $.fn.daterangepicker !== 'function') { return; }
+    $('.bill-popup .td2-bill-datetime').each(function () {
+        var $el = $(this);
+        if ($el.data('daterangepicker')) { return; }
+        $el.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 5,
+            autoUpdateInput: false,
+            drops: 'auto',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    });
+}
 
 /* Close Bill Entry overlay when backdrop is clicked */
 $(document).on('click', '.td2-overlay-backdrop', function () {
@@ -433,6 +485,36 @@ $(document).on('shown.bs.modal', '#editTrip', function () {
 /* Select2 init for Assign Vehicle modal fields */
 $(document).on('shown.bs.modal', '#assignModal', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+/* Select2 init for Add Addition modal — Addition Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#addAddition', function () {
+    var $head = $('#td2AdditionHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an addition head',
+            allowClear: true
+        });
+    }
+});
+
+/* Select2 init for Add Deduction modal — Deduction Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#addDeduction', function () {
+    var $head = $('#td2DeductionHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add a deduction head',
+            allowClear: true
+        });
+    }
 });
 
 /* Select2 init for Driver Transaction modal — Expense Head supports
@@ -1702,15 +1784,4 @@ $(document).on('shown.bs.modal', '#addExpense', function () {
             $(this).val('');
         });
     }
-});
-
-/* Save (prototype) — Toast + reset, no persistence per "nothing dynamic". */
-$(document).on('click', '.td2-add-exp-save', function () {
-    Toast.fire({ icon: 'success', title: 'Expense added (prototype).' });
-    $('#addExpense').modal('hide');
-    if ($('#addExpenseForm').length) { $('#addExpenseForm')[0].reset(); }
-    if ($('#td2AddExpenseHead').hasClass('select2-hidden-accessible')) {
-        $('#td2AddExpenseHead').val('').trigger('change');
-    }
-    $('#td2AddExpenseDate').val('');
 });

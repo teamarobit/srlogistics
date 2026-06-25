@@ -5981,3 +5981,107 @@ body.td2-trip-paused #td2UpdateStatusLink {
     color: #1f2a44;
     margin: 10px 0 6px;
 }
+
+/* ============================================================
+   Bill Entry — Loading / Unloading / Other Charges (pro polish)
+   Inputs mirror the Expense modal (.td2-exp-modal) look for
+   cross-module consistency: one bordered rounded group, light
+   icon/currency addon, single blue focus ring.
+   ============================================================ */
+.td2-section.td2-bill-section {
+    border: 1px solid #ebeef4;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    padding: 16px 18px 18px;
+    margin-top: 16px;
+}
+.td2-bill-section .td2-section-header {
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #f0f2f7;
+}
+.td2-bill-section .td2-section-head-title {
+    display: flex;
+    align-items: center;
+    color: #1f2a44;
+}
+.td2-bill-section .td2-section-head-title i {
+    color: #2563eb;
+    font-size: 15px;
+}
+.td2-bill-fieldgrid {
+    margin-top: 2px;
+    row-gap: 16px;
+}
+
+/* Fields — matched to the Expense modal (.td2-exp-modal) */
+.td2-bill-section .form-control,
+.td2-bill-section .form-select,
+.td2-bill-section .input-group-text {
+    border-color: #dfe3ea;
+    border-radius: 8px;
+    min-height: 42px;
+    font-size: .9rem;
+}
+.td2-bill-section .input-group {
+    border: 1px solid #dfe3ea;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.td2-bill-section .input-group .input-group-text,
+.td2-bill-section .input-group .form-control {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    min-height: 40px;
+}
+.td2-bill-section .input-group .input-group-text {
+    color: #94a3b8;
+    padding-right: .25rem;
+}
+.td2-bill-section .input-group .form-control {
+    padding-left: .35rem;
+    margin-left: 0;
+}
+.td2-bill-section .input-group .form-control:focus,
+.td2-bill-section .input-group .input-group-text:focus {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+.td2-bill-section .input-group:focus-within {
+    border-color: #3b5bdb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 219, .15);
+}
+.td2-bill-section .form-control:focus,
+.td2-bill-section .form-select:focus {
+    border-color: #3b5bdb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 219, .12);
+}
+.td2-bill-datetime,
+.td2-bill-section .td2-bill-datetime {
+    cursor: pointer;
+    background: transparent;
+}
+.td2-bill-datetime::placeholder {
+    color: #94a3b8;
+}
+.td2-bill-dt-group .input-group-text i {
+    font-size: 14px;
+    line-height: 1;
+}
+.td2-bill-subhead {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.td2-bill-subhead::before {
+    content: "";
+    width: 4px;
+    height: 14px;
+    border-radius: 3px;
+    background: #2563eb;
+    opacity: 0.65;
+}
