@@ -2599,6 +2599,14 @@
                 <form id="addTransactionForm">
                     <div class="row g-3">
                         <div class="col-md-6">
+                            <label class="form-label">Transaction Type</label>
+                            <select class="form-select" name="transaction_type" id="td2TxnTransactionType">
+                                <option value="">Choose…</option>
+                                <option value="Credit">Credit</option>
+                                <option value="Debit">Debit</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Date</label>
                             <div class="input-group td2-exp-datetime-group">
                                 <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
