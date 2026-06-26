@@ -75,10 +75,6 @@
               data-ratechart-url="{{ route('contact.v2.customer.ratechart', $c['id']) }}">
           @csrf
           <input type="hidden" name="contact_id" value="{{ $c['id'] }}">
-          <input type="hidden" name="applicable_start_date" id="cv2AppStart">
-          <input type="hidden" name="applicable_end_date" id="cv2AppEnd">
-          <input type="hidden" name="retrospective_start_date" id="cv2RetroStart">
-          <input type="hidden" name="retrospective_end_date" id="cv2RetroEnd">
           <input type="hidden" name="midpoint_count" id="cv2MidpointCount" value="0">
           <script type="application/json" id="cv2VehTypeData">{!! json_encode($vehTypeData) !!}</script>
           <div class="cv2-form-grid">
@@ -105,8 +101,8 @@
             <div class="cv2-field"><label class="cv2-label">Destination Unloading Point <span class="req">*</span></label>
               <select class="cv2-select cv2-modal-select" name="contract_destination_city_id" id="cv2RateDest" style="width:100%;"><option value="">Choose destination</option></select>
             </div>
-            <div class="cv2-field"><label class="cv2-label">Applicable Date Range <span class="req">*</span></label><input type="text" class="cv2-daterange" id="cv2AppRange" data-start="#cv2AppStart" data-end="#cv2AppEnd" placeholder="Select date range" readonly></div>
-            <div class="cv2-field"><label class="cv2-label">Retrospective Date Range <span class="req">*</span></label><input type="text" class="cv2-daterange" id="cv2RetroRange" data-start="#cv2RetroStart" data-end="#cv2RetroEnd" placeholder="Select date range" readonly></div>
+            <div class="cv2-field"><label class="cv2-label">Applicable Date Range <span class="req">*</span></label><input type="text" class="cv2-daterange" id="cv2AppRange" data-start="#cv2AppStart" data-end="#cv2AppEnd" placeholder="Select date range" readonly><input type="hidden" name="applicable_start_date" id="cv2AppStart"><input type="hidden" name="applicable_end_date" id="cv2AppEnd"></div>
+            <div class="cv2-field"><label class="cv2-label">Retrospective Date Range <span class="req">*</span></label><input type="text" class="cv2-daterange" id="cv2RetroRange" data-start="#cv2RetroStart" data-end="#cv2RetroEnd" placeholder="Select date range" readonly><input type="hidden" name="retrospective_start_date" id="cv2RetroStart"><input type="hidden" name="retrospective_end_date" id="cv2RetroEnd"></div>
           </div>
 
           <div id="cv2MidpointSections"></div>
@@ -152,4 +148,5 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.5') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.7') }}"></script>@endsection
+                                            

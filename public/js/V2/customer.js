@@ -69,6 +69,9 @@ $(function () {
             var $input = errorTargets(field);
             if ($input.length) {
                 var $field = $input.closest('.cv2-field');
+                // Skip if this field already shows an error (e.g. a date range
+                // backed by two hidden start/end inputs) — one message per field.
+                if ($field.length && $field.find('.field-error').length) { return; }
                 var $span = $('<span class="text-danger small d-block mt-1 field-error"></span>').text(msg);
                 if ($field.length) { $field.append($span); }
                 else { $span.insertAfter($input); }
@@ -128,15 +131,28 @@ $(function () {
     }
     initAllPhones();
 
-    // Before serialize: write E.164 back to each phone input (within scope).
+    // Before serialize: write the NATIONAL significant number (digits only) into
+    // each phone input. The backend validates phone/whatsapp as digits:10 and
+    // stores the dial code separately in ph_prefix, so writing the full E.164
+    // value (e.g. +919876543210) made valid numbers fail the digits:10 rule.
     function writePhoneNumbers($scope) {
         itiMap.forEach(function (rec) {
             if (!$scope || $.contains($scope[0], rec.el) || $scope[0] === rec.el) {
                 try {
-                    var num = rec.iti.getNumber();
-                    if (num) { rec.el.value = num; }
-                    // mirror dial code into the paired hidden code input if present
+                    var num = rec.iti.getNumber();   // E.164, e.g. +919876543210
                     var cd = rec.iti.getSelectedCountryData();
+                    if (num) {
+                        var national = num;
+                        if (national.charAt(0) === '+') {           // E.164 -> strip dial code
+                            national = national.substring(1);
+                            if (cd && cd.dialCode && national.indexOf(cd.dialCode) === 0) {
+                                national = national.substring(cd.dialCode.length);
+                            }
+                        }
+                        national = national.replace(/\D/g, '');
+                        rec.el.value = national;
+                    }
+                    // mirror dial code into the paired hidden code input if present
                     var $row = $(rec.el).closest('.cv2-repeat-row');
                     if ($row.length && cd && cd.dialCode) {
                         if ($(rec.el).attr('name') && $(rec.el).attr('name').indexOf('phone') > -1) {

@@ -102,6 +102,6 @@
 </div>
 @endsection
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=1.4') }}"></script>
+<script src="{{ asset('js/V2/customer.js?v=1.7') }}"></script>
 <script src="{{ asset('js/V2/batteryvendor.js?v=2.0') }}"></script>
 @endsection

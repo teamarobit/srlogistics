@@ -18,6 +18,7 @@ use App\Models\Coattachment;
 use App\Models\Relcontact;
 use App\Models\Loadvendorlocation;
 use App\Models\Contactactivity;
+use App\Models\Route;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -254,16 +255,29 @@ class LoadVendorController extends Controller
         $contact = $this->findVendorOrFail($id);
         $v       = $this->shapeVendor($contact);
 
-        // Distinct cities used across this vendor's existing locations feed the modal selects.
-        $cities = City::whereHas('state.country', fn ($q) => $q->where('iso2', 'IN'))
-                        ->orderBy('name')->get();
-
-        return view('V2.loadvendor.locations', [
+        return view('V2.loadvendor.locations', array_merge([
             'v'      => $v,
             'counts' => $this->tabCounts($contact),
             'active' => 'locations',
-            'cities' => $cities,
-        ]);
+        ], $this->routeCityLists()));
+    }
+
+    /**
+     * City lists for the Add-Location modal, restricted to cities that are
+     * actually registered in routes (source / destination / midpoint), instead
+     * of every city in the system. Matches the Customer module behaviour.
+     */
+    private function routeCityLists(): array
+    {
+        $routes = Route::with(['sourceCity', 'destinationCity', 'midpoints.city'])->get();
+
+        $midpoints = $routes->flatMap(fn ($r) => $r->midpoints)->unique('id')->values();
+
+        return [
+            'routeSourceCities'   => $routes->pluck('sourceCity')->filter()->unique('id')->sortBy('name')->values(),
+            'routeDestCities'     => $routes->pluck('destinationCity')->filter()->unique('id')->sortBy('name')->values(),
+            'routeMidpointCities' => $midpoints->pluck('city')->filter()->unique('id')->sortBy('name')->values(),
+        ];
     }
 
     public function documents($id)

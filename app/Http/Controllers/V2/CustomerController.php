@@ -470,7 +470,7 @@ class CustomerController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
-            'gst_number'          => 'required|max:100|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/|unique:contacts,gstin',
+            'gst_number'          => ['required','max:100','regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/', Rule::unique('contacts','gstin')->whereNull('deleted_at')],
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',
@@ -802,7 +802,7 @@ class CustomerController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'gst_number'          => ['required','max:100','regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/', Rule::unique('contacts','gstin')->ignore($id)],
+            'gst_number'          => ['required','max:100','regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/', Rule::unique('contacts','gstin')->ignore($id)->whereNull('deleted_at')],
             'contact_name'        => 'required|max:100',
             'about_type_id'       => 'required|exists:customerabouttypes,id',
             'size'                => 'nullable|in:Small,Medium,Large',

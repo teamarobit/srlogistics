@@ -51,19 +51,19 @@
             <div class="cv2-field cv2-cond" data-rt="source"><label class="cv2-label">Source City <span class="req">*</span></label>
               <select class="cv2-select cv2-modal-select" name="source_city_id" style="width:100%;">
                 <option value="">Choose source city</option>
-                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+                @foreach($routeSourceCities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
               </select>
             </div>
             <div class="cv2-field cv2-cond" data-rt="destination"><label class="cv2-label">Destination City <span class="req">*</span></label>
               <select class="cv2-select cv2-modal-select" name="destination_city_id" style="width:100%;">
                 <option value="">Choose destination city</option>
-                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+                @foreach($routeDestCities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
               </select>
             </div>
             <div class="cv2-field cv2-cond" data-rt="midpoint"><label class="cv2-label">Midpoint City <span class="req">*</span></label>
               <select class="cv2-select cv2-modal-select" name="midpoint_city_id" style="width:100%;">
                 <option value="">Choose midpoint</option>
-                @foreach($cities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
+                @foreach($routeMidpointCities as $city)<option value="{{ $city->id }}">{{ $city->name }}</option>@endforeach
               </select>
             </div>
             <div class="cv2-field is-full"><label class="cv2-label">Address <span class="req">*</span></label><input type="text" name="address"></div>
@@ -113,4 +113,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/loadvendor.js?v=1.3') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/loadvendor.js?v=1.4') }}"></script>@endsection

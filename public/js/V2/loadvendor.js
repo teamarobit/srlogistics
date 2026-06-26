@@ -110,9 +110,22 @@ $(function () {
         itiMap.forEach(function (rec) {
             if (!$scope || $.contains($scope[0], rec.el) || $scope[0] === rec.el) {
                 try {
-                    var num = rec.iti.getNumber();
-                    if (num) { rec.el.value = num; }
-                    var cd = rec.iti.getSelectedCountryData();
+                    var num = rec.iti.getNumber();            // E.164, e.g. +919876543210
+                    var cd  = rec.iti.getSelectedCountryData();
+                    if (num) {
+                        // Store the NATIONAL significant number (digits only) in the phone
+                        // field — the controller validates digits:10 and keeps the dial code
+                        // separately in ph_prefix. Writing the full +91… value broke validation.
+                        var national = num;
+                        if (national.charAt(0) === '+') {            // E.164 -> strip dial code
+                            national = national.substring(1);
+                            if (cd && cd.dialCode && national.indexOf(cd.dialCode) === 0) {
+                                national = national.substring(cd.dialCode.length);
+                            }
+                        }
+                        national = national.replace(/\D/g, '');
+                        rec.el.value = national;
+                    }
                     var $row = $(rec.el).closest('.cv2-repeat-row');
                     if ($row.length && cd && cd.dialCode) {
                         var nm = $(rec.el).attr('name') || '';
