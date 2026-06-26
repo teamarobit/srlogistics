@@ -64,7 +64,7 @@
                                         <td>{{ optional($contract->contracttype)->name ?? '—' }}</td>
                                         <td>
                                             @if($contract->contract_type_id == 6) No expiry
-                                            @else {{ $contract->start_date ? \Carbon\Carbon::parse($contract->start_date)->format('d M y') : '—' }} – {{ $contract->end_date ? \Carbon\Carbon::parse($contract->end_date)->format('d M y') : '—' }} @endif
+                                            @else {{ $contract->start_date ? \Carbon\Carbon::parse($contract->start_date)->format('d-m-Y') : '—' }} – {{ $contract->end_date ? \Carbon\Carbon::parse($contract->end_date)->format('d-m-Y') : '—' }} @endif
                                         </td>
                                         <td><span class="cv2-badge {{ $statusClass }}"><span class="cv2-badge-dot"></span>{{ $status }}</span></td>
                                     </tr>

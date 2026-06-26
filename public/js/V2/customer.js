@@ -229,16 +229,39 @@ $(function () {
             });
         });
 
-        /* Single-date picker (contract / vehicle dates) -> writes YYYY-MM-DD into the field */
+        /* Single-date picker (contract / vehicle dates).
+           DISPLAYS DD-MM-YYYY to the user, but SUBMITS YYYY-MM-DD via a hidden
+           mirror field (backend date columns require YYYY-MM-DD). */
         $('.cv2-date').each(function () {
             var $inp = $(this);
-            $inp.daterangepicker({
+            var dname = $inp.attr('name');
+            var $hidden = $();
+            if (dname) {
+                $hidden = $('<input type="hidden">').attr('name', dname);
+                $inp.removeAttr('name').after($hidden);
+                $hidden.data('display', $inp);
+                $inp.data('mirror', $hidden);
+                var seed = $.trim($inp.val());
+                if (seed) {
+                    var ms = moment(seed, 'YYYY-MM-DD', true);
+                    if (!ms.isValid()) { ms = moment(seed, 'DD-MM-YYYY', true); }
+                    if (ms.isValid()) { $hidden.val(ms.format('YYYY-MM-DD')); $inp.val(ms.format('DD-MM-YYYY')); }
+                }
+            }
+            var dpOpts = {
                 singleDatePicker: true,
                 autoUpdateInput: false,
-                locale: { format: 'YYYY-MM-DD', cancelLabel: 'Clear' }
+                locale: { format: 'DD-MM-YYYY', cancelLabel: 'Clear' }
+            };
+            if (dname === 'start_date') { dpOpts.minDate = moment(); } // V1 parity: no past start date
+            $inp.daterangepicker(dpOpts);
+            $inp.on('apply.daterangepicker', function (ev, picker) {
+                $inp.val(picker.startDate.format('DD-MM-YYYY'));
+                $hidden.val(picker.startDate.format('YYYY-MM-DD'));
+                if (dname === 'start_date') { calcCv2EndDate(); }
+                if (dname === 'end_date')   { updateContractStatus(); }
             });
-            $inp.on('apply.daterangepicker', function (ev, picker) { $inp.val(picker.startDate.format('YYYY-MM-DD')); });
-            $inp.on('cancel.daterangepicker', function () { $inp.val(''); });
+            $inp.on('cancel.daterangepicker', function () { $inp.val(''); $hidden.val(''); });
         });
     }
 
@@ -410,10 +433,56 @@ $(function () {
     /* ===============================================================
      | CONTRACT form (create) — type/reminder toggles + save
      | =============================================================== */
+    // Auto-calc End Date from Start Date + Contract Type (parity with Contract create V1)
+    function calcCv2EndDate() {
+        var typeText = $('#cv2ContractType option:selected').text().trim();
+        // start/end submit values live in the hidden mirrors (YYYY-MM-DD);
+        // the visible inputs only display DD-MM-YYYY.
+        var $endHidden  = $('input[type="hidden"][name="end_date"]');
+        var $endDisplay = $endHidden.data('display');
+        function setEnd(ymd) {
+            $endHidden.val(ymd);
+            if ($endDisplay && $endDisplay.length) {
+                $endDisplay.val(ymd ? moment(ymd, 'YYYY-MM-DD').format('DD-MM-YYYY') : '');
+            }
+        }
+        var startVal = $('input[type="hidden"][name="start_date"]').val();
+        if (!startVal) { return; }
+        var start = moment(startVal, 'YYYY-MM-DD');
+        if (!start.isValid()) { return; }
+        var end = start.clone();
+        if      (typeText === 'Monthly')     { end.add(1, 'months').subtract(1, 'days'); }
+        else if (typeText === 'Quarterly')   { end.add(3, 'months').subtract(1, 'days'); }
+        else if (typeText === 'Half Yearly') { end.add(6, 'months').subtract(1, 'days'); }
+        else if (typeText === 'Yearly')      { end.add(1, 'years').subtract(1, 'days'); }
+        else { setEnd(''); updateContractStatus(); return; } // Trip Wise / Life Time / none = no end date (field hidden by data-when)
+        setEnd(end.format('YYYY-MM-DD'));
+        updateContractStatus();
+    }
+
+    // Derive Status (Active / Inactive / Life Time) from contract type + end date (V1 parity)
+    function updateContractStatus() {
+        var typeText = $('#cv2ContractType option:selected').text().trim();
+        var $status  = $('#cv2ContractStatus');
+        if (!$status.length) { return; }
+        var status = 'Active';
+        if (typeText === 'Life Time')      { status = 'Life Time'; }
+        else if (typeText === 'Trip Wise') { status = 'Active'; }
+        else {
+            var endVal = $('input[type="hidden"][name="end_date"]').val();
+            if (endVal) {
+                status = moment(endVal, 'YYYY-MM-DD').isSameOrAfter(moment().startOf('day')) ? 'Active' : 'Inactive';
+            }
+        }
+        $status.val(status);
+    }
+
     function syncContractType() {
         var v = $('#cv2ContractType').val();
         $('[data-when="monthly"]').toggle(v === '1');
         $('[data-when="dated"]').toggle(v !== '6' && v !== '5');
+        calcCv2EndDate();
+        updateContractStatus();
     }
     $('#cv2ContractType').on('change', syncContractType);
     if ($('#cv2ContractType').length) { syncContractType(); }
@@ -436,7 +505,7 @@ $(function () {
         });
     });
 
-    /* CONTRACT list — delete + edit (fetch) */
+    /* CONTRACT list — delete (edit is a direct link to the edit page) */
     $(document).on('click', '.cv2-del-contract', function () {
         var id = $(this).data('id');
         Swal.fire({
@@ -449,14 +518,6 @@ $(function () {
                 setTimeout(function () { window.location.reload(); }, 900);
             }).fail(handleAjaxError);
         });
-    });
-    $(document).on('click', '.cv2-edit-contract', function () {
-        var id = $(this).data('id');
-        $.get('/contacts/v2/customers/contract/' + id + '/edit', function (res) {
-            if (res && res.success) {
-                Toast.fire({ icon: 'info', title: 'Loaded contract ' + (res.data.contract_no || '') });
-            }
-        }).fail(handleAjaxError);
     });
 
     /* ===============================================================

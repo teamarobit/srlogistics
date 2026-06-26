@@ -36,8 +36,8 @@
                 @endforeach
               </select>
             </div>
-            <div class="cv2-field"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="text" class="cv2-date" name="v_start_date" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
-            <div class="cv2-field"><label class="cv2-label">End Date <span class="req">*</span></label><input type="text" class="cv2-date" name="v_end_date" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
+            <div class="cv2-field"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="text" class="cv2-date" name="v_start_date" placeholder="DD-MM-YYYY" autocomplete="off" readonly></div>
+            <div class="cv2-field"><label class="cv2-label">End Date <span class="req">*</span></label><input type="text" class="cv2-date" name="v_end_date" placeholder="DD-MM-YYYY" autocomplete="off" readonly></div>
             <div class="cv2-field is-full"><label class="cv2-label">KM Allowed <span class="req">*</span></label><input type="text" name="v_allowed_km"></div>
             <div class="cv2-field"><label class="cv2-label">Fixed Amount <span class="req">*</span></label><input type="text" name="v_fixed_amount" placeholder="₹"></div>
             <div class="cv2-field"><label class="cv2-label">Extra Amount / KM <span class="req">*</span></label><input type="text" name="v_extra_amount_per_km" placeholder="₹"></div>
@@ -52,4 +52,4 @@
   </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.8') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=2.2') }}"></script>@endsection

@@ -1383,24 +1383,24 @@ class CustomerController extends Controller
 
     public function editContract($id)
     {
-        $contract = Customercontract::with(['contact', 'contracttype', 'detail', 'routes'])->find($id);
+        $contract = Customercontract::with(['contact', 'contracttype', 'detail', 'routes'])->findOrFail($id);
 
-        if (!$contract) {
-            return response()->json(['success' => false, 'data' => [], 'message' => 'Contract not found.'], 422);
-        }
+        $contact = $this->findCustomerOrFail($contract->contact_id);
+        $c       = $this->shapeCustomer($contact);
 
-        $contractTypes = Contracttype::orderBy('id')->get();
-        $routes        = Route::where('status', 'Active')->get();
+        $contracttypes = Contracttype::orderBy('id')->get();
+        $routes        = Route::where('status', 'Active')->orderBy('name')->get();
 
         $this->storeUseractivity(46, 5, Auth::id(), $contract->id, 'Edit contract ' . $contract->contract_no);
 
-        return response()->json([
-            'success'       => true,
-            'data'          => $contract,
-            'contractTypes' => $contractTypes,
+        return view('V2.customer.contract-edit-form', [
+            'c'             => $c,
+            'counts'        => $this->tabCounts($contact),
+            'active'        => 'contracts',
+            'contract'      => $contract,
+            'contracttypes' => $contracttypes,
             'routes'        => $routes,
-            'message'       => 'Contract fetched successfully.'
-        ], 200);
+        ]);
     }
 
     public function updateContract(Request $request, $id)

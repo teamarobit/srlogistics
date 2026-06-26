@@ -24,7 +24,7 @@
                 <div class="cv2-form-grid is-3">
                     <div class="cv2-field"><label class="cv2-label">Customer</label><input type="text" value="{{ $c['name'] }}" disabled></div>
                     <div class="cv2-field"><label class="cv2-label">Contract No <span class="req">*</span></label><input type="text" name="contract_no" value="{{ old('contract_no') }}" placeholder="CTR-2026-015"></div>
-                    <div class="cv2-field"><label class="cv2-label">Status</label><input type="text" value="Active" disabled></div>
+                    <div class="cv2-field"><label class="cv2-label">Status</label><input type="text" id="cv2ContractStatus" value="Active" disabled></div>
                     <div class="cv2-field"><label class="cv2-label">Contract Type <span class="req">*</span></label>
                         <select class="cv2-select" id="cv2ContractType" name="contract_type_id" style="width:100%;">
                             <option value="">Choose…</option>
@@ -35,8 +35,8 @@
                     </div>
                     <div class="cv2-field"><label class="cv2-label">Advance Payment <span class="req">*</span></label><input type="number" step="0.01" name="advance_payment" value="{{ old('advance_payment') }}" placeholder="0.00"></div>
                     <div class="cv2-field"><label class="cv2-label">Payment Within (days) <span class="req">*</span></label><input type="number" name="payment_within_day" value="{{ old('payment_within_day') }}" placeholder="30"></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="text" class="cv2-date" name="start_date" value="{{ old('start_date') }}" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
-                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="text" class="cv2-date" name="end_date" value="{{ old('end_date') }}" placeholder="YYYY-MM-DD" autocomplete="off" readonly></div>
+                    <div class="cv2-field"><label class="cv2-label">Start Date <span class="req">*</span></label><input type="text" class="cv2-date" name="start_date" value="{{ old('start_date') }}" placeholder="DD-MM-YYYY" autocomplete="off" readonly></div>
+                    <div class="cv2-field" data-when="dated"><label class="cv2-label">End Date <span class="req">*</span></label><input type="text" class="cv2-date" name="end_date" value="{{ old('end_date') }}" placeholder="DD-MM-YYYY" autocomplete="off" readonly></div>
                     <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Allowed KM <span class="req">*</span></label><input type="number" name="total_allowed_kilometer" value="{{ old('total_allowed_kilometer') }}" placeholder="e.g. 8000"></div>
                     <div class="cv2-field" data-when="monthly"><label class="cv2-label">Monthly Total Price <span class="req">*</span></label><input type="number" step="0.01" name="monthly_total_price" value="{{ old('monthly_total_price') }}" placeholder="₹"></div>
                     <div class="cv2-field is-full"><label class="cv2-label">Routes <span class="req">*</span></label>
@@ -58,4 +58,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.8') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=2.2') }}"></script>@endsection
