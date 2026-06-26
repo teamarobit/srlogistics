@@ -174,7 +174,7 @@ class WorkshopController extends Controller
 
     public function masterWorkshops(Request $request)
     {
-        $query = Workshop::with(['state', 'city'])->whereNull('deleted_at')->orderBy('workshop_code');
+        $query = Workshop::with(['state', 'city'])->whereNull('deleted_at')->orderByDesc('id');
 
         if ($ownership = $request->ownership) {
             $query->where('ownership', $ownership);
