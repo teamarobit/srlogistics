@@ -17,50 +17,71 @@ $(document).ready(function() {
     ImgUpload();
     
     function ImgUpload() {
-        var imgWrap = "";
-        var imgArray = [];
-    
+
         $('.upload__inputfile').each(function () {
-            $(this).on('change', function (e) {
-                imgWrap = $(this).closest('.upload__box').find('.upload__img-wrap');
-                var maxLength = $(this).attr('data-max_length');
-    
-                var files = e.target.files;
-                var filesArr = Array.prototype.slice.call(files);
-    
-                filesArr.forEach(function (f) {
-    
-                    if (!f.type.match('image.*')) return;
-    
-                    if (imgArray.length >= maxLength) return;
-    
-                    imgArray.push(f);
-    
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        var html = `
-                            <div class="upload__img-box">
-                                <div class="img-bg" 
-                                     style="background-image:url(${e.target.result})"
-                                     data-file="${f.name}">
+
+            var input     = this;
+            var dt        = new DataTransfer();              // canonical file list for this input
+            var $imgWrap  = $(input).closest('.upload__box').find('.upload__img-wrap');
+            var maxLength = parseInt($(input).attr('data-max_length'), 10) || 20;
+
+            function fileKey(f) {
+                return f.name + '|' + f.size + '|' + f.lastModified;
+            }
+
+            $(input).on('change', function (e) {
+
+                Array.prototype.slice.call(e.target.files).forEach(function (f) {
+
+                    if (dt.files.length >= maxLength) return;     // respect max
+
+                    // skip files already added
+                    var exists = Array.prototype.some.call(dt.files, function (g) {
+                        return fileKey(g) === fileKey(f);
+                    });
+                    if (exists) return;
+
+                    dt.items.add(f);                              // keep every accepted file
+
+                    var key = fileKey(f);
+                    if (f.type.match('image.*')) {
+                        var reader = new FileReader();
+                        reader.onload = function (ev) {
+                            $imgWrap.append(`
+                                <div class="upload__img-box" data-filekey="${key}">
+                                    <div class="img-bg" style="background-image:url(${ev.target.result})" data-file="${f.name}">
+                                        <div class="upload__img-close"></div>
+                                    </div>
+                                </div>`);
+                        };
+                        reader.readAsDataURL(f);
+                    } else {
+                        // non-image accepted file (e.g. pdf) — show filename box (existing classes only)
+                        $imgWrap.append(`
+                            <div class="upload__img-box" data-filekey="${key}">
+                                <div class="img-bg" data-file="${f.name}">${f.name}
                                     <div class="upload__img-close"></div>
                                 </div>
-                            </div>`;
-                        imgWrap.append(html);
-                    };
-                    reader.readAsDataURL(f);
+                            </div>`);
+                    }
                 });
+
+                input.files = dt.files;                          // sync accumulated list back to the input
             });
-        });
-    
-        $('body').on('click', '.upload__img-close', function () {
-            var file = $(this).parent().data('file');
-    
-            imgArray = imgArray.filter(function (img) {
-                return img.name !== file;
+
+            // remove one newly-added file from both preview and the input
+            $imgWrap.on('click', '.upload__img-close', function () {
+                if ($(this).hasClass('remove-existing-btn')) return;   // existing files handled elsewhere
+
+                var key  = String($(this).closest('.upload__img-box').data('filekey'));
+                var kept = new DataTransfer();
+                Array.prototype.forEach.call(dt.files, function (g) {
+                    if (fileKey(g) !== key) kept.items.add(g);
+                });
+                dt = kept;
+                input.files = dt.files;
+                $(this).closest('.upload__img-box').remove();
             });
-    
-            $(this).closest('.upload__img-box').remove();
         });
     }
     

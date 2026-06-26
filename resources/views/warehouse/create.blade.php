@@ -217,5 +217,5 @@
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whCreateForm. --}}
 {{-- SD-13: intl-tel-input is already loaded globally in layouts/app.blade.php (BUG-004). --}}
-<script src="{{ asset('js/Warehouse/create.js?v=1.6') }}"></script>
+<script src="{{ asset('js/Warehouse/create.js?v=1.7') }}"></script>
 @endsection

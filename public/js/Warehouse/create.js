@@ -1,7 +1,12 @@
 /**
  * Warehouse Master — Create Page JS
- * SR Logistics | public/js/Warehouse/create.js v1.6
+ * SR Logistics | public/js/Warehouse/create.js v1.7
  *
+ * v1.7 (2026-06-26): Phone flag dropped down when a validation error showed.
+ *                    showValidationErrors() inserted the error span after the
+ *                    input, which iti has moved INSIDE the .iti wrapper — the
+ *                    wrapper grew and the v25 .iti__country-container recentred
+ *                    the flag. Now insert after the .iti wrapper instead.
  * v1.3 (2026-05-25): BUG-004 — layout already loads intl-tel-input v17.0.3
  *                    (js + utils). Removed utilsScript to avoid third version.
  *
@@ -128,8 +133,13 @@ $(function () {
         $.each(errors, function (field, messages) {
             var $input = $('[name="' + field + '"]');
             if ($input.length) {
+                // intl-tel-input wraps #wh_contact_number inside a .iti div.
+                // Insert the error after the .iti wrapper (not the input), so the
+                // wrapper height stays = input height and the flag does not drop down.
+                var $iti = $input.closest('.iti');
+                var $target = $iti.length ? $iti : $input;
                 $('<span class="text-danger small d-block mt-1 field-error">'
-                    + messages[0] + '</span>').insertAfter($input);
+                    + messages[0] + '</span>').insertAfter($target);
             }
         });
         var $first = $('.field-error').first();

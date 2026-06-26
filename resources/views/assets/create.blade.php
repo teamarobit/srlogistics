@@ -317,7 +317,7 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/create.js?v=1.1')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/create.js?v=1.2')}}"></script>
 
 @endsection
 

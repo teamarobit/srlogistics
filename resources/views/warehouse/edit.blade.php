@@ -223,5 +223,5 @@
 @section('js')
 {{-- SD-1: All JS in external file. Blade config passed via data-* attributes on #whEditForm. --}}
 {{-- SD-13: intl-tel-input is already loaded globally in layouts/app.blade.php (BUG-004). --}}
-<script src="{{ asset('js/Warehouse/edit.js?v=1.8') }}"></script>
+<script src="{{ asset('js/Warehouse/edit.js?v=1.9') }}"></script>
 @endsection

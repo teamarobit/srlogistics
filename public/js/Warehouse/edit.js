@@ -1,7 +1,12 @@
 /**
  * Warehouse Master — Edit Page JS
- * SR Logistics | public/js/Warehouse/edit.js v1.8
+ * SR Logistics | public/js/Warehouse/edit.js v1.9
  *
+ * v1.9 (2026-06-26): Phone flag dropped down when a validation error showed.
+ *                    showValidationErrors() inserted the error span after the input,
+ *                    which iti has moved INSIDE the .iti wrapper — the wrapper grew
+ *                    and the v25 .iti__country-container recentred the flag. Now insert
+ *                    after the .iti wrapper instead. (Parity with create.js v1.7.)
  * v1.8 (2026-06-18): Asana 1215319065738836 — saved E.164 number rendered with the
  *                    +91 dial code left inside the input (e.g. "919184914141"), so the
  *                    country code showed twice next to the flag. setNumber() ran before
@@ -154,8 +159,13 @@ $(function () {
         $.each(errors, function (field, messages) {
             var $input = $('[name="' + field + '"]');
             if ($input.length) {
+                // intl-tel-input wraps #wh_contact_number inside a .iti div.
+                // Insert the error after the .iti wrapper (not the input), so the
+                // wrapper height stays = input height and the flag does not drop down.
+                var $iti = $input.closest('.iti');
+                var $target = $iti.length ? $iti : $input;
                 $('<span class="text-danger small d-block mt-1 field-error">'
-                    + messages[0] + '</span>').insertAfter($input);
+                    + messages[0] + '</span>').insertAfter($target);
             }
         });
         var $first = $('.field-error').first();
