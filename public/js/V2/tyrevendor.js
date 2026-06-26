@@ -305,6 +305,7 @@ $(function () {
     $('#cv2ActivityForm').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
+        var $btn  = $form.find('button[type="submit"]').prop('disabled', true);
         clearValidationErrors($form);
         $.ajax({
             url: $form.attr('action'), method: 'POST', data: $form.serialize(),
@@ -312,7 +313,7 @@ $(function () {
                 Toast.fire({ icon: 'success', title: res.message || 'Note saved.' });
                 setTimeout(function () { window.location.reload(); }, 900);
             },
-            error: handleAjaxError
+            error: function (xhr) { $btn.prop('disabled', false); handleAjaxError(xhr); }
         });
     });
 

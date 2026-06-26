@@ -301,6 +301,7 @@ $(function () {
 
     /* ---------------- Generic modal/inline AJAX form (serialize) ---------------- */
     function submitSerialized($form, hideModalSel) {
+        var $btn = $form.find('[type="submit"]').prop('disabled', true);
         preparePhones($form);
         clearValidationErrors($form);
         $.ajax({
@@ -310,7 +311,7 @@ $(function () {
                 if (hideModalSel) { $(hideModalSel).modal('hide'); }
                 setTimeout(function () { window.location.reload(); }, 900);
             },
-            error: handleAjaxError
+            error: function (xhr) { $btn.prop('disabled', false); handleAjaxError(xhr); }
         });
     }
     function submitMultipart($form) {

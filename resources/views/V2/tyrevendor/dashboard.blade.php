@@ -105,4 +105,4 @@
     </div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/tyrevendor.js?v=2.0') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/tyrevendor.js?v=2.1') }}"></script>@endsection

@@ -337,6 +337,7 @@ $(function () {
      | Generic modal / inline form submit (serialize) -> reload on success
      | =============================================================== */
     function submitModalForm($form, $modal) {
+        var $btn = $form.find('[type="submit"]').prop('disabled', true);
         writePhoneNumbers($form);
         clearValidationErrors($form);
         $.ajax({
@@ -346,7 +347,7 @@ $(function () {
                 if ($modal && $modal.length) { $modal.modal('hide'); }
                 setTimeout(function () { window.location.reload(); }, 900);
             },
-            error: function (xhr) { handleAjaxError(xhr, $form); }
+            error: function (xhr) { $btn.prop('disabled', false); handleAjaxError(xhr, $form); }
         });
     }
 

@@ -58,4 +58,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=1.7') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=1.8') }}"></script>@endsection

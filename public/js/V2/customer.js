@@ -744,6 +744,7 @@ $(function () {
     $('#cv2ActivityForm').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
+        var $btn  = $form.find('button[type="submit"]').prop('disabled', true);
         clearValidationErrors($form);
         $.ajax({
             url: $form.attr('action'), method: 'POST', data: $form.serialize(),
@@ -752,7 +753,7 @@ $(function () {
                 var url = $form.data('list-url');
                 setTimeout(function () { if (url) { window.location.href = url; } else { window.location.reload(); } }, 900);
             },
-            error: handleAjaxError
+            error: function (xhr) { $btn.prop('disabled', false); handleAjaxError(xhr); }
         });
     });
 });

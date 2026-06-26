@@ -33,4 +33,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/employee.js?v=2.1') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/employee.js?v=2.2') }}"></script>@endsection
