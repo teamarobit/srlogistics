@@ -111,20 +111,20 @@ $(document).ready(function() {
     
         // Hide all first
         $(".motor_vehicle").hide();
-        $(".MotorVehicleNumber, .MakeDiv, .ModelDiv, .MotorVehicleNumberRCDate, .MotorVehicleAge, .ElectronicsDiv, .AssetTypeName, .IssueDateDiv, .AssignedOnDiv, .AssignedByDiv, .WarrantyStartDiv, .WarrantyEndDiv, .AgeDiv").hide();
+        $(".MotorVehicleNumber, .MakeDiv, .ModelDiv, .MotorVehicleNumberRCDate, .MotorVehicleAge, .ElectronicsDiv, .AssetTypeName, .IssueDateDiv, .WarrantyStartDiv, .WarrantyEndDiv, .AgeDiv").hide();
     
         if (type === "Motor Vehicle") {
     
             $(".motor_vehicle").css("display", "block");
     
-            $(".MotorVehicleNumber, .MakeDiv, .ModelDiv, .MotorVehicleNumberRCDate, .MotorVehicleAge, .IssueDateDiv, .AssignedOnDiv, .AssignedByDiv").show();
+            $(".MotorVehicleNumber, .MakeDiv, .ModelDiv, .MotorVehicleNumberRCDate, .MotorVehicleAge, .IssueDateDiv").show();
     
         } 
         else if (type === "Electronics") {
     
             $(".motor_vehicle").css("display", "block");
     
-            $(".MakeDiv, .ModelDiv, .ElectronicsDiv, .IssueDateDiv, .AssignedOnDiv, .AssignedByDiv, .WarrantyStartDiv, .WarrantyEndDiv, .AgeDiv").show();
+            $(".MakeDiv, .ModelDiv, .ElectronicsDiv, .IssueDateDiv, .WarrantyStartDiv, .WarrantyEndDiv, .AgeDiv").show();
     
         } 
         else if (type === "Others") {

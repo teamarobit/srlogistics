@@ -123,9 +123,7 @@ class AssetController extends Controller
             
             
             'issue_date'  => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
-            'assigned_on' => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
-            'assigned_by' => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|exists:contacts,id',
-            
+
             'comment'     => 'nullable|string|max:2000',
             'documents'   => 'nullable|array',
             'documents.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
@@ -196,8 +194,6 @@ class AssetController extends Controller
                 }
                 
                 $asset->issue_date = $request->get('issue_date') ?? null;
-                $asset->assigned_on = $request->get('assigned_on') ?? null;
-                $asset->assigned_by = $request->get('assigned_by') ?? null;
                 $asset->comment = $request->get('comment') ?? null;
                 $asset->status = $request->get('status', 'Active');
 
@@ -330,9 +326,7 @@ class AssetController extends Controller
             'electronic_age_months' => 'nullable|integer|min:0|max:11',
     
             'issue_date'  => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
-            'assigned_on' => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|date|date_format:Y-m-d',
-            'assigned_by' => 'required_if:asset_type,Motor Vehicle,Electronics|nullable|exists:contacts,id',
-            
+
             'comment'     => 'nullable|string|max:2000',
             'documents'   => 'nullable|array',
             'documents.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
@@ -405,8 +399,6 @@ class AssetController extends Controller
                 }
     
                 $asset->issue_date = $request->get('issue_date') ?? null;
-                $asset->assigned_on = $request->get('assigned_on') ?? null;
-                $asset->assigned_by = $request->get('assigned_by') ?? null;
                 $asset->comment = $request->get('comment') ?? null;
                 $asset->status = $request->get('status', 'Active');
 

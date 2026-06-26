@@ -221,33 +221,6 @@
                                 </div>
                               </div>
                               
-                              <div class="form-group row pb-1 AssignedOnDiv">
-                                <div class="col-12 col-md-3">
-                                    <label>Assigned On <span class="text-danger">*</span></label>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <input name="assigned_on" value="{{ $data->assigned_on ?? '' }}" class="form-control bg-light text-uppercase common_date" type="date" placeholder="DD/MM/YY">
-                                    <small class="error text-danger" id="edit_assigned_on_error"></small>
-                                </div>
-                              </div>
-                              
-                              <div class="form-group row pb-1 AssignedByDiv">
-                                <div class="col-12 col-md-3">
-                                    <label>Assigned By <span class="text-danger">*</span></label>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <select name="assigned_by" class="form-select select2">
-                                        <option value="">Choose..</option>
-                                        @foreach ($contacts as $contact)
-                                            <option value="{{ $contact->id }}" {{ $contact->id == $data->assigned_by ? 'selected' : '' }}>
-                                                {{ $contact->contact_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="error text-danger" id="edit_assigned_by_error"></small>
-                                </div>
-                              </div>
-                              
                                 <div class="form-group row">
                                     <div class="col-12 col-md-3">
                                         <label>Photos</label>
@@ -351,6 +324,6 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/edit.js?v=1.5')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/edit.js?v=1.6')}}"></script>
 
 @endsection
