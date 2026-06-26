@@ -28,7 +28,7 @@
                                 <form action="{{ route('locationpoint.index') }}" id="searchform" class="d-inline-block d-flex">
                                       
                                   <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
-                                      <input type="text" name="location" id="search_location" value="{{ $search_location }}" class="form-control" placeholder="Search by Location" />
+                                      <input type="text" name="location" id="lp_search_location" value="{{ $search_location }}" class="form-control" placeholder="Search by Location" />
                                   </div>
                                   
                                   <div class="search-wrap d-inline-block ms-2" style="width: 180px;">
@@ -171,6 +171,6 @@
 
 </script>
 
-<script type="text/javascript" src="{{asset('js/LocationPoint/index.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/LocationPoint/index.js?v=1.1')}}"></script>
 
 @endsection
