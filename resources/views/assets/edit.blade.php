@@ -102,7 +102,7 @@
                                     <label>Purchase Date</label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input name="purchase_date" value="{{ $data->purchase_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="purchase_date" id="edit_purchase_date" value="{{ $data->purchase_date ? \Carbon\Carbon::parse($data->purchase_date)->format('d-m-Y') : '' }}" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="edit_purchase_date_error"></small>
                                 </div>
                               </div>
@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{-- Issue 18 — RC Date is a registration date; allow past/today, block only future --}}
-                                    <input name="rc_date" value="{{ $data->rc_date ?? '' }}" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="rc_date" id="edit_rc_date" value="{{ $data->rc_date ? \Carbon\Carbon::parse($data->rc_date)->format('d-m-Y') : '' }}" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="edit_rc_date_error"></small>
                                 </div>
                               </div>
@@ -174,7 +174,7 @@
                                         <label>Warranty Start Date <span class="text-danger">*</span></label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input name="warranty_start_date" value="{{ $data->warranty_start_date ?? '' }}" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                        <input type="text" name="warranty_start_date" id="edit_warranty_start_date" value="{{ $data->warranty_start_date ? \Carbon\Carbon::parse($data->warranty_start_date)->format('d-m-Y') : '' }}" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                         <small class="error text-danger" id="edit_warranty_start_date_error"></small>
                                     </div>
                                   </div>
@@ -183,7 +183,7 @@
                                         <label>Warranty End Date <span class="text-danger">*</span></label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input name="warranty_end_date" value="{{ $data->warranty_end_date ?? '' }}" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                        <input type="text" name="warranty_end_date" id="edit_warranty_end_date" value="{{ $data->warranty_end_date ? \Carbon\Carbon::parse($data->warranty_end_date)->format('d-m-Y') : '' }}" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                         <small class="error text-danger" id="edit_warranty_end_date_error"></small>
                                     </div>
                                   </div>
@@ -216,7 +216,7 @@
                                     <label>Issue Date <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input name="issue_date" value="{{ $data->issue_date ?? '' }}" class="form-control bg-light text-uppercase common_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="issue_date" id="edit_issue_date" value="{{ $data->issue_date ? \Carbon\Carbon::parse($data->issue_date)->format('d-m-Y') : '' }}" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="edit_issue_date_error"></small>
                                 </div>
                               </div>
@@ -324,6 +324,6 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/edit.js?v=1.6')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/edit.js?v=1.7')}}"></script>
 
 @endsection

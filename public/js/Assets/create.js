@@ -14,6 +14,30 @@ $(document).ready(function() {
     });
     
     
+    // Single-date pickers (daterangepicker, DD-MM-YYYY display)
+    function singleDate(sel, opts) {
+        var $el = $(sel);
+        if (!$el.length) return;
+        $el.daterangepicker($.extend({
+            singleDatePicker: true,
+            autoUpdateInput: false,
+            showDropdowns: true,
+            locale: { format: 'DD-MM-YYYY', cancelLabel: 'Clear' }
+        }, opts || {}));
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
+
+    singleDate('#add_purchase_date',      { maxDate: moment() }); // block future
+    singleDate('#add_rc_date',            { maxDate: moment() }); // block future
+    singleDate('#add_warranty_start_date');
+    singleDate('#add_warranty_end_date');
+    singleDate('#add_issue_date',         { minDate: moment() }); // block past
+
     // Image upload
     ImgUpload();
     
@@ -144,6 +168,12 @@ $(document).ready(function() {
         }
 
         var formData = new FormData(this);
+
+        // Convert displayed DD-MM-YYYY dates to Y-m-d for backend validation
+        ['purchase_date', 'rc_date', 'warranty_start_date', 'warranty_end_date', 'issue_date'].forEach(function (n) {
+            var v = $('[name="' + n + '"]').val();
+            if (v) { formData.set(n, moment(v, 'DD-MM-YYYY').format('YYYY-MM-DD')); }
+        });
 
         // Clear previous errors
         // $('.is-invalid').removeClass('is-invalid');

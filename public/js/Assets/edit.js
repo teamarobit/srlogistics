@@ -13,6 +13,38 @@ $(document).ready(function() {
     });
     
     
+    // Single-date pickers (daterangepicker, DD-MM-YYYY display) — preload existing value
+    function singleDate(sel, opts) {
+        var $el = $(sel);
+        if (!$el.length) return;
+        $el.daterangepicker($.extend({
+            singleDatePicker: true,
+            autoUpdateInput: false,
+            showDropdowns: true,
+            locale: { format: 'DD-MM-YYYY', cancelLabel: 'Clear' }
+        }, opts || {}));
+        var existing = $el.val();
+        if (existing) {
+            var m = moment(existing, 'DD-MM-YYYY', true);
+            if (m.isValid()) {
+                $el.data('daterangepicker').setStartDate(m);
+                $el.data('daterangepicker').setEndDate(m);
+            }
+        }
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
+
+    singleDate('#edit_purchase_date',      { maxDate: moment() }); // block future
+    singleDate('#edit_rc_date',            { maxDate: moment() }); // block future
+    singleDate('#edit_warranty_start_date');
+    singleDate('#edit_warranty_end_date');
+    singleDate('#edit_issue_date',         { minDate: moment() }); // block past
+
     // Image upload
     ImgUpload();
     
@@ -232,9 +264,13 @@ $(document).ready(function() {
 
         var formData = new FormData(this);
         formData.set('assetid', assetId);
-        
-        
-    
+
+        // Convert displayed DD-MM-YYYY dates to Y-m-d for backend validation
+        ['purchase_date', 'rc_date', 'warranty_start_date', 'warranty_end_date', 'issue_date'].forEach(function (n) {
+            var v = $('[name="' + n + '"]').val();
+            if (v) { formData.set(n, moment(v, 'DD-MM-YYYY').format('YYYY-MM-DD')); }
+        });
+
         $('.error').html('');
         $('#editBtn').html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled', true);
     

@@ -99,7 +99,7 @@
                                     <label>Purchase Date</label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input name="purchase_date" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="purchase_date" id="add_purchase_date" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="add_purchase_date_error"></small>
                                 </div>
                               </div>
@@ -140,7 +140,7 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{-- Issue 18 — RC Date is a registration date; allow past/today, block only future --}}
-                                    <input name="rc_date" class="form-control bg-light text-uppercase general_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="rc_date" id="add_rc_date" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="add_rc_date_error"></small>
                                 </div>
                               </div>
@@ -171,7 +171,7 @@
                                         <label>Warranty Start Date <span class="text-danger">*</span></label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input name="warranty_start_date" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                        <input type="text" name="warranty_start_date" id="add_warranty_start_date" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                         <small class="error text-danger" id="add_warranty_start_date_error"></small>
                                     </div>
                                   </div>
@@ -180,7 +180,7 @@
                                         <label>Warranty End Date <span class="text-danger">*</span></label>
                                     </div>
                                     <div class="col-12 col-md-6">
-                                        <input name="warranty_end_date" class="form-control bg-light text-uppercase" type="date" placeholder="DD/MM/YY">
+                                        <input type="text" name="warranty_end_date" id="add_warranty_end_date" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                         <small class="error text-danger" id="add_warranty_end_date_error"></small>
                                     </div>
                                   </div>
@@ -212,7 +212,7 @@
                                     <label>Issue Date <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input name="issue_date" class="form-control bg-light text-uppercase common_date" type="date" placeholder="DD/MM/YY">
+                                    <input type="text" name="issue_date" id="add_issue_date" class="form-control bg-light js-single-date" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                     <small class="error text-danger" id="add_issue_date_error"></small>
                                 </div>
                               </div>
@@ -290,7 +290,7 @@
 var ASSETS = "{{ route('asset.index') }}";
 </script>
 
-<script type="text/javascript" src="{{asset('js/Assets/create.js?v=1.3')}}"></script>
+<script type="text/javascript" src="{{asset('js/Assets/create.js?v=1.4')}}"></script>
 
 @endsection
 
