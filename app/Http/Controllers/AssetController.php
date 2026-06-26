@@ -116,8 +116,8 @@ class AssetController extends Controller
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
             'purchase_date' => 'nullable|date|date_format:Y-m-d',
 
-            'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
-            'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
+            'warranty_start_date' => 'required_if:asset_type,Electronics,Others|nullable|date|date_format:Y-m-d',
+            'warranty_end_date'   => 'required_if:asset_type,Electronics,Others|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
             'electronic_age_months' => 'nullable|integer|min:0|max:11',
             
@@ -324,8 +324,8 @@ class AssetController extends Controller
             'rc_date'     => 'required_if:asset_type,Motor Vehicle|nullable|date|date_format:Y-m-d',
             'purchase_date' => 'nullable|date|date_format:Y-m-d',
 
-            'warranty_start_date' => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
-            'warranty_end_date'   => 'required_if:asset_type,Electronics|nullable|date|date_format:Y-m-d',
+            'warranty_start_date' => 'required_if:asset_type,Electronics,Others|nullable|date|date_format:Y-m-d',
+            'warranty_end_date'   => 'required_if:asset_type,Electronics,Others|nullable|date|date_format:Y-m-d',
             'electronic_age'      => 'required_if:asset_type,Electronics|nullable|integer|min:1',
             'electronic_age_months' => 'nullable|integer|min:0|max:11',
     
