@@ -12,6 +12,10 @@
                                     <div class="td2-pod-card">
                                         <div class="td2-pod-grid">
                                             <div class="td2-pod-item">
+                                                <div class="td2-doc-label">Vehicle Number</div>
+                                                <div class="td2-doc-val">WB-12-AB-1234</div>
+                                            </div>
+                                            <div class="td2-pod-item">
                                                 <div class="td2-doc-label">Material Description</div>
                                                 <div class="td2-doc-val">Hydrabad - Kolkata</div>
                                             </div>

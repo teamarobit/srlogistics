@@ -3,6 +3,17 @@
  * SD-1: All logic in external JS file — no inline scripts in blade.
  * SD-7: Toast mixin defined at top.
  * v3.6 | 2026-06-03 — tab persistence across page refresh
+ * v4.6 | 2026-06-15 — SOS → Pause → Resume operator flow (prototype, client-side)
+ * v4.7 | 2026-06-15 — SOS / Resume events injected into the Status Timeline
+ * v4.8 | 2026-06-16 — SOS incident location: auto GPS capture + editable Leaflet map
+ * v4.9 | 2026-06-16 — SOS submit Toast now success (was error)
+ * v5.0 | 2026-06-16 — Resume modal: vehicle picker mirrors Vehicle Allocation tab
+ *                     (suggested cards + OR + Add/Allocate); card pick → inline Assign
+ * v5.1 | 2026-06-16 — Resume modal: change-vehicle/driver notes; change-driver shows the
+ *                     driver's currently-assigned vehicle card; condition notes (not on
+ *                     another ongoing trip)
+ * v5.2 | 2026-06-16 — Eway+LR: Unassigned E-Ways modal (select-all + live selected count/qty,
+ *                     status filter) + nested Add Eway form modal (GSTIN + bill numbers)
  */
 
 /* =============================================================
@@ -19,6 +30,38 @@ const Toast = Swal.mixin({
         toast.addEventListener('mouseleave', Swal.resumeTimer);
     }
 });
+
+/* =============================================================
+   SELECT2 — force modal dropdowns to always open BELOW the field
+   (Select2 flips upward inside a scrollable Bootstrap modal). Runs
+   at load so the patched prototype is bound by every later init.
+   Non-modal selects keep Select2's native above/below behaviour.
+   ============================================================= */
+(function () {
+    if (!(window.jQuery && $.fn.select2 && $.fn.select2.amd)) { return; }
+    try {
+        var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
+        if (!AttachBody || AttachBody.prototype.__td2BelowPatched) { return; }
+        var original = AttachBody.prototype._positionDropdown;
+        AttachBody.prototype._positionDropdown = function () {
+            var inModal = this.$dropdownParent && this.$dropdownParent.closest('.modal').length > 0;
+            if (!inModal) { return original.apply(this, arguments); }
+            var $op = this.$dropdownParent;
+            if ($op.css('position') === 'static') { $op = $op.offsetParent(); }
+            var offset = this.$container.offset();
+            var height = this.$container.outerHeight(false);
+            var parentOffset = { top: 0, left: 0 };
+            if ($.contains(document.body, $op[0]) || $op[0].isConnected) { parentOffset = $op.offset(); }
+            this.$dropdownContainer.css({
+                top:  offset.top + height - parentOffset.top,
+                left: offset.left - parentOffset.left
+            });
+            this.$dropdown.removeClass('select2-dropdown--above select2-dropdown--below').addClass('select2-dropdown--below');
+            this.$container.removeClass('select2-container--above select2-container--below').addClass('select2-container--below');
+        };
+        AttachBody.prototype.__td2BelowPatched = true;
+    } catch (e) { /* Select2 not ready — keep native behaviour */ }
+})();
 
 /* =============================================================
    PROTO CONFIG
@@ -212,18 +255,78 @@ function applyConditionalVisibility() {
    ============================================================= */
 function closeAllOverlays() {
     $('.td2-overlay').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
 }
 
 /* Attachment overlay */
 $(document).on('click', '#attachmentBtn', function () {
     closeAllOverlays();
     $('.attachment-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
 });
 
 /* Bill Entry overlay */
 $(document).on('click', '.td2-bill-click', function () {
     closeAllOverlays();
     $('.bill-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
+    initBillDateTimePickers();
+});
+
+/* Add Addition / Deduction / Transaction modals — single DATE picker
+   (daterangepicker). Reuses the Expense-modal field styling (.td2-exp-modal
+   + .td2-exp-datetime). SD-1: init lives here, not inline in the blade. */
+$(document).on('shown.bs.modal', '#addAddition, #addDeduction, #addTransaction', function () {
+    var modalId = this.id;
+    $(this).find('.td2-exp-datetime').each(function () {
+        var $el = $(this);
+        if ($el.data('daterangepicker')) { return; }
+        $el.daterangepicker({
+            singleDatePicker: true,
+            autoApply: true,
+            showDropdowns: true,
+            autoUpdateInput: false,
+            parentEl: '#' + modalId,
+            locale: { format: 'DD/MM/YYYY', cancelLabel: 'Clear' }
+        });
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    });
+});
+
+/* Loading / Unloading date+time pickers (daterangepicker, loaded in
+   layouts.app). SD-1: init lives here in the external JS, not inline in blade.
+   Idempotent — safe to call every time the overlay opens. */
+function initBillDateTimePickers() {
+    if (typeof $.fn.daterangepicker !== 'function') { return; }
+    $('.bill-popup .td2-bill-datetime').each(function () {
+        var $el = $(this);
+        if ($el.data('daterangepicker')) { return; }
+        $el.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 5,
+            autoUpdateInput: false,
+            drops: 'auto',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $el.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $el.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    });
+}
+
+/* Close Bill Entry overlay when backdrop is clicked */
+$(document).on('click', '.td2-overlay-backdrop', function () {
+    closeAllOverlays();
 });
 
 /* Map / Vehicle Detail overlay — eye button or card click.
@@ -238,6 +341,7 @@ $(document).on('click', '.td2-open-map', function (e) {
     $('.map-popup .td2-vd-vahan-view').toggleClass('d-none', !showVahan);
 
     $('.map-popup').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
 });
 
 /* Close any overlay */
@@ -333,6 +437,29 @@ $(document).on('change', '.td2-ext-veh', function () {
     $('.td2-if-ext').show();
 });
 
+/* VAHAN Details + selected vehicle card — reveal only after a vehicle is picked.
+   Hidden by default in the blade; shown (accordion expanded) on selection. */
+function td2ToggleVahan($scope, collapseSelector, show) {
+    var collapseEl = document.querySelector(collapseSelector);
+    if (show) {
+        $scope.find('.td2-vahan-wrap').show();
+        $scope.find('.td2-veh-card').show();
+        if (collapseEl) { bootstrap.Collapse.getOrCreateInstance(collapseEl).show(); }
+    } else {
+        if (collapseEl) { bootstrap.Collapse.getOrCreateInstance(collapseEl).hide(); }
+        $scope.find('.td2-vahan-wrap').hide();
+        $scope.find('.td2-veh-card').hide();
+    }
+}
+
+$(document).on('change', '#td2OwnVehSelect', function () {
+    td2ToggleVahan($(this).closest('.td2-if-own'), '#td2VahanDetails', !!$(this).val());
+});
+
+$(document).on('change', '#td2ExtVehicleSelect', function () {
+    td2ToggleVahan($(this).closest('.td2-if-ext'), '#td2VahanDetailsExt', !!$(this).val());
+});
+
 /* Edit Trip: + Add Stop */
 $(document).on('click', '.td2-add-stop-btn', function () {
     var $clone = $('.td2-edit-stop-item').first().clone();
@@ -358,6 +485,72 @@ $(document).on('shown.bs.modal', '#editTrip', function () {
 /* Select2 init for Assign Vehicle modal fields */
 $(document).on('shown.bs.modal', '#assignModal', function () {
     $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+/* Select2 init for Add Addition modal — Addition Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#addAddition', function () {
+    var $head = $('#td2AdditionHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an addition head',
+            allowClear: true
+        });
+    }
+});
+
+/* Select2 init for Add Deduction modal — Deduction Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#addDeduction', function () {
+    var $head = $('#td2DeductionHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add a deduction head',
+            allowClear: true
+        });
+    }
+});
+
+/* Select2 init for Driver Transaction modal — Expense Head supports
+   selecting an existing head OR typing a new one (tags: true). */
+$(document).on('shown.bs.modal', '#driverExpense', function () {
+    var $head = $('#td2ExpenseHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an expense head',
+            allowClear: true
+        });
+    }
+
+    /* Date & Time — single date + time picker (daterangepicker, already loaded
+       in layouts.app). Replaces the native datetime-local control. */
+    var $expDate = $('#td2ExpenseDate');
+    if ($expDate.length && typeof $.fn.daterangepicker === 'function' && !$expDate.data('daterangepicker')) {
+        $expDate.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: false,
+            parentEl: '#driverExpense',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $expDate.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $expDate.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
 });
 
 /* =============================================================
@@ -545,23 +738,12 @@ $(document).on('click', '.td2-review-save-btn', function () {
    SPRINT 5 — CHANGE STATUS MODAL
    ============================================================= */
 
-/* Status = route point + "Other". Reveal the "Other" sub-status
-   dropdown (Halt, Breakdown, etc.) only when "Other" is selected. */
-$(document).on('change', '#td2StatusSelect', function () {
-    var isOther = $(this).val() === 'Other';
-    $('#td2StatusOtherWrap').toggleClass('d-none', !isOther);
-    if (!isOther) { $('#td2StatusOther').val(''); }
-});
-
-/* Reset the modal's status fields whenever it is closed */
-$(document).on('hidden.bs.modal', '#changeStatus', function () {
-    $('#td2StatusOtherWrap').addClass('d-none');
-    $('#td2StatusOther').val('');
-});
-
+/* Update Status = route-stage progression only. Disruptions (Halt, Breakdown,
+   Accident, etc.) moved to the SOS panel, so the old "Other" sub-status
+   dropdown was removed from the modal. */
 $(document).on('click', '.td2-status-save-btn', function () {
-    if ($('#td2StatusSelect').val() === 'Other' && !$('#td2StatusOther').val()) {
-        Toast.fire({ icon: 'warning', title: 'Please select an "Other" status.' });
+    if (!$('#td2StatusSelect').val()) {
+        Toast.fire({ icon: 'warning', title: 'Please select a status.' });
         return;
     }
     Toast.fire({ icon: 'success', title: 'Status updated (prototype).' });
@@ -575,6 +757,10 @@ $(document).on('click', '.td2-driver-exp-save', function () {
     Toast.fire({ icon: 'success', title: 'Driver transaction added (prototype).' });
     $('#driverExpense').modal('hide');
     $('#driverExpenseForm')[0].reset();
+    if ($('#td2ExpenseHead').hasClass('select2-hidden-accessible')) {
+        $('#td2ExpenseHead').val('').trigger('change');
+    }
+    $('#td2ExpenseDate').val('');
 });
 
 /* =============================================================
@@ -614,18 +800,222 @@ $(document).on('click', '.td2-txn-save', function () {
 // In-memory SOS log (prototype — replaced by AJAX when backend is wired)
 var sosLog = [];
 
+/* =============================================================
+   PAUSE / RESUME STATE (prototype — client-side)
+   ─────────────────────────────────────────────────────────────
+   tripState mirrors a future trips.trip_status = 'Paused'.
+   activeSos holds the id of the SOS event that paused the trip.
+   Visibility of the Paused badge / Resume buttons / locked
+   Update Status link is driven by the body.td2-trip-paused class
+   so it survives the lazy-loaded vehStatus tab being (re)injected.
+   ============================================================= */
+var tripState = 'Ongoing';   // 'Ongoing' | 'Paused'
+var activeSos = null;        // SOS event id that paused the trip
+
+function setTripPaused(paused, sosId) {
+    tripState = paused ? 'Paused' : 'Ongoing';
+    activeSos = paused ? (sosId || null) : null;
+    $('body').toggleClass('td2-trip-paused', paused);
+}
+
+/* Short "DD/MM/YYYY HH:MM" timestamp helper */
+function td2Now() {
+    var n = new Date();
+    return ('0'+n.getDate()).slice(-2) + '/' +
+           ('0'+(n.getMonth()+1)).slice(-2) + '/' + n.getFullYear() +
+           ' ' + ('0'+n.getHours()).slice(-2) + ':' + ('0'+n.getMinutes()).slice(-2);
+}
+
+/* =============================================================
+   SOS — INCIDENT LOCATION (auto GPS capture + editable map)
+   ─────────────────────────────────────────────────────────────
+   Prototype, client-side. Uses Leaflet + OpenStreetMap tiles
+   (no API key) and Nominatim for reverse geocoding. The marker
+   is locked by default; "Edit" makes it draggable / tap-to-place.
+   Captured lat/lng/address are written to the hidden inputs and
+   ride along in the SOS submit event.
+   ============================================================= */
+var sosMap        = null;   // Leaflet map instance
+var sosMarker     = null;   // draggable marker
+var sosMapEditing = false;  // edit mode on/off
+var sosLocReady   = false;  // a coordinate has been captured
+
+/* Fallback centre — trip origin (Kolkata) until GPS resolves. */
+var SOS_DEFAULT_LAT = 22.5726;
+var SOS_DEFAULT_LNG = 88.3639;
+
+/* Custom red SOS pin (matches panel theme) */
+function sosPinIcon() {
+    return L.divIcon({
+        className: '',
+        html: '<div class="td2-sos-pin">' +
+              '<span class="td2-sos-pin-pulse"></span>' +
+              '<span class="td2-sos-pin-dot"></span></div>',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+    });
+}
+
+/* Update the small status pill */
+function setSosLocStatus(state, text) {
+    var $pill = $('#td2SosLocStatus');
+    $pill.removeClass('is-locating is-located is-editing is-error');
+    if (state) { $pill.addClass(state); }
+    $pill.find('.td2-sos-loc-status-txt').text(text);
+}
+
+/* Persist the captured coordinate to hidden inputs + coord line */
+function setSosCoords(lat, lng) {
+    sosLocReady = true;
+    $('#td2SosLat').val(lat);
+    $('#td2SosLng').val(lng);
+    $('#td2SosLocCoords').text(Number(lat).toFixed(5) + ', ' + Number(lng).toFixed(5));
+}
+
+/* Reverse geocode (Nominatim) → human address. Best-effort. */
+function sosReverseGeocode(lat, lng) {
+    $('#td2SosLocAddr').text('Fetching address…');
+    $.ajax({
+        url: 'https://nominatim.openstreetmap.org/reverse',
+        method: 'GET',
+        timeout: 8000,
+        data: { format: 'json', lat: lat, lon: lng, zoom: 16, addressdetails: 1 },
+        success: function (res) {
+            var addr = (res && res.display_name) ? res.display_name : 'Address unavailable';
+            $('#td2SosLocAddr').text(addr);
+            $('#td2SosAddress').val(addr);
+        },
+        error: function () {
+            $('#td2SosLocAddr').text('Address lookup unavailable');
+            $('#td2SosAddress').val('');
+        }
+    });
+}
+
+/* Move marker + map to a coordinate and refresh meta */
+function sosSetLocation(lat, lng, recenter) {
+    if (!sosMap) { return; }
+    if (sosMarker) {
+        sosMarker.setLatLng([lat, lng]);
+    }
+    if (recenter) {
+        sosMap.setView([lat, lng], 15, { animate: true });
+    }
+    setSosCoords(lat, lng);
+    sosReverseGeocode(lat, lng);
+}
+
+/* Build the Leaflet map once (lazily, when the panel first opens) */
+function initSosMap() {
+    if (sosMap || typeof L === 'undefined') { return; }
+
+    sosMap = L.map('td2SosMap', {
+        center: [SOS_DEFAULT_LAT, SOS_DEFAULT_LNG],
+        zoom: 13,
+        zoomControl: true,
+        attributionControl: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(sosMap);
+
+    sosMarker = L.marker([SOS_DEFAULT_LAT, SOS_DEFAULT_LNG], {
+        icon: sosPinIcon(),
+        draggable: false
+    }).addTo(sosMap);
+
+    /* When dragging the pin (edit mode) — update on drop */
+    sosMarker.on('dragend', function () {
+        var p = sosMarker.getLatLng();
+        sosSetLocation(p.lat, p.lng, false);
+    });
+
+    /* Tap the map (edit mode only) to move the pin */
+    sosMap.on('click', function (e) {
+        if (!sosMapEditing) { return; }
+        sosSetLocation(e.latlng.lat, e.latlng.lng, false);
+    });
+
+    /* Initial GPS capture */
+    sosLocate(false);
+}
+
+/* Capture the device's current location */
+function sosLocate(announce) {
+    if (!navigator.geolocation) {
+        setSosLocStatus('is-error', 'GPS unavailable');
+        $('#td2SosLocAddr').text('Location services not available — edit manually');
+        return;
+    }
+    setSosLocStatus('is-locating', 'Locating…');
+    navigator.geolocation.getCurrentPosition(
+        function (pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+            sosSetLocation(lat, lng, true);
+            setSosLocStatus('is-located', 'Current location captured');
+            if (announce) { Toast.fire({ icon: 'success', title: 'Location updated to current position' }); }
+        },
+        function () {
+            setSosLocStatus('is-error', 'Location denied');
+            $('#td2SosLocAddr').text('Couldn’t get current location — tap “Edit” to set it manually');
+            /* Keep the default centre as an editable starting point */
+            setSosCoords(SOS_DEFAULT_LAT, SOS_DEFAULT_LNG);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+/* Toggle edit mode on the map */
+function setSosMapEditing(on) {
+    sosMapEditing = on;
+    $('#td2SosMap').closest('.td2-sos-map-shell').toggleClass('is-editing', on);
+    $('#td2SosMapHint').toggleClass('d-none', !on);
+    var $btn = $('#td2SosEditLocBtn');
+    $btn.toggleClass('is-active', on);
+    $btn.find('.td2-sos-map-btn-lbl').text(on ? 'Done' : 'Edit');
+    $btn.find('i').attr('class', on ? 'uil uil-check' : 'uil uil-edit');
+    if (sosMarker) { sosMarker.dragging[on ? 'enable' : 'disable'](); }
+    if (on) {
+        setSosLocStatus('is-editing', 'Adjust the pin');
+    } else if (sosLocReady) {
+        setSosLocStatus('is-located', 'Location set');
+    }
+}
+
+/* Edit / Done toggle */
+$(document).on('click', '#td2SosEditLocBtn', function () {
+    setSosMapEditing(!sosMapEditing);
+});
+
+/* "Use my current location" button */
+$(document).on('click', '#td2SosGpsBtn', function () {
+    sosLocate(true);
+});
+
 /* ── Open / close SOS panel ── */
 $('#td2SosFabBtn').on('click', function () {
     $('#td2SosPanel').addClass('show');
+    $('.td2-overlay-backdrop').addClass('show');
+    /* Leaflet must size against a visible container — init/refresh after the
+       slide-in transition so the map renders at full width. */
+    setTimeout(function () {
+        initSosMap();
+        if (sosMap) { sosMap.invalidateSize(); }
+    }, 380);
 });
 
 $('#td2SosPanelClose').on('click', function () {
     $('#td2SosPanel').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
 });
 
 /* ── View History link (inside panel) ── */
 $('#td2SosHistoryBtn').on('click', function () {
     $('#td2SosPanel').removeClass('show');
+    $('.td2-overlay-backdrop').removeClass('show');
     renderSosHistory();
     $('#sosHistory').modal('show');
 });
@@ -685,32 +1075,53 @@ $('#td2SosSubmitBtn').on('click', function () {
         return;
     }
 
-    var now    = new Date();
-    var dateStr = ('0'+now.getDate()).slice(-2) + '/' +
-                  ('0'+(now.getMonth()+1)).slice(-2) + '/' + now.getFullYear() +
-                  ' ' + ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2);
+    var pauseTrip = $('#td2SosPauseToggle').is(':checked');
 
     var event = {
         id      : Date.now(),
         tags    : selected,
         manual  : manual,
-        time    : dateStr,
-        reporter: 'Admin',
+        time    : td2Now(),
+        reporter: tripConfig.userRole,
         status  : 'Active',
+        pausesTrip  : pauseTrip,
+        /* Captured incident location (prototype — client-side) */
+        lat     : $('#td2SosLat').val()     || null,
+        lng     : $('#td2SosLng').val()     || null,
+        address : $('#td2SosAddress').val() || null,
         resolvedBy  : null,
         resolvedTime: null,
         resolutionNote: null
     };
 
     sosLog.unshift(event);
-    updateSosBadge();
 
-    /* Reset form */
+    /* "Pause this trip?" ON → move the trip to Paused and surface Resume. */
+    if (pauseTrip) {
+        setTripPaused(true, event.id);
+    }
+
+    updateSosBadge();
+    renderTimelineEvents();
+
+    /* Reset form (toggle returns to its default ON state) */
     $('#td2SosCheckboxes input').prop('checked', false);
     $('#td2SosManual').val('');
+    $('#td2SosPauseToggle').prop('checked', true);
+    if (sosMapEditing) { setSosMapEditing(false); }   /* leave edit mode */
     $('#td2SosPanel').removeClass('show');
 
-    Toast.fire({ icon: 'error', title: 'SOS reported: ' + selected.join(', ') });
+    Toast.fire({
+        icon : 'success',
+        title: pauseTrip
+            ? 'SOS reported — trip paused: ' + selected.join(', ')
+            : 'SOS reported: ' + selected.join(', ')
+    });
+});
+
+/* Close the SOS slide panel when the in-panel Resume button opens the modal */
+$('#td2SosResumeBtn').on('click', function () {
+    $('#td2SosPanel').removeClass('show');
 });
 
 /* ── Resolve SOS event (delegated — history list) ── */
@@ -729,7 +1140,201 @@ $(document).on('click', '.td2-sos-event-resolve-btn', function () {
     }
     updateSosBadge();
     renderSosHistory();
+    renderTimelineEvents();
     Toast.fire({ icon: 'success', title: 'SOS marked as resolved.' });
+});
+
+/* =============================================================
+   RESUME TRIP MODAL (prototype — client-side)
+   ─────────────────────────────────────────────────────────────
+   Date/Time/Note + a further-action choice (resume only / change
+   vehicle / driver / both) + a mandatory reason. On confirm the
+   active SOS is resolved, the trip is un-paused, and the action is
+   recorded on the SOS timeline.
+   ============================================================= */
+
+/* Show/hide the vehicle + driver selects based on the chosen action */
+function syncResumeActionFields() {
+    var action = $('#resumeTripForm input[name="resume_action"]:checked').val();
+    var needVehicle = (action === 'change_vehicle' || action === 'change_both');
+    var needDriver  = (action === 'change_driver'  || action === 'change_both');
+    $('#td2ResumeVehicleWrap').toggleClass('d-none', !needVehicle);
+    $('#td2ResumeDriverWrap').toggleClass('d-none', !needDriver);
+}
+
+function clearResumeErrors() {
+    $('#resumeTripForm .td2-resume-err').text('');
+}
+
+/* Reset the vehicle-allocation picker (suggested cards + Add/Allocate) to a clean state */
+function resumeVehReset() {
+    $('input[name="td2ResumeVehSelect"]').prop('checked', false);
+    $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect, #td2ResumeExtVendorSelect').val('');
+    $('#td2ResumeOwnVeh').prop('checked', true);
+    $('.td2-resume-if-own').show();
+    $('.td2-resume-if-ext').hide();
+    $('#td2ResumeAssignedVehicle').val('');
+    $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
+    $('#td2ResumeAssignPick').html('');
+    $('#td2ResumeAssignBtn').prop('disabled', false)
+        .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
+}
+
+/* Reset the driver picker (selected driver's assigned-vehicle card) to a clean state */
+function resumeDriverReset() {
+    $('#td2ResumeDriverVehWrap').addClass('d-none');
+    $('.td2-resume-driver-veh-card').addClass('d-none');
+}
+
+/* A driver was picked → reveal that driver's currently-assigned vehicle card
+   (mirrors the Vehicle Allocation tab's selected-vehicle summary). */
+$(document).on('change', '#td2ResumeDriverSelect', function () {
+    var key = $(this).find('option:selected').attr('data-driver-key') || '';
+    $('.td2-resume-driver-veh-card').addClass('d-none');
+    if (key) {
+        $('.td2-resume-driver-veh-card[data-driver-key="' + key + '"]').removeClass('d-none');
+        $('#td2ResumeDriverVehWrap').removeClass('d-none');
+        $('#resumeTripForm .td2-resume-err[data-for="driver"]').text('');
+    } else {
+        $('#td2ResumeDriverVehWrap').addClass('d-none');
+    }
+});
+
+/* Own / External toggle — scoped to the Resume modal */
+$(document).on('change', '.td2-resume-own-veh', function () {
+    $('.td2-resume-if-own').show();
+    $('.td2-resume-if-ext').hide();
+});
+$(document).on('change', '.td2-resume-ext-veh', function () {
+    $('.td2-resume-if-own').hide();
+    $('.td2-resume-if-ext').show();
+});
+
+/* A vehicle was picked (suggested card OR own/external select) → reveal Assign button.
+   No nested modal opens — the user just confirms with the inline Assign button. */
+$(document).on('change', '.td2-resume-veh-pick', function () {
+    var reg;
+    if ($(this).is('input[type="radio"]')) {
+        reg = $(this).val();
+        $('#td2ResumeOwnVehSelect, #td2ResumeExtVehicleSelect').val('');
+    } else {
+        reg = $(this).val();
+        $('input[name="td2ResumeVehSelect"]').prop('checked', false);
+        if (this.id === 'td2ResumeOwnVehSelect') { $('#td2ResumeExtVehicleSelect').val(''); }
+        else { $('#td2ResumeOwnVehSelect').val(''); }
+    }
+
+    /* A new pick invalidates any previous assignment */
+    $('#td2ResumeAssignedVehicle').val('');
+    $('#td2ResumeAssignBtn').prop('disabled', false)
+        .html('<i class="uil uil-check me-1"></i> Assign Vehicle');
+
+    if (reg) {
+        $('#td2ResumeAssignPick').html('Selected: <strong>' + reg + '</strong>');
+        $('#td2ResumeAssignWrap').removeClass('d-none').attr('data-reg', reg);
+        $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('');
+    } else {
+        $('#td2ResumeAssignWrap').addClass('d-none').removeAttr('data-reg');
+    }
+});
+
+/* Assign the picked vehicle to the resume (prototype — client side only) */
+$(document).on('click', '#td2ResumeAssignBtn', function () {
+    var reg = $('#td2ResumeAssignWrap').attr('data-reg') || '';
+    if (!reg) { return; }
+    $('#td2ResumeAssignedVehicle').val(reg);
+    $(this).prop('disabled', true)
+        .html('<i class="uil uil-check-circle me-1"></i> Assigned · ' + reg);
+    $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('');
+    Toast.fire({ icon: 'success', title: 'Vehicle assigned.' });
+});
+
+/* Prep modal each time it opens */
+$(document).on('shown.bs.modal', '#resumeTripModal', function () {
+    var n = new Date();
+    $('#td2ResumeDate').val(n.getFullYear() + '-' +
+        ('0'+(n.getMonth()+1)).slice(-2) + '-' + ('0'+n.getDate()).slice(-2));
+    $('#td2ResumeTime').val(('0'+n.getHours()).slice(-2) + ':' + ('0'+n.getMinutes()).slice(-2));
+
+    /* Reset to "Resume only" and hide the conditional allocation fields */
+    $('#resumeTripForm input[name="resume_action"][value="resume_only"]').prop('checked', true);
+    $('#td2ResumeReason').val('');
+    $('#td2ResumeNote').val('');
+    clearResumeErrors();
+    resumeVehReset();
+    resumeDriverReset();
+    syncResumeActionFields();
+
+    /* Select2 inside the modal needs dropdownParent (frontend skill PART 7) */
+    $('.select2-modal', this).each(function () {
+        if (!$(this).hasClass('select2-hidden-accessible')) {
+            $(this).select2({ dropdownParent: $('#resumeTripModal'), width: '100%' });
+        }
+        $(this).val('').trigger('change');
+    });
+});
+
+$(document).on('change', '#resumeTripForm input[name="resume_action"]', syncResumeActionFields);
+
+/* Confirm resume */
+$(document).on('click', '.td2-resume-confirm-btn', function () {
+    clearResumeErrors();
+
+    var action = $('#resumeTripForm input[name="resume_action"]:checked').val();
+    var reason = $.trim($('#td2ResumeReason').val());
+    var vehicle = $('#td2ResumeAssignedVehicle').val();
+    var driver  = $('#td2ResumeDriverSelect').val();
+    var ok = true;
+
+    if (!reason) {
+        $('#resumeTripForm .td2-resume-err[data-for="reason"]').text('Reason is required.');
+        ok = false;
+    }
+    if ((action === 'change_vehicle' || action === 'change_both') && !vehicle) {
+        $('#resumeTripForm .td2-resume-err[data-for="vehicle"]').text('Please select a vehicle and click Assign.');
+        ok = false;
+    }
+    if ((action === 'change_driver' || action === 'change_both') && !driver) {
+        $('#resumeTripForm .td2-resume-err[data-for="driver"]').text('Please select the new driver.');
+        ok = false;
+    }
+    if (!ok) { return; }
+
+    /* Build a human-readable summary of the resume action */
+    var actionLabels = {
+        resume_only   : 'Resumed (no change)',
+        change_vehicle: 'Resumed + changed vehicle',
+        change_driver : 'Resumed + changed driver',
+        change_both   : 'Resumed + changed vehicle & driver'
+    };
+    var parts = [actionLabels[action] || 'Resumed'];
+    if (vehicle && (action === 'change_vehicle' || action === 'change_both')) { parts.push('Vehicle → ' + vehicle); }
+    if (driver  && (action === 'change_driver'  || action === 'change_both')) { parts.push('Driver → ' + driver); }
+    parts.push('Reason: ' + reason);
+    var note = $.trim($('#td2ResumeNote').val());
+    if (note) { parts.push('Note: ' + note); }
+    var summary = parts.join(' · ');
+
+    /* Resolve the SOS that paused the trip and record the resume on its timeline */
+    var ev = sosLog.find(function (e) { return e.id === activeSos; });
+    if (ev) {
+        ev.status         = 'Resolved';
+        ev.resolvedBy     = tripConfig.userRole;
+        ev.resolvedTime   = td2Now();
+        ev.resolutionNote = summary;
+    }
+
+    setTripPaused(false);
+    updateSosBadge();
+    renderSosHistory();
+    renderTimelineEvents();
+
+    var modalEl = document.getElementById('resumeTripModal');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+
+    Toast.fire({ icon: 'success', title: 'Trip resumed.' });
 });
 
 /* ── Update badge + FAB pulse ── */
@@ -785,7 +1390,8 @@ function renderSosHistory() {
             : '';
 
         var resolutionHtml = isResolved
-            ? '<div class="td2-sos-event-resolution"><strong>Resolved by ' + ev.resolvedBy + '</strong> at ' + ev.resolvedTime + '</div>'
+            ? '<div class="td2-sos-event-resolution"><strong>Resolved by ' + ev.resolvedBy + '</strong> at ' + ev.resolvedTime +
+              (ev.resolutionNote ? '<br>' + $('<span>').text(ev.resolutionNote).html() : '') + '</div>'
             : '';
 
         html += '<div class="td2-sos-event ' + (isResolved ? 'td2-sos-resolved' : '') + '">' +
@@ -803,6 +1409,64 @@ function renderSosHistory() {
 
     $list.html(html);
 }
+
+/* =============================================================
+   STATUS TIMELINE — inject SOS / Resume events
+   ─────────────────────────────────────────────────────────────
+   The Vehicle Status tab (#td2StatusTimeline) is lazy-loaded, so
+   this runs on every SOS / resume / resolve AND when the tab
+   mounts (td2:tab-loaded). It is idempotent: clears prior dynamic
+   entries (.td2-tl-dynamic) and re-appends from sosLog.
+   ============================================================= */
+function td2Esc(s) { return $('<span>').text(s == null ? '' : s).html(); }
+
+function tlEntry(kind, icon, title, badge, time, note) {
+    var markerCls = (kind === 'sos') ? 'td2-tl-marker-sos' : 'td2-tl-marker-resume';
+    return '<div class="td2-tl-item td2-tl-dynamic td2-tl-' + kind + '">' +
+        '<span class="td2-tl-marker ' + markerCls + '"><i class="uil ' + icon + '"></i></span>' +
+        '<div class="td2-tl-body">' +
+            '<div class="td2-tl-head">' +
+                '<span class="td2-tl-title">' + td2Esc(title) + '</span>' +
+                (badge ? '<span class="td2-tl-badge td2-tl-badge-sos">' + td2Esc(badge) + '</span>' : '') +
+                '<span class="td2-tl-time">' + td2Esc(time) + '</span>' +
+            '</div>' +
+            (note ? '<p class="td2-tl-note">' + td2Esc(note) + '</p>' : '') +
+        '</div>' +
+    '</div>';
+}
+
+function renderTimelineEvents() {
+    var $tl = $('#td2StatusTimeline');
+    if (!$tl.length) { return; }              /* Vehicle Status tab not mounted yet */
+    $tl.find('.td2-tl-dynamic').remove();      /* clear prior dynamic entries */
+
+    var html = '';
+    /* sosLog is newest-first; render oldest → newest so the timeline reads chronologically */
+    for (var i = sosLog.length - 1; i >= 0; i--) {
+        var ev = sosLog[i];
+        var incidents = $.grep(ev.tags, function (t) { return t.charAt(0) === '#'; }).join(', ');
+        var sosNote   = incidents + (ev.manual ? ' — "' + ev.manual + '"' : '');
+
+        html += tlEntry('sos', 'uil-exclamation-triangle', 'SOS Reported',
+            ev.pausesTrip ? 'Trip paused' : '',
+            'Reported by ' + ev.reporter + ' · ' + ev.time,
+            sosNote);
+
+        if (ev.status === 'Resolved') {
+            var isResume = !!ev.resolutionNote;
+            html += tlEntry('resume', isResume ? 'uil-play-circle' : 'uil-check-circle',
+                isResume ? 'Trip Resumed' : 'SOS Resolved', '',
+                (isResume ? 'Resumed by ' : 'Resolved by ') + ev.resolvedBy + ' · ' + ev.resolvedTime,
+                isResume ? ev.resolutionNote : null);
+        }
+    }
+    $tl.append(html);
+}
+
+/* Re-render the timeline when the Vehicle Status tab mounts (lazy-loaded) */
+$(document).on('td2:tab-loaded', function (e, key) {
+    if (key === 'vehStatus') { renderTimelineEvents(); }
+});
 
 /* =============================================================
    TAB PERSISTENCE — remember last active tab across page refresh
@@ -855,4 +1519,269 @@ $(document).ready(function () {
     $('#td2ExtVendorSelect').select2({ placeholder: 'Select vendor...', width: '100%', allowClear: true });
     $('#td2ExtVehicleSelect').select2({ placeholder: 'Select vehicle...', width: '100%', allowClear: true });
 
+});
+
+/* =============================================================
+   EWAY + LR — Unassigned E-Ways modal (#addEwayTable)
+   Select-all + live "Selected" count and "Selected Quantity".
+   ============================================================= */
+function td2EwayRefreshSummary() {
+    /* Only count data rows (exclude the empty-state row) */
+    var $rows = $('#td2EwayTable tbody tr:visible').not('.td2-eway-empty-row');
+    var $checked = $rows.find('.td2-eway-row-check:checked');
+    var qty = 0;
+    $checked.each(function () { qty += parseFloat($(this).data('qty')) || 0; });
+
+    $('#td2EwayTotal').text($rows.length);
+    $('#td2EwaySelected').text($checked.length);
+    $('#td2EwaySelQty').text(qty.toFixed(2));
+
+    /* Highlight selected rows */
+    $rows.removeClass('td2-eway-selected');
+    $checked.closest('tr').addClass('td2-eway-selected');
+
+    /* Keep the header checkbox in sync with the visible rows */
+    var $allRowChecks = $rows.find('.td2-eway-row-check');
+    $('#td2EwayCheckAll').prop('checked', $allRowChecks.length > 0 && $checked.length === $allRowChecks.length);
+    $('#td2EwayCheckAll').prop('disabled', $allRowChecks.length === 0);
+}
+
+/* Combined filter — search text + status. Hides non-matching rows,
+   shows the empty-state row when nothing matches, then recomputes summary. */
+function td2EwayApplyFilters() {
+    var term   = $.trim(($('#td2EwaySearch').val() || '')).toLowerCase();
+    var status = $('#td2EwayStatusFilter').val();
+    var shown  = 0;
+
+    $('#td2EwayTable tbody tr').not('.td2-eway-empty-row').each(function () {
+        var $row = $(this);
+        var statusOk = !status || $row.data('status') === status;
+        var textOk   = !term || $row.text().toLowerCase().indexOf(term) !== -1;
+        var match    = statusOk && textOk;
+
+        $row.toggle(match);
+        if (!match) { $row.find('.td2-eway-row-check').prop('checked', false); }
+        if (match)  { shown++; }
+    });
+
+    $('#td2EwayEmptyRow').prop('hidden', shown !== 0).toggle(shown === 0);
+    td2EwayRefreshSummary();
+}
+
+/* Header select-all toggles every visible data row */
+$(document).on('change', '#td2EwayCheckAll', function () {
+    var on = $(this).is(':checked');
+    $('#td2EwayTable tbody tr:visible').not('.td2-eway-empty-row')
+        .find('.td2-eway-row-check').prop('checked', on);
+    td2EwayRefreshSummary();
+});
+
+/* Any row checkbox change updates the summary */
+$(document).on('change', '.td2-eway-row-check', td2EwayRefreshSummary);
+
+/* Search + status filter inputs */
+$(document).on('input', '#td2EwaySearch', td2EwayApplyFilters);
+$(document).on('change', '#td2EwayStatusFilter', td2EwayApplyFilters);
+
+/* Reset filters */
+$(document).on('click', '#td2EwayResetFilters', function () {
+    $('#td2EwaySearch').val('');
+    $('#td2EwayStatusFilter').val('');
+    td2EwayApplyFilters();
+});
+
+/* Reset filters + summary each time the modal opens */
+$(document).on('shown.bs.modal', '#addEwayTable', function () {
+    $('#td2EwaySearch').val('');
+    $('#td2EwayStatusFilter').val('');
+    td2EwayApplyFilters();
+});
+
+/* Add to Trip */
+$(document).on('click', '#td2EwayAddToTrip', function () {
+    var n = $('#td2EwayTable tbody .td2-eway-row-check:checked').length;
+    if (n === 0) {
+        Toast.fire({ icon: 'error', title: 'Select at least one e-way.' });
+        return;
+    }
+    var modalEl = document.getElementById('addEwayTable');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    Toast.fire({ icon: 'success', title: n + ' e-way(s) added to trip.' });
+});
+
+/* =============================================================
+   EWAY + LR — Add Eway form modal (#addEwayForm)
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addEwayForm', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+function td2ClearEwayFormErrors() {
+    $('#addEwayFormEl .td2-eway-err').text('');
+}
+
+$(document).on('submit', '#addEwayFormEl', function (e) {
+    e.preventDefault();
+    td2ClearEwayFormErrors();
+
+    var gstin   = $('#td2EwayGstin').val();
+    var billNos = $.trim($('#td2EwayBillNos').val());
+    var ok = true;
+
+    if (!gstin) {
+        $('#addEwayFormEl .td2-eway-err[data-for="gstin"]').text('GSTIN is required.');
+        ok = false;
+    }
+    if (!billNos) {
+        $('#addEwayFormEl .td2-eway-err[data-for="eway_bill_numbers"]').text('Enter at least one e-way bill number.');
+        ok = false;
+    }
+    if (!ok) { return; }
+
+    /* Prototype: no backend yet — confirm + reset + return to the table modal */
+    var modalEl = document.getElementById('addEwayForm');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    this.reset();
+    if ($('#td2EwayGstin').hasClass('select2-hidden-accessible')) { $('#td2EwayGstin').val('').trigger('change'); }
+    Toast.fire({ icon: 'success', title: 'Eway saved.' });
+});
+
+/* =============================================================
+   ADD POD — LR-POD modal (#addPOD)  [v5.5 | 2026-06-17]
+   Select2 init + attachment dropzone/preview + prototype submit.
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addPOD', function () {
+    $('.select2-modal', this).select2({ dropdownParent: $(this), width: '100%' });
+});
+
+function td2PodHumanSize(bytes) {
+    if (bytes >= 1048576) { return (bytes / 1048576).toFixed(1) + ' MB'; }
+    if (bytes >= 1024)    { return (bytes / 1024).toFixed(1) + ' KB'; }
+    return bytes + ' B';
+}
+
+/* Render the preview grid from the file input + toggle the drop prompt */
+function td2PodRenderPreview() {
+    var input    = document.getElementById('td2PodFiles');
+    var $preview = $('#td2PodPreview').empty();
+    var files    = input && input.files ? input.files : [];
+
+    Array.prototype.forEach.call(files, function (file) {
+        var $pip = $('<span class="td2-pip"></span>');
+        if (file.type && file.type.indexOf('image/') === 0) {
+            $pip.append('<img class="td2-image-thumb" src="' + URL.createObjectURL(file) + '" alt="">');
+        } else {
+            $pip.append('<span class="td2-pip-fileicon"><i class="uil uil-file-alt"></i></span>');
+        }
+        $pip.append(
+            '<div class="td2-file-name-wrap"><p>' + $('<div>').text(file.name).html() +
+            '</p><small>' + td2PodHumanSize(file.size) + '</small></div>'
+        );
+        $pip.append('<span class="td2-file-remove" title="Remove"><i class="uil uil-trash-alt"></i></span>');
+        $preview.append($pip);
+    });
+
+    $('#td2PodDzPrompt').toggle(files.length === 0);
+}
+
+$(document).on('change', '#td2PodFiles', td2PodRenderPreview);
+
+/* Remove a previewed attachment (rebuilds the input FileList) */
+$(document).on('click', '#td2PodPreview .td2-file-remove', function () {
+    var idx   = $(this).closest('.td2-pip').index();
+    var input = document.getElementById('td2PodFiles');
+    var dt    = new DataTransfer();
+    Array.prototype.forEach.call(input.files, function (f, i) { if (i !== idx) { dt.items.add(f); } });
+    input.files = dt.files;
+    td2PodRenderPreview();
+});
+
+/* Drag & drop onto the dropzone */
+(function () {
+    function dz() { return document.getElementById('td2PodDropzone'); }
+    $(document).on('dragover dragenter', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).addClass('is-dragover');
+    });
+    $(document).on('dragleave dragend', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).removeClass('is-dragover');
+    });
+    $(document).on('drop', '#td2PodDropzone', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        $(this).removeClass('is-dragover');
+        var dropped = e.originalEvent.dataTransfer.files;
+        if (!dropped || !dropped.length) { return; }
+        var input = document.getElementById('td2PodFiles');
+        var dt    = new DataTransfer();
+        Array.prototype.forEach.call(input.files, function (f) { dt.items.add(f); });
+        Array.prototype.forEach.call(dropped,     function (f) { dt.items.add(f); });
+        input.files = dt.files;
+        td2PodRenderPreview();
+    });
+})();
+
+/* Prototype submit: no backend yet — validate required ack, confirm, reset */
+$(document).on('submit', '#td2PodForm', function (e) {
+    e.preventDefault();
+
+    if (!$('#td2PodAck').val()) {
+        Toast.fire({ icon: 'error', title: 'Please select an acknowledgement.' });
+        return;
+    }
+
+    var modalEl = document.getElementById('addPOD');
+    if (modalEl) {
+        (bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl)).hide();
+    }
+    this.reset();
+    $('#td2PodPreview').empty();
+    $('#td2PodDzPrompt').show();
+    if ($('#td2PodAck').hasClass('select2-hidden-accessible')) { $('#td2PodAck').val('').trigger('change'); }
+    Toast.fire({ icon: 'success', title: 'POD saved.' });
+});
+
+/* =============================================================
+   ADD EXPENSE MODAL (#addExpense — Expenses tab)
+   Expense Head supports selecting an existing head OR typing a new
+   one (Select2 tags: true). Date & Time uses the single-date +
+   time daterangepicker. Prototype only — no persistence (SD-1: all
+   logic lives here, not inline in the blade).
+   ============================================================= */
+$(document).on('shown.bs.modal', '#addExpense', function () {
+    var $head = $('#td2AddExpenseHead');
+    if ($head.length && !$head.hasClass('select2-hidden-accessible')) {
+        $head.select2({
+            dropdownParent: $(this),
+            width: '100%',
+            tags: true,
+            placeholder: 'Select or add an expense head',
+            allowClear: true
+        });
+    }
+
+    /* Date & Time — single date + time picker (daterangepicker, already
+       loaded in layouts.app). */
+    var $expDate = $('#td2AddExpenseDate');
+    if ($expDate.length && typeof $.fn.daterangepicker === 'function' && !$expDate.data('daterangepicker')) {
+        $expDate.daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: false,
+            timePickerIncrement: 1,
+            autoUpdateInput: false,
+            parentEl: '#addExpense',
+            locale: { format: 'DD MMM YYYY, hh:mm A', cancelLabel: 'Clear' }
+        });
+        $expDate.on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD MMM YYYY, hh:mm A'));
+        });
+        $expDate.on('cancel.daterangepicker', function () {
+            $(this).val('');
+        });
+    }
 });

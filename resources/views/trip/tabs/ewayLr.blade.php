@@ -1,15 +1,11 @@
 {{-- Trip show-v2 — ewayLr tab content (extracted partial) --}}
                                 <div class="td2-pane-header">
                                     <h5 class="td2-pane-title">Eway + LR</h5>
-                                    <button class="btn btn-primary btn-sm" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#addEwayTable">
-                                        + Add Eway
-                                    </button>
                                 </div>
                                 <div class="td2-pane-body">
 
                                     {{-- ─── E-Way Bills ─── --}}
-                                    <div class="td2-docs-section">
+                                    <div class="td2-docs-section td2-eway-section">
                                         <div class="td2-docs-header">
                                             <p class="td2-docs-title">E-Way Bills</p>
                                             <button class="btn btn-primary btn-sm" type="button"
@@ -26,11 +22,11 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Invoice Number</div>
                                                         <div class="td2-doc-val">#INV-2025-001</div>
@@ -39,8 +35,6 @@
                                                         <div class="td2-doc-label">Invoice Date</div>
                                                         <div class="td2-doc-val">02/11/2025</div>
                                                     </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">LR Number</div>
                                                         <div class="td2-doc-val">#LR001</div>
@@ -79,11 +73,11 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Invoice Number</div>
                                                         <div class="td2-doc-val">#INV-2025-001</div>
@@ -92,8 +86,6 @@
                                                         <div class="td2-doc-label">Invoice Date</div>
                                                         <div class="td2-doc-val">02/11/2025</div>
                                                     </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">LR Number</div>
                                                         <div class="td2-doc-val">#LR001</div>
@@ -126,7 +118,7 @@
                                     </div>
 
                                     {{-- ─── Lorry Receipts ─── --}}
-                                    <div class="td2-docs-section">
+                                    <div class="td2-docs-section td2-eway-section">
                                         <div class="td2-docs-header">
                                             <p class="td2-docs-title">Lorry Receipts</p>
                                             <a href="{{ route('trip.lr.create') }}" class="btn btn-primary btn-sm">+ Add LR</a>
@@ -140,21 +132,19 @@
                                                     <button class="td2-dot-trigger dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
                                                     <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print') }}">View Details</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('trip.lr.print', ['trip' => $trip]) }}">View Details & Print</a></li>
                                                         {{-- Print REMOVED per feedback.md §6/§19 --}}
                                                     </ul>
                                                 </div>
-                                                <div class="td2-doc-row td2-doc-row-2">
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Vehicle Number</div>
                                                         <div class="td2-doc-val">WB-12-AB-1237</div>
                                                     </div>
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Vehicle Size</div>
-                                                        <div class="td2-doc-val">14 FT</div>
+                                                        <div class="td2-doc-val">12 Tyre - 14 (ft) * 9 (ft) * 12 (ft)</div>
                                                     </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">LR Number</div>
                                                         <div class="td2-doc-val">#LR001</div>
@@ -163,12 +153,12 @@
                                                         <div class="td2-doc-label">Party LR#</div>
                                                         <div class="td2-doc-val">PTY-20251020</div>
                                                     </div>
+                                                </div>
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">LR Date</div>
                                                         <div class="td2-doc-val">20/10/2025</div>
                                                     </div>
-                                                </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Seal Number</div>
                                                         <div class="td2-doc-val">SEAL-001</div>
@@ -182,7 +172,7 @@
                                                         <div class="td2-doc-val">To Pay</div>
                                                     </div>
                                                 </div>
-                                                <div class="td2-doc-row td2-doc-row-3">
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Consignor</div>
                                                         <div class="td2-doc-val">Britania Kolkata</div>
@@ -195,17 +185,17 @@
                                                         <div class="td2-doc-label">Billing Party</div>
                                                         <div class="td2-doc-val">Gitanjali LLP</div>
                                                     </div>
-                                                </div>
-                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Gross Weight</div>
                                                         <div class="td2-doc-val">10 KG</div>
                                                     </div>
+                                                </div>
+                                                <div class="td2-doc-row">
                                                     <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Charged Weight</div>
                                                         <div class="td2-doc-val">20 KG</div>
                                                     </div>
-                                                    <div class="td2-doc-item col-span-2">
+                                                    <div class="td2-doc-item">
                                                         <div class="td2-doc-label">Remarks</div>
                                                         <div class="td2-doc-val">Handle with care</div>
                                                     </div>

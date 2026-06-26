@@ -72,7 +72,7 @@
                                             <div class="col-md-3 col-sm-6">
                                                 <div class="td2-di">
                                                     <span class="td2-di-label">Vehicle Size</span>
-                                                    <span class="td2-di-value">14 FT – XXM 14M × 9M × 12M</span>
+                                                    <span class="td2-di-value">12 Tyre - 14 (ft) * 9 (ft) * 12 (ft)</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-3 col-sm-6">

@@ -5,7 +5,7 @@
                                         <button class="btn btn-outline-primary btn-sm td2-bill-click" type="button">
                                             Bill Entry
                                         </button>
-                                        <a href="#" class="btn btn-success btn-sm">Finalise Bill</a>
+                                        <a href="{{ route('trip.billFinalise', $trip) }}" class="btn btn-success btn-sm">Finalise Bill</a>
                                     </div>
                                 </div>
                                 <div class="td2-pane-body">

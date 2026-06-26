@@ -387,7 +387,7 @@
     
 <div id="ember2473" class="ember-view">
 
-<input class="print printbtn" type="button" value="Print" onclick="window.print()"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="trip-details.php" class="hide">Back</a>
+<input class="print printbtn" type="button" value="Print" onclick="window.print()"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="{{ $trip ? route('trip.details', $trip) : route('trip.index') }}" class="hide">Back</a>
 <section class="sheet padding-10mm">
     <div class="pcs-template">
         

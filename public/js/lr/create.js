@@ -138,49 +138,8 @@ $(document).ready(function () {
     $('#lrCreateForm').on('submit', function (e) {
         e.preventDefault();
 
-        var $form = $(this);
-        var storeUrl = $form.attr('action');
-
-        /* Abort if placeholder action — route not yet created */
-        if (!storeUrl || storeUrl === '#') {
-            Toast.fire({ icon: 'error', title: 'Store route not configured yet.' });
-            return;
-        }
-
-        /* Clear previous inline errors */
-        $('.lr-field-error').text('');
-
-        var $btn = $('#lr-save-btn');
-        $btn.prop('disabled', true).text('Saving…');
-
-        $.ajax({
-            url: storeUrl,
-            method: 'POST',
-            data: $form.serialize(),
-            success: function (res) {
-                if (res.success) {
-                    Toast.fire({ icon: 'success', title: res.message || 'LR saved successfully.' });
-                    if (res.redirect) {
-                        setTimeout(function () { window.location.href = res.redirect; }, 1000);
-                    }
-                } else {
-                    Toast.fire({ icon: 'error', title: res.message || 'Failed to save LR.' });
-                }
-            },
-            error: function (xhr) {
-                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
-                    $.each(xhr.responseJSON.errors, function (field, messages) {
-                        $('#err-' + field).text(messages[0]);
-                    });
-                    Toast.fire({ icon: 'error', title: 'Please fix the highlighted errors.' });
-                } else {
-                    Toast.fire({ icon: 'error', title: 'Something went wrong. Please try again.' });
-                }
-            },
-            complete: function () {
-                $btn.prop('disabled', false).text('Save LR');
-            }
-        });
+        /* PROTOTYPE: redirect to print page (no backend yet) */
+        window.location.href = '/lr/print';
     });
 
 });

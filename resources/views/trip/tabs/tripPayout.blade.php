@@ -75,7 +75,7 @@
                                             <p class="td2-section-head-title">Driver Transactions</p>
                                             <button class="btn btn-primary btn-sm" type="button"
                                                     data-bs-toggle="modal" data-bs-target="#driverExpense">
-                                                + Add Expense
+                                                + Add Driver Transaction
                                             </button>
                                         </div>
                                         <div class="table-responsive">

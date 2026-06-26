@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('css')
+{{-- Leaflet (interactive map for SOS location capture) --}}
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=8.5') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=11.9') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -38,7 +41,12 @@
                 <div class="v2-id-main">
                     <div class="v2-id-vno">
                         Kolkata – Mumbai
-                        <span class="v2-id-status td2-in-transit">In Transit</span>
+                        {{-- Lifecycle status. Dimmed while paused so the Paused pill leads. --}}
+                        <span class="v2-id-status td2-in-transit" id="td2LifecycleBadge">In Transit</span>
+                        {{-- Paused pill — shown only while body.td2-trip-paused (SOS pause). --}}
+                        <span class="v2-id-status td2-paused-badge" id="td2PausedBadge">
+                            <i class="uil uil-pause-circle"></i> Paused
+                        </span>
                     </div>
                     <div class="v2-id-sub">
                         Created 25/10/2025 &nbsp;·&nbsp; Anmol Kaur &nbsp;·&nbsp;
@@ -123,6 +131,15 @@
                         <span class="td2-step-label">Completed</span>
                     </div>
                 </div>
+
+                {{-- Paused flag on the horizontal status row — visible only while
+                     body.td2-trip-paused. Lets the operator read the trip state
+                     straight from the header without opening any tab. --}}
+                <span class="td2-stepper-paused-flag" id="td2StepperPausedFlag">
+                    <span class="td2-stepper-paused-dot"></span>
+                    <i class="uil uil-pause-circle"></i> Trip Paused
+                    <span class="td2-stepper-paused-sub">awaiting resume</span>
+                </span>
             </div>
 
         </div>{{-- /.v2-header-zone --}}
@@ -789,13 +806,19 @@
             </div>
         </div>
 
+        {{-- Overlay backdrop (Bill Entry) --}}
+        <div class="td2-overlay-backdrop"></div>
+
         {{-- Bill Entry Panel --}}
         <div class="td2-overlay bill-popup">
-            <div class="td2-overlay-header">
-                <h6 class="td2-overlay-title">Bill Entry</h6>
+            <div class="td2-overlay-header td2-bill-header">
+                <div class="td2-bill-head-titles">
+                    <h6 class="td2-overlay-title"><i class="uil uil-bill"></i> Bill Entry</h6>
+                    <span class="td2-bill-head-sub">Trip income &amp; expense reconciliation</span>
+                </div>
                 <div class="ms-auto d-flex gap-2">
                     <button class="btn btn-success btn-sm td2-bill-save-btn" type="button">
-                        <i class="uil uil-save"></i> Save Bill
+                        <i class="uil uil-save"></i> Generate Bill
                     </button>
                     <button class="td2-overlay-close close-overlay" type="button">
                         <i class="uil uil-angle-right-b"></i>
@@ -805,11 +828,40 @@
             <div class="td2-overlay-body">
                 <form id="td2BillEntryForm">
 
-                    {{-- Trip reference bar --}}
+                                        {{-- Trip / bill reference bar --}}
                     <div class="td2-bill-refbar">
-                        <span><strong>Trip:</strong> #TRIP001</span>
-                        <span><strong>Vehicle:</strong> WB-12-AB-1237</span>
-                        <span><strong>Route:</strong> Kolkata – Mumbai</span>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Trip</span>
+                            <span class="td2-bill-chip-value">#TRIP001</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Bill Number</span>
+                            <span class="td2-bill-chip-value">#BILL45678</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Billing Party</span>
+                            <span class="td2-bill-chip-value">Gitanjali LLP.</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Location / State</span>
+                            <span class="td2-bill-chip-value">Hyderabad</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">State Code</span>
+                            <span class="td2-bill-chip-value">HYD</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Vehicle Number</span>
+                            <span class="td2-bill-chip-value">WB-12-AB-1237<span class="td2-bill-vehtype td2-bill-vehtype-own">Own</span></span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Source</span>
+                            <span class="td2-bill-chip-value">Kolkata</span>
+                        </div>
+                        <div class="td2-bill-chip">
+                            <span class="td2-bill-chip-label">Destination</span>
+                            <span class="td2-bill-chip-value">Mumbai</span>
+                        </div>
                     </div>
 
                     {{-- Two-column layout: Income | Expense --}}
@@ -817,98 +869,110 @@
 
                         {{-- Income side --}}
                         <div class="col-md-6">
-                            <p class="td2-bill-col-title td2-bill-income-title">Income</p>
-
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Freight</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="freight" value="35,000">
+                            <div class="td2-bill-card td2-bill-card-income">
+                                <div class="td2-bill-card-head">
+                                    <span class="td2-bill-card-icon"><i class="uil uil-plus"></i></span>
+                                    <p class="td2-bill-col-title td2-bill-income-title">Income</p>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Loading / Unloading</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="loading_charge" value="2,000">
+                                <div class="td2-bill-card-body">
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Freight</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="freight" value="35,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Loading / Unloading</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="loading_charge" value="2,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Halting</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="halting_income" value="1,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Multi-Point</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="multipoint_income" value="1,500">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Other</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="other_income" placeholder="0">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-subtotal td2-bill-income-sub">
+                                        <span>Total Income</span>
+                                        <span id="td2BillIncomeTotal">₹39,500</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Halting</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="halting_income" value="1,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Multi-Point</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="multipoint_income" value="1,500">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Other</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="other_income" placeholder="0">
-                                </div>
-                            </div>
-                            <div class="td2-bill-subtotal td2-bill-income-sub">
-                                <span>Total Income</span>
-                                <span id="td2BillIncomeTotal">₹39,500</span>
                             </div>
                         </div>
 
                         {{-- Expense side --}}
                         <div class="col-md-6">
-                            <p class="td2-bill-col-title td2-bill-expense-title">Expense</p>
-
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Diesel</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="diesel_expense" value="15,000">
+                            <div class="td2-bill-card td2-bill-card-expense">
+                                <div class="td2-bill-card-head">
+                                    <span class="td2-bill-card-icon"><i class="uil uil-minus"></i></span>
+                                    <p class="td2-bill-col-title td2-bill-expense-title">Expense</p>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Toll Charges</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="toll_expense" value="10,000">
+                                <div class="td2-bill-card-body">
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Diesel</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="diesel_expense" value="15,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Toll Charges</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="toll_expense" value="10,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Driver Advance</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="driver_advance" value="50,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Maintenance</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="maintenance_expense" value="3,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Fooding</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="fooding_expense" value="5,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-row">
+                                        <label class="td2-bill-lbl">Misc.</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" name="misc_expense" value="2,000">
+                                        </div>
+                                    </div>
+                                    <div class="td2-bill-subtotal td2-bill-expense-sub">
+                                        <span>Total Expense</span>
+                                        <span id="td2BillExpenseTotal">₹85,000</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Driver Advance</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="driver_advance" value="50,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Maintenance</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="maintenance_expense" value="3,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Fooding</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="fooding_expense" value="5,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-row">
-                                <label class="td2-bill-lbl">Misc.</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="text" class="form-control" name="misc_expense" value="2,000">
-                                </div>
-                            </div>
-                            <div class="td2-bill-subtotal td2-bill-expense-sub">
-                                <span>Total Expense</span>
-                                <span id="td2BillExpenseTotal">₹85,000</span>
                             </div>
                         </div>
 
@@ -916,12 +980,188 @@
 
                     {{-- P&L result --}}
                     <div class="td2-bill-result td2-bill-loss" id="td2BillResult">
-                        <span>Profit / Loss</span>
-                        <span id="td2BillPLAmt">– ₹45,500</span>
+                        <span class="td2-bill-result-label"><i class="uil uil-chart-line"></i> Net Profit / Loss</span>
+                        <span class="td2-bill-result-amt" id="td2BillPLAmt">– ₹45,500</span>
                     </div>
 
-                    <div class="mt-3">
-                        <label class="form-label small fw-semibold">Notes</label>
+                    {{-- Loading section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-import me-1"></i>Loading</p>
+                        </div>
+                        <div class="row g-3 td2-bill-fieldgrid">
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Arrival Date/Time for Loading</label>
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="loading_arrival_at" id="td2BillLoadArrival" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Actual Date/Time of Loading</label>
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="loading_actual_at" id="td2BillLoadActual" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Loading Charges</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="loading_charges" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Loading Detention Time</label>
+                                <input type="text" class="form-control" name="loading_detention_time" placeholder="e.g. 2 Days">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Detention Charges</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="loading_detention_charges" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Unloading section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-export me-1"></i>Unloading</p>
+                        </div>
+                        <div class="row g-3 td2-bill-fieldgrid">
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Arrival Date/Time for Reporting</label>
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="unloading_arrival_at" id="td2BillUnloadArrival" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="td2-bill-fld-lbl">Actual Date/Time of Unloading</label>
+                                <div class="input-group td2-bill-dt-group">
+                                    <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                    <input type="text" class="form-control td2-bill-datetime" name="unloading_actual_at" id="td2BillUnloadActual" placeholder="Select date &amp; time" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Charges</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="unloading_charges" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Detention Time</label>
+                                <input type="text" class="form-control" name="unloading_detention_time" placeholder="e.g. 1 Day">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="td2-bill-fld-lbl">Unloading Detention Charges</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">&#8377;</span>
+                                    <input type="text" class="form-control" name="unloading_detention_charges" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Other Charges section --}}
+                    <div class="td2-section td2-bill-section">
+                        <div class="td2-section-header">
+                            <p class="td2-section-head-title"><i class="uil uil-bill me-1"></i>Other Charges</p>
+                        </div>
+
+                        {{-- Addition --}}
+                        <p class="td2-bill-subhead">Addition</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Addition Head</th>
+                                        <th>Amount</th>
+                                        <th>Recorded By</th>
+                                        <th>Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Fixed Fee</td>
+                                        <td>&#8377;7,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Loading/Unloading Charge</td>
+                                        <td>&#8377;1,000</td>
+                                        <td>Abhishek Nayak</td>
+                                        <td>13/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Deduction --}}
+                        <p class="td2-bill-subhead mt-3">Deduction</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Deduction Head</th>
+                                        <th>Amount</th>
+                                        <th>Recorded By</th>
+                                        <th>Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TDS</td>
+                                        <td>&#8377;7,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mamul</td>
+                                        <td>&#8377;3,000</td>
+                                        <td>Vinay Goyel</td>
+                                        <td>12/11/2025</td>
+                                        <td>&mdash;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Transaction --}}
+                        <p class="td2-bill-subhead mt-3">Transaction</p>
+                        <div class="table-responsive">
+                            <table class="td2-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Mode of Payment</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>12/11/2025</td>
+                                        <td>Advance</td>
+                                        <td>Cash</td>
+                                        <td>&#8377;3,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="td2-bill-notes mt-3">
+                        <label class="td2-bill-notes-lbl">Notes</label>
                         <textarea class="form-control form-control-sm" name="bill_notes" rows="2"
                                   placeholder="Any remarks for this bill entry…"></textarea>
                     </div>
@@ -938,11 +1178,17 @@
 ═══════════════════════════════════════════════════════════════ --}}
 
 {{-- Settle Trip --}}
-<div class="modal fade" id="closeTrip" tabindex="-1" aria-labelledby="closeTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="closeTrip" tabindex="-1" aria-labelledby="closeTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="closeTripLabel">Settle Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-check-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="closeTripLabel">Settle Trip</h5>
+                        <p class="td2-modal-head-sub">Confirm trip settlement</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -957,11 +1203,17 @@
 </div>
 
 {{-- Cancel Trip --}}
-<div class="modal fade" id="cancelTrip" tabindex="-1" aria-labelledby="cancelTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="cancelTrip" tabindex="-1" aria-labelledby="cancelTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="cancelTripLabel">Cancel Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-exclamation-octagon"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="cancelTripLabel">Cancel Trip</h5>
+                        <p class="td2-modal-head-sub">Confirm trip cancellation</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -976,11 +1228,17 @@
 </div>
 
 {{-- Edit Trip — Sprint 2 (placeholder structure) --}}
-<div class="modal fade" id="editTrip" tabindex="-1" aria-labelledby="editTripLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="editTrip" tabindex="-1" aria-labelledby="editTripLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editTripLabel">Edit Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-edit"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="editTripLabel">Edit Trip</h5>
+                        <p class="td2-modal-head-sub">Update trip details</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1138,95 +1396,385 @@
     </div>
 </div>
 
-{{-- Add Eway Table — Sprint 3 --}}
-<div class="modal fade" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+{{-- Unassigned E-Ways — pick existing unassigned e-ways and attach them to this trip --}}
+<div class="modal fade td2-eway-modal td2-modal-pro" id="addEwayTable" tabindex="-1" aria-labelledby="addEwayTableLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-file-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addEwayTableLabel">Unassigned E-Ways</h5>
+                        <p class="td2-modal-head-sub">Select one or more e-way bills to attach to this trip</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                {{-- ═══ SPRINT 3 ═══ --}}
-                <div class="td2-sprint-note">
-                    <i class="uil uil-clock-three"></i> Add Eway Table — Sprint 3
+            <div class="modal-body td2-eway-modal-body">
+
+                {{-- Toolbar: filters (search + status) + Add Eway --}}
+                <div class="td2-eway-toolbar">
+                    <div class="td2-eway-filters">
+                        <div class="td2-eway-search">
+                            <i class="uil uil-search td2-eway-search-icon"></i>
+                            <input type="text" class="form-control form-control-sm td2-eway-search-input"
+                                   id="td2EwaySearch" autocomplete="off"
+                                   placeholder="Search bill no, vehicle, consigner, consignee or GSTIN…">
+                        </div>
+                        <div class="td2-eway-filter">
+                            <label class="form-label td2-eway-filter-label" for="td2EwayStatusFilter">Search By Status</label>
+                            <select class="form-select form-select-sm" id="td2EwayStatusFilter" name="eway_status_filter">
+                                <option value="">All</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-sm td2-eway-reset-btn" id="td2EwayResetFilters" title="Reset filters">
+                            <i class="uil uil-history-alt me-1"></i>Reset
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-sm td2-eway-add-btn" type="button"
+                            data-bs-toggle="modal" data-bs-target="#addEwayForm">
+                        <i class="uil uil-plus me-1"></i>Add Eway
+                    </button>
+                </div>
+
+                {{-- Unassigned E-Ways table --}}
+                <div class="table-responsive td2-eway-table-wrap">
+                    <table class="td2-table td2-eway-table" id="td2EwayTable">
+                        <thead>
+                            <tr>
+                                <th class="td2-eway-check-col">
+                                    <input type="checkbox" class="form-check-input" id="td2EwayCheckAll">
+                                </th>
+                                <th>Eway Bill Number</th>
+                                <th>Eway Date</th>
+                                <th>Vehicle Number</th>
+                                <th>Status</th>
+                                <th>Quantity</th>
+                                <th>Quantity Units</th>
+                                <th>Consigner</th>
+                                <th>Source</th>
+                                <th>Consignee</th>
+                                <th>Destination</th>
+                                <th>GSTIN</th>
+                                <th>Valid Upto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-status="Active">
+                                <td><input type="checkbox" class="form-check-input td2-eway-row-check" value="EWB001" data-qty="441"></td>
+                                <td>#001</td>
+                                <td>05/11/2025</td>
+                                <td>WB-12-AB-1237</td>
+                                <td><span class="td2-eway-status td2-eway-status-active">Active</span></td>
+                                <td>441</td>
+                                <td>KG</td>
+                                <td>Britania Kolkata</td>
+                                <td>Chennai</td>
+                                <td>Kolkata-Gen</td>
+                                <td>Kolkata</td>
+                                <td>GST00912267g6</td>
+                                <td>30/11/2025</td>
+                            </tr>
+                            <tr data-status="Active">
+                                <td><input type="checkbox" class="form-check-input td2-eway-row-check" value="EWB002" data-qty="441"></td>
+                                <td>#002</td>
+                                <td>05/11/2025</td>
+                                <td>WB-12-AB-1237</td>
+                                <td><span class="td2-eway-status td2-eway-status-active">Active</span></td>
+                                <td>441</td>
+                                <td>KG</td>
+                                <td>Britania Kolkata</td>
+                                <td>Chennai</td>
+                                <td>Kolkata-Gen</td>
+                                <td>Kolkata</td>
+                                <td>GST00912267g6</td>
+                                <td>30/11/2025</td>
+                            </tr>
+                            <tr class="td2-eway-empty-row" id="td2EwayEmptyRow" hidden>
+                                <td colspan="13">
+                                    <div class="td2-eway-empty">
+                                        <i class="uil uil-search-minus"></i>
+                                        <span>No e-ways match your filters.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer td2-eway-foot">
+                <div class="td2-eway-summary">
+                    <span class="td2-eway-chip"><i class="uil uil-list-ul"></i>Total<strong id="td2EwayTotal">2</strong></span>
+                    <span class="td2-eway-chip td2-eway-chip-sel"><i class="uil uil-check-circle"></i>Selected<strong id="td2EwaySelected">0</strong></span>
+                    <span class="td2-eway-chip td2-eway-chip-qty"><i class="uil uil-balance-scale"></i>Selected Quantity<strong id="td2EwaySelQty">0.00</strong></span>
+                </div>
+                <div class="td2-eway-foot-actions">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="td2EwayAddToTrip"><i class="uil uil-plus-circle me-1"></i>Add to Trip</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Add POD — Sprint 3 --}}
-<div class="modal fade" id="addPOD" tabindex="-1" aria-labelledby="addPODLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+{{-- Add Eway — create a new e-way by GSTIN + bill number(s) --}}
+<div class="modal fade td2-modal-pro" id="addEwayForm" tabindex="-1" aria-labelledby="addEwayFormLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPODLabel">LR-POD</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-file-plus-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addEwayFormLabel">Add Eway</h5>
+                        <p class="td2-modal-head-sub">Attach an e-way bill</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                {{-- ═══ SPRINT 3 ═══ --}}
-                <div class="td2-sprint-note">
-                    <i class="uil uil-clock-three"></i> Add POD — Sprint 3
+            <form id="addEwayFormEl">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="td2EwayGstin">GSTIN <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal" id="td2EwayGstin" name="gstin">
+                                <option value="">Choose...</option>
+                                <option value="GST00912267g6">GST00912267g6 — Britania Kolkata</option>
+                                <option value="GST22AAAAA0000A1Z5">GST22AAAAA0000A1Z5 — Samsung Hydrabad</option>
+                                <option value="GST29BBBBB1111B2Z6">GST29BBBBB1111B2Z6 — Nestle Mumbai</option>
+                            </select>
+                            <span class="text-danger small d-block mt-1 td2-eway-err" data-for="gstin"></span>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="td2EwayBillNos">Eway Bill Number (s) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="td2EwayBillNos" name="eway_bill_numbers"
+                                   placeholder="Enter one or more e-way bill numbers, comma separated">
+                            <span class="text-danger small d-block mt-1 td2-eway-err" data-for="eway_bill_numbers"></span>
+                        </div>
+                    </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Add POD — LR-POD details, acknowledgement, dates + attachments --}}
+<div class="modal fade td2-modal-pro" id="addPOD" tabindex="-1" aria-labelledby="addPODLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addPODLabel">LR-POD</h5>
+                        <p class="td2-modal-head-sub">Proof of delivery details</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
+            <form id="td2PodForm">
+                <div class="modal-body td2-pod-body pt-2">
+
+                    {{-- ── Consignment details (read-only) ── --}}
+                    <div class="td2-pod-detail-card">
+                        <div class="td2-pod-detail-head">
+                            <i class="uil uil-box"></i> Consignment Details
+                        </div>
+                        <div class="td2-pod-detail-grid">
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Material Description</span>
+                                <span class="td2-pod-dv">Hydrabad - Kolkata</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Invoice Number &amp; Date</span>
+                                <span class="td2-pod-dv">#INV001 &middot; 12/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">LR Number &amp; Date</span>
+                                <span class="td2-pod-dv">#LR001 &middot; 25/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Net Quantity</span>
+                                <span class="td2-pod-dv">50</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Value (with tax)</span>
+                                <span class="td2-pod-dv">&#8377;1,000</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Gross Weight</span>
+                                <span class="td2-pod-dv">10 KG</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Charged Weight</span>
+                                <span class="td2-pod-dv">5 KG</span>
+                            </div>
+                            <div class="td2-pod-di">
+                                <span class="td2-pod-dl">Estimated Date of Delivery</span>
+                                <span class="td2-pod-dv">28/10/2025</span>
+                            </div>
+                            <div class="td2-pod-di td2-pod-di-wide">
+                                <span class="td2-pod-dl">LR Comments</span>
+                                <span class="td2-pod-dv">Lorem ipsum doller sit amet.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── POD entry form ── --}}
+                    <div class="td2-pod-form-head">
+                        <i class="uil uil-clipboard-notes"></i> POD Information
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl" for="td2PodAck">Acknowledgement <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal" id="td2PodAck" name="acknowledgement">
+                                <option value="">Choose..</option>
+                                <option value="Good">Good</option>
+                                <option value="Damaged">Damaged</option>
+                                <option value="Short">Short</option>
+                                <option value="Claimed">Claimed</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-pod-fl" for="td2PodReportingDate">Reporting Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="td2PodReportingDate" name="reporting_date">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label td2-pod-fl" for="td2PodUnloadingDate">Unloading Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="td2PodUnloadingDate" name="unloading_date">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodDetention">Detention Days <span class="text-danger">*</span></label>
+                            <input type="number" min="0" class="form-control" id="td2PodDetention" name="detention_days" placeholder="0">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodLateDelivery">Late Delivery Days <span class="text-danger">*</span></label>
+                            <input type="number" min="0" class="form-control" id="td2PodLateDelivery" name="late_delivery_days" placeholder="0">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label td2-pod-fl" for="td2PodShortage">Shortage <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="td2PodShortage" name="shortage" placeholder="e.g. 2 units">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl" for="td2PodComments">PoD Comments <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="td2PodComments" name="pod_comments" rows="2" placeholder="Add any remarks about the delivery..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label td2-pod-fl">Attachments</label>
+                            <div class="td2-pod-dropzone" id="td2PodDropzone">
+                                <input type="file" id="td2PodFiles" name="files[]" multiple accept="image/*,application/pdf">
+                                <div class="td2-pod-dz-prompt" id="td2PodDzPrompt">
+                                    <i class="uil uil-cloud-upload"></i>
+                                    <p class="mb-0">Drag &amp; drop files here, or
+                                        <label class="td2-pod-browse" for="td2PodFiles">browse</label>
+                                    </p>
+                                    <small>PDF or image &middot; multiple allowed</small>
+                                </div>
+                                <div id="td2PodPreview" class="td2-upload-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer td2-pod-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="uil uil-check me-1"></i> Save POD</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 {{-- Add Expense — Sprint 4 --}}
-<div class="modal fade" id="addExpense" tabindex="-1" aria-labelledby="addExpenseLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addExpense" tabindex="-1" aria-labelledby="addExpenseLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addExpenseLabel">Add Expense</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-receipt-alt"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addExpenseLabel">Add Expense</h5>
+                        <p class="td2-modal-head-sub">Record a trip expense entry</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label">Expense Head</label>
-                        <input type="text" class="form-control" name="expense_head">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Expense Type</label>
-                        <select class="form-select" name="expense_type">
-                            <option value="">Choose...</option>
-                            <option>Debit</option>
-                            <option>Credit</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Amount (₹)</label>
-                        <div class="input-group">
-                            <span class="input-group-text">₹</span>
-                            <input type="text" class="form-control" name="amount">
+                <form id="addExpenseForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Head <span class="text-danger">*</span></label>
+                            <select class="form-select select2-modal td2-expense-head" id="td2AddExpenseHead" name="expense_head">
+                                <option value="">Choose…</option>
+                                <option>Diesel</option>
+                                <option>Toll Charges</option>
+                                <option>Driver Advance</option>
+                                <option>Maintenance</option>
+                                <option>Fooding</option>
+                                <option>Miscl. Exp.</option>
+                            </select>
+                            <small class="td2-exp-hint d-block mt-1">
+                                <i class="uil uil-info-circle"></i>
+                                Select an existing expense head or type to add your own.
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Type</label>
+                            <select class="form-select" id="td2AddExpenseType" name="expense_type">
+                                <option value="">Choose…</option>
+                                <option>Cash</option>
+                                <option>Online</option>
+                                <option>UPI</option>
+                                <option>Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Amount (₹)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="text" class="form-control" id="td2AddExpenseAmount" name="amount" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Expense Date &amp; Time</label>
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2AddExpenseDate"
+                                       name="expense_datetime" placeholder="Select date &amp; time"
+                                       autocomplete="off" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="td2AddExpenseNotes" name="notes" rows="2" placeholder="Optional remarks…"></textarea>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" name="notes" rows="2"></textarea>
-                    </div>
-                </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary td2-add-exp-save"><i class="uil uil-check me-1"></i>Save</button>
             </div>
         </div>
     </div>
 </div>
 
 {{-- Assign Vehicle to This Trip — opened from the Vehicle Details panel "Assign" button --}}
-<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="assignModalLabel">Assign Vehicle to This Trip</h5>
+                        <p class="td2-modal-head-sub">Allocate a vehicle and route</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1353,11 +1901,17 @@
 </div>
 
 {{-- Add Review --}}
-<div class="modal fade" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addReviewLabel">Trip Review</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-star"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addReviewLabel">Trip Review</h5>
+                        <p class="td2-modal-head-sub">Rate driver, vehicle & timeliness</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1411,11 +1965,17 @@
 </div>
 
 {{-- View Full History --}}
-<div class="modal fade" id="viewHistory" tabindex="-1" aria-labelledby="viewHistoryLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="viewHistory" tabindex="-1" aria-labelledby="viewHistoryLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewHistoryLabel">Full Trip History</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-history"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="viewHistoryLabel">Full Trip History</h5>
+                        <p class="td2-modal-head-sub">All activity on this trip</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -1451,11 +2011,17 @@
 </div>
 
 {{-- Change Vehicle Status --}}
-<div class="modal fade" id="changeStatus" tabindex="-1" aria-labelledby="changeStatusLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="changeStatus" tabindex="-1" aria-labelledby="changeStatusLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="changeStatusLabel">Change Vehicle Status</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-map-marker"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="changeStatusLabel">Change Vehicle Status</h5>
+                        <p class="td2-modal-head-sub">Update the current trip stage</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1463,27 +2029,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Status</label>
+                            {{-- Route-stage progression only. Disruptions (Halt, Breakdown,
+                                 Accident, etc.) have moved to the SOS panel — report them there. --}}
                             <select class="form-select" id="td2StatusSelect" name="vehicle_stage">
                                 <option value="">Select status…</option>
                                 <option>Kolkata — Loading Point</option>
                                 <option>Kolaghat — Load &amp; Unload Point</option>
                                 <option>Patna — Loading Point</option>
                                 <option>Mumbai — Unloading Point (Destination)</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        {{-- Shown only when Status = Other (toggle handled in show-v2.js) --}}
-                        <div class="col-12 d-none" id="td2StatusOtherWrap">
-                            <label class="form-label">Other Status</label>
-                            <select class="form-select" id="td2StatusOther" name="vehicle_stage_other">
-                                <option value="">Select reason…</option>
-                                <option>Halt</option>
-                                <option>Breakdown</option>
-                                <option>Accident</option>
-                                <option>Detained (RTO / Police Check)</option>
-                                <option>Under Repair / Maintenance</option>
-                                <option>Diversion / Re-route</option>
-                                <option>Weather / Road Block Delay</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -1509,12 +2062,303 @@
     </div>
 </div>
 
+{{-- Resume Trip moved to a dedicated page: route('trip.resume', $trip) → trip/resume.blade.php --}}
+@if (false)
+<div class="modal fade" id="resumeTripModal" tabindex="-1" aria-labelledby="resumeTripLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#ecfdf5;border-bottom:2px solid #bbf7d0;">
+                <h5 class="modal-title" id="resumeTripLabel" style="color:#166534;">
+                    <i class="uil uil-play-circle"></i> Resume Trip
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="td2-resume-intro">
+                    This trip is paused. Choose how to resume — continue as-is, or re-allocate the
+                    vehicle / driver before the trip continues.
+                </p>
+                <form id="resumeTripForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Resume Date</label>
+                            <input type="date" class="form-control" id="td2ResumeDate" name="resume_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Resume Time</label>
+                            <input type="time" class="form-control" id="td2ResumeTime" name="resume_time">
+                        </div>
+
+                        {{-- Further action --}}
+                        <div class="col-12">
+                            <label class="form-label d-block">Further action</label>
+                            <div class="td2-resume-action-grid" id="td2ResumeActionGrid">
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="resume_only" checked>
+                                    <span><i class="uil uil-play"></i> Resume only</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_vehicle">
+                                    <span><i class="uil uil-truck"></i> Resume + change vehicle</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_driver">
+                                    <span><i class="uil uil-user"></i> Resume + change driver</span>
+                                </label>
+                                <label class="td2-resume-action">
+                                    <input type="radio" name="resume_action" value="change_both">
+                                    <span><i class="uil uil-exchange"></i> Resume + change both</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Conditional: new vehicle (change_vehicle / change_both) —
+                             mirrors the Vehicle Allocation tab: suggested cards + OR + Add/Allocate.
+                             Selecting a card or a vehicle reveals the Assign button (no nested modal). --}}
+                        <div class="col-12 d-none" id="td2ResumeVehicleWrap">
+                            <div class="td2-resume-card">
+                            <label class="form-label d-block td2-resume-card-title">Allocate Vehicle</label>
+                            <p class="td2-resume-cond-note">
+                                <i class="uil uil-filter"></i>
+                                Only vehicles not currently assigned to another ongoing trip are listed.
+                            </p>
+
+                            {{-- Part A: Suggested Vehicles --}}
+                            <div class="td2-section">
+                                <div class="accordion td2-veh-accordion" id="td2ResumeSuggestedVeh">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header mb-2">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#td2ResumeVehCollapse">
+                                                <i class="uil uil-bolt-alt td2-veh-acc-icon"></i>
+                                                <span class="td2-veh-acc-title">Select from Suggested Vehicles</span>
+                                                <span class="td2-veh-acc-count">3</span>
+                                                <span class="td2-veh-acc-pill">Recommended</span>
+                                            </button>
+                                        </h2>
+                                        <div id="td2ResumeVehCollapse" class="accordion-collapse collapse show">
+                                            <div class="accordion-body p-0">
+                                                @php
+                                                    $resumeSuggested = [
+                                                        ['WB-12-AB-1237','green','Ashok Ray','+91 8879402641','green','10 Mo','empty','Empty ✓','Yes','Kolkata','5th','10 Years 5 Months'],
+                                                        ['WB-34-CD-5678','red','Ranjit Das','+91 9432101234','yellow','4 Mo','onway','Not Empty ✗','On the Way (2 days)','Mumbai','3rd','7 Years 2 Months'],
+                                                        ['WB-56-EF-9012','yellow','Manoj Kumar','+91 7654321098','green','14 Mo','empty','Empty ✓','Yes','Durgapur','8th','4 Years 9 Months'],
+                                                    ];
+                                                @endphp
+                                                @foreach ($resumeSuggested as $i => $rv)
+                                                <div class="td2-veh-card-wrap">
+                                                    <input type="radio" name="td2ResumeVehSelect" id="td2ResumeVeh{{ $i }}" class="td2-veh-radio td2-resume-veh-pick" value="{{ $rv[0] }}">
+                                                    <label for="td2ResumeVeh{{ $i }}" class="td2-veh-card td2-veh-card-{{ $rv[1] }}">
+                                                        <div class="td2-vc-header">
+                                                            <div class="td2-vc-num">{{ $rv[0] }}</div>
+                                                        </div>
+                                                        <div class="td2-vc-grid">
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Driver Name</span><span class="td2-vc-val">{{ $rv[2] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Driver Number</span><span class="td2-vc-val">{{ $rv[3] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">About Driver</span><span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-{{ $rv[4] }}"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">{{ $rv[5] }}</span></span></span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Status</span><span class="td2-vc-val"><span class="td2-veh-status-{{ $rv[6] }}">{{ $rv[7] }}</span></span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Availability</span><span class="td2-vc-val">{{ $rv[8] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Live Location</span><span class="td2-vc-val">{{ $rv[9] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Vehicle Rank</span><span class="td2-vc-val">{{ $rv[10] }}</span></div>
+                                                            <div class="td2-vc-item"><span class="td2-vc-label">Associated Since</span><span class="td2-vc-val">{{ $rv[11] }}</span></div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Note: effect of changing the vehicle (change_vehicle / change_both) --}}
+                            <div class="td2-resume-note td2-resume-note-amber">
+                                <i class="uil uil-info-circle"></i>
+                                <span>Selecting the vehicle will unassign the vehicle's driver and assign the current driver to selected vehicle.</span>
+                            </div>
+
+                            {{-- OR Divider --}}
+                            <div class="td2-or-divider"><span>OR</span></div>
+
+                            {{-- Part C: Add / Allocate Vehicle --}}
+                            <div class="td2-section td2-alloc-section">
+                                <div class="td2-alloc-head">
+                                    <span class="td2-alloc-head-icon"><i class="uil uil-truck"></i></span>
+                                    <div class="td2-alloc-head-text">
+                                        <p class="td2-alloc-head-title">Add / Allocate Vehicle</p>
+                                        <p class="td2-alloc-head-sub">Pick a vehicle from your own fleet or assign an external vendor vehicle to this trip.</p>
+                                    </div>
+                                </div>
+
+                                <div class="td2-alloc-source mb-3">
+                                    <span class="td2-alloc-source-label">Select any of these below</span>
+                                    <div class="td2-veh-type-toggle">
+                                        <input type="radio" name="td2ResumeVehType" id="td2ResumeOwnVeh" value="Own" class="td2-vtype-radio td2-resume-own-veh" checked>
+                                        <label for="td2ResumeOwnVeh" class="td2-vtype-label">Own Vehicle</label>
+                                        <input type="radio" name="td2ResumeVehType" id="td2ResumeExtVeh" value="External" class="td2-vtype-radio td2-resume-ext-veh">
+                                        <label for="td2ResumeExtVeh" class="td2-vtype-label">External / Vendor</label>
+                                    </div>
+                                </div>
+
+                                {{-- If Own Vehicle --}}
+                                <div class="td2-resume-if-own td2-alloc-body">
+                                    <div class="mb-1">
+                                        <label class="form-label">Select Vehicle</label>
+                                        <select class="form-select td2-resume-veh-pick" id="td2ResumeOwnVehSelect">
+                                            <option value="">Select vehicle...</option>
+                                            <option>WB-12-AB-1237</option>
+                                            <option>WB-34-CD-5678</option>
+                                            <option>WB-56-EF-9012</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- If External Vehicle --}}
+                                <div class="td2-resume-if-ext td2-alloc-body" style="display:none;">
+                                    <div class="mb-2">
+                                        <label class="form-label">Vendor</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select class="form-select" id="td2ResumeExtVendorSelect">
+                                                <option value="">Select vendor...</option>
+                                                <option>ABC Logistics</option>
+                                                <option>XYZ Transport</option>
+                                                <option>MNC Logistics</option>
+                                            </select>
+                                            <a href="{{ route('contact.vehiclevendor.create') }}" target="_blank" rel="noopener" class="text-nowrap small">+ Add Vendor</a>
+                                        </div>
+                                    </div>
+                                    <div class="mb-1">
+                                        <label class="form-label">Vehicle</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select class="form-select td2-resume-veh-pick" id="td2ResumeExtVehicleSelect">
+                                                <option value="">Select vehicle...</option>
+                                                <option>WB-99-ZZ-0001</option>
+                                                <option>DL-01-XX-5050</option>
+                                            </select>
+                                            <a href="{{ route('vehiclemanagement.create') }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm text-nowrap">+ Add Vehicle</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Assign button — appears once a vehicle is picked (no nested modal opens) --}}
+                            <div class="td2-resume-assign-wrap d-none" id="td2ResumeAssignWrap">
+                                <div class="td2-resume-assign-pick" id="td2ResumeAssignPick"></div>
+                                <button type="button" class="btn btn-success td2-resume-assign-btn" id="td2ResumeAssignBtn">
+                                    <i class="uil uil-check me-1"></i> Assign Vehicle
+                                </button>
+                            </div>
+
+                            <input type="hidden" id="td2ResumeAssignedVehicle" name="new_vehicle">
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="vehicle"></span>
+                            </div>{{-- /.td2-resume-card --}}
+                        </div>
+
+                        {{-- Conditional: new driver (change_driver / change_both) —
+                             on selecting a driver, the driver's currently-assigned vehicle is shown
+                             (mirrors the Vehicle Allocation tab's selected-vehicle summary card). --}}
+                        <div class="col-12 d-none" id="td2ResumeDriverWrap">
+                            <div class="td2-resume-card">
+                            <label class="form-label d-block td2-resume-card-title">Allocate Driver</label>
+                            <p class="td2-resume-cond-note">
+                                <i class="uil uil-filter"></i>
+                                Only drivers not currently assigned to another ongoing trip are listed.
+                            </p>
+
+                            @php
+                                $resumeDrivers = [
+                                    ['key' => 'd1', 'name' => 'Ashok Ray',    'phone' => '+91 88794 02641',
+                                     'veh' => 'WB-12-AB-1237', 'rag' => 'green',  'bhv' => 'green',  'bhvExp' => '10 Mo',
+                                     'status' => 'empty', 'statusLabel' => 'Empty ✓', 'avail' => 'Yes',
+                                     'loc' => 'Kolkata',  'rank' => '5th', 'since' => '10 Years 5 Months'],
+                                    ['key' => 'd2', 'name' => 'Ramesh Sahu',  'phone' => '+91 90381 11220',
+                                     'veh' => 'WB-45-KL-2210', 'rag' => 'yellow', 'bhv' => 'yellow', 'bhvExp' => '6 Mo',
+                                     'status' => 'onway', 'statusLabel' => 'On the Way (1 day)', 'avail' => 'On the Way (1 day)',
+                                     'loc' => 'Ranchi',   'rank' => '3rd', 'since' => '6 Years 2 Months'],
+                                    ['key' => 'd3', 'name' => 'Iqbal Khan',   'phone' => '+91 99320 44518',
+                                     'veh' => 'WB-67-MN-8899', 'rag' => 'green',  'bhv' => 'green',  'bhvExp' => '14 Mo',
+                                     'status' => 'empty', 'statusLabel' => 'Empty ✓', 'avail' => 'Yes',
+                                     'loc' => 'Asansol',  'rank' => '7th', 'since' => '4 Years 1 Month'],
+                                ];
+                            @endphp
+
+                            <select class="form-select select2-modal" id="td2ResumeDriverSelect" name="new_driver">
+                                <option value="">Select driver…</option>
+                                @foreach ($resumeDrivers as $rd)
+                                <option value="{{ $rd['name'] }} · {{ $rd['phone'] }}" data-driver-key="{{ $rd['key'] }}">{{ $rd['name'] }} · {{ $rd['phone'] }}</option>
+                                @endforeach
+                            </select>
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="driver"></span>
+
+                            {{-- Note: effect of changing the driver (change_driver / change_both) --}}
+                            <div class="td2-resume-note td2-resume-note-amber mt-2">
+                                <i class="uil uil-info-circle"></i>
+                                <span>Selecting driver will unassign the driver from the assigned vehicle and assign to the current (trip) vehicle.</span>
+                            </div>
+
+                            {{-- Selected driver's currently-assigned vehicle (one card per driver, shown on select) --}}
+                            <div class="td2-resume-driver-veh d-none" id="td2ResumeDriverVehWrap">
+                                <p class="td2-resume-driver-veh-title">Driver's currently assigned vehicle</p>
+                                @foreach ($resumeDrivers as $rd)
+                                <div class="td2-veh-card td2-veh-card-{{ $rd['rag'] }} td2-resume-driver-veh-card d-none" data-driver-key="{{ $rd['key'] }}">
+                                    <div class="td2-vc-header">
+                                        <div class="td2-vc-num">{{ $rd['veh'] }}</div>
+                                    </div>
+                                    <div class="td2-vc-grid">
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Driver Name</span><span class="td2-vc-val">{{ $rd['name'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Driver Number</span><span class="td2-vc-val">{{ $rd['phone'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">About Driver</span><span class="td2-vc-val"><span class="td2-bhv-wrap"><span class="td2-bhv-dot td2-bhv-{{ $rd['bhv'] }}"></span><span class="td2-bhv-label">Behaviour</span><span class="td2-bhv-exp">{{ $rd['bhvExp'] }}</span></span></span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Status</span><span class="td2-vc-val"><span class="td2-veh-status-{{ $rd['status'] }}">{{ $rd['statusLabel'] }}</span></span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Availability</span><span class="td2-vc-val">{{ $rd['avail'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Live Location</span><span class="td2-vc-val">{{ $rd['loc'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Vehicle Rank</span><span class="td2-vc-val">{{ $rd['rank'] }}</span></div>
+                                        <div class="td2-vc-item"><span class="td2-vc-label">Associated Since</span><span class="td2-vc-val">{{ $rd['since'] }}</span></div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            </div>{{-- /.td2-resume-card --}}
+                        </div>
+
+                        {{-- Reason (required) --}}
+                        <div class="col-12">
+                            <label class="form-label">Reason <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="td2ResumeReason" name="resume_reason"
+                                      rows="2" placeholder="Why is the trip being resumed / re-allocated?"></textarea>
+                            <span class="text-danger small d-block mt-1 td2-resume-err" data-for="reason"></span>
+                        </div>
+
+                        {{-- Note (optional) --}}
+                        <div class="col-12">
+                            <label class="form-label">Note <span class="text-muted small">(optional)</span></label>
+                            <input type="text" class="form-control" id="td2ResumeNote" name="resume_note"
+                                   placeholder="Optional note">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success td2-resume-confirm-btn" id="td2ResumeConfirmBtn">
+                    <i class="uil uil-play-circle me-1"></i> Resume Trip
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- Driver Expense (Trip Payout tab) --}}
-<div class="modal fade" id="driverExpense" tabindex="-1" aria-labelledby="driverExpenseLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="driverExpense" tabindex="-1" aria-labelledby="driverExpenseLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="driverExpenseLabel">Add Driver Transaction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-transaction"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="driverExpenseLabel">Add Driver Transaction</h5>
+                        <p class="td2-modal-head-sub">Record a driver transaction</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1522,14 +2366,15 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Expense Head</label>
-                            <select class="form-select" name="expense_head">
+                            <select class="form-select select2-modal td2-expense-head" id="td2ExpenseHead" name="expense_head">
                                 <option value="">Choose…</option>
                                 <option>Vehicle Challan</option>
-                                <option>Material Shortage</option>
-                                <option>Material Damage</option>
+                                <option>Accident charges paid to car</option>
+                                <option>Material shortage</option>
+                                <option>Late Delivery</option>
                                 <option>Bonus</option>
-                                <option>Other</option>
                             </select>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing expense head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Expense Type</label>
@@ -1537,6 +2382,7 @@
                                 <option value="">Choose…</option>
                                 <option>Debit</option>
                                 <option>Credit</option>
+                                <option>UPI</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -1547,8 +2393,13 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="txn_date">
+                            <label class="form-label">Date &amp; Time</label>
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2ExpenseDate"
+                                       name="txn_datetime" placeholder="Select date &amp; time"
+                                       autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -1566,11 +2417,17 @@
 </div>
 
 {{-- Add Vehicle (Vehicle Allocation — External) --}}
-<div class="modal fade" id="addVeh" tabindex="-1" aria-labelledby="addVehLabel" aria-hidden="true">
+<div class="modal fade td2-modal-pro" id="addVeh" tabindex="-1" aria-labelledby="addVehLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addVehLabel">Add External Vehicle</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-truck"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addVehLabel">Add External Vehicle</h5>
+                        <p class="td2-modal-head-sub">Register an external vehicle</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1611,11 +2468,17 @@
 </div>
 
 {{-- Add Addition (P&L tab) --}}
-<div class="modal fade" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addAddition" tabindex="-1" aria-labelledby="addAdditionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAdditionLabel">Add Addition</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-plus-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addAdditionLabel">Add Addition</h5>
+                        <p class="td2-modal-head-sub">Add an income line</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1623,14 +2486,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Addition Head</label>
-                            <select class="form-select" name="addition_head">
+                            <select class="form-select" name="addition_head" id="td2AdditionHead">
                                 <option value="">Choose…</option>
                                 <option>Fixed Fee</option>
                                 <option>Loading/Unloading Charge</option>
-                                <option>Halting Charge</option>
-                                <option>Penalty Recovery</option>
-                                <option>Other</option>
+                                <option>Extra KM</option>
+                                <option>Tax</option>
                             </select>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing addition head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Amount (₹)</label>
@@ -1641,7 +2504,10 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="addition_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2AdditionDate" name="addition_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -1659,11 +2525,17 @@
 </div>
 
 {{-- Add Deduction (P&L tab) --}}
-<div class="modal fade" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addDeduction" tabindex="-1" aria-labelledby="addDeductionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDeductionLabel">Add Deduction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-minus-circle"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addDeductionLabel">Add Deduction</h5>
+                        <p class="td2-modal-head-sub">Add a deduction line</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1671,14 +2543,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Deduction Head</label>
-                            <select class="form-select" name="deduction_head">
+                            <select class="form-select" name="deduction_head" id="td2DeductionHead">
                                 <option value="">Choose…</option>
                                 <option>TDS</option>
                                 <option>Mamul</option>
-                                <option>Damage Recovery</option>
-                                <option>Short Delivery</option>
-                                <option>Other</option>
+                                <option>P/R</option>
+                                <option>Previous Adjustments</option>
                             </select>
+                            <small class="td2-exp-hint d-block mt-1"><i class="uil uil-info-circle"></i> Select an existing deduction head or type to add a new one.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Amount (₹)</label>
@@ -1689,7 +2561,10 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="deduction_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2DeductionDate" name="deduction_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Notes</label>
@@ -1707,19 +2582,36 @@
 </div>
 
 {{-- Add Transaction (P&L + Memo tabs) --}}
-<div class="modal fade" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
+<div class="modal fade td2-exp-modal td2-modal-pro" id="addTransaction" tabindex="-1" aria-labelledby="addTransactionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addTransactionLabel">Add Transaction</h5>
+                <div class="td2-modal-head-wrap">
+                    <span class="td2-modal-head-icon"><i class="uil uil-transaction"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="addTransactionLabel">Add Transaction</h5>
+                        <p class="td2-modal-head-sub">Record a payment</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addTransactionForm">
                     <div class="row g-3">
                         <div class="col-md-6">
+                            <label class="form-label">Transaction Type</label>
+                            <select class="form-select" name="transaction_type" id="td2TxnTransactionType">
+                                <option value="">Choose…</option>
+                                <option value="Credit">Credit</option>
+                                <option value="Debit">Debit</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" name="txn_date">
+                            <div class="input-group td2-exp-datetime-group">
+                                <span class="input-group-text"><i class="uil uil-calendar-alt"></i></span>
+                                <input type="text" class="form-control td2-exp-datetime" id="td2TxnDate" name="txn_date" placeholder="Select date" autocomplete="off" readonly>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Type</label>
@@ -1782,6 +2674,11 @@
             <i class="uil uil-exclamation-triangle" style="font-size:20px;color:#dc2626;"></i>
             <h6 class="td2-overlay-title" style="color:#991b1b;">Report SOS Incident</h6>
         </div>
+        {{-- Resume Trip — only visible while the trip is Paused (body.td2-trip-paused) --}}
+        <a class="btn btn-sm td2-sos-resume-btn" id="td2SosResumeBtn"
+           href="{{ route('trip.resume', $trip) }}">
+            <i class="uil uil-play-circle"></i> Resume Trip
+        </a>
         <button class="btn btn-sm" type="button" id="td2SosHistoryBtn"
                 style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-size:11px;font-weight:600;">
             <i class="uil uil-history"></i> View History
@@ -1814,21 +2711,94 @@
             </div>
         </div>
 
+        {{-- ═══════════════════════════════════════════════════════════
+             INCIDENT LOCATION — auto-captured GPS + editable map.
+             Leaflet map (#td2SosMap) initialised in show-v2.js. The
+             marker is locked by default; "Edit" makes it draggable and
+             lets the operator tap the map to correct the pin. Captured
+             lat/lng/address ride along in the SOS submit event. --}}
+        <div class="td2-sos-loc" id="td2SosLoc">
+
+            <div class="td2-sos-loc-head">
+                <span class="td2-sos-loc-title">
+                    <i class="uil uil-location-point"></i> Incident Location
+                </span>
+                <span class="td2-sos-loc-status" id="td2SosLocStatus">
+                    <span class="td2-sos-loc-dot"></span>
+                    <span class="td2-sos-loc-status-txt">Locating…</span>
+                </span>
+            </div>
+
+            <div class="td2-sos-map-shell">
+                <div class="td2-sos-map" id="td2SosMap"></div>
+
+                {{-- Edit-mode hint ribbon (shown only while editing) --}}
+                <div class="td2-sos-map-hint d-none" id="td2SosMapHint">
+                    <i class="uil uil-info-circle"></i>
+                    Drag the pin or tap the map to adjust the location
+                </div>
+
+                {{-- Map action buttons (overlay, top-right) --}}
+                <div class="td2-sos-map-tools">
+                    <button type="button" class="td2-sos-map-btn" id="td2SosEditLocBtn"
+                            title="Edit location">
+                        <i class="uil uil-edit"></i> <span class="td2-sos-map-btn-lbl">Edit</span>
+                    </button>
+                    <button type="button" class="td2-sos-map-btn td2-sos-map-btn-gps" id="td2SosGpsBtn"
+                            title="Use my current location">
+                        <i class="uil uil-crosshair"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Resolved address + coordinates --}}
+            <div class="td2-sos-loc-meta">
+                <i class="uil uil-map-marker td2-sos-loc-meta-ico"></i>
+                <div class="td2-sos-loc-meta-text">
+                    <span class="td2-sos-loc-addr" id="td2SosLocAddr">Fetching address…</span>
+                    <span class="td2-sos-loc-coords" id="td2SosLocCoords">—</span>
+                </div>
+            </div>
+
+            {{-- Hidden inputs — captured values for the SOS submission --}}
+            <input type="hidden" id="td2SosLat" value="">
+            <input type="hidden" id="td2SosLng" value="">
+            <input type="hidden" id="td2SosAddress" value="">
+        </div>
+
         <p class="td2-sos-instr">Select all that apply — multiple incidents can be reported together</p>
 
-        {{-- Incident type multi-select (hashtag format per PDF §5) --}}
+        {{-- Incident type multi-select (hashtag format per PDF §5).
+             Merged list: disruptions previously under Update Status → "Other"
+             now live here as incidents (Halt, Detained, Diversion, Weather, etc.). --}}
         <div class="td2-sos-grid" id="td2SosCheckboxes">
-            <label class="td2-sos-chip">
-                <input type="checkbox" value="Maintenance">
-                <span><i class="uil uil-wrench"></i> #Maintenance</span>
-            </label>
             <label class="td2-sos-chip">
                 <input type="checkbox" value="Breakdown">
                 <span><i class="uil uil-car-sideview"></i> #Breakdown</span>
             </label>
             <label class="td2-sos-chip">
-                <input type="checkbox" value="Driver Run">
-                <span><i class="uil uil-user-times"></i> #DriverRun</span>
+                <input type="checkbox" value="Accident">
+                <span><i class="uil uil-ambulance"></i> #Accident</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Halt">
+                <span><i class="uil uil-clock"></i> #Halt</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Detained">
+                <span><i class="uil uil-exclamation-octagon"></i> #Detained</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Maintenance">
+                <span><i class="uil uil-wrench"></i> #Maintenance</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Diversion">
+                <span><i class="uil uil-directions"></i> #Diversion</span>
+            </label>
+            <label class="td2-sos-chip">
+                <input type="checkbox" value="Weather">
+                <span><i class="uil uil-cloud"></i> #Weather</span>
             </label>
             <label class="td2-sos-chip">
                 <input type="checkbox" value="Diesel Theft">
@@ -1839,13 +2809,25 @@
                 <span><i class="uil uil-package"></i> #GoodsTheft</span>
             </label>
             <label class="td2-sos-chip">
-                <input type="checkbox" value="Accident">
-                <span><i class="uil uil-ambulance"></i> #Accident</span>
+                <input type="checkbox" value="Driver Run">
+                <span><i class="uil uil-user-times"></i> #DriverRun</span>
             </label>
             {{-- Add a custom incident if not listed; custom incidents share a common icon --}}
             <button type="button" class="td2-sos-chip-add" id="td2SosAddIncidentBtn">
                 <i class="uil uil-plus-circle"></i> Add Incident
             </button>
+        </div>
+
+        {{-- Pause this trip? — operator decides per submission (default ON).
+             ON  → trip moves to Paused, Resume Trip affordance appears.
+             OFF → incident is logged only; trip keeps running. --}}
+        <div class="td2-sos-pause-row">
+            <div class="form-check form-switch td2-sos-pause-switch">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="td2SosPauseToggle" checked>
+                <label class="form-check-label" for="td2SosPauseToggle">Pause this trip</label>
+            </div>
+            <span class="td2-sos-pause-hint">Stops the trip until you resume it</span>
         </div>
 
         {{-- Note free text --}}
@@ -1915,6 +2897,9 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('customjs/trip/show-v2.js?v=4.5') }}"></script>
-<script src="{{ asset('js/Trip/tab-loader.js?v=1.1') }}"></script>
+{{-- Leaflet (interactive map for SOS location capture) --}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=6.6') }}"></script>
+<script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection
