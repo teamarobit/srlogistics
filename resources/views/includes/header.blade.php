@@ -137,7 +137,7 @@
 
         
         <li class="nav-item">
-        <a class="nav-link text-white {{ request()->routeIs('ws.*') ? 'active' : '' }}" href="{{ route('ws.dashboard') }}"><img src="{{ asset('images/menu-icon/Production.png') }}">Workshop</a>
+        <a class="nav-link text-white {{ request()->routeIs('ws.*') && !request()->routeIs('ws.master.*') ? 'active' : '' }}" href="{{ route('ws.dashboard') }}"><img src="{{ asset('images/menu-icon/Production.png') }}">Workshop</a>
         <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
