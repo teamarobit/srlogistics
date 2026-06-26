@@ -5,6 +5,8 @@
    SD-4: Validation errors as <span class="text-danger small d-block mt-1">
    SD-7: Toast mixin at top; Toast.fire() for all notifications
    v1.2: State/City Select2 dropdowns with AJAX city cascade (SCR-WS-M-001)
+   v1.6: intl-tel-input phone (India default) + pincode(6)/mobile(10) validation
+   v1.7: use global .telinput init (v25) — removed conflicting v17 import
    ========================================================================== */
 
 $(function () {
@@ -32,14 +34,38 @@ $(function () {
         $.each(errors, function (field, messages) {
             var $input = $(scope || 'body').find('[name="' + field + '"]').first();
             if ($input.length) {
-                var $after = $input.hasClass('select2-hidden-accessible')
-                    ? $input.next('.select2-container')
-                    : $input;
+                var $after = $input;
+                if ($input.hasClass('select2-hidden-accessible')) {
+                    $after = $input.next('.select2-container');
+                } else if ($input.closest('.iti').length) {
+                    // intl-tel-input wraps the input — place error after the widget
+                    $after = $input.closest('.iti');
+                }
                 $('<span class="text-danger small d-block mt-1 field-error">' + messages[0] + '</span>')
                     .insertAfter($after);
             }
         });
     }
+
+    /* ── intl-tel-input ──────────────────────────────────────────────────
+       Phone fields carry class "telinput" and are initialised by the global
+       initTelInputs() in layouts.app (intl-tel-input v25, India default).
+       Do NOT re-import the library here — a second version overrides
+       window.intlTelInput and breaks the v25 CSS (flag rendered above input). */
+
+    /* Keep only national digits (max 10) in the input before serialize */
+    function nationalPhone($input) {
+        var digits = ($input.val() || '').replace(/\D/g, '').slice(0, 10);
+        $input.val(digits);
+    }
+
+    /* Restrict pincode + phone inputs to digits as the user types */
+    $('#addWsPincode, #editWsPincode').on('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+    $('#addWsPhone, #editWsPhone').on('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
 
     /* ── Select2: State dropdowns (both modals) ──────────────────────────── */
     $('#addWsState').select2({
@@ -222,6 +248,7 @@ $(function () {
 
         var $form = $(this);
         var $btn  = $('#btnSaveWs');
+        nationalPhone($('#addWsPhone'));
         $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status"></span> Saving…');
 
         $.ajax({
@@ -272,7 +299,7 @@ $(function () {
         $('#editWsType').val(b.data('type'));
         $('#editWsBrand').val(b.data('brand') || '');
         $('#editWsManager').val(b.data('manager') || '');
-        $('#editWsPhone').val(b.data('phone')   || '');
+        $('#editWsPhone').val(String(b.data('phone') || '').replace(/\D/g, '').slice(-10));
         $('#editWsEmail').val(b.data('email')   || '');
         $('#editWsTechs').val(b.data('techs')   || 0);
         $('#editWsNotes').val(b.data('notes')   || '');
@@ -303,6 +330,7 @@ $(function () {
         var url     = baseUrl.replace('__ID__', id);
 
         var $btn = $(this);
+        nationalPhone($('#editWsPhone'));
         $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status"></span> Updating…');
 
         $.ajax({

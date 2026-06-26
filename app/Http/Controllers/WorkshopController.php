@@ -231,7 +231,11 @@ class WorkshopController extends Controller
             'brand'         => 'nullable|string|max:100',
             'state_id'      => 'nullable|integer|exists:states,id',
             'city'          => 'nullable|string|max:100',
-            'contact_phone' => 'nullable|string|max:20',
+            'pincode'       => 'nullable|digits:6',
+            'contact_phone' => 'nullable|digits:10',
+        ], [
+            'pincode.digits'       => 'Pincode must be exactly 6 digits.',
+            'contact_phone.digits' => 'Mobile number must be exactly 10 digits.',
         ]);
 
         try {
@@ -297,8 +301,12 @@ class WorkshopController extends Controller
             'brand'         => 'nullable|string|max:100',
             'state_id'      => 'nullable|integer|exists:states,id',
             'city'          => 'nullable|string|max:100',
-            'contact_phone' => 'nullable|string|max:20',
+            'pincode'       => 'nullable|digits:6',
+            'contact_phone' => 'nullable|digits:10',
             'status'        => 'nullable|in:Active,Inactive',
+        ], [
+            'pincode.digits'       => 'Pincode must be exactly 6 digits.',
+            'contact_phone.digits' => 'Mobile number must be exactly 10 digits.',
         ]);
 
         try {

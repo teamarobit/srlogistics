@@ -292,7 +292,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Pincode</label>
-                            <input type="text" class="form-control" name="pincode" placeholder="e.g. 500001" maxlength="10">
+                            <input type="text" class="form-control" name="pincode" id="addWsPincode" placeholder="e.g. 500001" inputmode="numeric" maxlength="6">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Manager / Contact Person</label>
@@ -300,7 +300,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Phone</label>
-                            <input type="text" class="form-control" name="contact_phone" placeholder="+91 XXXXX XXXXX">
+                            <input type="tel" class="form-control telinput" name="contact_phone" id="addWsPhone" inputmode="numeric" maxlength="10" placeholder="9876543210">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email</label>
@@ -404,7 +404,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">Pincode</label>
-                            <input type="text" class="form-control" name="pincode" id="editWsPincode" placeholder="e.g. 500001" maxlength="10">
+                            <input type="text" class="form-control" name="pincode" id="editWsPincode" placeholder="e.g. 500001" inputmode="numeric" maxlength="6">
                         </div>
 
                         <div class="col-md-6">
@@ -413,7 +413,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Phone</label>
-                            <input type="text" class="form-control" placeholder="+91 XXXXX XXXXX" name="contact_phone" id="editWsPhone">
+                            <input type="tel" class="form-control telinput" placeholder="9876543210" name="contact_phone" id="editWsPhone" inputmode="numeric" maxlength="10">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email</label>
@@ -446,5 +446,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.5') }}"></script>
+    <script src="{{ asset('js/Workshop/Master/workshops.js?v=1.7') }}"></script>
 @endsection
