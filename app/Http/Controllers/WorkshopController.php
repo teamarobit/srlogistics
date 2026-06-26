@@ -398,7 +398,7 @@ class WorkshopController extends Controller
             $query->where('status', $status);
         }
 
-        $parts      = $query->orderBy('part_no')->paginate(25)->withQueryString();
+        $parts      = $query->latest('id')->paginate(25)->withQueryString();
         $categories = WsSparePartCategory::active()->orderBy('name')->get();
 
         return view('ws.master-spare-parts', compact('parts', 'categories'));
