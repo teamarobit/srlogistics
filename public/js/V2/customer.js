@@ -344,6 +344,24 @@ $(function () {
     });
 
     /* ===============================================================
+     | Customer LIST — select-all checkbox (index page)
+     | Header checkbox toggles every row checkbox; row changes keep the
+     | header in sync (checked / unchecked / indeterminate).
+     | =============================================================== */
+    var $cv2CheckAll = $('#cv2CheckAll');
+    if ($cv2CheckAll.length) {
+        $cv2CheckAll.on('change', function () {
+            $('.cv2-row-check').prop('checked', this.checked);
+        });
+        $(document).on('change', '.cv2-row-check', function () {
+            var $rows = $('.cv2-row-check');
+            var checked = $rows.filter(':checked').length;
+            $cv2CheckAll.prop('checked', checked > 0 && checked === $rows.length);
+            $cv2CheckAll.prop('indeterminate', checked > 0 && checked < $rows.length);
+        });
+    }
+
+    /* ===============================================================
      | LOCATIONS tab — AJAX list load + filter + save + delete
      | =============================================================== */
     function loadLocations() {

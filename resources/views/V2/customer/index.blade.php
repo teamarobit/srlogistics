@@ -45,7 +45,7 @@
                     <table class="cv2-table">
                         <thead>
                             <tr>
-                                <th style="width:34px;"><input type="checkbox"></th>
+                                <th style="width:34px;"><input type="checkbox" id="cv2CheckAll"></th>
                                 <th>Contact No</th><th>Customer</th><th>Type</th><th>Size</th>
                                 <th>Phone</th><th>City</th><th>Locations</th><th>Contracts</th><th>Status</th>
                                 <th style="text-align:right;">Actions</th>
@@ -54,7 +54,7 @@
                         <tbody>
                             @forelse($customers as $c)
                             <tr>
-                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox" class="cv2-row-check"></td>
                                 <td class="cv2-t-mono">{{ $c['contactno'] }}</td>
                                 <td>
                                     <div style="display:flex;align-items:center;gap:11px;">
@@ -97,5 +97,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=2.3') }}"></script>
+<script src="{{ asset('js/V2/customer.js?v=2.4') }}"></script>
 @endsection
