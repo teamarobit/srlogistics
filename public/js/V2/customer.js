@@ -410,6 +410,11 @@ $(function () {
                 Toast.fire({ icon: 'success', title: res.message || 'Location saved.' });
                 $('#cv2LocationModal').modal('hide');
                 $form[0].reset();
+                // Native reset clears the <select> value but Select2 keeps its
+                // rendered selection — re-sync so city/route dropdowns show blank.
+                $form.find('.cv2-modal-select').val('').trigger('change.select2');
+                // Hide conditional fields revealed by the previous entry.
+                $form.find('.cv2-cond').hide();
                 loadLocations();
             },
             error: handleAjaxError

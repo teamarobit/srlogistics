@@ -186,4 +186,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/customer.js?v=2.2') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/customer.js?v=2.3') }}"></script>@endsection
