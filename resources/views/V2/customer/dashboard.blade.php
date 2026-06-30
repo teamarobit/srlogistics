@@ -88,8 +88,6 @@
                         <div class="cv2-card-b" style="display:flex;flex-direction:column;gap:10px;">
                             <a href="{{ route('contact.v2.customer.create') }}" class="cv2-btn cv2-btn-primary" style="justify-content:flex-start;"><i class="bi bi-person-plus"></i>New Customer</a>
                             <a href="{{ route('contact.v2.customer.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-search"></i>Find a Customer</a>
-                            <a href="{{ route('contact.v2.customer.show', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-file-earmark-plus"></i>Add Contract</a>
-                            <a href="{{ route('contact.v2.customer.show', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-truck"></i>Allocate Vehicle</a>
                         </div>
                     </div>
                     <div class="cv2-card cv2-mt">
