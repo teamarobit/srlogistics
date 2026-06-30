@@ -137,6 +137,23 @@ $(function () {
         initAllPhones($modal);
     });
 
+    /* ---------------- Filter bar (SD RULE 13: auto-submit, no Search btn) -----
+       Native selects (not Select2) — global style.css forces
+       .select2-container{width:100%!important}, which would stack the filters.
+       Native .cv2-select stays inline → all filters sit on one line. */
+    $('#cv2FilterForm').on('change', '.cv2-filter-select', function () {
+        $('#cv2FilterForm').submit();
+    });
+    var $cv2Search = $('#cv2FilterForm input[name="name"]');
+    var cv2SearchInit = $cv2Search.val();
+    $cv2Search.on('keypress', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#cv2FilterForm').submit(); }
+    });
+    // Submit on blur too — only when the value actually changed (avoids needless reloads).
+    $cv2Search.on('blur', function () {
+        if ($(this).val() !== cv2SearchInit) { $('#cv2FilterForm').submit(); }
+    });
+
     /* ---------------- State -> City cascade ---------------- */
     function populateCities($state) {
         var targetSel = $state.data('city-target');
@@ -228,6 +245,8 @@ $(function () {
             this.removeAttribute('data-iti-done');
             $(this).removeClass('iti__tel-input');
         });
+        // reset native selects (e.g. Blood Group) so the clone doesn't inherit row 1's value
+        $clone.find('select').each(function () { this.selectedIndex = 0; });
         // strip any intl wrapper the clone copied
         $clone.find('.iti').each(function () {
             var $tel = $(this).find('input[data-intl-phone="1"]');

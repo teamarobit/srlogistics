@@ -68,7 +68,7 @@
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Blood Group</label>
-                                    <select class="cv2-select" name="blood_group" style="width:100%;"><option value="">Choose…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+                                    <select name="blood_group" style="width:100%;"><option value="">Choose…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
                                 </div>
                                 <div class="cv2-field">
                                     <label class="cv2-label">Religion</label>
@@ -229,7 +229,7 @@
                                 <div class="cv2-form-grid is-3">
                                     <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[]" placeholder="Person name"></div>
                                     <div class="cv2-field"><label class="cv2-label">Relation <span class="req">*</span></label><input type="text" name="contact_person_relation[]" placeholder="e.g. Brother"></div>
-                                    <div class="cv2-field"><label class="cv2-label">Blood Group</label><input type="text" name="contact_person_blood_group[]" placeholder="O+"></div>
+                                    <div class="cv2-field"><label class="cv2-label">Blood Group</label><select name="contact_person_blood_group[]"><option value="">Choose…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
                                     <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[]" data-intl-phone="1" placeholder="98640 11223"></div>
                                     <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="contact_person_whatsapp[]" data-intl-phone="1" placeholder="98640 11223"></div>
                                     <div class="cv2-field"><label class="cv2-label">Address</label><input type="text" name="contact_person_address[]" placeholder="Optional"></div>
@@ -310,4 +310,4 @@
 </div>
 @endsection
 
-@section('js')<script src="{{ asset('js/V2/driver.js?v=2.1') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.4') }}"></script>@endsection

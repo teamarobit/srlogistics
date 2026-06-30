@@ -23,13 +23,28 @@
             </div>
 
             <div class="cv2-card">
-                <div class="cv2-filters">
-                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" placeholder="Search by name, code or phone…"></div>
-                    <select class="cv2-select"><option>All Categories</option><option>Local</option><option>Line</option></select>
-                    <select class="cv2-select"><option>All RAG</option><option>Red</option><option>Yellow</option><option>Green</option></select>
-                    <select class="cv2-select"><option>All Status</option><option>Active</option><option>Inactive</option><option>Blacklisted</option></select>
-                    <button class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</button>
-                </div>
+                <form method="GET" action="{{ route('contact.v2.driver.index') }}" id="cv2FilterForm" class="cv2-filters">
+                    <div class="cv2-search"><i class="bi bi-search"></i><input type="text" name="name" value="{{ $search_name }}" placeholder="Search by name, code or phone…"></div>
+                    <select class="cv2-select cv2-filter-select" name="category" data-placeholder="All Categories">
+                        <option value="">All Categories</option>
+                        @foreach(['Local','Line'] as $cat)
+                            <option value="{{ $cat }}" {{ $search_category === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select cv2-filter-select" name="rag" data-placeholder="All RAG">
+                        <option value="">All RAG</option>
+                        @foreach(['Red','Yellow','Green'] as $rag)
+                            <option value="{{ $rag }}" {{ $search_rag === $rag ? 'selected' : '' }}>{{ $rag }}</option>
+                        @endforeach
+                    </select>
+                    <select class="cv2-select cv2-filter-select" name="vehicle" data-placeholder="All Vehicles">
+                        <option value="">All Vehicles</option>
+                        @foreach($vehicles as $vehicle)
+                            <option value="{{ $vehicle->id }}" {{ (string) $search_vehicle === (string) $vehicle->id ? 'selected' : '' }}>{{ $vehicle->vehicle_no }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('contact.v2.driver.index') }}" class="cv2-btn cv2-btn-soft"><i class="bi bi-arrow-counterclockwise"></i>Reset</a>
+                </form>
 
                 <div class="cv2-card-b is-flush">
                     <table class="cv2-table">
@@ -89,4 +104,4 @@
 </div>
 @endsection
 
-@section('js')<script src="{{ asset('js/V2/driver.js?v=2.1') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.4') }}"></script>@endsection

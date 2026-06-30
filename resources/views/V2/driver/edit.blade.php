@@ -34,7 +34,7 @@
                         <div class="cv2-field"><label class="cv2-label">Date of Birth</label><input type="date" name="dob" value="{{ $contact->dob }}"></div>
                         <div class="cv2-field"><label class="cv2-label">Date of Joining <span class="req">*</span></label><input type="date" name="doj" value="{{ $contact->doj }}"></div>
                         <div class="cv2-field"><label class="cv2-label">Blood Group</label>
-                            <select class="cv2-select" name="blood_group" style="width:100%;"><option value="">Choose…</option>
+                            <select name="blood_group" style="width:100%;"><option value="">Choose…</option>
                             @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)<option @selected($contact->blood_group===$bg)>{{ $bg }}</option>@endforeach
                             </select></div>
                         <div class="cv2-field"><label class="cv2-label">Religion</label>
@@ -185,7 +185,7 @@
                             <div class="cv2-form-grid is-3">
                                 <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[]" value="{{ $rc->name }}"></div>
                                 <div class="cv2-field"><label class="cv2-label">Relation <span class="req">*</span></label><input type="text" name="contact_person_relation[]" value="{{ $rc->relationship }}"></div>
-                                <div class="cv2-field"><label class="cv2-label">Blood Group</label><input type="text" name="contact_person_blood_group[]" value="{{ $rc->blood_group }}"></div>
+                                <div class="cv2-field"><label class="cv2-label">Blood Group</label><select name="contact_person_blood_group[]"><option value="">Choose…</option>@foreach (['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)<option value="{{ $bg }}" @selected($rc->blood_group === $bg)>{{ $bg }}</option>@endforeach</select></div>
                                 <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[]" value="{{ $rc->phone }}" data-intl-phone="1"></div>
                                 <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="contact_person_whatsapp[]" value="{{ $rc->whatsapp }}" data-intl-phone="1"></div>
                                 <div class="cv2-field"><label class="cv2-label">Address</label><input type="text" name="contact_person_address[]" value="{{ $rc->address }}"></div>
@@ -196,7 +196,7 @@
                             <div class="cv2-form-grid is-3">
                                 <div class="cv2-field"><label class="cv2-label">Name <span class="req">*</span></label><input type="text" name="contact_person_name[]"></div>
                                 <div class="cv2-field"><label class="cv2-label">Relation <span class="req">*</span></label><input type="text" name="contact_person_relation[]"></div>
-                                <div class="cv2-field"><label class="cv2-label">Blood Group</label><input type="text" name="contact_person_blood_group[]"></div>
+                                <div class="cv2-field"><label class="cv2-label">Blood Group</label><select name="contact_person_blood_group[]"><option value="">Choose…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
                                 <div class="cv2-field"><label class="cv2-label">Phone <span class="req">*</span></label><input type="tel" name="contact_person_phone[]" data-intl-phone="1"></div>
                                 <div class="cv2-field"><label class="cv2-label">WhatsApp</label><input type="tel" name="contact_person_whatsapp[]" data-intl-phone="1"></div>
                                 <div class="cv2-field"><label class="cv2-label">Address</label><input type="text" name="contact_person_address[]"></div>
@@ -265,4 +265,4 @@
     </div></div>
 </div>
 @endsection
-@section('js')<script src="{{ asset('js/V2/driver.js?v=2.1') }}"></script>@endsection
+@section('js')<script src="{{ asset('js/V2/driver.js?v=2.4') }}"></script>@endsection

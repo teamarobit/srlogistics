@@ -154,9 +154,18 @@ class DriverController extends Controller
         return $contact->employeeExitDetail && $contact->status !== 'Active';
     }
 
-    /** Dropdown lookups shared by create + edit. */
-    private function formLookups(): array
+    /** Dropdown lookups shared by create + edit.
+     *  Vehicle list excludes vehicles already allocated to a driver (same
+     *  Vehicleallocation type='Driver' rule the store/update validator enforces),
+     *  so the dropdown matches the on-screen "only unallocated vehicles are listed"
+     *  help text. On edit, pass the current driver's contact id so that driver's
+     *  own allocated vehicle stays selectable. */
+    private function formLookups(?int $exceptDriverContactId = null): array
     {
+        $allocatedVehicleIds = Vehicleallocation::where('type', 'Driver')
+                                    ->when($exceptDriverContactId, fn ($q) => $q->where('contact_id', '!=', $exceptDriverContactId))
+                                    ->pluck('vehicle_id')->filter()->all();
+
         return [
             'countries'     => Country::all(),
             'states'        => State::with(['cities' => fn ($q) => $q->orderBy('name')])
@@ -166,7 +175,9 @@ class DriverController extends Controller
             'cotypes'       => Cotype::all(),
             'religions'     => Religion::orderBy('name')->get(),
             'banks'         => Bank::orderBy('name')->get(),
-            'vehicles'      => Vehicle::where('status', 'Active')->orderBy('vehicle_no')->get(),
+            'vehicles'      => Vehicle::where('status', 'Active')
+                                    ->whereNotIn('id', $allocatedVehicleIds)
+                                    ->orderBy('vehicle_no')->get(),
             'coattachtypes' => Coattachtype::all(),
         ];
     }
@@ -292,7 +303,7 @@ class DriverController extends Controller
 
         $this->storeUseractivity(3, 5, Auth::user()->id, $contact->id, 'Retrieve a driver named ' . $contact->contact_name . ' to edit.');
 
-        return view('V2.driver.edit', array_merge($this->formLookups(), $this->payload($contact, 'edit'), [
+        return view('V2.driver.edit', array_merge($this->formLookups($contact->id), $this->payload($contact, 'edit'), [
             'contact'          => $contact,
             'coattachtypes'    => $coattachtypes,
             'permanentAddress' => $permanentAddress,
@@ -507,7 +518,7 @@ class DriverController extends Controller
             'contact_person_name.*'     => 'required|string|distinct|min:1',
             'contact_person_relation'   => 'required|array|min:1',
             'contact_person_relation.*' => 'required|string|min:1',
-            'contact_person_blood_group.*' => 'nullable|string|min:1',
+            'contact_person_blood_group.*' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'contact_person_address.*'  => 'nullable|string|min:1',
             'contact_person_ph_code'    => 'nullable|array|min:1',
             'contact_person_phone'      => 'required|array|min:1',
@@ -529,6 +540,7 @@ class DriverController extends Controller
             'max'             => 'Maximum :max characters allowed.',
             'exists'          => "This field's value is invalid.",
             'distinct'        => 'Duplicate value.',
+            'contact_person_blood_group.*.in' => 'Choose a valid blood group.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
             'primary_bank.required'                   => 'At least one bank must be marked as Primary.',
@@ -866,7 +878,7 @@ class DriverController extends Controller
             'contact_person_name.*'     => 'required|string|distinct|min:1',
             'contact_person_relation'   => 'required|array|min:1',
             'contact_person_relation.*' => 'required|string|min:1',
-            'contact_person_blood_group.*' => 'nullable|string|min:1',
+            'contact_person_blood_group.*' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'contact_person_address.*'  => 'nullable|string|min:1',
             'contact_person_phone'      => 'required|array|min:1',
             'contact_person_phone.*'    => ['required', 'string', 'distinct', $validate_cp_phone],
@@ -886,6 +898,7 @@ class DriverController extends Controller
             'max'             => 'Maximum :max characters allowed.',
             'exists'          => "This field's value is invalid.",
             'distinct'        => 'Duplicate value.',
+            'contact_person_blood_group.*.in' => 'Choose a valid blood group.',
             'phone.digits'    => 'This field must contain 10 digits.',
             'whatsapp.digits' => 'This field must contain 10 digits.',
             'primary_bank.required'                   => 'At least one bank must be marked as Primary.',
