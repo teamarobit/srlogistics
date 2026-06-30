@@ -26,28 +26,28 @@
             {{-- KPI row --}}
             <div class="cv2-kpis">
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-people"></i></span><span class="cv2-kpi-trend cv2-up">+8%</span></div>
-                    <div class="cv2-kpi-val">124</div><div class="cv2-kpi-lbl">Total Customers</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-people"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['total'] }}</div><div class="cv2-kpi-lbl">Total Customers</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span><span class="cv2-kpi-trend cv2-up">+5</span></div>
-                    <div class="cv2-kpi-val">112</div><div class="cv2-kpi-lbl">Active</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['active'] }}</div><div class="cv2-kpi-lbl">Active</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span><span class="cv2-kpi-trend cv2-flat">0</span></div>
-                    <div class="cv2-kpi-val">9</div><div class="cv2-kpi-lbl">Inactive</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['inactive'] }}</div><div class="cv2-kpi-lbl">Inactive</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span><span class="cv2-kpi-trend cv2-down">+1</span></div>
-                    <div class="cv2-kpi-val">3</div><div class="cv2-kpi-lbl">Blacklisted</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['blacklisted'] }}</div><div class="cv2-kpi-lbl">Blacklisted</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-file-earmark-text"></i></span><span class="cv2-kpi-trend cv2-up">+12</span></div>
-                    <div class="cv2-kpi-val">87</div><div class="cv2-kpi-lbl">Active Contracts</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-file-earmark-text"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['contracts'] }}</div><div class="cv2-kpi-lbl">Active Contracts</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span><span class="cv2-kpi-trend cv2-up">+3</span></div>
-                    <div class="cv2-kpi-val">46</div><div class="cv2-kpi-lbl">Vehicles Allocated</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $stats['vehicles'] }}</div><div class="cv2-kpi-lbl">Vehicles Allocated</div>
                 </div>
             </div>
 
