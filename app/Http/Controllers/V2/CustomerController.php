@@ -119,7 +119,27 @@ class CustomerController extends Controller
         $contacts  = Contact::where('cotype_id', self::CONTACT_TYPE_CUSTOMER)->orderBy('id', 'desc')->get();
         $customers = $contacts->map(fn ($c) => $this->shapeCustomer($c))->values()->all();
 
-        return view('V2.customer.dashboard', ['customers' => $customers]);
+        $base = Contact::where('cotype_id', self::CONTACT_TYPE_CUSTOMER);
+
+        $activeContractFilter = function ($q) {
+            $q->whereNull('end_date')->orWhereDate('end_date', '>=', today());
+        };
+
+        $stats = [
+            'total'       => (clone $base)->count(),
+            'active'      => (clone $base)->where('status', 'Active')->count(),
+            'inactive'    => (clone $base)->where('status', 'Inactive')->count(),
+            'blacklisted' => (clone $base)->where('status', 'Blacklisted')->count(),
+            'contracts'   => Customercontract::where($activeContractFilter)->count(),
+            'vehicles'    => Vehicleallocation::where('type', 'Customer')
+                                ->where($activeContractFilter)
+                                ->count(),
+        ];
+
+        return view('V2.customer.dashboard', [
+            'customers' => $customers,
+            'stats'     => $stats,
+        ]);
     }
 
     public function index(Request $request)
