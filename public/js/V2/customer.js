@@ -176,6 +176,18 @@ $(function () {
         try { $(this).select2({ width: '100%', placeholder: $(this).find('option:first').text() }); } catch (e) {}
     });
 
+    /* Filter bar — searchable city dropdown (Select2 with search box) */
+    var $filterCity = $('#cv2FilterCity');
+    if ($filterCity.length) {
+        try {
+            $filterCity.select2({
+                width: '240px',
+                placeholder: $filterCity.data('placeholder') || 'All Cities',
+                allowClear: true
+            });
+        } catch (e) {}
+    }
+
     $('.cv2-modal').on('shown.bs.modal', function () {
         var $modal = $(this);
         $modal.find('.cv2-modal-select').each(function () {

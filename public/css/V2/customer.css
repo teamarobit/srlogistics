@@ -125,6 +125,16 @@
   border-radius:10px; font-size:13px; background:#fff; min-width:150px; color:var(--cv2-ink); }
 .cv2-input:focus,.cv2-select:focus,.cv2-search input:focus{ outline:none;
   border-color:var(--cv2-navy); box-shadow:0 0 0 3px rgba(3,38,113,.08); }
+/* searchable city filter (Select2) — match .cv2-select look/height */
+.cv2-filters .select2-container{ width:240px !important; min-width:240px; }
+.cv2-filters .select2-container .select2-selection--single{ height:38px;
+  border:1px solid var(--cv2-line); border-radius:10px; display:flex; align-items:center; }
+.cv2-filters .select2-container .select2-selection--single .select2-selection__rendered{
+  padding-left:12px; padding-right:26px; font-size:13px; color:var(--cv2-ink); line-height:normal; }
+.cv2-filters .select2-container .select2-selection--single .select2-selection__arrow{ height:36px; }
+.cv2-filters .select2-container--focus .select2-selection--single,
+.cv2-filters .select2-container--open .select2-selection--single{
+  border-color:var(--cv2-navy); box-shadow:0 0 0 3px rgba(3,38,113,.08); }
 
 /* ---- profile banner (hub) ---------------------------------------- */
 .cv2-profile{ background:var(--cv2-card); border:1px solid var(--cv2-line);

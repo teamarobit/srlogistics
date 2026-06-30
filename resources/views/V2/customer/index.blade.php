@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/V2/customer.css?v=1.4') }}" rel="stylesheet">
+<link href="{{ asset('css/V2/customer.css?v=1.6') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -25,7 +25,7 @@
             <div class="cv2-card">
                 <form method="GET" action="{{ route('contact.v2.customer.index') }}" id="cv2FilterForm" class="cv2-filters">
                     <div class="cv2-search"><i class="bi bi-search"></i><input type="text" name="name" value="{{ $search_name }}" placeholder="Search by customer name…"></div>
-                    <select class="cv2-select" name="city">
+                    <select class="cv2-select cv2-filter-city" id="cv2FilterCity" name="city" data-placeholder="All Cities">
                         <option value="">All Cities</option>
                         @foreach($cities as $city)
                             <option value="{{ $city->id }}" {{ (string) $search_city === (string) $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
@@ -97,5 +97,5 @@
 @endsection
 
 @section('js')
-<script src="{{ asset('js/V2/customer.js?v=2.4') }}"></script>
+<script src="{{ asset('js/V2/customer.js?v=2.6') }}"></script>
 @endsection
