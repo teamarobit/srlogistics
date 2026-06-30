@@ -194,8 +194,18 @@ class DriverController extends Controller
         $active      = (clone $base)->where('status', 'Active')->count();
         $inactive    = (clone $base)->where('status', 'Inactive')->count();
         $blacklisted = (clone $base)->where('status', 'Blacklisted')->count();
+        $onleave     = (clone $base)->whereHas('driverinfo', fn ($q) => $q->where('status_type', 'On Leave'))->count();
+        $allocated   = (clone $base)->whereHas('currentVehicleAllocation')->count();
+
         $line        = (clone $base)->whereHas('driverinfo', fn ($q) => $q->where('category', 'Line'))->count();
         $local       = (clone $base)->whereHas('driverinfo', fn ($q) => $q->where('category', 'Local'))->count();
+        $catTotal    = $line + $local;
+        $linePct     = $catTotal > 0 ? round($line / $catTotal * 100) : 0;
+        $localPct    = $catTotal > 0 ? round($local / $catTotal * 100) : 0;
+
+        $today          = Carbon::today();
+        $licenceExpired = (clone $base)->whereHas('driverinfo', fn ($q) => $q->whereNotNull('licence_expiry_date')->whereDate('licence_expiry_date', '<', $today))->count();
+        $licenceExpiring = (clone $base)->whereHas('driverinfo', fn ($q) => $q->whereNotNull('licence_expiry_date')->whereDate('licence_expiry_date', '>=', $today)->whereDate('licence_expiry_date', '<=', $today->copy()->addDays(60)))->count();
 
         $recent = Contact::where('cotype_id', self::COTYPE)
                     ->with(['driverinfo', 'currentVehicleAllocation.vehicle', 'bankDetails.bank', 'employeeExitDetail'])
@@ -203,8 +213,10 @@ class DriverController extends Controller
                     ->map(fn ($c) => $this->shapeDriver($c))->all();
 
         return view('V2.driver.dashboard', [
-            'drivers' => $recent,
-            'kpi'     => compact('total', 'active', 'inactive', 'blacklisted', 'line', 'local'),
+            'drivers'  => $recent,
+            'kpi'      => compact('total', 'active', 'inactive', 'blacklisted', 'onleave', 'allocated'),
+            'category' => compact('line', 'local', 'linePct', 'localPct'),
+            'licence'  => compact('licenceExpired', 'licenceExpiring'),
         ]);
     }
 

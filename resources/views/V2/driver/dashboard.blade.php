@@ -24,28 +24,28 @@
 
             <div class="cv2-kpis">
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-person-badge"></i></span><span class="cv2-kpi-trend cv2-up">+6</span></div>
-                    <div class="cv2-kpi-val">86</div><div class="cv2-kpi-lbl">Total Drivers</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-person-badge"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['total'] }}</div><div class="cv2-kpi-lbl">Total Drivers</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span><span class="cv2-kpi-trend cv2-up">+4</span></div>
-                    <div class="cv2-kpi-val">71</div><div class="cv2-kpi-lbl">Active</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-ok"><i class="bi bi-check2-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['active'] }}</div><div class="cv2-kpi-lbl">Active</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span><span class="cv2-kpi-trend cv2-flat">0</span></div>
-                    <div class="cv2-kpi-val">11</div><div class="cv2-kpi-lbl">Inactive</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-slate"><i class="bi bi-pause-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['inactive'] }}</div><div class="cv2-kpi-lbl">Inactive</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span><span class="cv2-kpi-trend cv2-down">+1</span></div>
-                    <div class="cv2-kpi-val">4</div><div class="cv2-kpi-lbl">Blacklisted</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-bad"><i class="bi bi-slash-circle"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['blacklisted'] }}</div><div class="cv2-kpi-lbl">Blacklisted</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-warn"><i class="bi bi-airplane"></i></span><span class="cv2-kpi-trend cv2-flat">3</span></div>
-                    <div class="cv2-kpi-val">7</div><div class="cv2-kpi-lbl">On Leave</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic is-warn"><i class="bi bi-airplane"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['onleave'] }}</div><div class="cv2-kpi-lbl">On Leave</div>
                 </div>
                 <div class="cv2-kpi">
-                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span><span class="cv2-kpi-trend cv2-up">+2</span></div>
-                    <div class="cv2-kpi-val">64</div><div class="cv2-kpi-lbl">Vehicles Allocated</div>
+                    <div class="cv2-kpi-top"><span class="cv2-kpi-ic"><i class="bi bi-truck"></i></span></div>
+                    <div class="cv2-kpi-val">{{ $kpi['allocated'] }}</div><div class="cv2-kpi-lbl">Vehicles Allocated</div>
                 </div>
             </div>
 
@@ -85,16 +85,14 @@
                         <div class="cv2-card-b" style="display:flex;flex-direction:column;gap:10px;">
                             <a href="{{ route('contact.v2.driver.create') }}" class="cv2-btn cv2-btn-primary" style="justify-content:flex-start;"><i class="bi bi-person-plus"></i>New Driver</a>
                             <a href="{{ route('contact.v2.driver.index') }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-search"></i>Find a Driver</a>
-                            <a href="{{ route('contact.v2.driver.bhatta', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-cash-coin"></i>Record Bhatta</a>
-                            <a href="{{ route('contact.v2.driver.joining', 1) }}" class="cv2-btn cv2-btn-ghost" style="justify-content:flex-start;"><i class="bi bi-file-earmark-text"></i>Joining Letter</a>
                         </div>
                     </div>
                     <div class="cv2-card cv2-mt">
                         <div class="cv2-card-h"><h3>By Category</h3></div>
                         <div class="cv2-card-b">
                             <ul class="cv2-mini">
-                                <li><span class="cv2-mini-ic"><i class="bi bi-signpost-2"></i></span><div class="cv2-mini-body"><b>Line</b><span>52 drivers</span></div><span class="cv2-t-mono">60%</span></li>
-                                <li><span class="cv2-mini-ic"><i class="bi bi-geo"></i></span><div class="cv2-mini-body"><b>Local</b><span>34 drivers</span></div><span class="cv2-t-mono">40%</span></li>
+                                <li><span class="cv2-mini-ic"><i class="bi bi-signpost-2"></i></span><div class="cv2-mini-body"><b>Line</b><span>{{ $category['line'] }} drivers</span></div><span class="cv2-t-mono">{{ $category['linePct'] }}%</span></li>
+                                <li><span class="cv2-mini-ic"><i class="bi bi-geo"></i></span><div class="cv2-mini-body"><b>Local</b><span>{{ $category['local'] }} drivers</span></div><span class="cv2-t-mono">{{ $category['localPct'] }}%</span></li>
                             </ul>
                         </div>
                     </div>
@@ -102,8 +100,8 @@
                         <div class="cv2-card-h"><h3>Licence Expiry</h3></div>
                         <div class="cv2-card-b">
                             <ul class="cv2-mini">
-                                <li><span class="cv2-mini-ic" style="background:#fde8ec;color:#ea0027;"><i class="bi bi-exclamation-octagon"></i></span><div class="cv2-mini-body"><b>Expired</b><span>2 licences</span></div><span class="cv2-t-mono">2</span></li>
-                                <li><span class="cv2-mini-ic" style="background:#fbf1dd;color:#b8770a;"><i class="bi bi-hourglass-split"></i></span><div class="cv2-mini-body"><b>Expiring ≤ 60 days</b><span>5 licences</span></div><span class="cv2-t-mono">5</span></li>
+                                <li><span class="cv2-mini-ic" style="background:#fde8ec;color:#ea0027;"><i class="bi bi-exclamation-octagon"></i></span><div class="cv2-mini-body"><b>Expired</b><span>{{ $licence['licenceExpired'] }} licences</span></div><span class="cv2-t-mono">{{ $licence['licenceExpired'] }}</span></li>
+                                <li><span class="cv2-mini-ic" style="background:#fbf1dd;color:#b8770a;"><i class="bi bi-hourglass-split"></i></span><div class="cv2-mini-body"><b>Expiring ≤ 60 days</b><span>{{ $licence['licenceExpiring'] }} licences</span></div><span class="cv2-t-mono">{{ $licence['licenceExpiring'] }}</span></li>
                             </ul>
                         </div>
                     </div>
