@@ -804,6 +804,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/battery/{id}/repair/store',         [App\Http\Controllers\WorkshopController::class, 'batteryStoreRepair'])->name('battery.repair.store');
         Route::post('/battery/repair/{repair}/update',    [App\Http\Controllers\WorkshopController::class, 'batteryUpdateRepair'])->name('battery.repair.update');
         Route::post('/battery/repair/{repair}/delete',    [App\Http\Controllers\WorkshopController::class, 'batteryDestroyRepair'])->name('battery.repair.destroy');
+        // Purchase Insurance
+        Route::get('/purchase-insurance/dashboard', [App\Http\Controllers\InsurancePurchaseDashboardController::class, 'dashboard'])->name('purchase-insurance.dashboard');
+
         Route::get('/purchase-orders',      [App\Http\Controllers\WorkshopController::class, 'poList'])->name('purchase-orders');
         Route::get('/purchase-orders/{id}', [App\Http\Controllers\WorkshopController::class, 'poDetail'])->name('po-detail');
         Route::get('/goods-receipt',        [App\Http\Controllers\WorkshopController::class, 'grn'])->name('goods-receipt');

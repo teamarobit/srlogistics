@@ -220,6 +220,18 @@
                     </ul>
                   </div>
 
+                  {{-- Purchase Insurance --}}
+                  <div class="col-lg-3 col-md-3 col-xs-12 link-list">
+                    <ul>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Purchase Insurance</li>
+                      @if(Route::has('inventory.purchase-insurance.dashboard'))
+                      <li class="{{ request()->routeIs('inventory.purchase-insurance.*') ? 'active' : '' }}">
+                        <a href="{{ route('inventory.purchase-insurance.dashboard') }}">Dashboard</a>
+                      </li>
+                      @endif
+                    </ul>
+                  </div>
+
                   {{-- Billing (placeholder) --}}
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>

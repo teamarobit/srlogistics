@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — Purchase Insurance Dashboard
+   File: public/css/Inventory/purchase-insurance-dashboard.css
+   Version: 1.0
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── KPI Mini Cards ────────────────────────────────────────────────────── */
+.pid-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+@media (max-width: 1200px) { .pid-kpi-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .pid-kpi-row { grid-template-columns: 1fr; } }
+
+.pid-kpi-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 9px 12px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+.pid-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+}
+.pid-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 8px 0 0 8px;
+}
+
+/* Navy — Actual Paid */
+.pid-kpi-card.card-paid {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-color: #c5d4ee;
+}
+.pid-kpi-card.card-paid::before      { background: #032671; }
+.pid-kpi-card.card-paid .pid-kpi-label { color: #2d4a8a; }
+.pid-kpi-card.card-paid .pid-kpi-amt  { color: #032671; }
+.pid-kpi-card.card-paid .pid-kpi-divider { background: #c5d4ee; }
+
+/* Teal — Claimed */
+.pid-kpi-card.card-claimed {
+    background: linear-gradient(135deg, #ecfdf5 0%, #e6faf5 100%);
+    border-color: #99e6ce;
+}
+.pid-kpi-card.card-claimed::before      { background: #0d9488; }
+.pid-kpi-card.card-claimed .pid-kpi-label { color: #0f766e; }
+.pid-kpi-card.card-claimed .pid-kpi-amt  { color: #134e4a; }
+.pid-kpi-card.card-claimed .pid-kpi-divider { background: #99e6ce; }
+
+/* Green — Settled */
+.pid-kpi-card.card-settled {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border-color: #a7ddb8;
+}
+.pid-kpi-card.card-settled::before      { background: #16a34a; }
+.pid-kpi-card.card-settled .pid-kpi-label { color: #15803d; }
+.pid-kpi-card.card-settled .pid-kpi-amt  { color: #14532d; }
+.pid-kpi-card.card-settled .pid-kpi-divider { background: #a7ddb8; }
+
+/* Orange — Excess / Short */
+.pid-kpi-card.card-excess {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
+    border-color: #f9c784;
+}
+.pid-kpi-card.card-excess::before      { background: #f97316; }
+.pid-kpi-card.card-excess .pid-kpi-label { color: #c2410c; }
+.pid-kpi-card.card-excess .pid-kpi-amt  { color: #9a3412; }
+.pid-kpi-card.card-excess .pid-kpi-divider { background: #f9c784; }
+
+.pid-kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+}
+.pid-kpi-amt {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2937;
+}
+.pid-kpi-sub {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 1px;
+}
+.pid-kpi-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 5px 0;
+}
+.pid-kpi-qty {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+}
+.pid-kpi-qty span {
+    font-size: 12px;
+    font-weight: 800;
+    color: #374151;
+}
+
+/* ── Filter Card ────────────────────────────────────────────────────────── */
+.pid-filter-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.pid-filter-header {
+    background: #f8faff;
+    border-bottom: 1px solid #e8edf5;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pid-filter-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.pid-filter-title i { font-size: 12px; color: #4b6cb7; }
+.pid-filter-body {
+    padding: 12px 16px 12px;
+}
+.pid-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.pid-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.pid-filter-label i { font-size: 11px; color: #9ca3af; }
+.pid-filter-card .form-control,
+.pid-filter-card .form-select {
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    height: 32px;
+    padding: 4px 9px;
+    color: #1f2937;
+    background: #fff;
+}
+.pid-filter-card .form-control:focus,
+.pid-filter-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3,38,113,0.07);
+}
+.pid-filter-card .input-group-text {
+    background: #f5f6f8;
+    border-color: #d1d5db;
+    border-right: none;
+    color: #9ca3af;
+}
+.pid-filter-card .input-group .form-control {
+    border-left: none;
+}
+.pid-filter-divider {
+    height: 1px;
+    background: #f0f2f7;
+    margin: 10px 0;
+}
+.pid-reset-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 5px 13px;
+    background: #fff;
+    transition: all 0.15s;
+    height: 32px;
+    white-space: nowrap;
+}
+.pid-reset-link:hover {
+    border-color: #032671;
+    color: #032671;
+    background: #f0f4ff;
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────── */
+.pid-table-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.pid-table-head {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.pid-table-head-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.pid-table table thead th {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f5f6f8;
+    border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px;
+    white-space: nowrap;
+}
+.pid-table table tbody td {
+    font-size: 12px;
+    padding: 8px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7;
+    color: #2d2d2d;
+}
+.pid-table table tbody tr:hover td { background: #f4f7fe; }
+.pid-table table tbody tr:last-child td { border-bottom: 0; }
+
+/* Vehicle reg badge */
+.pid-reg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* Driver cell */
+.pid-driver-name { font-size: 12px; font-weight: 600; color: #1f2937; }
+.pid-driver-code { font-size: 10px; color: #6b7280; margin-top: 1px; }
+
+/* RAG badge */
+.pid-rag { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
+.pid-rag-r { background:#dc2626; }
+.pid-rag-a { background:#f59e0b; }
+.pid-rag-g { background:#16a34a; }
+.pid-rag-label { font-size:11px; font-weight:600; }
+
+/* Claim status badges */
+.pid-status {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.pid-status-initiated  { background: #e3ecff; color: #032671; }
+.pid-status-survey     { background: #e3f4ff; color: #0061a8; }
+.pid-status-repair     { background: #fff3e0; color: #c45a00; }
+.pid-status-awaiting   { background: #f3e5f5; color: #7b1fa2; }
+.pid-status-settled    { background: #e6f4ea; color: #10863f; }
+
+/* Yes / No chip */
+.pid-yes { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:#fdecea; color:#ea0027; }
+.pid-no  { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:#e9ecef; color:#495057; }
+
+/* Excess amount */
+.pid-excess-pos { font-size:12px; font-weight:700; color:#dc2626; }
+.pid-excess-neg { font-size:12px; font-weight:700; color:#16a34a; }
+
+/* Workshop sub-label */
+.pid-ws-label { font-size:10px; color:#9ca3af; }
+.pid-ws-name  { font-size:12px; font-weight:600; color:#1f2937; }
+
+/* View button */
+.pid-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #032671;
+    text-decoration: none;
+    border: 1px solid #c5d4ee;
+    border-radius: 5px;
+    padding: 3px 10px;
+    background: #eef2fb;
+    white-space: nowrap;
+}
+.pid-view-btn:hover { background: #032671; color: #fff; border-color: #032671; }
+
+/* Sort badge */
+.pid-sort-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:11px; font-weight:600; color:#032671;
+    background:#eef2fb; border:1px solid #c5d4ee;
+    border-radius:6px; padding:3px 10px;
+}
