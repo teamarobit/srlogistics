@@ -254,6 +254,9 @@
                         <button class="nav-link fleetTab" data-status="1" id="pills-on_the_way-tab" data-bs-toggle="pill" data-bs-target="#pills-on_the_way" type="button" role="tab" aria-controls="pills-on_the_way" aria-selected="false">On The Way</button>
                       </li>
                       <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-attached_vehicle-tab" data-bs-toggle="pill" data-bs-target="#pills-attached_vehicle" type="button" role="tab" aria-controls="pills-attached_vehicle" aria-selected="false">Attached Vehicle</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
                         <button class="nav-link fleetTab" data-status="6" id="pills-maintenance-tab" data-bs-toggle="pill" data-bs-target="#pills-maintenance" type="button" role="tab" aria-controls="pills-maintenance" aria-selected="false">Maintenance</button>
                       </li>
                     </ul>
@@ -1207,6 +1210,177 @@
                             <!--sr_dashboard0_table-->
                       </div>
                       
+                      <div class="tab-pane fade" id="pills-attached_vehicle" role="tabpanel" aria-labelledby="pills-attached_vehicle-tab">
+                          <div class="accordion mt-2" id="accordionExample">
+                              <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                  <button class="accordion-button filter-options" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <div class="item-filter">
+                                        <div class="filter">
+                                            <span class="filter-icon">
+                                                <img src="{{ asset('images/icons/filter-01icon.png') }}" alt="icon">
+                                            </span>
+                                        </div>
+                                        <p class="mb-0">Filter Options</p>
+                                    </div>
+                                  </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                  <div class="accordion-body">
+                                    <form>
+                                        <input type="hidden" name="status" id="status">
+                                        <div class="filtersearch-bd justify-content-between">
+
+                                            <div class="vehicletype ms-1">
+                                                <label>Tracking Group</label>
+                                                <select class="form-select select2">
+                                                    <option value="">Choose..</option>
+                                                    <option>Tracking A</option>
+                                                    <option>Tracking B</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="vehicletype ms-1">
+                                                <label>Remaining KM</label>
+                                                <select class="form-select">
+                                                    <option value="">Choose..</option>
+                                                    <option>0 - 1000</option>
+                                                    <option>1000 - 5000</option>
+                                                    <option>5000+</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="vehicletype ms-1">
+                                                <label>Extra Run Km</label>
+                                                <select class="form-select">
+                                                    <option value="">Choose..</option>
+                                                    <option>0 - 500</option>
+                                                    <option>500 - 2000</option>
+                                                    <option>2000+</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="vehicletype ms-1">
+                                                <label>End Date</label>
+                                                <div id="reportrange" class="form-control" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                                    <i class="fa fa-calendar"></i>&nbsp;
+                                                    <span></span> <i class="fa fa-caret-down"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="filtersearch-bd justify-content-start mt-3">
+
+                                            <div class="ms-1" style="width: 240px;">
+                                                <div class="input-group">
+                                                  <input type="text" class="form-control" placeholder="Search by Customer">
+                                                  <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="ms-1" style="width: 220px;">
+                                                <div class="input-group">
+                                                  <input type="text" class="form-control" placeholder="Search by Vehicle #">
+                                                  <span class="input-group-text"><i class="uil uil-search"></i></span>
+                                                </div>
+                                            </div>
+
+                                            <a href="{{ route('fleetdashboard.index') }}" class="btn btn-primary ms-1"><i class="uil uil-sync me-1"></i>Reset</a>
+
+                                            <div class="dropdown ms-1">
+                                              <button class="btn btn-primary dropdown-toggle" type="button" id="exportBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Export <i class="uil uil-upload ms-1"></i>
+                                              </button>
+                                              <ul class="dropdown-menu" aria-labelledby="exportBtn">
+                                                <li><a class="dropdown-item" href="javascript:void(0)">Excel</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0)">PDF</a></li>
+                                              </ul>
+                                            </div>
+                                        </div>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!--sr_dashboard0_table-->
+                            <div class="sr_dashboard0_table">
+                                <div class="container-fluid">
+                                    <div class="table-responsive">
+                                        <table class="table custom-driver-table">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th style="min-width: 120px">Vehicle Number</th>
+                                                    <th style="min-width: 140px">Current Driver</th>
+                                                    <th>Tracking Group</th>
+                                                    <th>Current Status</th>
+                                                    <th>Customer</th>
+                                                    <th>Fixed KM</th>
+                                                    <th>Remaining KM</th>
+                                                    <th>Extra Run KM</th>
+                                                    <th>Trips<br/>Completed</th>
+                                                    <th>Fixed Amount</th>
+                                                    <th>Fixed Amt/KM</th>
+                                                    <th>Extra Run Amount</th>
+                                                    <th>Extra Amt/KM</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="fleetTableBody_attached">
+                                                <tr>
+                                                    <td><img src="{{ asset('images/icons/vehiche01.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><span class="value">WB-12-AB-1234</span></td>
+                                                    <td><span class="value">Sujoy Ghosh</span><br/><span class="value">DRV-1021</span></td>
+                                                    <td><span class="value">Tracking A</span></td>
+                                                    <td><span class="badge bg-success">On The Way</span></td>
+                                                    <td><span class="value">Neelesh Maheta</span></td>
+                                                    <td><span class="value">10,000</span></td>
+                                                    <td><span class="value">3,500</span></td>
+                                                    <td><span class="value">450</span></td>
+                                                    <td><span class="value">12</span></td>
+                                                    <td><span class="value">₹ 2,50,000</span></td>
+                                                    <td><span class="value">₹ 25.00</span></td>
+                                                    <td><span class="value">₹ 13,500</span></td>
+                                                    <td><span class="value">₹ 30.00</span></td>
+                                                    <td><span class="value">01/01/2026</span></td>
+                                                    <td><span class="value">31/03/2026</span></td>
+                                                    <td class="text-center">
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><img src="{{ asset('images/icons/vehiche03.png') }}" alt="icon" class="driver-img-sm"></td>
+                                                    <td><span class="value">WB-12-AB-1235</span></td>
+                                                    <td><span class="value">Ramen Singh</span><br/><span class="value">DRV-1044</span></td>
+                                                    <td><span class="value">Tracking B</span></td>
+                                                    <td><span class="badge bg-secondary">Empty</span></td>
+                                                    <td><span class="value">Ambar Singh</span></td>
+                                                    <td><span class="value">8,000</span></td>
+                                                    <td><span class="value">1,200</span></td>
+                                                    <td><span class="value">0</span></td>
+                                                    <td><span class="value">9</span></td>
+                                                    <td><span class="value">₹ 2,00,000</span></td>
+                                                    <td><span class="value">₹ 25.00</span></td>
+                                                    <td><span class="value">₹ 0</span></td>
+                                                    <td><span class="value">₹ 28.00</span></td>
+                                                    <td><span class="value">15/01/2026</span></td>
+                                                    <td><span class="value">14/04/2026</span></td>
+                                                    <td class="text-center">
+                                                        <a href="#" class="btn btn-sm-custom">View Details</a>
+                                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#remarks" class="ms-2 cmnt-icon"><i class="uil uil-info-circle"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--sr_dashboard0_table-->
+                      </div>
+
                       <div class="tab-pane fade" id="pills-maintenance" role="tabpanel" aria-labelledby="pills-maintenance-tab">
                           <div class="accordion mt-2" id="accordionExample">
                               <div class="accordion-item">
