@@ -1785,3 +1785,144 @@ $(document).on('shown.bs.modal', '#addExpense', function () {
         });
     }
 });
+
+/* ================================================================
+   COMPLETE TRIP MODAL — JS (2026-07-08)
+   – Live Speedo KM calculation
+   – Two-step flow: KM entry → confirmation summary
+   – On confirm: update status, stepper, timeline, toast
+   ================================================================ */
+
+/* Stores completion data so the timeline entry can be rendered
+   even when the Vehicle Status tab is lazy-loaded AFTER confirm. */
+var ctripCompletion = null;
+
+function appendCompletionToTimeline() {
+    if (!ctripCompletion) { return; }
+    var $tl = $('#td2StatusTimeline');
+    if (!$tl.length) { return; }
+    /* Avoid duplicate entries */
+    if ($tl.find('.td2-tl-completed').length) { return; }
+    var c = ctripCompletion;
+    $tl.append(
+        '<div class="td2-tl-item td2-tl-dynamic td2-tl-completed">' +
+            '<span class="td2-tl-marker td2-tl-marker-completed"><i class="uil uil-flag-alt"></i></span>' +
+            '<div class="td2-tl-body">' +
+                '<div class="td2-tl-head">' +
+                    '<span class="td2-tl-title">Trip Completed</span>' +
+                    '<span class="td2-tl-badge td2-tl-badge-completed">Completed</span>' +
+                    '<span class="td2-tl-time">' + c.time + '</span>' +
+                '</div>' +
+                '<p class="td2-tl-note">Speedo KM: ' + c.diff + ' km &nbsp;(Start ' + c.start + ' → End ' + c.end + ')</p>' +
+            '</div>' +
+        '</div>'
+    );
+}
+
+/* Also hook into tab-load so the entry renders when tab is opened after confirm */
+$(document).on('td2:tab-loaded', function (e, key) {
+    if (key === 'vehStatus') { appendCompletionToTimeline(); }
+});
+
+$(document).ready(function () {
+
+    /* ── Live Speedo KM ───────────────────────────────────────── */
+    function calcSpeedoKm() {
+        var start = parseInt($('#td2CtripStartKm').val(), 10);
+        var end   = parseInt($('#td2CtripEndKm').val(),   10);
+        if (!isNaN(start) && !isNaN(end) && end > start) {
+            $('#td2CtripSpeedoVal').html(end - start + ' <span class="td2-ctrip-km-unit">km</span>');
+        } else {
+            $('#td2CtripSpeedoVal').html('— <span class="td2-ctrip-km-unit">km</span>');
+        }
+    }
+
+    $(document).on('input', '#td2CtripStartKm, #td2CtripEndKm', calcSpeedoKm);
+
+    /* ── Page 1 → Page 2 ─────────────────────────────────────── */
+    $(document).on('click', '#td2CtripCompleteBtn', function () {
+        var start = parseInt($('#td2CtripStartKm').val(), 10);
+        var end   = parseInt($('#td2CtripEndKm').val(),   10);
+        var $err  = $('#td2CtripSpeedoErr');
+
+        if (isNaN(start) || isNaN(end)) {
+            $err.text('Enter both start and end KM.').show();
+            return;
+        }
+        if (end <= start) {
+            $err.text('End KM must be greater than start KM.').show();
+            return;
+        }
+        $err.hide();
+
+        var diff    = end - start;
+        var fixedKm = parseInt($('#td2CtripFixedVal').text(), 10) || 0;
+        var gpsKm   = parseInt($('#td2CtripGpsVal').text(),   10) || 0;
+
+        /* Populate summary */
+        $('#td2CtripP2Fixed').text(fixedKm  + ' km');
+        $('#td2CtripP2Gps').text(gpsKm    + ' km');
+        $('#td2CtripP2Speedo').text(diff   + ' km');
+        $('#td2CtripP2Start').text(start);
+        $('#td2CtripP2End').text(end);
+
+        /* Flip to page 2 */
+        $('#td2CtripPage1').hide();
+        $('#td2CtripPage2').show();
+        $('#td2CtripFooter1').hide();
+        $('#td2CtripFooter2').show();
+        $('#td2CtripSubtitle').text('Confirm KM values to finalise');
+    });
+
+    /* ── Page 2 → Page 1 (Back) ──────────────────────────────── */
+    $(document).on('click', '#td2CtripBackBtn', function () {
+        $('#td2CtripPage2').hide();
+        $('#td2CtripPage1').show();
+        $('#td2CtripFooter2').hide();
+        $('#td2CtripFooter1').show();
+        $('#td2CtripSubtitle').text('Trip KM summary before marking as complete');
+    });
+
+    /* ── Confirm & Complete ───────────────────────────────────── */
+    $(document).on('click', '#td2CtripConfirmBtn', function () {
+        var start = parseInt($('#td2CtripStartKm').val(), 10);
+        var end   = parseInt($('#td2CtripEndKm').val(),   10);
+        var diff  = end - start;
+        var now   = td2Now();
+
+        /* Close modal */
+        var modalEl = document.getElementById('closeTrip');
+        if (modalEl) {
+            var bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) { bsModal.hide(); }
+        }
+
+        /* Update trip status */
+        tripConfig.tripStatus = 'Completed';
+        applyConditionalVisibility();
+
+        /* Store completion and render (deferred if tab not yet loaded) */
+        ctripCompletion = { diff: diff, start: start, end: end, time: now };
+        appendCompletionToTimeline();
+
+        /* Toast */
+        Toast.fire({ icon: 'success', title: 'Trip marked as Completed.' });
+    });
+
+    /* ── Reset modal state on close ──────────────────────────── */
+    var closeTripEl = document.getElementById('closeTrip');
+    if (closeTripEl) {
+        closeTripEl.addEventListener('hidden.bs.modal', function () {
+            $('#td2CtripStartKm').val('');
+            $('#td2CtripEndKm').val('');
+            $('#td2CtripSpeedoVal').html('— <span class="td2-ctrip-km-unit">km</span>');
+            $('#td2CtripSpeedoErr').hide();
+            $('#td2CtripPage2').hide();
+            $('#td2CtripPage1').show();
+            $('#td2CtripFooter2').hide();
+            $('#td2CtripFooter1').show();
+            $('#td2CtripSubtitle').text('Trip KM summary before marking as complete');
+        });
+    }
+
+});

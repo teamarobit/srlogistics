@@ -49,6 +49,9 @@
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
                       <li class="title mb-4"></li>
+                      @if(Route::has('fuel.dashboard'))
+                      <li class="{{ request()->routeIs('fuel.dashboard') ? 'active' : '' }}"><a href="{{ route('fuel.dashboard') }}">Fuel Dashboard</a></li>
+                      @endif
                       <li><a href="#">Fuel Logs</a></li>
                       <li><a href="#">Odometer Tracking</a></li>
                       <li><a href="#">Performance Analytics</a></li>
@@ -84,6 +87,9 @@
                       @if(Route::has('fleet.compliance.permit-fitness'))
                       <li><a href="{{ route('fleet.compliance.permit-fitness') }}">Permit & Fitness Tracker</a></li>
                       @endif
+                      @if(Route::has('challan.dashboard'))
+                      <li><a href="{{ route('challan.dashboard') }}">Challan Dashboard</a></li>
+                      @endif
                     </ul>
                   </div>
 
@@ -107,6 +113,7 @@
                       <li><a href="#">Eways</a></li>
                       <li><a href="#">LR</a></li>
                       <li><a href="#">Toll History</a></li>
+                      <li class="{{ request()->routeIs('toll.dashboard') ? 'active' : '' }}"><a href="{{ route('toll.dashboard') }}">Toll Dashboard</a></li>
                     </ul>
                   </div>
                   

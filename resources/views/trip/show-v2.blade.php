@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link href="{{ asset('css/fleet/vehicle-details-v2.css?v=5.6') }}" rel="stylesheet">
-<link href="{{ asset('css/trip/show-v2.css?v=11.9') }}" rel="stylesheet">
+<link href="{{ asset('css/trip/show-v2.css?v=12.1') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -97,7 +97,7 @@
                     <button class="v2-id-tag-btn" id="settleTripBtn" type="button"
                             data-bs-toggle="modal" data-bs-target="#closeTrip"
                             style="background:#d1fae5;color:#065f46;border-color:#6ee7b7;">
-                        <i class="uil uil-check-circle"></i> Settle Trip
+                        <i class="uil uil-check-circle"></i> Complete Trip
                     </button>
                     <button class="v2-id-tag-btn" id="cancelTripBtn" type="button"
                             data-bs-toggle="modal" data-bs-target="#cancelTrip"
@@ -1177,27 +1177,133 @@
      MODALS — Sprint 5 (structure placeholders wired now)
 ═══════════════════════════════════════════════════════════════ --}}
 
-{{-- Settle Trip --}}
+{{-- Complete Trip --}}
 <div class="modal fade td2-modal-pro" id="closeTrip" tabindex="-1" aria-labelledby="closeTripLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="td2-modal-head-wrap">
                     <span class="td2-modal-head-icon"><i class="uil uil-check-circle"></i></span>
                     <div>
-                        <h5 class="modal-title" id="closeTripLabel">Settle Trip</h5>
-                        <p class="td2-modal-head-sub">Confirm trip settlement</p>
+                        <h5 class="modal-title" id="closeTripLabel">Complete Trip</h5>
+                        <p class="td2-modal-head-sub" id="td2CtripSubtitle">Trip KM summary before marking as complete</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p>Are you sure you want to settle this trip?</p>
+            <div class="modal-body td2-ctrip-body">
+
+                {{-- ── PAGE 1: KM Entry ── --}}
+                <div id="td2CtripPage1">
+
+                    <div class="td2-ctrip-km-grid">
+
+                        {{-- Fixed KM --}}
+                        <div class="td2-ctrip-km-row">
+                            <div class="td2-ctrip-km-meta">
+                                <span class="td2-ctrip-km-label">Fixed KM</span>
+                                <span class="td2-ctrip-km-val" id="td2CtripFixedVal">850 <span class="td2-ctrip-km-unit">km</span></span>
+                            </div>
+                            <span class="td2-ctrip-src-badge td2-ctrip-src-auto">
+                                <i class="uil uil-list-ul"></i> Auto · Fixed List
+                            </span>
+                        </div>
+
+                        {{-- GPS KM --}}
+                        {{-- When GPS in repair: swap badge class to td2-ctrip-src-repair, text to "GPS Repair" --}}
+                        <div class="td2-ctrip-km-row">
+                            <div class="td2-ctrip-km-meta">
+                                <span class="td2-ctrip-km-label">GPS KM</span>
+                                <span class="td2-ctrip-km-val" id="td2CtripGpsVal">860 <span class="td2-ctrip-km-unit">km</span></span>
+                            </div>
+                            <span class="td2-ctrip-src-badge td2-ctrip-src-auto">
+                                <i class="uil uil-map-marker"></i> Auto · GPS
+                            </span>
+                        </div>
+
+                        {{-- Speedo KM (manual) --}}
+                        <div class="td2-ctrip-km-row td2-ctrip-km-speedo-row">
+                            <div class="td2-ctrip-km-meta">
+                                <span class="td2-ctrip-km-label">Speedo KM</span>
+                                <span class="td2-ctrip-km-val" id="td2CtripSpeedoVal">— <span class="td2-ctrip-km-unit">km</span></span>
+                            </div>
+                            <span class="td2-ctrip-src-badge td2-ctrip-src-manual">
+                                <i class="uil uil-edit-alt"></i> Manual entry
+                            </span>
+                            <div class="td2-ctrip-speedo-inputs">
+                                <div class="td2-ctrip-speedo-field">
+                                    <label class="td2-ctrip-speedo-lbl" for="td2CtripStartKm">Trip start KM</label>
+                                    <input type="number" class="form-control form-control-sm" id="td2CtripStartKm" placeholder="e.g. 45000" min="0">
+                                </div>
+                                <div class="td2-ctrip-speedo-sep">
+                                    <i class="uil uil-arrow-right"></i>
+                                </div>
+                                <div class="td2-ctrip-speedo-field">
+                                    <label class="td2-ctrip-speedo-lbl" for="td2CtripEndKm">Trip end KM</label>
+                                    <input type="number" class="form-control form-control-sm" id="td2CtripEndKm" placeholder="e.g. 45855" min="0">
+                                </div>
+                            </div>
+                            <div class="td2-ctrip-speedo-err" id="td2CtripSpeedoErr" style="display:none;"></div>
+                        </div>
+
+                    </div>{{-- /.td2-ctrip-km-grid --}}
+
+                    <div class="td2-ctrip-warning">
+                        <i class="uil uil-info-circle"></i>
+                        <span>This will mark the trip as <strong>Completed</strong>. This action cannot be undone.</span>
+                    </div>
+
+                </div>{{-- /#td2CtripPage1 --}}
+
+                {{-- ── PAGE 2: Confirmation Summary ── --}}
+                <div id="td2CtripPage2" style="display:none;">
+                    <div class="td2-ctrip-p2-summary">
+
+                        <div class="td2-ctrip-p2-row">
+                            <span class="td2-ctrip-p2-lbl"><i class="uil uil-list-ul"></i> Fixed KM</span>
+                            <span class="td2-ctrip-p2-val" id="td2CtripP2Fixed">—</span>
+                        </div>
+                        <div class="td2-ctrip-p2-row">
+                            <span class="td2-ctrip-p2-lbl"><i class="uil uil-map-marker"></i> GPS KM</span>
+                            <span class="td2-ctrip-p2-val" id="td2CtripP2Gps">—</span>
+                        </div>
+                        <div class="td2-ctrip-p2-row">
+                            <span class="td2-ctrip-p2-lbl"><i class="uil uil-tachometer-fast"></i> Speedo KM</span>
+                            <span class="td2-ctrip-p2-val td2-ctrip-p2-speedo" id="td2CtripP2Speedo">—</span>
+                        </div>
+                        <div class="td2-ctrip-p2-breakdown" id="td2CtripP2Breakdown">
+                            <span class="td2-ctrip-p2-bk-item">Start: <strong id="td2CtripP2Start">—</strong> km</span>
+                            <i class="uil uil-arrow-right"></i>
+                            <span class="td2-ctrip-p2-bk-item">End: <strong id="td2CtripP2End">—</strong> km</span>
+                        </div>
+
+                    </div>
+                    <div class="td2-ctrip-p2-confirm-note">
+                        <i class="uil uil-exclamation-triangle"></i>
+                        <span>Confirm the KM values above and click <strong>Confirm &amp; Complete</strong> to finalise.</span>
+                    </div>
+                </div>{{-- /#td2CtripPage2 --}}
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Yes, Settle</button>
+
+            {{-- Footer page 1 --}}
+            <div class="modal-footer" id="td2CtripFooter1">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success btn-sm" id="td2CtripCompleteBtn">
+                    <i class="uil uil-check-circle me-1"></i> Complete Trip
+                </button>
             </div>
+
+            {{-- Footer page 2 --}}
+            <div class="modal-footer" id="td2CtripFooter2" style="display:none;">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="td2CtripBackBtn">
+                    <i class="uil uil-arrow-left me-1"></i> Back
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="td2CtripConfirmBtn">
+                    <i class="uil uil-check-circle me-1"></i> Confirm &amp; Complete
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -2900,6 +3006,6 @@
 {{-- Leaflet (interactive map for SOS location capture) --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ asset('customjs/trip/show-v2.js?v=6.6') }}"></script>
+<script src="{{ asset('customjs/trip/show-v2.js?v=6.8') }}"></script>
 <script src="{{ asset('js/Trip/tab-loader.js?v=1.2') }}"></script>
 @endsection

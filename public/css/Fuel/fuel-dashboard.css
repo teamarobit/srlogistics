@@ -1,0 +1,497 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — Fuel Dashboard
+   File: public/css/Fuel/fuel-dashboard.css
+   Version: 1.0
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page head badge ────────────────────────────────────────────────────── */
+.fud-period-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #032671;
+    background: #eef2fb; border: 1px solid #c5d4ee;
+    border-radius: 6px; padding: 3px 10px;
+}
+
+/* ── Mini Dashboard — grouped KPI blocks ────────────────────────────────── */
+.fud-kpi-wrap {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.fud-span-1 { grid-column: span 2; }
+.fud-span-2 { grid-column: span 4; }
+.fud-span-3 { grid-column: span 6; }
+
+@media (max-width: 1200px) {
+    .fud-span-1, .fud-span-2, .fud-span-3 { grid-column: span 6; }
+}
+
+.fud-kpi-group {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    padding: 9px 10px 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.fud-kpi-group-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f2f7;
+}
+.fud-kpi-group-title i { font-size: 12px; color: #4b6cb7; }
+
+.fud-kpi-row { display: grid; gap: 8px; }
+.fud-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.fud-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.fud-cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+@media (max-width: 1200px) {
+    .fud-cols-6 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+    .fud-cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .fud-cols-2, .fud-cols-4, .fud-cols-6 { grid-template-columns: 1fr; }
+}
+
+.fud-kpi-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 10px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+.fud-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+}
+.fud-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 8px 0 0 8px;
+}
+
+/* Navy — Total Fuel */
+.fud-kpi-card.card-total {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-color: #c5d4ee;
+}
+.fud-kpi-card.card-total::before          { background: #032671; }
+.fud-kpi-card.card-total .fud-kpi-label   { color: #2d4a8a; }
+.fud-kpi-card.card-total .fud-kpi-amt     { color: #032671; }
+.fud-kpi-card.card-total .fud-kpi-divider { background: #c5d4ee; }
+
+/* Teal — Average rate */
+.fud-kpi-card.card-rate {
+    background: linear-gradient(135deg, #ecfdf5 0%, #e6faf5 100%);
+    border-color: #99e6ce;
+}
+.fud-kpi-card.card-rate::before          { background: #0d9488; }
+.fud-kpi-card.card-rate .fud-kpi-label   { color: #0f766e; }
+.fud-kpi-card.card-rate .fud-kpi-amt     { color: #134e4a; }
+.fud-kpi-card.card-rate .fud-kpi-divider { background: #99e6ce; }
+
+/* Payment methods */
+.fud-kpi-card.card-otp {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-color: #c5d4ee;
+}
+.fud-kpi-card.card-otp::before          { background: #032671; }
+.fud-kpi-card.card-otp .fud-kpi-label   { color: #2d4a8a; }
+.fud-kpi-card.card-otp .fud-kpi-amt     { color: #032671; }
+.fud-kpi-card.card-otp .fud-kpi-divider { background: #c5d4ee; }
+
+.fud-kpi-card.card-marketpe {
+    background: linear-gradient(135deg, #f5f3ff 0%, #efeaff 100%);
+    border-color: #cbbdf5;
+}
+.fud-kpi-card.card-marketpe::before          { background: #7c3aed; }
+.fud-kpi-card.card-marketpe .fud-kpi-label   { color: #6d28d9; }
+.fud-kpi-card.card-marketpe .fud-kpi-amt     { color: #4c1d95; }
+.fud-kpi-card.card-marketpe .fud-kpi-divider { background: #cbbdf5; }
+
+.fud-kpi-card.card-upi {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border-color: #a7ddb8;
+}
+.fud-kpi-card.card-upi::before          { background: #16a34a; }
+.fud-kpi-card.card-upi .fud-kpi-label   { color: #15803d; }
+.fud-kpi-card.card-upi .fud-kpi-amt     { color: #14532d; }
+.fud-kpi-card.card-upi .fud-kpi-divider { background: #a7ddb8; }
+
+.fud-kpi-card.card-credit {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
+    border-color: #f9c784;
+}
+.fud-kpi-card.card-credit::before          { background: #f97316; }
+.fud-kpi-card.card-credit .fud-kpi-label   { color: #c2410c; }
+.fud-kpi-card.card-credit .fud-kpi-amt     { color: #9a3412; }
+.fud-kpi-card.card-credit .fud-kpi-divider { background: #f9c784; }
+
+/* Fuel companies — neutral card, coloured accent bar */
+.fud-kpi-card.card-jio::before       { background: #0f4c9c; }
+.fud-kpi-card.card-nyara::before     { background: #d97706; }
+.fud-kpi-card.card-ioc::before       { background: #dc2626; }
+.fud-kpi-card.card-bpcl::before      { background: #0d9488; }
+.fud-kpi-card.card-hp::before        { background: #1d4ed8; }
+.fud-kpi-card.card-kalpataru::before { background: #7c3aed; }
+
+.fud-kpi-card.card-jio       .fud-kpi-label i { color: #0f4c9c; }
+.fud-kpi-card.card-nyara     .fud-kpi-label i { color: #d97706; }
+.fud-kpi-card.card-ioc       .fud-kpi-label i { color: #dc2626; }
+.fud-kpi-card.card-bpcl      .fud-kpi-label i { color: #0d9488; }
+.fud-kpi-card.card-hp        .fud-kpi-label i { color: #1d4ed8; }
+.fud-kpi-card.card-kalpataru .fud-kpi-label i { color: #7c3aed; }
+
+.fud-kpi-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.fud-kpi-label i { font-size: 11px; }
+.fud-kpi-amt {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.fud-kpi-amt small { font-size: 10px; font-weight: 700; opacity: 0.7; }
+.fud-kpi-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 5px 0;
+}
+.fud-kpi-qty {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+}
+.fud-kpi-qty span {
+    font-size: 12px;
+    font-weight: 800;
+    color: #374151;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Filter Card ────────────────────────────────────────────────────────── */
+.fud-filter-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.fud-filter-header {
+    background: #f8faff;
+    border-bottom: 1px solid #e8edf5;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fud-filter-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.fud-filter-title i { font-size: 12px; color: #4b6cb7; }
+.fud-filter-body { padding: 12px 16px; }
+.fud-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.fud-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.fud-filter-label i { font-size: 11px; color: #9ca3af; }
+.fud-filter-card .form-control,
+.fud-filter-card .form-select {
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    height: 32px;
+    padding: 4px 9px;
+    color: #1f2937;
+    background: #fff;
+}
+.fud-filter-card .form-control:focus,
+.fud-filter-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3,38,113,0.07);
+}
+.fud-filter-card .input-group-text {
+    background: #f5f6f8;
+    border-color: #d1d5db;
+    border-right: none;
+    color: #9ca3af;
+}
+.fud-filter-card .input-group .form-control { border-left: none; }
+.fud-filter-divider {
+    height: 1px;
+    background: #f0f2f7;
+    margin: 10px 0;
+}
+.fud-reset-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 5px 13px;
+    background: #fff;
+    transition: all 0.15s;
+    height: 32px;
+    white-space: nowrap;
+}
+.fud-reset-link:hover {
+    border-color: #032671;
+    color: #032671;
+    background: #f0f4ff;
+}
+
+/* ── Table Card ─────────────────────────────────────────────────────────── */
+.fud-table-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.fud-table-head {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.fud-table-head-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.fud-table-head-sub { font-size: 11px; color: #6b7280; }
+.fud-head-actions { display: flex; align-items: center; gap: 8px; }
+
+.fud-btn-add,
+.fud-btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.fud-btn-add {
+    background: #032671;
+    border: 1px solid #032671;
+    color: #fff;
+}
+.fud-btn-add:hover { background: #021d54; color: #fff; }
+.fud-btn-export {
+    background: #eef2fb;
+    border: 1px solid #c5d4ee;
+    color: #032671;
+}
+.fud-btn-export:hover { background: #032671; color: #fff; border-color: #032671; }
+
+/* Scrollable wide table */
+.fud-table { max-height: 620px; overflow: auto; }
+.fud-table table { margin-bottom: 0; }
+.fud-table table thead th {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f5f6f8;
+    border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.fud-table table tbody td {
+    font-size: 11.5px;
+    padding: 8px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7;
+    color: #2d2d2d;
+    white-space: nowrap;
+}
+.fud-table table tbody tr:hover td { background: #f4f7fe; }
+.fud-table table tbody tr:last-child td { border-bottom: 0; }
+
+.fud-th-num  { text-align: right; }
+.fud-th-group {
+    background: #eef2fb !important;
+    color: #032671 !important;
+    border-left: 1px solid #d7e0f2;
+    border-right: 1px solid #d7e0f2;
+}
+
+/* Column-wise sorting — clickable headers */
+.fud-table table thead th.fud-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+}
+.fud-table table thead th.fud-sortable:hover {
+    background: #e9edf6;
+    color: #032671;
+}
+.fud-sort-icon {
+    font-size: 11px;
+    color: #b6bcc7;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.fud-table table thead th.fud-sortable:hover .fud-sort-icon { color: #4b6cb7; }
+
+/* Active sort column */
+.fud-table table thead th.fud-sortable.is-sorted {
+    background: #e3ecff;
+    color: #032671;
+}
+.fud-table table thead th.fud-sortable.is-sorted .fud-sort-icon { color: #032671; }
+.fud-table table tbody td.is-sorted-col { background: #f8faff; }
+.fud-table table tbody tr:hover td.is-sorted-col { background: #eef2fb; }
+
+/* Cell helpers */
+.fud-sl { color: #9ca3af; font-weight: 700; }
+.fud-reg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+.fud-driver-name { font-size: 11.5px; font-weight: 600; color: #1f2937; }
+.fud-driver-code { font-size: 10px; color: #6b7280; margin-top: 1px; }
+.fud-sub { font-size: 10px; color: #6b7280; margin-top: 1px; }
+.fud-mono {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+}
+.fud-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.fud-amt  { font-weight: 700; color: #1f2937; }
+.fud-rate { font-weight: 800; color: #0f766e; background: #f6fdfb; }
+.fud-odo  { color: #4b5563; }
+.fud-muted { color: #9ca3af; }
+.fud-route {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #374151;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.fud-company {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #374151;
+    background: #f1f3f7;
+    border: 1px solid #e2e6ee;
+    border-radius: 10px;
+    padding: 1px 9px;
+    white-space: nowrap;
+}
+
+/* Badges */
+.fud-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.fud-badge-otp      { background: #e3ecff; color: #032671; }
+.fud-badge-marketpe { background: #f3e8ff; color: #6d28d9; }
+.fud-badge-upi      { background: #e7f7ec; color: #157347; }
+.fud-badge-credit   { background: #fff1e3; color: #c2410c; }
+.fud-badge-upcoming { background: #fef3c7; color: #92400e; }
+
+/* Table footer */
+.fud-table-foot {
+    padding: 9px 16px;
+    border-top: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6b7280;
+}
+.fud-table-foot b { color: #032671; font-variant-numeric: tabular-nums; }

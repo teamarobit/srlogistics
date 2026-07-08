@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link href="{{ asset('css/Inventory/purchase-insurance-dashboard.css?v=1.5') }}" rel="stylesheet">
+<link href="{{ asset('css/Inventory/purchase-insurance-dashboard.css?v=2.4') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -31,44 +31,112 @@
             </div>
 
             {{-- ══════════════════════════════════════════════════
-                 SECTION 1 — Mini KPI Cards
+                 SECTION 1 — Claim Financials
             ══════════════════════════════════════════════════ --}}
-            <div class="pid-kpi-row">
+            <div class="pid-group-head"><span class="pid-group-title">Claim Financials</span></div>
+            <div class="pid-cards">
 
                 {{-- Total Actual Paid --}}
-                <div class="pid-kpi-card card-paid">
-                    <div class="pid-kpi-label"><i class="uil uil-money-bill"></i> Total Actual Paid</div>
-                    <div class="pid-kpi-amt">₹ 28,46,500</div>
-                    <div class="pid-kpi-sub">Amount paid to workshops</div>
-                    <div class="pid-kpi-divider"></div>
-                    <div class="pid-kpi-qty"><span>42</span> Claims</div>
+                <div class="pid-card">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-navy"><i class="uil uil-money-bill"></i></span>
+                        <span class="pid-card-label">Total Actual Paid</span>
+                    </div>
+                    <div class="pid-card-val">₹ 28,46,500</div>
+                    <div class="pid-card-sub">Amount paid to workshops</div>
+                    <div class="pid-card-foot"><span>42</span> Claims</div>
                 </div>
 
                 {{-- Total Claimed --}}
-                <div class="pid-kpi-card card-claimed">
-                    <div class="pid-kpi-label"><i class="uil uil-file-alt"></i> Total Claimed</div>
-                    <div class="pid-kpi-amt">₹ 31,20,000</div>
-                    <div class="pid-kpi-sub">Filed with insurer</div>
-                    <div class="pid-kpi-divider"></div>
-                    <div class="pid-kpi-qty"><span>42</span> Claims</div>
+                <div class="pid-card">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-navy"><i class="uil uil-file-alt"></i></span>
+                        <span class="pid-card-label">Total Claimed</span>
+                    </div>
+                    <div class="pid-card-val">₹ 31,20,000</div>
+                    <div class="pid-card-sub">Filed with insurer</div>
+                    <div class="pid-card-foot"><span>42</span> Claims</div>
                 </div>
 
                 {{-- Total Settled --}}
-                <div class="pid-kpi-card card-settled">
-                    <div class="pid-kpi-label"><i class="uil uil-check-circle"></i> Total Settled</div>
-                    <div class="pid-kpi-amt">₹ 24,85,000</div>
-                    <div class="pid-kpi-sub">Received from insurer</div>
-                    <div class="pid-kpi-divider"></div>
-                    <div class="pid-kpi-qty"><span>28</span> Claims</div>
+                <div class="pid-card">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-green"><i class="uil uil-check-circle"></i></span>
+                        <span class="pid-card-label">Total Settled</span>
+                    </div>
+                    <div class="pid-card-val">₹ 24,85,000</div>
+                    <div class="pid-card-sub">Received from insurer</div>
+                    <div class="pid-card-foot"><span>28</span> Claims</div>
                 </div>
 
                 {{-- Excess / Short (Actual Paid − Settled) --}}
-                <div class="pid-kpi-card card-excess">
-                    <div class="pid-kpi-label"><i class="uil uil-exclamation-triangle"></i> Excess / Short</div>
-                    <div class="pid-kpi-amt">₹ 3,61,500</div>
-                    <div class="pid-kpi-sub">Paid − Settled (net borne)</div>
-                    <div class="pid-kpi-divider"></div>
-                    <div class="pid-kpi-qty"><span>14</span> Open &amp; Unsettled</div>
+                <div class="pid-card">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-amber"><i class="uil uil-exclamation-triangle"></i></span>
+                        <span class="pid-card-label">Excess / Short (vs Settled)</span>
+                    </div>
+                    <div class="pid-card-val">₹ 3,61,500</div>
+                    <div class="pid-card-sub">Paid − Settled (net borne)</div>
+                    <div class="pid-card-foot"><span>14</span> Open &amp; Unsettled</div>
+                </div>
+
+                {{-- Excess / Short (Actual Paid − Claim Approved) --}}
+                <div class="pid-card">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-amber"><i class="uil uil-balance-scale"></i></span>
+                        <span class="pid-card-label">Excess / Short (vs Approved)</span>
+                    </div>
+                    <div class="pid-card-val">₹ 2,56,500</div>
+                    <div class="pid-card-sub">Paid − Claim Approved</div>
+                    <div class="pid-card-foot"><span>36</span> Approved Claims</div>
+                </div>
+
+            </div>
+
+            {{-- ══════════════════════════════════════════════════
+                 SECTION 1B — Claim Status Breakdown
+            ══════════════════════════════════════════════════ --}}
+            <div class="pid-group-head"><span class="pid-group-title">Claim Status Breakdown</span></div>
+            <div class="pid-cards">
+
+                <div class="pid-card pid-card-sm">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-navy"><i class="uil uil-file-plus-alt"></i></span>
+                        <span class="pid-card-label">Claim Initiated</span>
+                    </div>
+                    <div class="pid-card-val">8</div>
+                </div>
+
+                <div class="pid-card pid-card-sm">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-navy"><i class="uil uil-clipboard-notes"></i></span>
+                        <span class="pid-card-label">Survey Completed</span>
+                    </div>
+                    <div class="pid-card-val">6</div>
+                </div>
+
+                <div class="pid-card pid-card-sm">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-amber"><i class="uil uil-wrench"></i></span>
+                        <span class="pid-card-label">Repair in Progress</span>
+                    </div>
+                    <div class="pid-card-val">9</div>
+                </div>
+
+                <div class="pid-card pid-card-sm">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-amber"><i class="uil uil-hourglass"></i></span>
+                        <span class="pid-card-label">Awaiting Claim Settlement</span>
+                    </div>
+                    <div class="pid-card-val">5</div>
+                </div>
+
+                <div class="pid-card pid-card-sm">
+                    <div class="pid-card-top">
+                        <span class="pid-card-ico ico-green"><i class="uil uil-check-circle"></i></span>
+                        <span class="pid-card-label">Claim Settled</span>
+                    </div>
+                    <div class="pid-card-val">14</div>
                 </div>
 
             </div>
@@ -239,12 +307,7 @@
                                 <th>Incident Type</th>
                                 <th>Driver Mistake</th>
                                 <th>FIR No.</th>
-                                <th>Mech. Workshop</th>
-                                <th>Body Workshop</th>
-                                <th style="text-align:right;">Actual Paid</th>
-                                <th style="text-align:right;">Claim Approved</th>
-                                <th style="text-align:right;">Excess / Short</th>
-                                <th>Status</th>
+                                <th>Workshop Name</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -271,17 +334,15 @@
                                 <td><span class="pid-yes">Yes</span></td>
                                 <td style="font-size:12px;font-weight:600;">FIR/2026/MH/001</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">SR Workshop — Pune</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">SR Workshop — Pune</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">Shine Auto Body Works</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">Shine Auto Body Works</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,85,000</td>
-                                <td style="text-align:right;font-size:12px;font-weight:600;color:#10863f;">₹ 1,60,000</td>
-                                <td style="text-align:right;"><span class="pid-excess-pos">₹ 25,000</span></td>
-                                <td><span class="pid-status pid-status-settled">Claim Settled</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -306,17 +367,15 @@
                                 <td><span class="pid-no">No</span></td>
                                 <td style="font-size:12px;color:#9ca3af;">NO</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">National Auto Garage</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">National Auto Garage</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">—</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">—</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,72,000</td>
-                                <td style="text-align:right;font-size:12px;font-weight:600;color:#10863f;">₹ 1,50,000</td>
-                                <td style="text-align:right;"><span class="pid-excess-pos">₹ 22,000</span></td>
-                                <td><span class="pid-status pid-status-awaiting">Awaiting Settlement</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -341,17 +400,15 @@
                                 <td><span class="pid-no">No</span></td>
                                 <td style="font-size:12px;font-weight:600;">FIR/2026/RJ/004</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">—</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">—</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">—</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">—</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,60,000</td>
-                                <td style="text-align:right;font-size:12px;color:#9ca3af;">—</td>
-                                <td style="text-align:right;"><span class="pid-excess-pos">₹ 1,60,000</span></td>
-                                <td><span class="pid-status pid-status-survey">Survey Completed</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -376,17 +433,15 @@
                                 <td><span class="pid-yes">Yes</span></td>
                                 <td style="font-size:12px;font-weight:600;">FIR/2026/DL/007</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">Singh Auto Repairs</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">Singh Auto Repairs</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">Capital Body Works</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">Capital Body Works</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,45,000</td>
-                                <td style="text-align:right;font-size:12px;font-weight:600;color:#10863f;">₹ 1,30,000</td>
-                                <td style="text-align:right;"><span class="pid-excess-pos">₹ 15,000</span></td>
-                                <td><span class="pid-status pid-status-repair">Repair in Progress</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -411,17 +466,15 @@
                                 <td><span class="pid-no">No</span></td>
                                 <td style="font-size:12px;font-weight:600;">FIR/2026/UP/011</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">Lucknow Auto Centre</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">Lucknow Auto Centre</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">Perfect Dent & Paint</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">Perfect Dent & Paint</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,38,500</td>
-                                <td style="text-align:right;font-size:12px;font-weight:600;color:#10863f;">₹ 1,45,000</td>
-                                <td style="text-align:right;"><span class="pid-excess-neg">+₹ 6,500</span></td>
-                                <td><span class="pid-status pid-status-settled">Claim Settled</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -446,17 +499,15 @@
                                 <td><span class="pid-yes">Yes</span></td>
                                 <td style="font-size:12px;color:#9ca3af;">NO</td>
                                 <td>
-                                    <div class="pid-ws-label">Mechanical</div>
-                                    <div class="pid-ws-name">Bhopal Motors</div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-mech">Mechanical Workshop</span>
+                                        <span class="pid-ws-name">Bhopal Motors</span>
+                                    </div>
+                                    <div class="pid-ws-item">
+                                        <span class="pid-ws-badge pid-ws-badge-body">Body Workshop</span>
+                                        <span class="pid-ws-name">—</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="pid-ws-label">Body</div>
-                                    <div class="pid-ws-name">—</div>
-                                </td>
-                                <td style="text-align:right;font-size:12px;font-weight:700;">₹ 1,12,000</td>
-                                <td style="text-align:right;font-size:12px;color:#9ca3af;">Pending</td>
-                                <td style="text-align:right;"><span class="pid-excess-pos">₹ 1,12,000</span></td>
-                                <td><span class="pid-status pid-status-initiated">Claim Initiated</span></td>
                                 <td><a href="#" class="pid-view-btn"><i class="uil uil-eye"></i> View</a></td>
                             </tr>
 
@@ -469,8 +520,152 @@
         </div>{{-- /sc-no-sidebar --}}
     </div>{{-- /wrapper --}}
 </div>{{-- /layout-wrapper --}}
+
+{{-- ══════════════════════════════════════════════════
+     Maintenance & Scheduled Service — Modal (opened from row View button)
+══════════════════════════════════════════════════ --}}
+<div class="modal fade" id="pidMaintenanceModal" tabindex="-1" aria-labelledby="pidMaintenanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content pid-modal-content">
+            <div class="modal-header pid-modal-header">
+                <div class="pid-modal-head-left">
+                    <span class="pid-modal-ico"><i class="uil uil-wrench"></i></span>
+                    <div>
+                        <h5 class="modal-title" id="pidMaintenanceModalLabel">Maintenance &amp; Scheduled Service</h5>
+                        <span class="pid-modal-sub" id="pidMaintenanceModalMeta">Vehicle overview</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pid-modal-body">
+
+                <div class="pid-modal-section">
+                    <span class="pid-modal-section-title">Service Overview</span>
+                </div>
+
+                <div class="pid-cards pid-modal-cards">
+
+                    {{-- Maintenance Cost — Qty & Amount --}}
+                    <div class="pid-card">
+                        <div class="pid-card-top">
+                            <span class="pid-card-ico ico-navy"><i class="uil uil-constructor"></i></span>
+                            <span class="pid-card-label">Maintenance Cost</span>
+                        </div>
+                        <div class="pid-card-val">₹ 8,74,200</div>
+                        <div class="pid-card-sub">Total maintenance spend</div>
+                        <div class="pid-card-foot"><span>156</span> Jobs</div>
+                    </div>
+
+                    {{-- Total Scheduled Service --}}
+                    <div class="pid-card">
+                        <div class="pid-card-top">
+                            <span class="pid-card-ico ico-navy"><i class="uil uil-calendar-alt"></i></span>
+                            <span class="pid-card-label">Total Scheduled Service</span>
+                        </div>
+                        <div class="pid-card-val">120</div>
+                        <div class="pid-card-sub">Services in range</div>
+                        <div class="pid-card-foot"><span>120</span> Qty</div>
+                    </div>
+
+                    {{-- Completed Scheduled Service --}}
+                    <div class="pid-card">
+                        <div class="pid-card-top">
+                            <span class="pid-card-ico ico-green"><i class="uil uil-check-circle"></i></span>
+                            <span class="pid-card-label">Completed Scheduled Service</span>
+                        </div>
+                        <div class="pid-card-val">86</div>
+                        <div class="pid-card-sub">Services done</div>
+                        <div class="pid-card-foot"><span>86</span> Qty</div>
+                    </div>
+
+                    {{-- Missed Scheduled Service --}}
+                    <div class="pid-card">
+                        <div class="pid-card-top">
+                            <span class="pid-card-ico ico-red"><i class="uil uil-times-circle"></i></span>
+                            <span class="pid-card-label">Missed Scheduled Service</span>
+                        </div>
+                        <div class="pid-card-val">12</div>
+                        <div class="pid-card-sub">Overdue / not done</div>
+                        <div class="pid-card-foot"><span>12</span> Qty</div>
+                    </div>
+
+                    {{-- Pending Scheduled Service --}}
+                    <div class="pid-card">
+                        <div class="pid-card-top">
+                            <span class="pid-card-ico ico-amber"><i class="uil uil-clock"></i></span>
+                            <span class="pid-card-label">Pending Scheduled Service</span>
+                        </div>
+                        <div class="pid-card-val">22</div>
+                        <div class="pid-card-sub">Upcoming / not yet due</div>
+                        <div class="pid-card-foot"><span>22</span> Qty</div>
+                    </div>
+
+                </div>
+
+                <div class="pid-modal-section">
+                    <span class="pid-modal-section-title">Recent Service History</span>
+                </div>
+
+                <div class="table-responsive pid-modal-table">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th style="text-align:right;">Odometer</th>
+                                <th style="text-align:right;">Cost</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Engine Oil &amp; Filter Change</td>
+                                <td>Scheduled</td>
+                                <td>12 Jun 2026</td>
+                                <td style="text-align:right;">1,42,300 km</td>
+                                <td style="text-align:right;">₹ 18,500</td>
+                                <td><span class="pid-status pid-status-settled">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Brake Pad Replacement</td>
+                                <td>Repair</td>
+                                <td>28 May 2026</td>
+                                <td style="text-align:right;">1,39,850 km</td>
+                                <td style="text-align:right;">₹ 12,200</td>
+                                <td><span class="pid-status pid-status-settled">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Tyre Rotation &amp; Alignment</td>
+                                <td>Scheduled</td>
+                                <td>10 Jul 2026</td>
+                                <td style="text-align:right;">1,45,000 km</td>
+                                <td style="text-align:right;">₹ 4,800</td>
+                                <td><span class="pid-status pid-status-repair">Due</span></td>
+                            </tr>
+                            <tr>
+                                <td>Clutch Assembly Inspection</td>
+                                <td>Scheduled</td>
+                                <td>02 May 2026</td>
+                                <td style="text-align:right;">1,37,400 km</td>
+                                <td style="text-align:right;">₹ 0</td>
+                                <td><span class="pid-status pid-status-initiated">Missed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer pid-modal-footer">
+                <button type="button" class="btn pid-modal-close-btn" data-bs-dismiss="modal">
+                    <i class="uil uil-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('js')
-<script src="{{ asset('js/Inventory/purchase-insurance-dashboard.js?v=1.3') }}"></script>
+<script src="{{ asset('js/Inventory/purchase-insurance-dashboard.js?v=1.4') }}"></script>
 @endsection

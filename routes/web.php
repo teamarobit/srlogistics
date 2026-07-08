@@ -835,6 +835,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/lr/print', 'print')->name('trip.lr.print');
     });
 
+    // Toll Dashboard — static view (no dynamic data)
+    Route::get('/toll/dashboard', [App\Http\Controllers\TollDashboardController::class, 'dashboard'])->name('toll.dashboard');
+
+    // Challan Dashboard — static view (no dynamic data)
+    Route::get('/challan/dashboard', [App\Http\Controllers\ChallanDashboardController::class, 'dashboard'])->name('challan.dashboard');
+
+    // Fuel Dashboard — static view (no dynamic data)
+    Route::get('/fuel/dashboard', [App\Http\Controllers\FuelDashboardController::class, 'dashboard'])->name('fuel.dashboard');
+
 
     /******************************** Contacts V2 — Customer (redesign) *********************/
     // New, isolated module. Does NOT touch existing contacts routes/controller/views.
@@ -1076,6 +1085,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post  ('/insurance-vendors/{id}/update',        [App\Http\Controllers\V2\InsuranceProviderController::class, 'update'])->name('insuranceprovider.update');
         Route::post  ('/insurance-vendors/{id}/toggle-status', [App\Http\Controllers\V2\InsuranceProviderController::class, 'toggleStatus'])->name('insuranceprovider.toggle-status');
         Route::delete('/insurance-vendors/{id}',               [App\Http\Controllers\V2\InsuranceProviderController::class, 'destroy'])->name('insuranceprovider.destroy');
+    });
+
+    /******************************** Project Progress — client sign-off board *********************/
+    // Standalone page, intentionally NOT linked in any menu (Amit). DB-backed (pp_* tables).
+    Route::prefix('project-progress')->name('projectprogress.')->group(function () {
+        Route::get('/', [App\Http\Controllers\ProjectProgressController::class, 'index'])->name('index');
+
+        Route::post('modules/{id}/approval', [App\Http\Controllers\ProjectProgressController::class, 'toggleApproval'])->name('module.approval');
+        Route::post('modules/{id}/freeze',   [App\Http\Controllers\ProjectProgressController::class, 'freezeModule'])->name('module.freeze');
+        Route::post('modules/{id}/upload',   [App\Http\Controllers\ProjectProgressController::class, 'uploadFile'])->name('module.upload');
+
+        Route::post('phases/{id}/freeze',    [App\Http\Controllers\ProjectProgressController::class, 'freezePhase'])->name('phase.freeze');
+
+        Route::delete('files/{fileId}',      [App\Http\Controllers\ProjectProgressController::class, 'removeFile'])->name('file.remove');
+        Route::get('files/{fileId}/download', [App\Http\Controllers\ProjectProgressController::class, 'downloadFile'])->name('file.download');
     });
 
 }); // end auth middleware group

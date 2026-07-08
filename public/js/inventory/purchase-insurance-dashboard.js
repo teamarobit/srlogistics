@@ -1,7 +1,7 @@
 /**
  * SR Logistics — Purchase Insurance Dashboard
  * File: public/js/Inventory/purchase-insurance-dashboard.js
- * Version: 1.0
+ * Version: 1.1
  */
 
 $(function () {
@@ -46,6 +46,18 @@ $(function () {
         $('#pidDateRange').on('cancel.daterangepicker', function () {
             $(this).val('');
             $('#pidFilterForm').submit();
+        });
+    }
+
+    // ── Row "View" button — open Maintenance & Scheduled Service modal ────
+    var pidMaintenanceModalEl = document.getElementById('pidMaintenanceModal');
+    if (pidMaintenanceModalEl && typeof bootstrap !== 'undefined') {
+        var pidMaintenanceModal = new bootstrap.Modal(pidMaintenanceModalEl);
+        $(document).on('click', '.pid-view-btn', function (e) {
+            e.preventDefault();
+            var vehicle = $.trim($(this).closest('tr').find('.pid-reg').text());
+            $('#pidMaintenanceModalMeta').text(vehicle ? 'Vehicle ' + vehicle : 'Vehicle overview');
+            pidMaintenanceModal.show();
         });
     }
 

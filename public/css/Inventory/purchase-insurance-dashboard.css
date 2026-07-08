@@ -4,114 +4,135 @@
    Version: 1.0
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── KPI Mini Cards ────────────────────────────────────────────────────── */
-.pid-kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
+/* ── Metric Cards — unified system ─────────────────────────────────────── */
+.pid-group-head {
+    display: flex;
+    align-items: center;
+    margin: 16px 0 9px;
 }
-@media (max-width: 1200px) { .pid-kpi-row { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px)  { .pid-kpi-row { grid-template-columns: 1fr; } }
-
-.pid-kpi-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 9px 12px;
+.pid-group-head:first-of-type { margin-top: 2px; }
+.pid-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0b1f4e;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
     position: relative;
-    overflow: hidden;
-    transition: box-shadow 0.2s, transform 0.15s;
+    padding-left: 11px;
 }
-.pid-kpi-card:hover {
-    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
-    transform: translateY(-1px);
-}
-.pid-kpi-card::before {
+.pid-group-title::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    border-radius: 8px 0 0 8px;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 13px;
+    background: #032671;
+    border-radius: 2px;
 }
 
-/* Navy — Actual Paid */
-.pid-kpi-card.card-paid {
-    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
-    border-color: #c5d4ee;
+.pid-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 4px;
 }
-.pid-kpi-card.card-paid::before      { background: #032671; }
-.pid-kpi-card.card-paid .pid-kpi-label { color: #2d4a8a; }
-.pid-kpi-card.card-paid .pid-kpi-amt  { color: #032671; }
-.pid-kpi-card.card-paid .pid-kpi-divider { background: #c5d4ee; }
+@media (max-width: 1300px) { .pid-cards { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1050px) { .pid-cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 720px)  { .pid-cards { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px)  { .pid-cards { grid-template-columns: 1fr; } }
 
-/* Teal — Claimed */
-.pid-kpi-card.card-claimed {
-    background: linear-gradient(135deg, #ecfdf5 0%, #e6faf5 100%);
-    border-color: #99e6ce;
+.pid-card {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    border: 1px solid #e7ebf2;
+    border-radius: 12px;
+    padding: 9px 13px;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+    transition: box-shadow 0.2s ease, transform 0.18s ease, border-color 0.2s ease;
+    overflow: hidden;
 }
-.pid-kpi-card.card-claimed::before      { background: #0d9488; }
-.pid-kpi-card.card-claimed .pid-kpi-label { color: #0f766e; }
-.pid-kpi-card.card-claimed .pid-kpi-amt  { color: #134e4a; }
-.pid-kpi-card.card-claimed .pid-kpi-divider { background: #99e6ce; }
-
-/* Green — Settled */
-.pid-kpi-card.card-settled {
-    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
-    border-color: #a7ddb8;
+/* Left accent rail — keyed to the card's icon category */
+.pid-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #032671;
+    opacity: 0.85;
+    border-radius: 12px 0 0 12px;
+    transition: width 0.18s ease, opacity 0.18s ease;
 }
-.pid-kpi-card.card-settled::before      { background: #16a34a; }
-.pid-kpi-card.card-settled .pid-kpi-label { color: #15803d; }
-.pid-kpi-card.card-settled .pid-kpi-amt  { color: #14532d; }
-.pid-kpi-card.card-settled .pid-kpi-divider { background: #a7ddb8; }
-
-/* Orange — Excess / Short */
-.pid-kpi-card.card-excess {
-    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
-    border-color: #f9c784;
+.pid-card:has(.ico-green)::before { background: #1a7a41; }
+.pid-card:has(.ico-amber)::before { background: #c98416; }
+.pid-card:has(.ico-red)::before   { background: #c0392b; }
+.pid-card:hover {
+    box-shadow: 0 8px 20px rgba(16,24,40,0.09);
+    transform: translateY(-2px);
+    border-color: #d3dbe9;
 }
-.pid-kpi-card.card-excess::before      { background: #f97316; }
-.pid-kpi-card.card-excess .pid-kpi-label { color: #c2410c; }
-.pid-kpi-card.card-excess .pid-kpi-amt  { color: #9a3412; }
-.pid-kpi-card.card-excess .pid-kpi-divider { background: #f9c784; }
-
-.pid-kpi-label {
+.pid-card:hover::before { width: 4px; opacity: 1; }
+.pid-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.pid-card-ico {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex: none;
+    box-shadow: inset 0 0 0 1px rgba(3,38,113,0.05);
+}
+.pid-card-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #6b7280;
+    letter-spacing: 0.4px;
+    color: #59647a;
+    line-height: 1.25;
 }
-.pid-kpi-amt {
-    font-size: 15px;
+.pid-card-val {
+    font-size: 20px;
     font-weight: 800;
-    line-height: 1.1;
-    color: #1f2937;
+    color: #0b1f4e;
+    line-height: 1.02;
+    letter-spacing: -0.4px;
+    font-variant-numeric: tabular-nums;
 }
-.pid-kpi-sub {
+.pid-card-sub {
     font-size: 10px;
-    color: #6b7280;
-    margin-top: 1px;
+    color: #8a93a3;
+    margin-top: 2px;
 }
-.pid-kpi-divider {
-    height: 1px;
-    background: #e5e7eb;
-    margin: 5px 0;
-}
-.pid-kpi-qty {
+.pid-card-foot {
+    margin-top: 7px;
+    padding-top: 6px;
+    border-top: 1px solid #eef1f6;
     font-size: 10px;
     font-weight: 600;
     color: #6b7280;
 }
-.pid-kpi-qty span {
-    font-size: 12px;
+.pid-card-foot span {
+    font-size: 12.5px;
     font-weight: 800;
-    color: #374151;
+    color: #0b1f4e;
+    font-variant-numeric: tabular-nums;
 }
+
+/* Compact variant — status counts (no sub / no footer) */
+.pid-card-sm { padding: 9px 13px; }
+.pid-card-sm .pid-card-top { margin-bottom: 4px; }
+.pid-card-sm .pid-card-val { font-size: 22px; }
+
+/* Gradient icon chips (restrained, category-accented) */
+.pid-card-ico.ico-navy  { background: linear-gradient(135deg, #eef2fb 0%, #e2e9f8 100%); color: #032671; }
+.pid-card-ico.ico-green { background: linear-gradient(135deg, #e8f5ec 0%, #d7eede 100%); color: #167339; }
+.pid-card-ico.ico-amber { background: linear-gradient(135deg, #fdf3e4 0%, #fbe8ca 100%); color: #b5730f; }
+.pid-card-ico.ico-red   { background: linear-gradient(135deg, #fcebeb 0%, #f9dcda 100%); color: #b3352f; }
 
 /* ── Filter Card ────────────────────────────────────────────────────────── */
 .pid-filter-card {
@@ -310,6 +331,28 @@
 .pid-ws-label { font-size:10px; color:#9ca3af; }
 .pid-ws-name  { font-size:12px; font-weight:600; color:#1f2937; }
 
+/* Workshop Name column — name + type badge */
+.pid-ws-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    white-space: nowrap;
+}
+.pid-ws-item + .pid-ws-item { margin-top: 7px; }
+.pid-ws-badge {
+    display: inline-flex;
+    align-self: flex-start;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    line-height: 1.4;
+}
+.pid-ws-badge-mech { background: #e3ecff; color: #032671; }
+.pid-ws-badge-body { background: #fff3e0; color: #c45a00; }
+
 /* View button */
 .pid-view-btn {
     display: inline-flex;
@@ -334,3 +377,130 @@
     background:#eef2fb; border:1px solid #c5d4ee;
     border-radius:6px; padding:3px 10px;
 }
+
+/* ── Maintenance & Scheduled Service modal ─────────────────────────────── */
+.pid-modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(11,31,78,0.28);
+}
+.pid-modal-header {
+    align-items: center;
+    background: linear-gradient(120deg, #032671 0%, #0b3a8f 100%);
+    border-bottom: none;
+    padding: 16px 22px;
+}
+.pid-modal-head-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+.pid-modal-ico {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    color: #fff;
+    background: rgba(255,255,255,0.14);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+    flex: none;
+}
+.pid-modal-header .modal-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+}
+.pid-modal-sub {
+    display: block;
+    font-size: 11.5px;
+    color: #c5d4ee;
+    margin-top: 2px;
+    font-weight: 500;
+}
+.pid-modal-header .btn-close {
+    opacity: 0.85;
+    transition: opacity 0.15s ease;
+}
+.pid-modal-header .btn-close:hover { opacity: 1; }
+
+.pid-modal-body { background: #f6f8fc; padding: 18px 22px; }
+
+/* Section label inside modal */
+.pid-modal-section {
+    display: flex;
+    align-items: center;
+    margin: 2px 0 11px;
+}
+.pid-modal-section + .pid-modal-cards { margin-top: 0; }
+.pid-modal-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0b1f4e;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    position: relative;
+    padding-left: 11px;
+}
+.pid-modal-section-title::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 13px;
+    background: #032671;
+    border-radius: 2px;
+}
+.pid-modal-cards { margin-bottom: 22px; }
+
+/* Service history table inside modal */
+.pid-modal-table {
+    background: #fff;
+    border: 1px solid #e7ebf2;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+}
+.pid-modal-table table { font-size: 12.5px; }
+.pid-modal-table thead th {
+    background: #f2f5fb;
+    color: #59647a;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid #e7ebf2;
+    padding: 10px 14px;
+    white-space: nowrap;
+}
+.pid-modal-table tbody td {
+    padding: 11px 14px;
+    color: #1f2937;
+    border-bottom: 1px solid #f1f4f9;
+    vertical-align: middle;
+}
+.pid-modal-table tbody tr:last-child td { border-bottom: none; }
+.pid-modal-table tbody tr:hover td { background: #f8faff; }
+
+.pid-modal-footer {
+    background: #fff;
+    border-top: 1px solid #eef1f6;
+    padding: 12px 22px;
+}
+.pid-modal-close-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0b1f4e;
+    background: #eef2fb;
+    border: 1px solid #c5d4ee;
+    border-radius: 7px;
+    padding: 7px 16px;
+}
+.pid-modal-close-btn:hover { background: #032671; color: #fff; border-color: #032671; }
