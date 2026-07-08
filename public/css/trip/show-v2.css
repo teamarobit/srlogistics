@@ -6164,8 +6164,85 @@ body.td2-trip-paused #td2UpdateStatusLink {
     padding: 2px 8px;
     border-radius: 20px;
 }
-th: 0;
+
+/* ══════════════════════════════════════════════════════════════
+   COMPLETE TRIP MODAL — KM Summary Grid  (Page 1)
+   Prefix: td2-ctrip-
+   ══════════════════════════════════════════════════════════════ */
+.td2-ctrip-body { padding: 18px 20px; }
+
+/* Grid card */
+.td2-ctrip-km-grid {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
 }
+.td2-ctrip-km-row {
+    display: flex;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 10px;
+}
+.td2-ctrip-km-row:last-child { border-bottom: 0; }
+
+/* KM meta (label + value) */
+.td2-ctrip-km-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+.td2-ctrip-km-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.td2-ctrip-km-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.15;
+}
+.td2-ctrip-km-unit {
+    font-size: 13px;
+    font-weight: 400;
+    color: #94a3b8;
+}
+
+/* Source badges */
+.td2-ctrip-src-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.td2-ctrip-src-auto   { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.td2-ctrip-src-manual { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.td2-ctrip-src-repair { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* Speedo row — wraps to accommodate inputs */
+.td2-ctrip-km-speedo-row { flex-wrap: wrap; }
+
+.td2-ctrip-speedo-inputs {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top: 1px dashed #e2e8f0;
+}
+.td2-ctrip-speedo-field { flex: 1; min-width: 0; }
 .td2-ctrip-speedo-lbl {
     font-size: 11px;
     font-weight: 600;
@@ -6178,6 +6255,13 @@ th: 0;
     color: #94a3b8;
     flex-shrink: 0;
     padding-bottom: 6px;
+}
+.td2-ctrip-speedo-err {
+    width: 100%;
+    font-size: 11.5px;
+    color: #dc2626;
+    margin-top: 6px;
+    padding-left: 2px;
 }
 
 /* Warning note */
@@ -6198,21 +6282,4 @@ th: 0;
     flex-shrink: 0;
     margin-top: 1px;
     color: #d97706;
-}
-
-/* Complete button */
-.td2-ctrip-complete-btn {
-    background: #065f46;
-    color: #fff;
-    border: 1px solid #065f46;
-    font-size: 13.5px;
-    font-weight: 600;
-    padding: 7px 20px;
-    border-radius: 6px;
-}
-.td2-ctrip-complete-btn:hover,
-.td2-ctrip-complete-btn:focus {
-    background: #047857;
-    border-color: #047857;
-    color: #fff;
 }
