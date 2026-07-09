@@ -1,0 +1,517 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — EMI Dashboard
+   File: public/css/Emi/emi-dashboard.css
+   Version: 1.0
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page head badge ────────────────────────────────────────────────────── */
+.emid-period-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #032671;
+    background: #eef2fb; border: 1px solid #c5d4ee;
+    border-radius: 6px; padding: 3px 10px;
+}
+
+/* ── Mini Dashboard — grouped KPI blocks ────────────────────────────────── */
+.emid-kpi-wrap {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.emid-span-12 { grid-column: span 12; }
+.emid-span-5  { grid-column: span 5; }
+.emid-span-7  { grid-column: span 7; }
+
+@media (max-width: 1200px) {
+    .emid-span-5, .emid-span-7 { grid-column: span 12; }
+}
+
+.emid-kpi-group {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    padding: 9px 10px 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.emid-kpi-group-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f2f7;
+}
+.emid-kpi-group-title i { font-size: 12px; color: #4b6cb7; }
+
+.emid-kpi-row { display: grid; gap: 8px; }
+.emid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.emid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+    .emid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .emid-cols-3, .emid-cols-4 { grid-template-columns: 1fr; }
+}
+
+.emid-kpi-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 10px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+.emid-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+}
+.emid-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 8px 0 0 8px;
+}
+
+/* Navy — Total EMI */
+.emid-kpi-card.card-total {
+    background: linear-gradient(135deg, #eef2fb 0%, #e8eef7 100%);
+    border-color: #c5d4ee;
+}
+.emid-kpi-card.card-total::before          { background: #032671; }
+.emid-kpi-card.card-total .emid-kpi-label   { color: #2d4a8a; }
+.emid-kpi-card.card-total .emid-kpi-amt     { color: #032671; }
+.emid-kpi-card.card-total .emid-kpi-divider { background: #c5d4ee; }
+
+/* Green — On Time Paid */
+.emid-kpi-card.card-ontime {
+    background: linear-gradient(135deg, #f0fdf4 0%, #edfbf3 100%);
+    border-color: #a7ddb8;
+}
+.emid-kpi-card.card-ontime::before          { background: #16a34a; }
+.emid-kpi-card.card-ontime .emid-kpi-label   { color: #15803d; }
+.emid-kpi-card.card-ontime .emid-kpi-amt     { color: #14532d; }
+.emid-kpi-card.card-ontime .emid-kpi-divider { background: #a7ddb8; }
+
+/* Amber — Late Paid */
+.emid-kpi-card.card-late {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
+    border-color: #f9c784;
+}
+.emid-kpi-card.card-late::before          { background: #f97316; }
+.emid-kpi-card.card-late .emid-kpi-label   { color: #c2410c; }
+.emid-kpi-card.card-late .emid-kpi-amt     { color: #9a3412; }
+.emid-kpi-card.card-late .emid-kpi-divider { background: #f9c784; }
+
+/* Red — Late EMI Charges */
+.emid-kpi-card.card-charges {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee9e9 100%);
+    border-color: #f3b0b0;
+}
+.emid-kpi-card.card-charges::before          { background: #dc2626; }
+.emid-kpi-card.card-charges .emid-kpi-label   { color: #b91c1c; }
+.emid-kpi-card.card-charges .emid-kpi-amt     { color: #7f1d1d; }
+.emid-kpi-card.card-charges .emid-kpi-divider { background: #f3b0b0; }
+
+/* EMI Date Wise — neutral card, coloured accent bar */
+.emid-kpi-card.card-d1::before  { background: #032671; }
+.emid-kpi-card.card-d5::before  { background: #0d9488; }
+.emid-kpi-card.card-d10::before { background: #7c3aed; }
+
+.emid-kpi-card.card-d1  .emid-kpi-label i { color: #032671; }
+.emid-kpi-card.card-d5  .emid-kpi-label i { color: #0d9488; }
+.emid-kpi-card.card-d10 .emid-kpi-label i { color: #7c3aed; }
+
+/* Bank Wise — neutral card, coloured accent bar */
+.emid-kpi-card.card-hdfc::before  { background: #004c8f; }
+.emid-kpi-card.card-kotak::before { background: #dc2626; }
+.emid-kpi-card.card-idfc::before  { background: #9a1f6a; }
+.emid-kpi-card.card-icici::before { background: #d97706; }
+
+.emid-kpi-card.card-hdfc  .emid-kpi-label i { color: #004c8f; }
+.emid-kpi-card.card-kotak .emid-kpi-label i { color: #dc2626; }
+.emid-kpi-card.card-idfc  .emid-kpi-label i { color: #9a1f6a; }
+.emid-kpi-card.card-icici .emid-kpi-label i { color: #d97706; }
+
+.emid-kpi-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.emid-kpi-label i { font-size: 11px; }
+.emid-kpi-amt {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.emid-kpi-amt small { font-size: 10px; font-weight: 700; opacity: 0.7; }
+.emid-kpi-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 5px 0;
+}
+.emid-kpi-qty {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+}
+.emid-kpi-qty span {
+    font-size: 12px;
+    font-weight: 800;
+    color: #374151;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Filter Card ────────────────────────────────────────────────────────── */
+.emid-filter-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.emid-filter-header {
+    background: #f8faff;
+    border-bottom: 1px solid #e8edf5;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.emid-filter-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.emid-filter-title i { font-size: 12px; color: #4b6cb7; }
+.emid-filter-body { padding: 12px 16px; }
+.emid-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.emid-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.emid-filter-label i { font-size: 11px; color: #9ca3af; }
+.emid-filter-card .form-control,
+.emid-filter-card .form-select {
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    height: 32px;
+    padding: 4px 9px;
+    color: #1f2937;
+    background: #fff;
+}
+.emid-filter-card .form-control:focus,
+.emid-filter-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3,38,113,0.07);
+}
+.emid-filter-card .input-group-text {
+    background: #f5f6f8;
+    border-color: #d1d5db;
+    border-right: none;
+    color: #9ca3af;
+}
+.emid-filter-card .input-group .form-control { border-left: none; }
+.emid-reset-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 5px 13px;
+    background: #fff;
+    transition: all 0.15s;
+    height: 32px;
+    white-space: nowrap;
+}
+.emid-reset-link:hover {
+    border-color: #032671;
+    color: #032671;
+    background: #f0f4ff;
+}
+
+/* ── Table Card ─────────────────────────────────────────────────────────── */
+.emid-table-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.emid-table-head {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.emid-table-head-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.emid-table-head-sub { font-size: 11px; color: #6b7280; }
+.emid-head-actions { display: flex; align-items: center; gap: 8px; }
+
+.emid-btn-add,
+.emid-btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.emid-btn-add {
+    background: #032671;
+    border: 1px solid #032671;
+    color: #fff;
+}
+.emid-btn-add:hover { background: #021d54; color: #fff; }
+.emid-btn-export {
+    background: #eef2fb;
+    border: 1px solid #c5d4ee;
+    color: #032671;
+}
+.emid-btn-export:hover { background: #032671; color: #fff; border-color: #032671; }
+
+/* Scrollable wide table */
+.emid-table { max-height: 620px; overflow: auto; }
+.emid-table table { margin-bottom: 0; }
+.emid-table table thead th {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f5f6f8;
+    border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.emid-table table tbody td {
+    font-size: 11.5px;
+    padding: 8px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7;
+    color: #2d2d2d;
+    white-space: nowrap;
+}
+.emid-table table tbody tr:hover td { background: #f4f7fe; }
+.emid-table table tbody tr:last-child td { border-bottom: 0; }
+
+.emid-th-num  { text-align: right; }
+.emid-th-group {
+    background: #eef2fb !important;
+    color: #032671 !important;
+    border-left: 1px solid #d7e0f2;
+    border-right: 1px solid #d7e0f2;
+}
+
+/* Column-wise sorting — clickable headers */
+.emid-table table thead th.emid-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+}
+.emid-table table thead th.emid-sortable:hover {
+    background: #e9edf6;
+    color: #032671;
+}
+.emid-sort-icon {
+    font-size: 11px;
+    color: #b6bcc7;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.emid-table table thead th.emid-sortable:hover .emid-sort-icon { color: #4b6cb7; }
+
+/* Active sort column */
+.emid-table table thead th.emid-sortable.is-sorted {
+    background: #e3ecff;
+    color: #032671;
+}
+.emid-table table thead th.emid-sortable.is-sorted .emid-sort-icon { color: #032671; }
+.emid-table table tbody td.is-sorted-col { background: #f8faff; }
+.emid-table table tbody tr:hover td.is-sorted-col { background: #eef2fb; }
+
+/* Cell helpers */
+.emid-sl { color: #9ca3af; font-weight: 700; }
+.emid-reg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+.emid-sub { font-size: 10px; color: #6b7280; margin-top: 1px; }
+.emid-mono {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+}
+.emid-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.emid-amt   { font-weight: 700; color: #1f2937; }
+.emid-emi   { font-weight: 800; color: #032671; background: #f8faff; }
+.emid-roi   { font-weight: 800; color: #0f766e; }
+.emid-muted { color: #9ca3af; }
+
+.emid-bank {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #374151;
+    background: #f1f3f7;
+    border: 1px solid #e2e6ee;
+    border-radius: 10px;
+    padding: 1px 9px;
+    white-space: nowrap;
+}
+.emid-day {
+    display: inline-block;
+    min-width: 30px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #032671;
+    background: #eef2fb;
+    border: 1px solid #c5d4ee;
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+/* EMI progress */
+.emid-progress-wrap { min-width: 110px; }
+.emid-progress-txt {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #374151;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 3px;
+}
+.emid-progress-bar {
+    height: 5px;
+    background: #eceff4;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.emid-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #032671;
+}
+.emid-progress-fill.is-done { background: #16a34a; }
+
+/* Badges */
+.emid-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.emid-badge-active    { background: #e7f7ec; color: #157347; }
+.emid-badge-completed { background: #e3ecff; color: #032671; }
+.emid-badge-chassis   { background: #eef2fb; color: #032671; }
+.emid-badge-body      { background: #f3e8ff; color: #6d28d9; }
+.emid-badge-refinance { background: #fff1e3; color: #c2410c; }
+
+/* Attachment link */
+.emid-attach {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #032671;
+    background: #eef2fb;
+    border: 1px solid #c5d4ee;
+    border-radius: 5px;
+    padding: 2px 9px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.emid-attach:hover { background: #032671; color: #fff; border-color: #032671; }
+.emid-attach i { font-size: 12px; }
+
+/* Table footer */
+.emid-table-foot {
+    padding: 9px 16px;
+    border-top: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6b7280;
+}
+.emid-table-foot b { color: #032671; font-variant-numeric: tabular-nums; }

@@ -1,0 +1,356 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SR Logistics — All Vehicle Document Dashboard
+   File: public/css/VehicleDocument/vehicle-document-dashboard.css
+   Version: 1.1
+   Prefix: vdd-
+═══════════════════════════════════════════════════════════════════════════ */
+
+body { background-color: #fff; }
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.vdd-no-sidebar {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 20px;
+}
+@media (max-width: 768px) {
+    .vdd-no-sidebar { padding: 14px; }
+}
+
+/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+.vdd-breadcrumb {
+    font-size: 11px;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+.vdd-breadcrumb a        { color: #6b7280; text-decoration: none; }
+.vdd-breadcrumb a:hover  { color: #032671; }
+.vdd-breadcrumb .breadcrumb-item.active { color: #032671; font-weight: 600; }
+
+/* ── Page head ──────────────────────────────────────────────────────────── */
+.vdd-page-head h5 { font-size: 17px; font-weight: 700; color: #1f2937; }
+.vdd-head-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #032671;
+    background: #eef2fb; border: 1px solid #c5d4ee;
+    border-radius: 6px; padding: 3px 10px;
+}
+
+/* ── Mini Dashboard ─────────────────────────────────────────────────────── */
+.vdd-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+@media (max-width: 900px) { .vdd-kpi-row { grid-template-columns: 1fr; } }
+
+.vdd-kpi-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+.vdd-kpi-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+}
+.vdd-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 9px 0 0 9px;
+}
+
+/* Red — Expiry Today */
+.vdd-kpi-card.card-today {
+    background: linear-gradient(135deg, #fef2f2 0%, #fdecec 100%);
+    border-color: #f5b5b5;
+}
+.vdd-kpi-card.card-today::before        { background: #dc2626; }
+.vdd-kpi-card.card-today .vdd-kpi-label { color: #b91c1c; }
+.vdd-kpi-card.card-today .vdd-kpi-num   { color: #7f1d1d; }
+.vdd-kpi-card.card-today .vdd-kpi-divider { background: #f5b5b5; }
+
+/* Orange — Expiry in 1 Day */
+.vdd-kpi-card.card-day1 {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3e2 100%);
+    border-color: #f9c784;
+}
+.vdd-kpi-card.card-day1::before        { background: #f97316; }
+.vdd-kpi-card.card-day1 .vdd-kpi-label { color: #c2410c; }
+.vdd-kpi-card.card-day1 .vdd-kpi-num   { color: #9a3412; }
+.vdd-kpi-card.card-day1 .vdd-kpi-divider { background: #f9c784; }
+
+/* Amber — Expiry in 2 Days */
+.vdd-kpi-card.card-day2 {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef6dd 100%);
+    border-color: #f3d788;
+}
+.vdd-kpi-card.card-day2::before        { background: #d97706; }
+.vdd-kpi-card.card-day2 .vdd-kpi-label { color: #b45309; }
+.vdd-kpi-card.card-day2 .vdd-kpi-num   { color: #78350f; }
+.vdd-kpi-card.card-day2 .vdd-kpi-divider { background: #f3d788; }
+
+.vdd-kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #6b7280;
+    white-space: nowrap;
+}
+.vdd-kpi-label i { font-size: 12px; }
+.vdd-kpi-num {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2937;
+    font-variant-numeric: tabular-nums;
+}
+.vdd-kpi-divider { height: 1px; background: #e5e7eb; margin: 6px 0; }
+.vdd-kpi-sub {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+/* ── Filter Card ────────────────────────────────────────────────────────── */
+.vdd-filter-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.vdd-filter-header {
+    background: #f8faff;
+    border-bottom: 1px solid #e8edf5;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.vdd-filter-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.vdd-filter-title i { font-size: 12px; color: #4b6cb7; }
+.vdd-filter-body  { padding: 12px 16px; }
+.vdd-filter-group { display: flex; flex-direction: column; gap: 3px; }
+.vdd-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.vdd-filter-label i { font-size: 11px; color: #9ca3af; }
+.vdd-filter-card .form-control,
+.vdd-filter-card .form-select {
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    height: 32px;
+    padding: 4px 9px;
+    color: #1f2937;
+    background: #fff;
+}
+.vdd-filter-card .form-control:focus,
+.vdd-filter-card .form-select:focus {
+    border-color: #032671;
+    box-shadow: 0 0 0 2px rgba(3,38,113,0.07);
+}
+.vdd-filter-card .input-group-text {
+    background: #f5f6f8;
+    border-color: #d1d5db;
+    border-right: none;
+    color: #9ca3af;
+    padding: 0 10px;
+}
+.vdd-filter-card .input-group .form-control { border-left: none; }
+.vdd-filter-icon { font-size: 13px; color: #4b6cb7; }
+
+.vdd-reset-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 5px 13px;
+    background: #fff;
+    transition: all 0.15s;
+    height: 32px;
+    white-space: nowrap;
+}
+.vdd-reset-link:hover {
+    border-color: #032671;
+    color: #032671;
+    background: #f0f4ff;
+}
+
+/* Select2 height alignment inside the filter card */
+.vdd-filter-card .select2-container--default .select2-selection--single {
+    height: 32px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+}
+.vdd-filter-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px;
+    font-size: 12px;
+    color: #1f2937;
+    padding-left: 9px;
+}
+.vdd-filter-card .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 30px;
+}
+
+/* ── Table Card ─────────────────────────────────────────────────────────── */
+.vdd-table-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.vdd-table-head {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f2f7;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.vdd-table-head-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #032671;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.vdd-table-head-sub { font-size: 11px; color: #6b7280; }
+
+.vdd-table { max-height: 620px; overflow: auto; }
+.vdd-table table { margin-bottom: 0; }
+.vdd-table table thead th {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f5f6f8;
+    border-bottom: 2px solid #e4e7ef;
+    padding: 8px 10px;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.vdd-table table tbody td {
+    font-size: 11.5px;
+    padding: 8px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f7;
+    color: #2d2d2d;
+    white-space: nowrap;
+}
+.vdd-table table tbody tr:hover td { background: #f4f7fe; }
+.vdd-table table tbody tr:last-child td { border-bottom: 0; }
+
+/* ── Cell helpers ───────────────────────────────────────────────────────── */
+.vdd-sl { color: #9ca3af; font-weight: 700; }
+.vdd-reg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #032671;
+    background: #e3ecff;
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+.vdd-owner { font-size: 11.5px; font-weight: 600; color: #1f2937; }
+.vdd-group-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #475569;
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+.vdd-date { font-variant-numeric: tabular-nums; color: #4b5563; }
+
+/* Document type chips */
+.vdd-doc {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 2px 10px;
+    white-space: nowrap;
+}
+.vdd-doc-insurance { background: #e8f0fe; color: #032671; }
+.vdd-doc-fitness   { background: #f0fdf4; color: #166534; }
+.vdd-doc-permit1   { background: #fff7ed; color: #c2410c; }
+.vdd-doc-permit5   { background: #fef3c7; color: #92400e; }
+.vdd-doc-tax       { background: #f5f3ff; color: #6d28d9; }
+.vdd-doc-vltd      { background: #ecfdf5; color: #0f766e; }
+.vdd-doc-pucc      { background: #fdf2f8; color: #9d174d; }
+
+/* Expires-in chips */
+.vdd-exp {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+.vdd-exp-today  { background: #fee2e2; color: #991b1b; }
+.vdd-exp-urgent { background: #ffedd5; color: #9a3412; }
+.vdd-exp-soon   { background: #fef9c3; color: #854d0e; }
+.vdd-exp-ok     { background: #dcfce7; color: #166534; }
+
+/* ── Empty state ────────────────────────────────────────────────────────── */
+.vdd-empty-state    { text-align: center; padding: 56px 20px; color: #94a3b8; }
+.vdd-empty-state i  { font-size: 44px; margin-bottom: 10px; display: block; }
+.vdd-empty-state p  { font-size: 13px; margin: 0; }
+
+/* ── Table footer ───────────────────────────────────────────────────────── */
+.vdd-table-foot {
+    padding: 9px 16px;
+    border-top: 1px solid #f0f2f7;
+    background: #fafbfc;
+    font-size: 11px;
+    color: #6b7280;
+}

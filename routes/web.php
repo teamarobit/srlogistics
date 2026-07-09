@@ -841,8 +841,21 @@ Route::group(['middleware' => ['auth']], function() {
     // Challan Dashboard — static view (no dynamic data)
     Route::get('/challan/dashboard', [App\Http\Controllers\ChallanDashboardController::class, 'dashboard'])->name('challan.dashboard');
 
+    // All Vehicle Document Dashboard — static view (no dynamic data)
+    Route::get('/vehicle-document/dashboard', [App\Http\Controllers\VehicleDocumentDashboardController::class, 'dashboard'])->name('vehicledocument.dashboard');
+
+    // Escalation Dashboard — static view (no dynamic data)
+    Route::get('/escalation/dashboard', [App\Http\Controllers\EscalationDashboardController::class, 'dashboard'])->name('escalation.dashboard');
+
     // Fuel Dashboard — static view (no dynamic data)
     Route::get('/fuel/dashboard', [App\Http\Controllers\FuelDashboardController::class, 'dashboard'])->name('fuel.dashboard');
+
+    // EMI Dashboard — static view (no dynamic data)
+    Route::get('/emi/dashboard', [App\Http\Controllers\EmiDashboardController::class, 'dashboard'])->name('emi.dashboard');
+
+    // Document Dashboard — static tab shell page; tabs load via AJAX (no dynamic data)
+    Route::get('/document-dashboard',           [App\Http\Controllers\DocumentDashboardController::class, 'dashboard'])->name('documentdashboard.dashboard');
+    Route::get('/document-dashboard/tab/{tab}', [App\Http\Controllers\DocumentDashboardController::class, 'tab'])->name('documentdashboard.tab');
 
 
     /******************************** Contacts V2 — Customer (redesign) *********************/

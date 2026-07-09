@@ -19,7 +19,7 @@
 
         <li class="nav-item">
 
-          <a href="javascript:void(0)" class="nav-link text-white {{ request()->routeIs('fleet.*', 'fleetdashboard.*', 'tyre.*', 'battery.*') ? 'active' : '' }}"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
+          <a href="javascript:void(0)" class="nav-link text-white {{ request()->routeIs('fleet.*', 'fleetdashboard.*', 'tyre.*', 'battery.*', 'vehicledocument.*', 'documentdashboard.*') ? 'active' : '' }}"><img src="{{ asset('images/menu-icon/vehicles.webp') }}">Fleet</a>
           
           <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
@@ -72,6 +72,12 @@
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Compliance & Insurance</li>
+                      @if(Route::has('vehicledocument.dashboard'))
+                      <li class="{{ request()->routeIs('vehicledocument.dashboard') ? 'active' : '' }}"><a href="{{ route('vehicledocument.dashboard') }}">All Vehicle Document Dashboard</a></li>
+                      @endif
+                      @if(Route::has('documentdashboard.dashboard'))
+                      <li class="{{ request()->routeIs('documentdashboard.*') ? 'active' : '' }}"><a href="{{ route('documentdashboard.dashboard') }}">Document Dashboard</a></li>
+                      @endif
                       @if(Route::has('fleet.vehicle-insurance.index'))
                       <li><a href="{{ route('fleet.vehicle-insurance.index') }}">Vehicle Insurance Policies</a></li>
                       @endif
@@ -131,6 +137,9 @@
                   <div class="col-lg-3 col-md-3 col-xs-12 link-list">
                     <ul>
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Exception Management</li>
+                      @if(Route::has('escalation.dashboard'))
+                      <li class="{{ request()->routeIs('escalation.dashboard') ? 'active' : '' }}"><a href="{{ route('escalation.dashboard') }}">Escalation Dashboard</a></li>
+                      @endif
                       <li><a href="#">Delay Alerts</a></li>
                       <li><a href="#">Breakdown Logs</a></li>
                       <li><a href="#">Trip Reassignment</a></li>
@@ -255,7 +264,7 @@
         </li>
 
         <li class="nav-item">
-        <a class="nav-link text-white" href="#"><img src="{{ asset('images/menu-icon/Production.png') }}">Finance</a>
+        <a class="nav-link text-white {{ request()->routeIs('emi.*') ? 'active' : '' }}" href="#"><img src="{{ asset('images/menu-icon/Production.png') }}">Finance</a>
         <div class="fleetmegamenu-wrapper">
               <div class="megamenu-bd">
                 <div class="row">
@@ -275,6 +284,14 @@
                       <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Payments</li>
                       <li><a href="#">Driver Settlement</a></li>
                       <li><a href="#">Vendor Settlement</a></li>
+                    </ul>
+                    <ul>
+                      <li class="title"><span class="icon"><img src="{{ asset('images/menu-icon/fleet-monitoring.png') }}"></span>Loans &amp; EMI</li>
+                      @if(Route::has('emi.dashboard'))
+                      <li class="{{ request()->routeIs('emi.dashboard') ? 'active' : '' }}"><a href="{{ route('emi.dashboard') }}">EMI Dashboard</a></li>
+                      @endif
+                      <li><a href="#">Loan Accounts</a></li>
+                      <li><a href="#">EMI Repayment Schedule</a></li>
                     </ul>
                   </div>
                   
